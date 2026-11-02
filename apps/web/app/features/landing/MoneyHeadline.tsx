@@ -1,45 +1,73 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useTranslations } from "use-intl";
+import type { Locale } from "../../i18n/format.ts";
+import { useLocale } from "../../i18n/IntlProvider.tsx";
 import { useReducedMotionPreference } from "../../ui/motion-tokens.ts";
-import { agreement, MONEY_WORD_HOLD, MONEY_WORDS } from "./money-words.ts";
+import { MONEY_WORD_HOLD, MONEY_WORDS, phraseFor, type WordOf } from "./money-words.ts";
 
 /**
- * The Spanish headline, with what money is called around the Spanish-speaking world taking turns
- * on the gold marker ("Tus lukas 🇨🇴" → "Tu lana 🇲🇽" → "Tu guita 🇦🇷"…), each with its country's flag, and
- * "Tu(s)" and "clar(a/o)(s)" agreeing with each word. Screen readers and search engines get the
- * message as it is (the prerendered "lukas"); the turning words are decorative. It starts turning
- * once hydrated, waits while the tab is hidden, and holds on "lukas" under reduced motion.
+ * The headline, with what money is called around the world in this language taking turns on the
+ * gold marker ("Tus lukas 🇨🇴" → "Tu lana 🇲🇽" → …, "Your money" → "Your bucks 🇺🇸" → …), each with
+ * its country's flag, and the words around it agreeing with each word ("Tu(s)", "clar(a/o)(s)";
+ * "O teu"/"A tua", "I tuoi"/"La tua"). Screen readers and search engines get the message as it is
+ * (the prerendered first word); the turning words are decorative. It starts turning once hydrated,
+ * waits while the tab is hidden, and holds on the first word under reduced motion. Every word's
+ * headline is also laid out unseen in the same place, so the headline is as tall as its tallest
+ * one from the first paint and the page below never moves.
  */
 export function MoneyHeadline() {
   const t = useTranslations("landing.hero");
+  const { locale } = useLocale();
   const reduceMotion = useReducedMotionPreference();
-  const index = useTurns(MONEY_WORDS.length, MONEY_WORD_HOLD, !reduceMotion);
-  const entry = MONEY_WORDS[index] ?? MONEY_WORDS[0];
-  const { det, adj } = agreement(entry);
+  const words = MONEY_WORDS[locale] as readonly WordOf<Locale>[];
+  const index = useTurns(words.length, MONEY_WORD_HOLD, !reduceMotion);
+  const entry = words[index] ?? (words[0] as WordOf<Locale>);
   return (
     <h1 id="hero-title" className="lk-landing-headline">
       <span className="sr-only">{t.rich("headline", { mark: (chunks) => chunks })}</span>
       <span aria-hidden="true">
-        <span className="lk-swap-word">
-          Tu
-          <Swap text={det} />
-        </span>{" "}
-        <span className="lk-swap-word">
-          <span className="lk-landing-marker">
-            <Swap text={entry.word} />
-            <span className="lk-landing-flag">
-              <Swap text={entry.flag} />
-            </span>
-          </span>
-          ,
-        </span>{" "}
-        por fin{" "}
-        <span className="lk-swap-word">
-          clar
-          <Swap text={adj} />.
-        </span>
+        <Words locale={locale} entry={entry} piece={(text) => <Swap text={text} />} />
       </span>
+      {/* Every headline, unseen in the same place, so the tallest one sets the height. */}
+      {words.map((word) => (
+        <span key={word.word} className="lk-landing-headline-size">
+          <Words locale={locale} entry={word} piece={(text) => <Still text={text} />} />
+        </span>
+      ))}
     </h1>
+  );
+}
+
+/** The headline around a word, with `piece` for each part that turns. */
+function Words({
+  locale,
+  entry,
+  piece,
+}: {
+  locale: Locale;
+  entry: WordOf<Locale>;
+  piece: (text: string) => ReactNode;
+}) {
+  const { lead, middle, last } = phraseFor(locale, entry);
+  return (
+    <>
+      <span className="lk-swap-word">
+        {lead[0]}
+        {piece(lead[1])}
+      </span>{" "}
+      <span className="lk-swap-word">
+        <span className="lk-landing-marker">
+          {piece(entry.word)}
+          <span className="lk-landing-flag">{piece(entry.flag)}</span>
+        </span>
+        ,
+      </span>{" "}
+      {middle}{" "}
+      <span className="lk-swap-word">
+        {last[0]}
+        {piece(last[1])}.
+      </span>
+    </>
   );
 }
 
@@ -107,6 +135,15 @@ function Swap({ text }: { text: string }) {
           {leaving}
         </span>
       )}
+    </span>
+  );
+}
+
+/** A `Swap`'s text, as it sits when it is not turning. */
+function Still({ text }: { text: string }) {
+  return (
+    <span className="lk-swap">
+      <span>{text}</span>
     </span>
   );
 }
