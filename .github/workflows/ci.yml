@@ -46,6 +46,9 @@ jobs:
       - run: deploy/personal/test-auto-deploy.sh
       # The web container's Caddy config (client address to the API and MCP, routes), in Docker.
       - run: deploy/personal/test-caddy.sh
+      # The personal install's two ways (tunnel by default, direct with COMPOSE_FILE): compose files,
+      # published ports, Caddy config and services started (`docker compose config`, needs jq).
+      - run: deploy/personal/test-compose-files.sh
 
   e2e:
     runs-on: ubuntu-latest

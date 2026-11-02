@@ -1,0 +1,33 @@
+# The direct way: a server with its own public address serves the install itself, with no tunnel.
+# Chosen in .env with COMPOSE_FILE=docker-compose.yml:docker-compose.direct.yml (README, "Moving to a
+# server"); the scripts here and a `docker compose` typed by hand in this folder both read it. Only
+# web changes: cloudflared is not started (up.sh) and needs no TUNNEL_ID.
+#
+#   internet ──80, 443, 443/udp──> web (Caddy, Caddyfile.direct) ──/api/*──> api ──> postgres
+#                                   │ Let's Encrypt certificate for PUBLIC_HOSTNAME, in web-caddy-data
+#                                   └ http://127.0.0.1:8088 (this machine only: smoke.sh, healthcheck)
+#
+# The firewall belongs outside the machine (Hetzner's Cloud Firewall): Docker publishes these ports
+# around ufw.
+services:
+  web:
+    command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile.direct", "--adapter", "caddyfile"]
+    environment:
+      # The site Caddy serves and gets a certificate for.
+      PUBLIC_HOSTNAME: ${PUBLIC_HOSTNAME:-app.wambito.com}
+    # Replaces the tunnel's 127.0.0.1:8088 -> 80: port 80 here is public (it only redirects to HTTPS
+    # and answers the certificate challenge), and the plain-HTTP listener is 8080, on 127.0.0.1 only.
+    ports: !override
+      - "127.0.0.1:${WEB_PORT:-8088}:8080"
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      # Caddy's certificates and ACME account, kept across new images, so a deploy does not ask
+      # Let's Encrypt again (it limits how often it issues for one name).
+      - web-caddy-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/sign-in"]
+
+volumes:
+  web-caddy-data:

@@ -9,13 +9,19 @@
 # X-Forwarded-For entry, taken from Cf-Connecting-Ip when Cloudflare sent one and from the TCP peer
 # otherwise, never from the X-Forwarded-For the client sent; the access log names the same visitor;
 # the API schema is not public; the landing's paths redirect to LANDING_URL with path and query.
+#
+# What it checks (direct, Caddyfile.direct, as app.localhost with Caddy's internal CA): the client's
+# address is always the TCP peer, whatever Cf-Connecting-Ip or X-Forwarded-For it sends, and the log
+# says the same; HTTP redirects to HTTPS, which sends HSTS; the plain-HTTP listener on 8080 (for this
+# machine only) serves the app without HSTS; a request for any other host never gets the app or the
+# API over plain HTTP.
 set -euo pipefail
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=lib.sh
 . "$here/lib.sh"
 
 # The case sets this script knows, in the order `all` runs them. Each NAME has a cases_NAME below.
-sets="tunnel"
+sets="tunnel direct"
 
 mode="${1:-all}"
 case "$mode" in
@@ -36,6 +42,8 @@ LANDING_URL=https://wambito.com
 # A fixed subnet, so the client's address is known. Not the install's own (NETWORK_PREFIX).
 SUBNET=10.233.71.0/24
 CLIENT_IP=10.233.71.10
+# The Caddy under test, where a test needs its address (direct: requests that name no host).
+WEB_IP=10.233.71.20
 
 id="$(LC_ALL=C tr -dc 'a-z0-9' </dev/urandom | head -c 8 || true)"
 net="caddytest-$id"
@@ -130,6 +138,23 @@ web_log_has() {
   return 1
 }
 
+# log_line_of URI: the access-log line of the request for URI (waiting for it to land), or nothing.
+log_line_of() {
+  web_log_has "\"uri\":\"$1\"" || return 0
+  grep -F -- "\"uri\":\"$1\"" "$tmp/web.log" | tail -n 1
+}
+
+# check_log_visitor NAME URI IP: the log line of the request for URI names IP as the visitor.
+check_log_visitor() {
+  local line
+  line="$(log_line_of "$2")"
+  case "$line" in
+    *"\"visitor_ip\":\"$3\""*) ok "$1" ;;
+    "") fail "$1 (no log line for $2)" ;;
+    *) fail "$1 (expected \"visitor_ip\":\"$3\" in: $line)" ;;
+  esac
+}
+
 # --- tunnel: Caddyfile, behind cloudflared. ---------------------------------------------------
 cases_tunnel() {
   start_web Caddyfile
@@ -151,6 +176,111 @@ cases_tunnel() {
     ok "tunnel: log has the visitor"
   else
     fail "tunnel: log has the visitor (no \"visitor_ip\":\"203.0.113.7\" in docker logs)"
+  fi
+  # Without Cloudflare the visitor in the log is the peer too. (This pins the behavior, not the
+  # @notViaCloudflare line: Caddy itself starts every request with client_ip set to the peer, since
+  # no trusted_proxies is configured, so the log would say the same without that line.)
+  curl_web -o /dev/null -H 'X-Forwarded-For: 198.51.100.9' http://web:80/api/log-no-cloudflare
+  check_log_visitor "tunnel: without Cloudflare, the log has the peer" /api/log-no-cloudflare "$CLIENT_IP"
+}
+
+# --- direct: Caddyfile.direct, on a server with its own public address. -------------------------
+# curl_app ARGS...: curl from the client to the Caddy under test as app.localhost (80 and 443),
+# accepting the internal CA's certificate.
+curl_app() {
+  curl_web -k --resolve "app.localhost:443:$WEB_IP" --resolve "app.localhost:80:$WEB_IP" "$@"
+}
+# header_of NAME: the value of the response header NAME in `curl -I` output on stdin.
+header_of() { tr -d '\r' | awk -v name="$(printf '%s' "$1" | tr 'A-Z' 'a-z')" -F': ' 'tolower($1) == name { print $2 }'; }
+
+# nothing NAME HOST CURL_ARGS...: the answer to a request naming HOST is neither the app (the SPA
+# shell or index) nor the upstream's echo. A refused connection or failed handshake, a 4xx, an empty
+# answer, or a redirect to HTTPS (to app.localhost, or to HOST itself: Caddy's catch-all redirect on
+# port 80, after which HOST gets no certificate, checked below) pass.
+nothing() {
+  local name="$1" host="$2" out meta body code location
+  shift 2
+  out="$(curl_web -w '\n%{http_code} %{redirect_url}' "$@" || true)"
+  meta="${out##*$'\n'}"
+  body=""
+  case "$out" in *$'\n'*) body="${out%$'\n'*}" ;; esac
+  code="${meta%% *}"
+  location="${meta#* }"
+  case "$body" in
+    *"<title>"* | *"$CLIENT_IP"* | *198.51.100.9* | *203.0.113.7*)
+      fail "$name (got the app or the upstream: $code '$body')"
+      return
+      ;;
+  esac
+  case "$code" in
+    000 | 4??) ok "$name ($code)" ;;
+    3??)
+      case "$location" in
+        https://app.localhost/* | https://app.localhost | "https://$host/"*) ok "$name ($code to $location)" ;;
+        *) fail "$name (redirect to '$location')" ;;
+      esac
+      ;;
+    *)
+      if [ -z "$body" ]; then ok "$name ($code, empty)"; else fail "$name ($code '$body')"; fi
+      ;;
+  esac
+}
+
+cases_direct() {
+  local app=https://app.localhost rc
+  start_web Caddyfile.direct --ip "$WEB_IP" -e PUBLIC_HOSTNAME=app.localhost
+  # The certificate comes from Caddy's internal CA (*.localhost): wait until HTTPS answers.
+  for _ in $(seq 1 50); do
+    rc=0
+    curl_app -o /dev/null "$app/sign-in" || rc=$?
+    [ "$rc" -eq 0 ] && break
+    sleep 0.2
+  done
+
+  check "direct: spoofed Cf-Connecting-Ip ignored" "$CLIENT_IP" \
+    "$(curl_app -H 'Cf-Connecting-Ip: 203.0.113.7' -H 'X-Forwarded-For: 198.51.100.9' "$app/api/x")"
+  check "direct: MCP, spoofed Cf-Connecting-Ip ignored" "$CLIENT_IP" \
+    "$(curl_app -X POST -H 'Content-Type: application/json' -d '{}' \
+      -H 'Cf-Connecting-Ip: 203.0.113.7' -H 'X-Forwarded-For: 198.51.100.9' "$app/mcp")"
+  check "direct: HTTP goes to HTTPS" "308 $app/sign-in" \
+    "$(curl_app -o /dev/null -w '%{http_code} %{redirect_url}' http://app.localhost/sign-in)"
+  check "direct: HSTS" "max-age=31536000" \
+    "$(curl_app -I "$app/sign-in" | header_of Strict-Transport-Security)"
+  check "direct: the app over HTTPS" 200 "$(curl_app -o /dev/null -w '%{http_code}' "$app/sign-in")"
+  check "direct: schema not public" 404 \
+    "$(curl_app -o /dev/null -w '%{http_code}' "$app/api/openapi.json")"
+  check "direct: landing redirect" "302 $LANDING_URL/pt?x=1" \
+    "$(curl_app -o /dev/null -w '%{http_code} %{redirect_url}' "$app/pt?x=1")"
+
+  check "direct: internal listener" 200 "$(curl_web -o /dev/null -w '%{http_code}' http://web:8080/sign-in)"
+  check "direct: internal listener, no HSTS" "" \
+    "$(curl_web -I http://web:8080/sign-in | header_of Strict-Transport-Security)"
+  check "direct: internal listener, spoofed Cf-Connecting-Ip ignored" "$CLIENT_IP" \
+    "$(curl_web -H 'Cf-Connecting-Ip: 203.0.113.7' -H 'X-Forwarded-For: 198.51.100.9' http://web:8080/api/x)"
+
+  nothing "direct: other hosts get nothing (by address)" "$WEB_IP" \
+    -H 'Cf-Connecting-Ip: 203.0.113.7' "http://$WEB_IP/sign-in"
+  nothing "direct: other hosts get nothing (Host: 127.0.0.1)" 127.0.0.1 -H 'Host: 127.0.0.1' \
+    -H 'Cf-Connecting-Ip: 203.0.113.7' "http://$WEB_IP/api/x"
+  nothing "direct: other hosts get nothing (Host: 127.0.0.1:8080)" 127.0.0.1 -H 'Host: 127.0.0.1:8080' \
+    "http://$WEB_IP/api/x"
+  nothing "direct: other hosts get nothing (Host: other.example)" other.example \
+    -H 'Host: other.example' "http://$WEB_IP/sign-in"
+  # Where those redirects lead: HTTPS for any other name has no certificate, so no answer at all.
+  nothing "direct: other hosts get nothing (HTTPS by address)" "$WEB_IP" -k "https://$WEB_IP/api/x"
+  nothing "direct: other hosts get nothing (HTTPS for other.example)" other.example -k \
+    --resolve "other.example:443:$WEB_IP" "https://other.example/sign-in"
+
+  # Last, so every request above has been logged: the peer, never the spoofed address. (A request
+  # naming another host is logged by Caddy's default access logger with its headers, the spoofed
+  # one among them, but never as the visitor: only the site's own log, http.log.access.logN, sets
+  # visitor_ip.)
+  curl_app -o /dev/null -H 'Cf-Connecting-Ip: 203.0.113.7' -H 'X-Forwarded-For: 198.51.100.9' "$app/api/log-direct"
+  check_log_visitor "direct: log has the peer" /api/log-direct "$CLIENT_IP"
+  if grep -F 203.0.113.7 "$tmp/web.log" | grep -qE '"visitor_ip":"203\.0\.113\.7"|"logger":"http\.log\.access\.log'; then
+    fail "direct: the site's log never has the spoofed address ($(grep -F 203.0.113.7 "$tmp/web.log" | head -n 1))"
+  else
+    ok "direct: the site's log never has the spoofed address"
   fi
 }
 

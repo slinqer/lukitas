@@ -36,10 +36,60 @@ need_docker() {
   docker info >/dev/null 2>&1 || die "Docker is not running. Start Docker Desktop and try again."
 }
 
-# compose ARGS...: docker compose for this install. Refuses `down -v` (and `rm -v`): the database
-# lives in a volume, and nothing here should ever remove it.
+# --- How the install is reached (README, "Moving to a server") ---------------------------------
+# COMPOSE_FILE in .env picks it, and docker compose reads the same setting when typed by hand here:
+#   unset (or docker-compose.yml)                      tunnel: Caddy on plain HTTP behind cloudflared
+#   docker-compose.yml:docker-compose.direct.yml       direct: Caddy on 80/443 with its own certificate
+
+# compose_files: the compose files of this install, one absolute path per line, from COMPOSE_FILE.
+# Dies on any other file, or when docker-compose.yml is not first.
+compose_files() {
+  local list rest name n=0 out=""
+  list="$(cfg COMPOSE_FILE docker-compose.yml)"
+  rest="$list:"
+  while [ -n "$rest" ]; do
+    name="${rest%%:*}"
+    rest="${rest#*:}"
+    n=$((n + 1))
+    case "$n:$name" in
+      1:docker-compose.yml | 2:docker-compose.direct.yml) ;;
+      1:*) die "COMPOSE_FILE=$list: it must start with docker-compose.yml" ;;
+      *) die "COMPOSE_FILE=$list: '$name' is not a file of this install (only docker-compose.yml, then docker-compose.direct.yml)" ;;
+    esac
+    out="$out$DIR/$name
+"
+  done
+  printf '%s' "$out"
+}
+
+# exposure: `direct` when the direct override is in use, else `tunnel`.
+exposure() {
+  local files
+  files="$(compose_files)" || exit 1
+  case "$files" in
+    *"/docker-compose.direct.yml"*) echo direct ;;
+    *) echo tunnel ;;
+  esac
+}
+
+# up_services WITH_TUNNEL: the long-running services up.sh starts. cloudflared only in the tunnel
+# way, and only when WITH_TUNNEL is 1 (0 is `up.sh --no-tunnel`).
+up_services() {
+  local mode
+  mode="$(exposure)" || exit 1
+  if [ "$mode" = tunnel ] && [ "$1" = 1 ]; then
+    echo "api mcp web cloudflared"
+  else
+    echo "api mcp web"
+  fi
+}
+
+# compose ARGS...: docker compose for this install, with its compose files (compose_files).
+# Refuses `down -v` (and `rm -v`): the database lives in a volume, and nothing here should ever
+# remove it.
 compose() {
-  local arg removes=0 volumes=0
+  local arg files f removes=0 volumes=0
+  local file_args=()
   for arg in "$@"; do
     case "$arg" in
       down | rm) removes=1 ;;
@@ -47,7 +97,13 @@ compose() {
     esac
   done
   [ "$removes$volumes" != "11" ] || die "refusing to run 'docker compose $*': it would delete the database volume"
-  docker compose --env-file "$ENV_FILE" -f "$DIR/docker-compose.yml" "$@"
+  files="$(compose_files)" || exit 1
+  while IFS= read -r f; do
+    file_args+=(-f "$f")
+  done <<EOF
+$files
+EOF
+  docker compose --env-file "$ENV_FILE" "${file_args[@]}" "$@"
 }
 
 # db_running: true when the postgres service is up.

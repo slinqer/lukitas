@@ -3,7 +3,8 @@
 # then the API, the web server and the tunnel. Safe to run again; it never removes volumes.
 #
 #   ./up.sh                 everything
-#   ./up.sh --no-tunnel     everything except the tunnel (checking it on 127.0.0.1 first)
+#   ./up.sh --no-tunnel     everything except the tunnel (checking it on 127.0.0.1 first); the
+#                           direct way (COMPOSE_FILE in .env) has no tunnel, so it changes nothing
 #   ./up.sh --skip-web      reuse the last web build (apps/web/build-personal)
 #   ./up.sh --force         deploy even if the checkout has uncommitted changes to tracked files
 #                           or is not on PERSONAL_BRANCH (see .env); refused otherwise
@@ -20,7 +21,7 @@ for arg in "$@"; do
     --skip-web) build_web=0 ;;
     --force) force=1 ;;
     -h | --help)
-      sed -n '2,9p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+      sed -n '2,10p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
       exit 0
       ;;
     *) die "unknown option: $arg" ;;
@@ -34,12 +35,16 @@ guard_checkout "$force"
 host="$(cfg PUBLIC_HOSTNAME app.wambito.com)"
 web_port="$(cfg WEB_PORT 8088)"
 
-if [ "$with_tunnel" = 1 ]; then
-  tunnel_id="$(cfg TUNNEL_ID)"
-  [ -n "$tunnel_id" ] || die "TUNNEL_ID is empty in $ENV_FILE. Create the tunnel first (README.md), or run ./up.sh --no-tunnel."
-  creds="$(cfg CLOUDFLARED_DIR "$HOME/.cloudflared")/$tunnel_id.json"
-  [ -f "$creds" ] || die "Tunnel credentials not found: $creds (README.md, 'The tunnel')."
-fi
+# What runs: cloudflared only in the tunnel way, and not with --no-tunnel (lib.sh, up_services).
+services="$(up_services "$with_tunnel")"
+case " $services " in
+  *" cloudflared "*)
+    tunnel_id="$(cfg TUNNEL_ID)"
+    [ -n "$tunnel_id" ] || die "TUNNEL_ID is empty in $ENV_FILE. Create the tunnel first (README.md), or run ./up.sh --no-tunnel."
+    creds="$(cfg CLOUDFLARED_DIR "$HOME/.cloudflared")/$tunnel_id.json"
+    [ -f "$creds" ] || die "Tunnel credentials not found: $creds (README.md, 'The tunnel')."
+    ;;
+esac
 
 if [ "$build_web" = 1 ]; then
   landing_url="$(cfg LANDING_URL https://wambito.com)"
@@ -74,8 +79,6 @@ compose up -d --wait postgres
 say "Applying migrations (creates the lukas_app role the first time)"
 compose run --rm migrate
 
-services="api mcp web"
-[ "$with_tunnel" = 1 ] && services="$services cloudflared"
 say "Starting: $services"
 # shellcheck disable=SC2086
 compose up -d --wait $services
@@ -84,5 +87,8 @@ say "Running"
 compose ps
 echo
 echo "Check it from this machine:  ./smoke.sh   (http://127.0.0.1:$web_port)"
-[ "$with_tunnel" = 1 ] && echo "On the internet:             https://$host"
+# Public once the tunnel runs, and always in the direct way (Caddy answers on 80 and 443).
+case " $services " in *" cloudflared "*) public=1 ;; *) public=0 ;; esac
+[ "$(exposure)" = direct ] && public=1
+[ "$public" = 1 ] && echo "On the internet:             https://$host"
 exit 0

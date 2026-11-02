@@ -181,8 +181,10 @@ say "Applying migrations the dump may not have yet"
 compose run --rm migrate
 
 say "Starting the app again"
-services="api web"
-[ -n "$(cfg TUNNEL_ID)" ] && services="$services cloudflared"
+# The tunnel again if this install has one; never in the direct way (lib.sh, up_services).
+with_tunnel=0
+[ -n "$(cfg TUNNEL_ID)" ] && with_tunnel=1
+services="$(up_services "$with_tunnel")"
 # shellcheck disable=SC2086
 compose up -d --wait $services
 
