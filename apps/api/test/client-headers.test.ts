@@ -15,6 +15,16 @@ describe("clientHeader", () => {
     expect(clientHeader(headers, "timezone")).toBe("Europe/Lisbon");
   });
 
+  test("mixed request reads only the new prefix", () => {
+    const headers = new Headers({
+      "x-wambito-locale": "es",
+      "x-lukas-timezone": "Europe/Lisbon",
+      "x-lukas-locale": "en",
+    });
+    expect(clientHeader(headers, "locale")).toBe("es");
+    expect(clientHeader(headers, "timezone")).toBeUndefined();
+  });
+
   test("neither", () => {
     expect(clientHeader(new Headers(), "timezone")).toBeUndefined();
     expect(clientHeader(new Headers({ "x-other-timezone": "UTC" }), "timezone")).toBeUndefined();
