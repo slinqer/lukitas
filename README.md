@@ -8,9 +8,9 @@ Wambito is **free forever and open source** ([AGPL-3.0](LICENSE)): anyone can re
 
 ## Why "Wambito"?
 
-**Wambito** is a made-up name built on *guambito*, the word people in Ibagué and the rest of Tolima use for a kid, spelled with a W to make it its own. A little one, small and close: that is how we want looking after your money to feel, nothing heavy.
+**Wambito** comes from *guambito*, how people in Ibagué and Tolima call a kid. The W spelling is closer to the Quechua *wambra*.
 
-**Wambi is the project's mascot**, a gold coin that keeps you company in the app: it cheers when you log an expense, warns you when a category is getting close to its limit, and celebrates when you close the month within budget. The goal is for looking after your money to feel good, not like homework.
+**Wambi is the project's mascot**, a gold coin that keeps you company in the app. It reacts to how your month is going, with short messages when a category is close to or over its limit and when you close the month within budget. The goal is for looking after your money to feel good, not like homework.
 
 The app still talks about money the Colombian way: in Colombia we call money **lukas** (spelled *lucas* in Chile, Argentina and Peru), and one *luka* is a thousand pesos. You will see "Tus lukas, por fin claras" on the Spanish landing page.
 
