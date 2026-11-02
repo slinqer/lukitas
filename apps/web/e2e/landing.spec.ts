@@ -540,6 +540,33 @@ async function expectHeaderFits(
   ).toBeLessThanOrEqual(0);
 }
 
+test("the tab and home-screen icons are the Wambito coin, none named after the mascot", async ({
+  page,
+  request,
+}) => {
+  await page.goto("/");
+  const links = await page
+    .locator("head link[rel='icon'], head link[rel='apple-touch-icon']")
+    .evaluateAll((els) => els.map((el) => [el.getAttribute("rel"), el.getAttribute("href")]));
+  expect(links).toEqual([
+    ["icon", "/favicon.ico"],
+    ["icon", "/favicon.svg"],
+    ["apple-touch-icon", "/apple-touch-icon.png"],
+  ]);
+  const types = { ico: "image/", svg: "image/svg+xml", png: "image/png" } as const;
+  for (const [, href] of links) {
+    const response = await request.get(href ?? "");
+    expect(response.status(), href ?? "").toBe(200);
+    const ext = (href ?? "").split(".").pop() as keyof typeof types;
+    expect(response.headers()["content-type"]).toContain(types[ext]);
+  }
+  // The landing never links a file named after the mascot module (see vite.config.ts).
+  const hrefs = await page
+    .locator("head link[href]")
+    .evaluateAll((els) => els.map((el) => el.getAttribute("href") ?? ""));
+  expect(hrefs.filter((href) => /wambi/i.test(href.split("/").pop() ?? ""))).toEqual([]);
+});
+
 for (const l of LOCALES) {
   test.describe(`landing (${l.locale})`, () => {
     test("the prerendered HTML carries the copy, without JavaScript", async ({ page, request }) => {

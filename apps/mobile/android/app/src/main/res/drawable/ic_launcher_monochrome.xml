@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated from docs/brand/wambito-icon-*.svg: 108 dp canvas, 72 dp viewport inside. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="1536"
+    android:viewportHeight="1536">
+    <path
+        android:fillColor="#FF000000"
+        android:fillType="evenOdd"
+        android:pathData="M336 768a432 432 0 1 0 864 0a432 432 0 1 0 -864 0ZM380 768a388 388 0 1 0 776 0a388 388 0 1 0 -776 0ZM420 768a348 348 0 1 0 696 0a348 348 0 1 0 -696 0ZM523.38 587.89A190 190 0 0 1 681.88 559.94A20 20 0 0 1 671.49 598.57A150 150 0 0 0 546.36 620.63A20 20 0 0 1 523.38 587.89ZM854.12 559.94A190 190 0 0 1 1012.62 587.89A20 20 0 0 1 989.64 620.63A150 150 0 0 0 864.51 598.57A20 20 0 0 1 854.12 559.94ZM516 730a92 92 0 1 0 184 0a92 92 0 1 0 -184 0ZM608 702a28 28 0 1 0 56 0a28 28 0 1 0 -56 0ZM856 730a92 92 0 1 0 184 0a92 92 0 1 0 -184 0ZM948 702a28 28 0 1 0 56 0a28 28 0 1 0 -56 0ZM720.44 893.44Q768 908.2 815.56 893.44Q827.04 890.16 824.58 903.28C818.84 945.92 794.24 968.88 768 968.88C741.76 968.88 717.16 945.92 711.42 903.28Q708.96 890.16 720.44 893.44Z" />
+</vector>

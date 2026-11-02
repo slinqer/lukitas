@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -16,6 +17,10 @@ final _manifest = File('android/app/src/main/AndroidManifest.xml').readAsStringS
 String _kotlin(String file) => File('$_widget/$file').readAsStringSync();
 
 int _argb(Color color) => color.toARGB32();
+
+/// RRGGBB in capitals, as the vector drawables write it.
+String _hex(Color color) =>
+    (_argb(color) & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase();
 
 void main() {
   test("the widget's colours are the app's tokens, night and day", () {
@@ -142,6 +147,30 @@ void main() {
         '<item name="android:windowSplashScreenIconBackgroundColor">@color/wambito_night_bg</item>',
       ),
     );
+  });
+
+  test('the launcher icon is the adaptive Wambito coin, in the token colours', () {
+    const res = 'android/app/src/main/res';
+    expect(_manifest, contains('android:icon="@mipmap/ic_launcher"'));
+    final adaptive = File('$res/mipmap-anydpi-v26/ic_launcher.xml').readAsStringSync();
+    expect(adaptive, contains('<background android:drawable="@color/wambito_icon_bg" />'));
+    expect(adaptive, contains('<foreground android:drawable="@drawable/ic_launcher_foreground" />'));
+    expect(adaptive, contains('<monochrome android:drawable="@drawable/ic_launcher_monochrome" />'));
+    final colors = File('$res/values/colors.xml').readAsStringSync();
+    final bg = RegExp(r'<color name="wambito_icon_bg">#([0-9A-Fa-f]{6})</color>')
+        .firstMatch(colors)!
+        .group(1)!;
+    expect(0xFF000000 | int.parse(bg, radix: 16), _argb(WambitoColors.day.onGold));
+    final foreground = File('$res/drawable/ic_launcher_foreground.xml').readAsStringSync();
+    expect(foreground, contains('android:fillColor="#${_hex(WambitoColors.day.gold)}"'));
+    expect(foreground, contains('android:fillColor="#${_hex(WambitoColors.day.onGold)}"'));
+    // The legacy launcher PNGs, one per density (48 dp).
+    const sizes = {'mdpi': 48, 'hdpi': 72, 'xhdpi': 96, 'xxhdpi': 144, 'xxxhdpi': 192};
+    for (final MapEntry(key: density, value: px) in sizes.entries) {
+      final png = File('$res/mipmap-$density/ic_launcher.png').readAsBytesSync();
+      final header = ByteData.sublistView(png, 16, 24);
+      expect([header.getUint32(0), header.getUint32(4)], [px, px], reason: density);
+    }
   });
 
   test('the Quick Settings tile only the system can bind', () {

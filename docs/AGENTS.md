@@ -7,7 +7,11 @@ Human docs. Live docs are kept current; `superpowers/` is history.
 - `docs/design/system/`: the design system. `docs/design/system/project/tokens.json` is the source
   of all tokens (regenerate: root `AGENTS.md`). `docs/design/system/project/README.md` is the
   brand book; `docs/design/system/project/components/` per-component guidelines and previews.
-- `docs/brand/`: raster brand art, files `wambi-*`.
+- `docs/brand/`: raster brand art, files `wambi-*`; the app icon and logo as hand-built vectors,
+  `wambito-icon.svg` (master, 1024), `-foreground`/`-monochrome` (Android adaptive, 108 dp),
+  `wambito-logo.svg` and `-logo-dark.svg` (wordmark as outlines), `wambito-icon-preview.png`.
+  The icon PNGs (`mipmap-*`, F-Droid `icon.png`, web `favicon.ico`/`apple-touch-icon.png`) and
+  `drawable/ic_launcher_{foreground,monochrome}.xml` are rendered from them: change all together.
 - `docs/deploy/`: `personal.md` (private install, short; the runbook is
   `deploy/personal/README.md`), `landing.md` (Cloudflare landing), `api.md` (client addresses,
   rate limits).
