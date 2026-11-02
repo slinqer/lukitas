@@ -1,29 +1,28 @@
 /**
  * Pure helpers for the traveling 2.5D Wambi on the landing page (see `TravelingWambi.tsx`): which
- * mood a spot asks for, the tilt toward the pointer, how he gets from one spot to the next without
+ * pose a spot asks for, the tilt toward the pointer, how he gets from one spot to the next without
  * ever crossing text, and the rolling entrance. No DOM here, so all of it is unit tested.
  */
 import { entrancePhase, rollAt } from "./entrance.ts";
 import type { WambiMood } from "./mood.ts";
 import type { WambiPose } from "./use-scroll-pose.ts";
 
-const MOODS: readonly WambiMood[] = ["happy", "worried", "celebrating"];
+const POSES: readonly WambiPose[] = ["wave", "celebrate"];
 
-/** The mood a pose implies when its spot doesn't say (`data-wambi-mood`). */
+/** The mood a pose shows (his class and name): happy waving, celebrating celebrating. */
 const POSE_MOOD: Record<WambiPose, WambiMood> = {
   wave: "happy",
-  point: "happy",
-  carry: "happy",
   celebrate: "celebrating",
 };
 
-/**
- * Wambi's mood on a spot: its `data-wambi-mood` when that is a mood, else the one its
- * `data-wambi-pose` implies (celebrate → celebrating, anything else → happy).
- */
-export function spotMood(pose: string | undefined, mood: string | undefined): WambiMood {
-  if (mood && (MOODS as readonly string[]).includes(mood)) return mood as WambiMood;
-  return POSE_MOOD[pose as WambiPose] ?? "happy";
+/** Wambi's pose on a spot: its `data-wambi-pose` when that is a pose, else wave. */
+export function spotPose(pose: string | undefined): WambiPose {
+  return pose && (POSES as readonly string[]).includes(pose) ? (pose as WambiPose) : "wave";
+}
+
+/** The mood a pose implies. */
+export function poseMood(pose: WambiPose): WambiMood {
+  return POSE_MOOD[pose];
 }
 
 /** The most he turns toward the pointer, either way, around either axis. */

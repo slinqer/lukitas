@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, waitFor, within } from "storybook/test";
-import { WAMBI_ART, Wambi } from "./Wambi.tsx";
+import { LANDING_ART, WAMBI_ART, Wambi } from "./Wambi.tsx";
 
 const meta = {
   title: "Wambi/Wambi",
@@ -173,6 +173,23 @@ export const ReducedMotion: Story = {
     await expect(still(worried)).toEqual(["/wambi/worried.webp", "100% 0%"]);
     // Frame 4: first column, second row.
     await expect(still(celebrating)).toEqual(["/wambi/celebrate.webp", "0% 100%"]);
+  },
+};
+
+/**
+ * The landing's celebrate: one pass of the sheet, then he rests on frame 4 (fists up), the same
+ * frame as his still under reduced motion.
+ */
+export const LandingCelebrate: Story = {
+  args: { mood: "celebrating", art: LANDING_ART.celebrate, playOnce: true },
+  play: async ({ canvasElement }) => {
+    const wambi = within(canvasElement).getByRole("img", { name: "Wambi, celebrando" });
+    const sheet = sprite(wambi);
+    await expectPlaying(wambi, "/wambi/celebrate.webp", 1000);
+    await expect(sheet).toHaveClass("is-once");
+    await waitFor(() => expect(sheet.getAnimations()).toHaveLength(0), { timeout: 4000 });
+    // Frame 4: first column, second row.
+    await expect(getComputedStyle(sheet).backgroundPosition).toBe("0% 100%");
   },
 };
 

@@ -10,8 +10,8 @@
  *         .lk-traveler-shadow   the ground shadow: bobs and hops with him
  *         .lk-traveler-tilt     the turn toward the pointer, in perspective (script)
  *           .lk-traveler-bob    idle bob
- *             .lk-traveler-hop  hover/tap hop, squash and stretch
- *               .lk-traveler-body   the entrance's spin, drop and tuck (script), the mood layers
+ *             .lk-traveler-hop  tap/click hop, squash and stretch
+ *               .lk-traveler-body   the entrance's spin, drop and tuck (script), the pose layers
  */
 @layer components {
   .lk-traveler {
@@ -66,7 +66,7 @@
   .lk-traveler-mood.is-active {
     opacity: 1;
   }
-  /* Sheets that aren't showing hold still. */
+  /* Poses that aren't showing hold still. */
   .lk-traveler-mood:not(.is-active) .lk-wambi-sprite {
     animation-play-state: paused;
   }

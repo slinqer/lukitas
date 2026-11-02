@@ -5,7 +5,7 @@ import { cx } from "../../ui/cx.ts";
 import { PressLink } from "../../ui/PressLink.tsx";
 import { LiveWambiBoundary, useLiveWambiReady } from "../../wambi/live-support.tsx";
 import { TravelingWambi as TravelingWambi2D } from "../../wambi/TravelingWambi.tsx";
-import { Wambi } from "../../wambi/Wambi.tsx";
+import { LANDING_ART, Wambi } from "../../wambi/Wambi.tsx";
 import { WhatsNext } from "../roadmap/WhatsNext.tsx";
 import { Faq } from "./Faq.tsx";
 import { Footer } from "./Footer.tsx";
@@ -20,9 +20,9 @@ import "./landing.css";
 
 /**
  * The live, 2.5D Wambi (the founder's sprite sheets plus CSS depth), mounted once the page has
- * loaded and the browser is idle. He stands on the page's Wambi spots (hero → ways → how it works
- * → FAQ → closing) in each spot's mood. Until then, under reduced motion and without JavaScript,
- * the prerendered 2D Wambi in the hero and the closing stays. (The 3D Wambi is an experiment in
+ * loaded and the browser is idle. He stands on the page's two Wambi spots, the hero and the
+ * closing: he waves once there, then goes straight to the closing and celebrates once. Until then,
+ * under reduced motion and without JavaScript, the prerendered 2D Wambi in both spots stays. (The 3D Wambi is an experiment in
  * `app/wambi/experimental/` and never loads here.)
  */
 function TravelingWambi() {
@@ -53,10 +53,17 @@ function Closing() {
           className="lk-landing-spot is-closing"
           data-wambi-spot="closing"
           data-wambi-pose="celebrate"
-          data-wambi-mood="celebrating"
           aria-hidden="true"
         >
-          <Wambi mood="celebrating" size="100%" decorative deferUntilNear />
+          {/* He celebrates once (frame 4, fists up, at rest); nothing on the landing loops. */}
+          <Wambi
+            mood="celebrating"
+            size="100%"
+            decorative
+            deferUntilNear
+            art={LANDING_ART.celebrate}
+            playOnce
+          />
         </span>
         <h2 id="closing-title">{t("closing.title")}</h2>
         <p>{t(closingBody)}</p>

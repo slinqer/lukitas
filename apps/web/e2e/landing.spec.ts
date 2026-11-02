@@ -17,8 +17,8 @@ const LOCALES = [
     headline: "Tus lukas, por fin claras.",
     highlight: "lukas🇨🇴",
     annotation: "¡Gratis, y siempre lo será!",
-    lead: "Wambito es tu presupuesto, y te va a dar gusto cuidarlo.",
-    description: "Anota un gasto en segundos y mira en qué se va cada luka.",
+    lead: "Wambi te acompaña para que cuidar tu plata dé gusto.",
+    removedDescription: "Anota un gasto en segundos y mira en qué se va cada luka.",
     newTab: "(se abre en una pestaña nueva)",
     perks: "Gratis para siempre · Código abierto · Sin contraseñas",
     openSourcePerk: "Código abierto",
@@ -57,8 +57,8 @@ const LOCALES = [
     headline: "Your money, finally clear.",
     highlight: "money",
     annotation: "Free, and it always will be!",
-    lead: "Wambito is your budget, and you'll actually enjoy looking after it.",
-    description: "Log an expense in seconds and see where every buck goes.",
+    lead: "Wambi keeps you company, so looking after your money feels good.",
+    removedDescription: "Log an expense in seconds and see where every buck goes.",
     newTab: "(opens in a new tab)",
     perks: "Free forever · Open source · No passwords",
     openSourcePerk: "Open source",
@@ -95,8 +95,8 @@ const LOCALES = [
     headline: "I tuoi soldi, finalmente chiari.",
     highlight: "soldi",
     annotation: "Gratis, e lo sarà sempre!",
-    lead: "Wambito è il tuo budget, e ti farà piacere prendertene cura.",
-    description: "Annota una spesa in pochi secondi e guarda dove va ogni centesimo.",
+    lead: "Wambi ti fa compagnia, così prenderti cura dei tuoi soldi è un piacere.",
+    removedDescription: "Annota una spesa in pochi secondi e guarda dove va ogni centesimo.",
     newTab: "(si apre in una nuova scheda)",
     perks: "Gratis per sempre · Open source · Senza password",
     openSourcePerk: "Open source",
@@ -138,8 +138,8 @@ const LOCALES = [
     headline: "O teu dinheiro, finalmente claro.",
     highlight: "dinheiro",
     annotation: "Grátis, e vai ser sempre!",
-    lead: "Wambito é o teu orçamento, e vais gostar de cuidar dele.",
-    description: "Regista uma despesa em segundos e vê para onde vai cada cêntimo.",
+    lead: "O Wambi faz-te companhia para que cuidar do teu dinheiro seja um prazer.",
+    removedDescription: "Regista uma despesa em segundos e vê para onde vai cada cêntimo.",
     newTab: "(abre num novo separador)",
     perks: "Grátis para sempre · Código aberto · Sem palavras-passe",
     openSourcePerk: "Código aberto",
@@ -189,19 +189,36 @@ const ROADMAP = {
           "App para Android",
           "Android: widget con micrófono",
           "Importa tu historial de Budge",
+          "Funciona sin conexión",
+          "Sin contraseñas",
+          "Pagos recurrentes con avisos",
+          "En cuatro idiomas",
+          "Instálalo en tu propio servidor",
         ],
       },
       {
         label: "En construcción",
-        items: ["Funciona sin conexión", "App para iPhone", "Importa desde Buddy y otras apps"],
+        items: ["Conecta tu IA", "App para iPhone", "Importa desde Buddy y otras apps"],
       },
-      { label: "Próximo", items: ["Conecta tu IA", "Cifrado de punta a punta"] },
+      {
+        label: "Próximo",
+        items: [
+          "Cifrado de punta a punta",
+          "En F-Droid y Google Play",
+          "Conecta tu IA en un clic",
+          "Apoya a Wambito",
+        ],
+      },
       {
         label: "Más adelante",
-        items: ["Captura automática de las alertas de tu banco", "Sin servidor central"],
+        items: [
+          "Captura automática de las alertas de tu banco",
+          "Sin servidor central",
+          "Anota por WhatsApp",
+        ],
       },
     ],
-    landingItems: ["Funciona sin conexión", "App para iPhone", "Conecta tu IA"],
+    landingItems: ["Conecta tu IA", "App para iPhone", "Cifrado de punta a punta"],
     cta: "Ver el roadmap",
     navLink: "Lo que viene",
     description: /Lo que tenemos planeado para Wambito/,
@@ -222,19 +239,36 @@ const ROADMAP = {
           "Android app",
           "Android: widget with a microphone",
           "Import your history from Budge",
+          "Works offline",
+          "No passwords",
+          "Recurring payments with reminders",
+          "In four languages",
+          "Run it on your own server",
         ],
       },
       {
         label: "Being built",
-        items: ["Works offline", "iPhone app", "Import from Buddy and other apps"],
+        items: ["Connect your AI", "iPhone app", "Import from Buddy and other apps"],
       },
-      { label: "Next", items: ["Connect your AI", "End-to-end encryption"] },
+      {
+        label: "Next",
+        items: [
+          "End-to-end encryption",
+          "On F-Droid and Google Play",
+          "Connect your AI in one click",
+          "Support Wambito",
+        ],
+      },
       {
         label: "Later",
-        items: ["Automatic capture of your bank's alerts", "No central server"],
+        items: [
+          "Automatic capture of your bank's alerts",
+          "No central server",
+          "Log it on WhatsApp",
+        ],
       },
     ],
-    landingItems: ["Works offline", "iPhone app", "Connect your AI"],
+    landingItems: ["Connect your AI", "iPhone app", "End-to-end encryption"],
     cta: "See the roadmap",
     navLink: "What's next",
     description: /What we have planned for Wambito/,
@@ -255,19 +289,36 @@ const ROADMAP = {
           "App per Android",
           "Android: widget con microfono",
           "Importa il tuo storico da Budge",
+          "Funziona offline",
+          "Senza password",
+          "Pagamenti ricorrenti con avvisi",
+          "In quattro lingue",
+          "Installalo sul tuo server",
         ],
       },
       {
         label: "In costruzione",
-        items: ["Funziona offline", "App per iPhone", "Importa da Buddy e da altre app"],
+        items: ["Collega la tua IA", "App per iPhone", "Importa da Buddy e da altre app"],
       },
-      { label: "Prossimo", items: ["Collega la tua IA", "Crittografia end-to-end"] },
+      {
+        label: "Prossimo",
+        items: [
+          "Crittografia end-to-end",
+          "Su F-Droid e Google Play",
+          "Collega la tua IA in un clic",
+          "Sostieni Wambito",
+        ],
+      },
       {
         label: "Più avanti",
-        items: ["Cattura automatica degli avvisi della tua banca", "Senza server centrale"],
+        items: [
+          "Cattura automatica degli avvisi della tua banca",
+          "Senza server centrale",
+          "Annota su WhatsApp",
+        ],
       },
     ],
-    landingItems: ["Funziona offline", "App per iPhone", "Collega la tua IA"],
+    landingItems: ["Collega la tua IA", "App per iPhone", "Crittografia end-to-end"],
     cta: "Vedi la roadmap",
     navLink: "In arrivo",
     description: /Cosa abbiamo in programma per Wambito/,
@@ -288,19 +339,36 @@ const ROADMAP = {
           "App para Android",
           "Android: widget com microfone",
           "Importa o teu histórico do Budge",
+          "Funciona sem ligação",
+          "Sem palavras-passe",
+          "Pagamentos recorrentes com avisos",
+          "Em quatro línguas",
+          "Instala-o no teu próprio servidor",
         ],
       },
       {
         label: "Em construção",
-        items: ["Funciona sem ligação", "App para iPhone", "Importa do Buddy e de outras apps"],
+        items: ["Liga a tua IA", "App para iPhone", "Importa do Buddy e de outras apps"],
       },
-      { label: "A seguir", items: ["Liga a tua IA", "Encriptação ponta a ponta"] },
+      {
+        label: "A seguir",
+        items: [
+          "Encriptação ponta a ponta",
+          "No F-Droid e no Google Play",
+          "Liga a tua IA num clique",
+          "Apoia o Wambito",
+        ],
+      },
       {
         label: "Mais à frente",
-        items: ["Captura automática dos alertas do teu banco", "Sem servidor central"],
+        items: [
+          "Captura automática dos alertas do teu banco",
+          "Sem servidor central",
+          "Regista pelo WhatsApp",
+        ],
       },
     ],
-    landingItems: ["Funciona sem ligação", "App para iPhone", "Liga a tua IA"],
+    landingItems: ["Liga a tua IA", "App para iPhone", "Encriptação ponta a ponta"],
     cta: "Ver o roadmap",
     navLink: "O que vem aí",
     description: /O que temos planeado para Wambito/,
@@ -585,8 +653,10 @@ for (const l of LOCALES) {
       );
 
       const description = hero.locator(".lk-landing-description");
-      await expect(description).toHaveText(`${l.lead} ${l.description}`);
+      // One sentence that introduces Wambi; the old second sentence is gone.
+      await expect(description).toHaveText(l.lead);
       await expect(description.locator(".lk-landing-lead")).toHaveText(l.lead);
+      await expect(hero).not.toContainText(l.removedDescription);
 
       // The visible text is the perks; the link to GitHub adds a hidden "opens in a new tab".
       await expect(hero.locator(".lk-landing-perks")).toHaveText(
@@ -607,9 +677,16 @@ for (const l of LOCALES) {
 
     test("says nothing about games, best friends or paying later", async ({ page, request }) => {
       const html = await (await request.get(l.path)).text();
-      const withoutScripts = html.replace(/<script[\s\S]*?<\/script>/g, "");
+      // "What's next" lists planned items (end-to-end encryption among them): plans, not claims.
+      const withoutScripts = html
+        .replace(/<script[\s\S]*?<\/script>/g, "")
+        .replace(/<section id="whats-next"[\s\S]*?<\/section>/, "");
       await page.goto(l.path);
-      const text = await page.locator("body").evaluate((body) => body.textContent ?? "");
+      const text = await page.locator("body").evaluate((body) => {
+        const copy = body.cloneNode(true) as HTMLElement;
+        copy.querySelector("#whats-next")?.remove();
+        return copy.textContent ?? "";
+      });
       for (const pattern of l.banned) {
         expect(withoutScripts).not.toMatch(pattern);
         expect(text).not.toMatch(pattern);
@@ -658,9 +735,16 @@ for (const l of LOCALES) {
     test("privacy copy promises only what Wambito does today", async ({ page, request }) => {
       // React escapes apostrophes in text ("can't" → "can&#x27;t"): decode before matching.
       const html = (await (await request.get(l.path)).text()).replaceAll("&#x27;", "'");
-      const withoutScripts = html.replace(/<script[\s\S]*?<\/script>/g, "");
+      // "What's next" lists planned items (end-to-end encryption among them): plans, not claims.
+      const withoutScripts = html
+        .replace(/<script[\s\S]*?<\/script>/g, "")
+        .replace(/<section id="whats-next"[\s\S]*?<\/section>/, "");
       await page.goto(l.path);
-      const text = await page.locator("body").evaluate((body) => body.textContent ?? "");
+      const text = await page.locator("body").evaluate((body) => {
+        const copy = body.cloneNode(true) as HTMLElement;
+        copy.querySelector("#whats-next")?.remove();
+        return copy.textContent ?? "";
+      });
       for (const pattern of l.overclaims) {
         expect(withoutScripts).not.toMatch(pattern);
         expect(text).not.toMatch(pattern);
@@ -958,6 +1042,27 @@ for (const l of LOCALES) {
 
       await page.emulateMedia({ reducedMotion: "reduce" });
       expect(await sprite.evaluate((el) => el.getAnimations().length)).toBe(0);
+    });
+
+    test("keeps Wambi only in the hero and the closing, where he celebrates once", async ({
+      page,
+    }) => {
+      await page.goto(l.path);
+      // Two spots, and no other Wambi anywhere in the page (not even in the demo chips).
+      expect(
+        await page
+          .locator("[data-wambi-spot]")
+          .evaluateAll((spots) => spots.map((spot) => (spot as HTMLElement).dataset.wambiSpot)),
+      ).toEqual(["hero", "closing"]);
+      await expect(page.locator("main .lk-wambi")).toHaveCount(2);
+      await expect(page.locator("#how .lk-landing-saved")).toBeVisible();
+      // The closing celebrates in one pass, then rests on frame 4 (fists up): nothing loops.
+      const closing = page.locator("[data-wambi-spot='closing'] .lk-wambi-sprite");
+      await expect(closing).toHaveClass(/is-once/);
+      await expect
+        .poll(() => closing.evaluate((el) => el.getAnimations().length), { timeout: 5000 })
+        .toBe(0);
+      await expect(closing).toHaveCSS("background-position", "0% 100%");
     });
   });
 }

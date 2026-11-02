@@ -4,45 +4,30 @@ import {
   COIN,
   entranceFrame,
   MAX_TILT_DEG,
-  spotMood,
+  poseMood,
+  spotPose,
   TRAVEL_FROM,
   tiltToward,
   travelFrame,
 } from "./traveling.ts";
 
-describe("spotMood", () => {
-  it("maps the landing's spots to their moods", () => {
-    const spots = [
-      { id: "hero", pose: "wave", mood: "happy" },
-      { id: "ways", pose: "point", mood: "happy" },
-      { id: "how", pose: "carry", mood: "worried" },
-      { id: "faq", pose: "point", mood: "happy" },
-      { id: "closing", pose: "celebrate", mood: "celebrating" },
-    ];
-    expect(spots.map((spot) => [spot.id, spotMood(spot.pose, spot.mood)])).toEqual([
-      ["hero", "happy"],
-      ["ways", "happy"],
-      ["how", "worried"],
-      ["faq", "happy"],
-      ["closing", "celebrating"],
-    ]);
+describe("spotPose", () => {
+  it("reads the landing's two spots: the hero waves, the closing celebrates", () => {
+    expect(spotPose("wave")).toBe("wave");
+    expect(spotPose("celebrate")).toBe("celebrate");
   });
 
-  it("falls back to the pose's mood without a (valid) data-wambi-mood", () => {
-    expect(spotMood("wave", undefined)).toBe("happy");
-    expect(spotMood("point", undefined)).toBe("happy");
-    expect(spotMood("carry", undefined)).toBe("happy");
-    expect(spotMood("celebrate", undefined)).toBe("celebrating");
-    expect(spotMood("celebrate", "grumpy")).toBe("celebrating");
+  it("waves for a missing or unknown pose (the old point, think and carry included)", () => {
+    for (const pose of [undefined, "dance", "point", "think", "carry"]) {
+      expect(spotPose(pose)).toBe("wave");
+    }
   });
+});
 
-  it("lets data-wambi-mood win over the pose", () => {
-    expect(spotMood("wave", "worried")).toBe("worried");
-  });
-
-  it("is happy for an unknown pose", () => {
-    expect(spotMood(undefined, undefined)).toBe("happy");
-    expect(spotMood("dance", undefined)).toBe("happy");
+describe("poseMood", () => {
+  it("is happy waving and celebrating on the celebrate pose", () => {
+    expect(poseMood("wave")).toBe("happy");
+    expect(poseMood("celebrate")).toBe("celebrating");
   });
 });
 

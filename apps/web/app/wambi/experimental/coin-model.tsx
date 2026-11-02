@@ -22,8 +22,9 @@ import {
 import type { WambiPose } from "../use-scroll-pose.ts";
 import { WAMBI_3D_PALETTE as C } from "./wambi3d-palette.ts";
 
-/** Everything the coin can do: the scroll poses, flying between spots, and worried. */
-export type CoinPose = WambiPose | "travel" | "worried";
+/** Everything the coin can do: the scroll poses, pointing, carrying a mini coin, flying between
+ * spots, and worried. */
+export type CoinPose = WambiPose | "point" | "carry" | "travel" | "worried";
 
 /** What drives the model each frame; Wambi3D writes it, the model eases toward it. */
 export interface CoinDrive {

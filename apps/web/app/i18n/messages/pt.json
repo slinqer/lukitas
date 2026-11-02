@@ -25,7 +25,7 @@
   "roadmap": {
     "meta": {
       "title": "Wambito · O que vem aí",
-      "description": "O que temos planeado para Wambito: funcionar sem ligação, a app para iPhone, a tua IA ligada, a encriptação ponta a ponta e mais. Sem datas, e pode mudar."
+      "description": "O que temos planeado para Wambito: a tua IA ligada, a app para iPhone, a encriptação ponta a ponta e mais. Sem datas, e pode mudar."
     },
     "title": "O que vem aí",
     "intro": "Isto é o que temos planeado. Pode mudar com o tempo.",
@@ -87,6 +87,38 @@
       "no_central_server": {
         "title": "Sem servidor central",
         "body": "Os teus dados sincronizam-se entre os teus dispositivos sem depender de um servidor nosso."
+      },
+      "passwordless": {
+        "title": "Sem palavras-passe",
+        "body": "Entras com um código que recebes por email ou com a impressão digital do teu telemóvel."
+      },
+      "recurring": {
+        "title": "Pagamentos recorrentes com avisos",
+        "body": "O Wambito marca-os como pendentes e, no Android, avisa-te no dia em que vencem."
+      },
+      "languages": {
+        "title": "Em quatro línguas",
+        "body": "Espanhol, inglês, português e italiano."
+      },
+      "self_host": {
+        "title": "Instala-o no teu próprio servidor",
+        "body": "É software livre (AGPL): podes ter a tua própria cópia."
+      },
+      "stores": {
+        "title": "No F-Droid e no Google Play",
+        "body": "Instala a app para Android a partir das lojas."
+      },
+      "ai_one_click": {
+        "title": "Liga a tua IA num clique",
+        "body": "A partir dos diretórios do Claude e do ChatGPT, sem copiar endereços."
+      },
+      "donations": {
+        "title": "Apoia o Wambito",
+        "body": "Donativos opcionais para manter o projeto a andar."
+      },
+      "whatsapp": {
+        "title": "Regista pelo WhatsApp",
+        "body": "Envias uma mensagem e fica registado."
       }
     }
   },
@@ -108,7 +140,7 @@
     },
     "hero": {
       "headline": "O teu <mark>dinheiro</mark>, finalmente claro.",
-      "description": "<lead>Wambito é o teu orçamento, e vais gostar de cuidar dele.</lead> Regista uma despesa em segundos e vê para onde vai cada cêntimo.",
+      "description": "<lead>O Wambi faz-te companhia para que cuidar do teu dinheiro seja um prazer.</lead>",
       "cta": "Começa agora",
       "cta_soon": "Em breve · Segue no GitHub",
       "cta_demo": "Experimenta sem conta",

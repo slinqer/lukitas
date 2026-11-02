@@ -5,9 +5,8 @@ import { ENTRANCE_STORAGE_KEY } from "./entrance.ts";
 import { TravelingWambi } from "./TravelingWambi.tsx";
 
 /**
- * The landing's traveling Wambi on a small page with three spots (like the landing's hero, "how it
- * works" and closing): he rolls in once per session, stands on the spot in view in its mood, turns
- * edge-on between spots, and hops on hover or tap. On the landing the page mounts him only once it
+ * The landing's traveling Wambi on a small page with its two spots (the hero and the closing): he rolls in once per session, stands on the spot in view in its pose, turns
+ * edge-on between spots, and hops on a tap or click (never on hover). On the landing the page mounts him only once it
  * has loaded and is idle, and never under reduced motion.
  */
 /** Like the landing, he mounts once the page (and its spots) is on screen. */
@@ -26,22 +25,13 @@ const meta = {
         <div
           data-wambi-spot="hero"
           data-wambi-pose="wave"
-          data-wambi-mood="happy"
           data-wambi-enter-from="right"
           style={{ width: 220, height: 220, marginInline: "auto" }}
         />
         <div style={{ height: "90vh" }} />
         <div
-          data-wambi-spot="how"
-          data-wambi-pose="carry"
-          data-wambi-mood="worried"
-          style={{ width: 120, height: 120, marginInlineStart: "auto" }}
-        />
-        <div style={{ height: "90vh" }} />
-        <div
           data-wambi-spot="closing"
           data-wambi-pose="celebrate"
-          data-wambi-mood="celebrating"
           style={{ width: 160, height: 160, marginInline: "auto" }}
         />
         <AfterThePage>
@@ -74,15 +64,6 @@ function activeSheet(layer: HTMLElement): string {
   return sprite ? getComputedStyle(sprite).backgroundImage : "";
 }
 
-/** Scrolls so the spot's center sits where it takes over (40% down the viewport). */
-function scrollToSpot(id: string) {
-  const spot = document.querySelector<HTMLElement>(`[data-wambi-spot='${id}']`);
-  const box = spot?.getBoundingClientRect();
-  if (!box) return;
-  const top = box.top + window.scrollY + box.height / 2 - window.innerHeight * 0.4 + 2;
-  window.scrollTo({ top, behavior: "instant" });
-}
-
 /** First visit: he rolls in (tucked into his coin), unfolds and waves, then stands on the hero. */
 export const Entrance: Story = {
   play: async ({ canvasElement }) => {
@@ -94,7 +75,7 @@ export const Entrance: Story = {
     await waitFor(() => expect(document.documentElement.dataset.wambiLive).toBe("live"));
     await waitFor(() => expect(layer.dataset.entrance).toBe("done"), { timeout: 15_000 });
     await expect(layer.dataset.spot).toBe("hero");
-    await expect(layer.dataset.mood).toBe("happy");
+    await expect(layer.dataset.pose).toBe("wave");
     await expect(activeSheet(layer)).toContain("/wambi/wave.webp");
     // Standing: the coin isn't clipped or turned any more, and the wave sheet plays.
     const body = layer.querySelector<HTMLElement>(".lk-traveler-body");
@@ -105,7 +86,10 @@ export const Entrance: Story = {
   },
 };
 
-/** He takes each spot's mood, and only his body takes the pointer: a tap makes him hop. */
+/**
+ * He takes each spot's pose and plays its gesture once on arriving (the closing's celebration rests
+ * on frame 4), and only his body takes the pointer: a tap makes him hop.
+ */
 export const SpotsAndHop: Story = {
   beforeEach: () => {
     sessionStorage.setItem(ENTRANCE_STORAGE_KEY, "seen");
@@ -121,13 +105,16 @@ export const SpotsAndHop: Story = {
     await waitFor(() => expect(layer.querySelector(".lk-traveler-hop.is-hopping")).not.toBeNull());
     await waitFor(() => expect(layer.querySelector(".lk-traveler-hop.is-hopping")).toBeNull());
 
-    scrollToSpot("how");
-    await waitFor(() => expect(layer.dataset.mood).toBe("worried"));
-    await expect(layer.dataset.spot).toBe("how");
-    await waitFor(() => expect(activeSheet(layer)).toContain("/wambi/worried.webp"));
-
     window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "instant" });
-    await waitFor(() => expect(layer.dataset.mood).toBe("celebrating"));
+    await waitFor(() => expect(layer.dataset.pose).toBe("celebrate"));
+    await expect(layer.dataset.spot).toBe("closing");
     await waitFor(() => expect(activeSheet(layer)).toContain("/wambi/celebrate.webp"));
+    const celebrating = () => layer.querySelector(".lk-traveler-mood.is-active .lk-wambi-sprite");
+    await expect(celebrating()).toHaveClass("is-once");
+    await waitFor(() => expect(celebrating()?.getAnimations()).toHaveLength(0), { timeout: 5000 });
+    // Frame 4 of the 4×2 sheet: first column, second row.
+    await expect(
+      celebrating() && getComputedStyle(celebrating() as Element).backgroundPosition,
+    ).toBe("0% 100%");
   },
 };

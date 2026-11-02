@@ -37,36 +37,21 @@
     scroll-margin-top: var(--space-4);
   }
 
-  /*
-   * Wambi spots: where the traveling Wambi stands per section (empty boxes without him). Section
-   * spots sit at the end of the heading row, his feet on the content's top edge; the heading keeps
-   * clear of them. Once he is live, the prerendered Wambi in a spot (hero, closing) steps aside.
-   */
+  /* A section's heading (and lede): the text uses the full width. */
   .lk-landing-section-head {
-    --lk-spot: 92px;
     --lk-head-gap: var(--space-4);
-    position: relative;
     margin-bottom: var(--lk-head-gap);
-    padding-inline-end: calc(var(--lk-spot) + var(--space-2));
   }
   .lk-landing .lk-landing-section-head h2 {
     margin: 0;
   }
+  /*
+   * Wambi spots: where the traveling Wambi stands, only the hero and the closing (each with its
+   * prerendered sprite). Once he is live, the prerendered Wambi in a spot steps aside.
+   */
   .lk-landing-spot {
     display: block;
     pointer-events: none;
-  }
-  .lk-landing-section-head .lk-landing-spot {
-    position: absolute;
-    right: 0;
-    /* A little lower than the content's top edge: his soles sit near the bottom of the box. */
-    bottom: calc(-1 * var(--lk-head-gap) - var(--lk-spot) * 0.07);
-    width: var(--lk-spot);
-    height: var(--lk-spot);
-  }
-  /* A section head without a spot for Wambi (what's next): the text may use the full width. */
-  .lk-landing-section-head.is-plain {
-    padding-inline-end: 0;
   }
   .lk-landing-lede {
     margin-top: var(--space-2);
@@ -356,7 +341,7 @@
     line-height: 1.5;
     color: var(--ink-muted);
   }
-  /* The first sentence of the description: what Wambi is. */
+  /* The description: the one line that introduces Wambi. */
   .lk-landing-lead {
     display: block;
     margin-bottom: var(--space-2);
@@ -540,7 +525,7 @@
     align-items: center;
     gap: var(--space-2);
     align-self: flex-start;
-    padding: 4px 14px 4px 4px;
+    padding: 6px 14px;
     border-radius: var(--radius-pill);
     background: var(--surface);
     font-family: var(--font-display);
@@ -817,7 +802,6 @@
       margin-bottom: var(--space-5);
     }
     .lk-landing-section-head {
-      --lk-spot: 180px;
       --lk-head-gap: var(--space-5);
     }
     .lk-landing-spot.is-closing {
@@ -873,21 +857,6 @@
     }
     .lk-landing-section {
       padding-block: var(--space-6) calc(var(--space-6) * 1.5);
-    }
-  }
-}
-
-/* Wide enough for a free column beside the FAQ list (max 760px): Wambi stands there, next to the
- * first questions. */
-@media (min-width: 1100px) {
-  @layer components {
-    .lk-landing-section-head .lk-landing-spot.is-faq {
-      --lk-faq-spot: 220px;
-      top: calc(100% + var(--lk-head-gap));
-      bottom: auto;
-      right: calc((100% - 760px) / 2 - var(--lk-faq-spot) / 2);
-      width: var(--lk-faq-spot);
-      height: var(--lk-faq-spot);
     }
   }
 }

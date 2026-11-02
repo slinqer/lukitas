@@ -3,6 +3,7 @@ import { useTranslations } from "use-intl";
 import { cx } from "../ui/cx.ts";
 import { useReducedMotionPreference } from "../ui/motion-tokens.ts";
 import type { WambiMood } from "./mood.ts";
+import type { WambiPose } from "./use-scroll-pose.ts";
 
 export type { WambiMood } from "./mood.ts";
 
@@ -51,6 +52,16 @@ export const WAMBI_ART: Record<WambiMood, WambiMoodArt> = {
   celebrating: { sprite: CELEBRATE, play: true, frame: 0, stillFrame: 4, treatment: "none" },
 };
 
+/**
+ * The landing's two poses: he waves (hero) and celebrates (closing). Each plays once when he
+ * arrives (`playOnce`), then he rests on `frame`, which matches his still under reduced motion:
+ * waving on frame 0, celebrating on frame 4 (fists up). Nothing on the landing loops.
+ */
+export const LANDING_ART: Record<WambiPose, WambiMoodArt> = {
+  wave: WAMBI_ART.happy,
+  celebrate: { ...WAMBI_ART.celebrating, frame: 4 },
+};
+
 export interface WambiProps {
   mood: WambiMood;
   /** Width and height: px, or any CSS length (`"100%"` fills a sized box, e.g. the landing hero). */
@@ -66,8 +77,9 @@ export interface WambiProps {
    */
   deferUntilNear?: boolean;
   /**
-   * Play the sheet once (one `loopMs`), then rest on its first frame, instead of looping. Only for
-   * a playing mood; the landing hero uses it so he waves once and stays still.
+   * Play the sheet once (one `loopMs`), then rest on the art's `frame` (the first one for the
+   * moods), instead of looping. Only for a playing mood; the landing uses it so each gesture
+   * plays once and he stays still.
    */
   playOnce?: boolean;
 }

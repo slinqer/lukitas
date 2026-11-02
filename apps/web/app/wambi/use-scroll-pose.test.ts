@@ -1,12 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { type ScrollSection, scrollPose, sectionIndexAt } from "./use-scroll-pose.ts";
 
-/** The landing's order: hero, ways, how it works, FAQ, closing call to action. */
+/**
+ * A page with five spots whose poses alternate (the landing itself has two, the hero and the
+ * closing), so every section change shows in the pose.
+ */
 const SECTIONS: ScrollSection[] = [
   { id: "hero", start: 0, pose: "wave" },
-  { id: "ways", start: 0.2, pose: "point" },
-  { id: "how", start: 0.4, pose: "carry" },
-  { id: "faq", start: 0.7, pose: "point" },
+  { id: "two", start: 0.2, pose: "celebrate" },
+  { id: "three", start: 0.4, pose: "wave" },
+  { id: "four", start: 0.7, pose: "celebrate" },
   { id: "closing", start: 0.9, pose: "celebrate" },
 ];
 
@@ -16,9 +19,9 @@ describe("scrollPose", () => {
   });
 
   it("takes the pose of the section the progress is in", () => {
-    expect(scrollPose(0.3, SECTIONS).pose).toBe("point");
-    expect(scrollPose(0.2, SECTIONS).pose).toBe("point");
-    expect(scrollPose(0.45, SECTIONS).pose).toBe("carry");
+    expect(scrollPose(0.3, SECTIONS).pose).toBe("celebrate");
+    expect(scrollPose(0.2, SECTIONS).pose).toBe("celebrate");
+    expect(scrollPose(0.45, SECTIONS).pose).toBe("wave");
   });
 
   it("celebrates at the end of the page", () => {
@@ -40,7 +43,7 @@ describe("scrollPose", () => {
     const shuffled = [SECTIONS[3], SECTIONS[0], SECTIONS[4], SECTIONS[2], SECTIONS[1]].filter(
       (s): s is ScrollSection => s !== undefined,
     );
-    expect(scrollPose(0.45, shuffled).pose).toBe("carry");
+    expect(scrollPose(0.45, shuffled).pose).toBe("wave");
     expect(scrollPose(1, shuffled).pose).toBe("celebrate");
   });
 
