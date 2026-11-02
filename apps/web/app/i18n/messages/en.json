@@ -87,6 +87,38 @@
       "no_central_server": {
         "title": "No central server",
         "body": "Your data syncs between your devices without depending on a server of ours."
+      },
+      "passwordless": {
+        "title": "No passwords",
+        "body": "Sign in with a code sent to your email, or with your phone's fingerprint."
+      },
+      "recurring": {
+        "title": "Recurring payments with reminders",
+        "body": "Wambito marks them as pending and, on Android, reminds you on the day they're due."
+      },
+      "languages": {
+        "title": "In four languages",
+        "body": "Spanish, English, Portuguese and Italian."
+      },
+      "self_host": {
+        "title": "Run it on your own server",
+        "body": "It's free software (AGPL): you can run your own copy."
+      },
+      "stores": {
+        "title": "On F-Droid and Google Play",
+        "body": "Get the Android app from the stores."
+      },
+      "ai_one_click": {
+        "title": "Connect your AI in one click",
+        "body": "From Claude's and ChatGPT's directories, with no addresses to copy."
+      },
+      "donations": {
+        "title": "Support Wambito",
+        "body": "Optional donations to keep the project going."
+      },
+      "whatsapp": {
+        "title": "Log it on WhatsApp",
+        "body": "Send a message and it's logged."
       }
     }
   },

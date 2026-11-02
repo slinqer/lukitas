@@ -87,6 +87,38 @@
       "no_central_server": {
         "title": "Sin servidor central",
         "body": "Tus datos se sincronizan entre tus dispositivos sin depender de un servidor nuestro."
+      },
+      "passwordless": {
+        "title": "Sin contraseñas",
+        "body": "Entras con un código que te llega al correo o con la huella de tu teléfono."
+      },
+      "recurring": {
+        "title": "Pagos recurrentes con avisos",
+        "body": "Wambito los anota como pendientes y, en Android, te avisa el día que vencen."
+      },
+      "languages": {
+        "title": "En cuatro idiomas",
+        "body": "Español, inglés, portugués e italiano."
+      },
+      "self_host": {
+        "title": "Instálalo en tu propio servidor",
+        "body": "Es software libre (AGPL): puedes tener tu propia copia."
+      },
+      "stores": {
+        "title": "En F-Droid y Google Play",
+        "body": "Descarga la app de Android desde las tiendas."
+      },
+      "ai_one_click": {
+        "title": "Conecta tu IA en un clic",
+        "body": "Desde los directorios de Claude y ChatGPT, sin copiar direcciones."
+      },
+      "donations": {
+        "title": "Apoya a Wambito",
+        "body": "Donaciones voluntarias para que el proyecto siga adelante."
+      },
+      "whatsapp": {
+        "title": "Anota por WhatsApp",
+        "body": "Mándale un mensaje y queda anotado."
       }
     }
   },

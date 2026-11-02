@@ -39,12 +39,20 @@ export const ROADMAP_ITEMS: readonly RoadmapItem[] = [
   item("android_widget", "done", "🎤"),
   item("import_budge", "done", "📥"),
   item("offline", "done", "📴"),
+  item("passwordless", "done", "🔑"),
+  item("recurring", "done", "🔁"),
+  item("languages", "done", "🌍"),
+  item("self_host", "done", "🏠"),
   item("connect_ai", "building", "✨"),
   item("iphone_app", "building", "📱"),
   item("import_others", "building", "📂"),
   item("e2e_encryption", "next", "🔒"),
+  item("stores", "next", "📦"),
+  item("ai_one_click", "next", "⚡"),
+  item("donations", "next", "💛"),
   item("bank_alerts", "later", "🏦"),
   item("no_central_server", "later", "🔗"),
+  item("whatsapp", "later", "💬"),
 ];
 
 /** The three items the landing shows in "what's next", in order: never a done one. */

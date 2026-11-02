@@ -87,6 +87,38 @@
       "no_central_server": {
         "title": "Senza server centrale",
         "body": "I tuoi dati si sincronizzano tra i tuoi dispositivi senza dipendere da un nostro server."
+      },
+      "passwordless": {
+        "title": "Senza password",
+        "body": "Entri con un codice che ricevi via email o con l'impronta del tuo telefono."
+      },
+      "recurring": {
+        "title": "Pagamenti ricorrenti con avvisi",
+        "body": "Wambito li segna come in sospeso e, su Android, ti avvisa il giorno della scadenza."
+      },
+      "languages": {
+        "title": "In quattro lingue",
+        "body": "Spagnolo, inglese, portoghese e italiano."
+      },
+      "self_host": {
+        "title": "Installalo sul tuo server",
+        "body": "È software libero (AGPL): puoi avere la tua copia."
+      },
+      "stores": {
+        "title": "Su F-Droid e Google Play",
+        "body": "Scarica l'app per Android dagli store."
+      },
+      "ai_one_click": {
+        "title": "Collega la tua IA in un clic",
+        "body": "Dalle directory di Claude e ChatGPT, senza copiare indirizzi."
+      },
+      "donations": {
+        "title": "Sostieni Wambito",
+        "body": "Donazioni facoltative per mandare avanti il progetto."
+      },
+      "whatsapp": {
+        "title": "Annota su WhatsApp",
+        "body": "Mandi un messaggio ed è annotato."
       }
     }
   },

@@ -87,6 +87,38 @@
       "no_central_server": {
         "title": "Sem servidor central",
         "body": "Os teus dados sincronizam-se entre os teus dispositivos sem depender de um servidor nosso."
+      },
+      "passwordless": {
+        "title": "Sem palavras-passe",
+        "body": "Entras com um código que recebes por email ou com a impressão digital do teu telemóvel."
+      },
+      "recurring": {
+        "title": "Pagamentos recorrentes com avisos",
+        "body": "O Wambito marca-os como pendentes e, no Android, avisa-te no dia em que vencem."
+      },
+      "languages": {
+        "title": "Em quatro línguas",
+        "body": "Espanhol, inglês, português e italiano."
+      },
+      "self_host": {
+        "title": "Instala-o no teu próprio servidor",
+        "body": "É software livre (AGPL): podes ter a tua própria cópia."
+      },
+      "stores": {
+        "title": "No F-Droid e no Google Play",
+        "body": "Instala a app para Android a partir das lojas."
+      },
+      "ai_one_click": {
+        "title": "Liga a tua IA num clique",
+        "body": "A partir dos diretórios do Claude e do ChatGPT, sem copiar endereços."
+      },
+      "donations": {
+        "title": "Apoia o Wambito",
+        "body": "Donativos opcionais para manter o projeto a andar."
+      },
+      "whatsapp": {
+        "title": "Regista pelo WhatsApp",
+        "body": "Envias uma mensagem e fica registado."
       }
     }
   },
