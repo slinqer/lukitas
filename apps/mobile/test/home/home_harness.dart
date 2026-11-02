@@ -39,6 +39,10 @@ class HomeHarness {
   final List<Transaction> edited;
 }
 
+/// A tall phone, for the tests that reach the days still to come: they sit at the bottom of the
+/// movements list, below the fold of the default screen.
+const tallPhone = Size(390, 1100);
+
 /// Home in front of [repo], on a phone-sized screen, in Spanish unless told otherwise.
 Future<HomeHarness> pumpHome(
   WidgetTester tester,

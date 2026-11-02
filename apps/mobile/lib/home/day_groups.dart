@@ -23,9 +23,9 @@ class DayGroup {
   final List<Transaction> items;
 }
 
-/// A month's transactions by day, as home lists them: today on top, then the days still to come
-/// (the nearest first, where the pending ones are), then the days gone by (newest first). The
-/// web's `groupByDay` (apps/web/app/features/home/home-model.ts).
+/// A month's transactions by day, as home lists them: today on top, then the days gone by (newest
+/// first), then the days still to come at the bottom (the nearest first, where the pending ones
+/// are). The web's `groupByDay` (apps/web/app/features/home/home-model.ts).
 List<DayGroup> groupByDay(List<Transaction> items, String today) {
   final byDate = <String, List<Transaction>>{};
   for (final tx in items) {
@@ -50,8 +50,8 @@ List<DayGroup> groupByDay(List<Transaction> items, String today) {
   int rank(DayGroup g) => g.when == DayWhen.today
       ? 0
       : g.when == DayWhen.upcoming
-      ? 1
-      : 2;
+      ? 2
+      : 1;
   groups.sort((a, b) {
     if (rank(a) != rank(b)) return rank(a) - rank(b);
     // Upcoming: nearest first. Everything else: newest first.

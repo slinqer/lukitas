@@ -27,8 +27,8 @@ function dayBefore(date: IsoDate): IsoDate {
 }
 
 /**
- * A month's transactions by day, as home lists them: today on top, then the days still to come
- * (the nearest first, where the pending ones are), then the days gone by (newest first).
+ * A month's transactions by day, as home lists them: today on top, then the days gone by (newest
+ * first), then the days still to come at the bottom (the nearest first, where the pending ones are).
  */
 export function groupByDay(items: TransactionDto[], today: IsoDate): DayGroup[] {
   const byDate = new Map<IsoDate, TransactionDto[]>();
@@ -49,7 +49,7 @@ export function groupByDay(items: TransactionDto[], today: IsoDate): DayGroup[] 
       items: list,
     }),
   );
-  const rank = (g: DayGroup) => (g.when === "today" ? 0 : g.when === "upcoming" ? 1 : 2);
+  const rank = (g: DayGroup) => (g.when === "today" ? 0 : g.when === "upcoming" ? 2 : 1);
   return groups.sort((a, b) => {
     if (rank(a) !== rank(b)) return rank(a) - rank(b);
     if (a.when === "upcoming") return a.date < b.date ? -1 : 1;

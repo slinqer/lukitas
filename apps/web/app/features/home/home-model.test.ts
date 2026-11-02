@@ -27,7 +27,7 @@ function tx(id: string, date: string, amount: number, status: "paid" | "pending"
 }
 
 describe("groupByDay", () => {
-  it("puts today first, then the upcoming days (nearest first), then the past (newest first)", () => {
+  it("puts today first, then the past (newest first), then the upcoming days (nearest first)", () => {
     // The API sends the month newest first.
     const items = [
       tx("internet", "2026-10-28", -3990, "pending"),
@@ -40,14 +40,31 @@ describe("groupByDay", () => {
     const groups = groupByDay(items, "2026-10-21");
     expect(groups.map((g) => [g.date, g.when])).toEqual([
       ["2026-10-21", "today"],
-      ["2026-10-23", "upcoming"],
-      ["2026-10-28", "upcoming"],
       ["2026-10-08", "past"],
       ["2026-10-01", "past"],
+      ["2026-10-23", "upcoming"],
+      ["2026-10-28", "upcoming"],
     ]);
     expect(groups[0]?.items.map((t) => t.id)).toEqual(["coffee", "lunch"]);
     expect(groups[0]?.total).toBe(-1360);
-    expect(groups[4]?.total).toBe(300000);
+    expect(groups[2]?.total).toBe(300000);
+  });
+
+  it("keeps the pending days still to come after yesterday, not between today and yesterday", () => {
+    const items = [
+      tx("internet", "2026-11-28", -3990, "pending"),
+      tx("plan", "2026-11-26", -1039, "pending"),
+      tx("gym", "2026-11-02", -3200),
+      tx("uber", "2026-11-02", -316),
+      tx("sushi", "2026-11-01", -1093),
+    ];
+    const groups = groupByDay(items, "2026-11-02");
+    expect(groups.map((g) => [g.date, g.when, g.total])).toEqual([
+      ["2026-11-02", "today", -3516],
+      ["2026-11-01", "yesterday", -1093],
+      ["2026-11-26", "upcoming", -1039],
+      ["2026-11-28", "upcoming", -3990],
+    ]);
   });
 
   it("marks the day before today as yesterday", () => {

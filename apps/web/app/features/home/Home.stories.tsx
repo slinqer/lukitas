@@ -149,7 +149,7 @@ export const Budgets: Story = {
   },
 };
 
-/** The same month by day: today on top, the upcoming pending next, then the past. */
+/** The same month by day: today on top, then the past, the upcoming pending last. */
 export const Transactions: Story = {
   render: (args) => <HomeStage onRequest={args.onRequest} />,
   play: async ({ canvasElement, args }) => {

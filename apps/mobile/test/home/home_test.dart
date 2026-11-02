@@ -78,17 +78,17 @@ void main() {
   });
 
   group('the movements', () {
-    testWidgets('are listed by day: today first, the pending ones due next, then the past', (
+    testWidgets('are listed by day: today first, then the past, the pending ones due last', (
       tester,
     ) async {
-      await pumpHome(tester, monthWithBudgets());
+      await pumpHome(tester, monthWithBudgets(), size: tallPhone);
       expect(find.text('HOY · JUE 22'), findsOneWidget);
       expect(find.text('AYER · MIÉ 21'), findsOneWidget);
       expect(find.text('DOM 25 · PRÓXIMO'), findsOneWidget);
       double y(String text) => tester.getTopLeft(find.text(text)).dy;
-      expect(y('Café'), lessThan(y('Arriendo')));
-      expect(y('Arriendo'), lessThan(y('Mercado')));
+      expect(y('Café'), lessThan(y('Mercado')));
       expect(y('Mercado'), lessThan(y('Nómina')));
+      expect(y('Nómina'), lessThan(y('Arriendo')));
       // Money: expenses with the real minus, income with a plus.
       expect(find.text('−\$4.500'), findsOneWidget);
       // The income, and the day's total (income only).
@@ -249,7 +249,7 @@ void main() {
 
     testWidgets('swipe right on a pending row marks it paid', (tester) async {
       final repo = monthWithBudgets();
-      await pumpHome(tester, repo);
+      await pumpHome(tester, repo, size: tallPhone);
       expect(find.text('PENDIENTE'), findsOneWidget);
 
       await swipe(tester, find.text('Arriendo'), 250);
@@ -265,7 +265,7 @@ void main() {
 
     testWidgets('tapping the Pendiente badge pays it too', (tester) async {
       final repo = monthWithBudgets();
-      await pumpHome(tester, repo);
+      await pumpHome(tester, repo, size: tallPhone);
       await tester.tap(find.text('PENDIENTE'));
       await tester.pumpAndSettle();
       expect(repo.calls.where((c) => c.startsWith('markPaid')), ['markPaid rent']);
@@ -275,7 +275,7 @@ void main() {
 
     testWidgets('a payment the server refuses puts the badge back to Pendiente', (tester) async {
       final repo = monthWithBudgets();
-      await pumpHome(tester, repo);
+      await pumpHome(tester, repo, size: tallPhone);
       repo.failures['markPaid'] = const HomeFailure(0);
       await tester.tap(find.text('PENDIENTE'));
       await tester.pumpAndSettle();
@@ -399,7 +399,7 @@ void main() {
     testWidgets('the event line names the movement and returns to the month\'s line after 10 s', (
       tester,
     ) async {
-      await pumpHome(tester, monthWithBudgets());
+      await pumpHome(tester, monthWithBudgets(), size: tallPhone);
       expect(find.textContaining('Vas muy bien'), findsOneWidget);
 
       await swipe(tester, find.text('Arriendo'), 250);
@@ -416,7 +416,7 @@ void main() {
     });
 
     testWidgets('in English the event line is English too', (tester) async {
-      await pumpHome(tester, monthWithBudgets(), locale: const Locale('en'));
+      await pumpHome(tester, monthWithBudgets(), locale: const Locale('en'), size: tallPhone);
       await swipe(tester, find.text('Arriendo'), 250);
       expect(find.textContaining('You paid “Arriendo”: COP\u00a0500,000'), findsOneWidget);
       await endEvent(tester);
@@ -657,7 +657,7 @@ void main() {
       tester,
     ) async {
       final repo = monthWithBudgets();
-      await pumpHome(tester, repo);
+      await pumpHome(tester, repo, size: tallPhone);
       await swipe(tester, find.text('Arriendo'), 250);
       expect(find.textContaining('Pagaste «Arriendo»'), findsOneWidget);
       await tester.tap(find.text('‹'));
