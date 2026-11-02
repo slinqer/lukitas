@@ -20,17 +20,15 @@ assistants, and a fake-backend demo (`/demo/*`).
 
 ## Talks to
 
-- API at `/api` on the same origin (Vite proxies it in dev). Types: `app/api/schema.d.ts`,
-  regenerate with `pnpm --filter @wambito/web api:types --file`.
+- API at `/api` on the same origin (Vite proxies it in dev). Types: `app/api/schema.d.ts`
+  (generated; commands for it and `tokens.css`: root `AGENTS.md`).
 
 ## Commands (repo root)
 
 - Dev: `pnpm --filter @wambito/web dev` (needs the root stack: `docker compose up -d`).
 - Unit + Storybook tests: `pnpm vitest run apps/web`; one project
   `--project "@wambito/web (unit)"` or `"@wambito/web (storybook)"` (Chromium).
-- Storybook: `pnpm --filter @wambito/web storybook` (:6006). Typecheck: `pnpm typecheck`.
-- Tokens: `pnpm --filter @wambito/web tokens` writes `app/styles/tokens.css` from
-  `docs/design/system/project/tokens.json`. OG images: `pnpm --filter @wambito/web og`.
+- Storybook: `pnpm --filter @wambito/web storybook` (:6006). OG images: `pnpm --filter @wambito/web og`.
 - e2e: `E2E_NOW=2026-10-21T15:00:00Z docker compose up -d --build` (value from
   `e2e/helpers.ts`), then `pnpm --filter @wambito/web e2e` | `e2e:landing` | `e2e:landing-only` |
   `e2e:landing-only-app`. Afterwards `docker compose stop` (never `down -v`).
@@ -44,7 +42,7 @@ assistants, and a fake-backend demo (`/demo/*`).
 
 ## Traps
 
-- Spanish copy carries money slang («lukas», «luka», «palos»): never rename.
+- Money slang (see root `AGENTS.md`) is in the Spanish copy.
   `app/features/landing/money-words.ts` / `MoneyHeadline.tsx` hold money words per language: edit
   with care.
 - The landing header must fit one row at 320px in every language (e2e checks it).

@@ -10,7 +10,7 @@ tool calls the API with the assistant's token.
   `@wambito/ai-assistant-tools`, protected-resource metadata, rate limit (`src/rate-limit.ts`).
 - `src/api-wambito.ts`: the `Wambito` interface over the HTTP API (bearer token).
 - `src/verifier.ts`: token checks. `src/config.ts`: env.
-- `src/api/schema.d.ts`: generated API types: `pnpm --filter @wambito/mcp api:types` (CI diffs it).
+- `src/api/schema.d.ts`: generated API types (command: root `AGENTS.md`; CI diffs it).
 
 ## MCP → API
 

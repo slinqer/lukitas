@@ -13,5 +13,6 @@ landing-only build, 404 page, route `wambito.com` (custom domain). Runbook: `doc
 
 ## Traps
 
-- The Worker name `lukitas-landing` is part 2b: don't rename it (a new name is a new Worker).
+- The Worker name in `wrangler.jsonc` is part 2b (see root `AGENTS.md`): don't rename it (a new
+  name is a new Worker).
 - The VPS redirects its landing paths here via `LANDING_URL` (`deploy/personal/routes.caddy`).

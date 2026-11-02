@@ -34,8 +34,7 @@ phone. Read the `AGENTS.md` of the area you work in; read code only to confirm.
   `initdb`/`pg_ctl` instead.
 - Web e2e needs the dev stack with the pinned clock (see `apps/web/AGENTS.md`).
 - Flutter: `export PATH="$HOME/development/flutter/bin:$PATH"`.
-- Gradle needs JDK 17 (see `docs/mobile/setup.md`). The founder's:
-  `JAVA_HOME=/Users/andirsun/development/jdk/jdk-17.0.21+9/Contents/Home`.
+- Gradle needs `JAVA_HOME` = JDK 17 (`docs/mobile/setup.md`).
 
 ## What CI runs (`.github/workflows/ci.yml`)
 
@@ -54,8 +53,8 @@ phone. Read the `AGENTS.md` of the area you work in; read code only to confirm.
 - Old name: `scripts/check-old-name.sh` fails on the old app or mascot name outside
   `.github/name-allowlist.txt` (`<pathspec>  # <reason>`; reasons `money`, `2b`, `2b: remove`,
   `history`, `docs-rule`). A new legit hit: add the file there with its reason, never a folder glob.
-- Personal domain: a `git grep` for the founder's personal domain outside `docs/superpowers`.
-  Never write personal names, emails or domains into the repo.
+- Personal-name guard (`ci.yml`): a `git grep` for the founder's name outside `docs/superpowers`.
+  Never write personal names, emails or paths into the repo.
 
 ## Cross-cutting rules
 
@@ -100,14 +99,6 @@ phone. Read the `AGENTS.md` of the area you work in; read code only to confirm.
 
 ## History: `docs/superpowers/**` (read only when needed, never edit)
 
-- Product and architecture: `docs/superpowers/specs/2026-10-20-lukas-design.md`.
-- Web: `docs/superpowers/specs/2026-10-21-stage-2-web-design.md`.
-- Mobile: `docs/superpowers/specs/2026-10-22-stage-3-mobile-design.md`, parity
-  `docs/superpowers/specs/2026-10-23-stage-3b-mobile-parity-design.md`, feature parity
-  `docs/superpowers/specs/2026-10-24-stage-3c-mobile-feature-parity-design.md`.
-- Italian/Portuguese: `docs/superpowers/specs/2026-10-26-italian-portuguese-design.md`.
-- MCP: `docs/superpowers/specs/2026-10-29-stage-4-mcp-design.md`.
-- Donations: `docs/superpowers/specs/2026-10-29-support-contributions-design.md`.
-- URLs and direct mode (part 1): `docs/superpowers/specs/2026-11-02-wambito-urls-design.md`.
-- The rename (part 2a, and what 2b will do): `docs/superpowers/specs/2026-11-02-wambito-part-2a-rename-design.md`.
-- Plans: `docs/superpowers/plans/`; rulings and spikes: `docs/superpowers/reports/`.
+- Part 1, URLs and direct mode: `docs/superpowers/specs/2026-11-02-wambito-urls-design.md`; part 2a
+  rename (and what 2b will do): `docs/superpowers/specs/2026-11-02-wambito-part-2a-rename-design.md`.
+- Others (product, web, mobile, MCP, i18n): `ls docs/superpowers/specs`; plans in `plans/`.

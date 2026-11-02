@@ -19,6 +19,6 @@ suggested categories, Wambi's messages. No I/O.
 
 ## Rules
 
-- The money slang in `quick-capture/` («lukas», «luka», «palo») must never change.
+- Money slang (see root `AGENTS.md`) lives in `quick-capture/`: never change it.
 - Changing `cases.json` changes what the mobile parser must accept: run
   `flutter test test/capture/parser_cases_test.dart` in `apps/mobile` too.

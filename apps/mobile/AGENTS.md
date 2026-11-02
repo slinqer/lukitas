@@ -19,23 +19,21 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
 
 ## Android (`android/app/src/main/kotlin/com/wambito/app/`)
 
-- `MainActivity.kt`: runs `Migration.kt` (`2b: remove`), takes the launch link, registers
-  `wambito/*` MethodChannels; feature channels in `passkeys/`, `voice/`, `haptics/`, `sounds/`,
-  `notices/`, `files/`. Channel names must match the Dart constants: rename both sides in one commit.
+- `MainActivity.kt`: runs `Migration.kt` (`2b: remove`), takes the launch link. Channels:
+  `wambito/*`, registered in `MainActivity.kt`; names match the Dart constants (rename both at once).
 - `widget/`: Glance widgets via home_widget; `notices/`: WorkManager `DueWorker`/`GuestWorker`,
   local notices only. Voice: Vosk, never Android's SpeechRecognizer. Passkeys: androidx.credentials.
 
-## Generated (never hand-edit)
+## Generated
 
-- `lib/api/gen/`: `scripts/gen-api.sh` (needs root `pnpm install`, JDK 17, Flutter).
-- `lib/theme/tokens.g.dart`: `dart run scripts/gen-tokens.dart`. l10n: `flutter pub get`
-  (ARBs `lib/l10n/app_{es,en,it,pt}.arb`, es is the template). CI fails if any is stale.
+- See root `AGENTS.md` (`lib/api/gen`, `tokens.g.dart`, l10n). `scripts/gen-api.sh` needs root
+  `pnpm install`, JDK 17, Flutter. ARBs `lib/l10n/app_{es,en,it,pt}.arb`, es is the template.
 
 ## Commands (from `apps/mobile`, `export PATH="$HOME/development/flutter/bin:$PATH"`)
 
 - `flutter pub get --enforce-lockfile`, `flutter analyze`, `flutter test --exclude-tags golden` (CI).
 - Goldens: `flutter test --tags golden` (`--update-goldens`); on macOS without PingFang set
-  `PARITY_PINGFANG=/Users/andirsun/development/fonts/PingFang.ttc`. CI (Linux) skips goldens.
+  `PARITY_PINGFANG` to a `PingFang.ttc` (see `test/support/parity.dart`). CI skips goldens.
 - Parity (`docs/mobile/parity.md`, list `test/parity/parity.json`): `pnpm --filter @wambito/web
   parity:fixtures|parity:shots [id]`, `flutter test --update-goldens test/parity`,
   `dart run tool/parity/compose.dart --max 2 [id]`.
@@ -46,15 +44,14 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
 
 ## Traps
 
-- Money slang in `lib/capture/parser/`, `lib/capture/engine/`, `lib/money/format.dart` and the
-  copy («luka/lukas/luca/lucas/palo», `lukasHint`): never rename.
+- See root `AGENTS.md`: money slang, 2b names, secrets (the signing keystore too). Here the slang
+  lives in `lib/capture/parser/`, `lib/capture/engine/`, `lib/money/format.dart` and the ARBs.
 - Persistent state on phones: prefs file names, WorkManager unique names (`wambito.widget.refresh`,
   `wambito.widget.midnight`, `wambito.notice.due`, `wambito.notice.guest`), widget receiver classes
   (renaming removes placed widgets), the snapshot key. Changing any needs a migration.
 - Never block on a WorkManager future (`.get()`) in code a Worker runs: deadlocks in tests.
-- Never read the signing keystore (a secret). Its alias stays `lukitas` (2b rule).
 - `test/tooling/*` reads Android files; `widget_android_test.dart` there pins Dart = Kotlin.
-- `lukitas://` links and their manifest filter stay (`2b: remove`); so `manifest_test` counts
+- Old-scheme deep links and their manifest filter stay (`2b: remove`); so `manifest_test` counts
   `android:host="due"` twice until 2b, then once.
 - About 55 goldens already fail on the founder's Mac: compare with the base first. Regenerated
   parity fixtures change millisecond timestamps: keep only the intended diff.

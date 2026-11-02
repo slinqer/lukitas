@@ -18,7 +18,7 @@ The MCP tools, prompts and server instructions, independent of transport. `apps/
 
 ## Rules
 
-- The "luka"/"lukas"/"palo" money lines in `src/instructions.ts` are Colombian slang: never rename.
+- Money slang (see root `AGENTS.md`) lives in `src/instructions.ts`'s money lines: never rename.
 - Tool names and their input shapes are a public contract (connected assistants).
 - Names, notes and category names are user data: tool output marks them as data, never
   instructions. Keep that marking.

@@ -153,10 +153,3 @@ CONTRIBUTING.md                                            # history
 # --- docs-rule: the agent maps, which name the money slang and the 2b names as rules ---
 AGENTS.md  # docs-rule
 apps/api/AGENTS.md  # docs-rule
-apps/mobile/AGENTS.md  # docs-rule
-apps/web/AGENTS.md  # docs-rule
-deploy/landing/AGENTS.md  # docs-rule
-docs/AGENTS.md  # docs-rule
-packages/ai-assistant-tools/AGENTS.md  # docs-rule
-packages/core/AGENTS.md  # docs-rule
-packages/db/AGENTS.md  # docs-rule

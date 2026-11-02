@@ -13,9 +13,9 @@ Drizzle schema, SQL migrations and row-level security for Postgres.
 
 ## Rules
 
-- Migrations run as the admin/owner role, never as the runtime role. The API connects as
-  `lukas_app` (`NOSUPERUSER NOBYPASSRLS`), so every user table needs RLS and a grant to it.
-- `lukas_app`, database `lukas` and admin `lukitas` are part 2b names: don't rename.
+- Migrations run as the admin/owner role, never as the runtime role (`APP_ROLE`,
+  `NOSUPERUSER NOBYPASSRLS`): every user table needs RLS and a grant to it.
+- Role, database and admin names are part 2b (see root `AGENTS.md`): don't rename.
 - Add migrations with drizzle-kit; never edit an applied one.
 - In production `docker compose run --rm migrate` (`deploy/personal/up.sh`) runs bootstrap +
   migrations.

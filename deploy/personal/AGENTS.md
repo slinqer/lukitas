@@ -35,9 +35,7 @@ app and proxying), optional cloudflared. Full runbook: `README.md` here; short v
 - `COMPOSE_FILE` lives in `.env`: run compose from this folder so it applies. `./up.sh --skip-web`
   does not recreate containers after a compose-file change.
 - The API trusts exactly one X-Forwarded-For hop, set by Caddy (`docs/deploy/api.md`).
-- Migrations run in `migrate` as the owner; the api runs as `lukas_app` (RLS).
-- Whole folder is part 2b: compose project `lukitas-personal`, volumes, units, plist, dumps
-  `lukitas-*.dump`, bucket `lukitas-backups`, `~/lukitas`, user-facing "Lukitas" texts. Don't
-  rename them here; 2b rewrites these files.
-- Never read `.env` (here or on the VPS) or `~/.cloudflared/*.json`: secrets. Use `.env.example`.
+- Migrations run in `migrate` as the owner; the api runs as the runtime role (RLS).
+- See root `AGENTS.md`: 2b names, secrets (`.env` here and on the VPS). Part 2b rewrites this
+  whole folder, so its old-name texts (unit descriptions, backup notifications) stay too.
 - Merging to `main` deploys production by itself.

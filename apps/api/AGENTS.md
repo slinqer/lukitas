@@ -23,7 +23,7 @@ Hono + Better Auth + Drizzle (`@wambito/db`), OpenAPI document "Wambito API". Ev
   `clientHeader`, never `headers.get("x-…")`. It also accepts `x-lukas-*` from installed APKs
   (`2b: remove`). A timezone header means "from the device"; `background: 1` reads the session
   with `disableRefresh` (not counted as activity).
-- DB: connects as `lukas_app` (RLS, part 2b name); migrations run as admin (`packages/db`).
+- DB: connects as the runtime role (RLS); migrations run as admin (`packages/db`).
 
 ## Run and test (repo root)
 
@@ -36,8 +36,7 @@ Hono + Better Auth + Drizzle (`@wambito/db`), OpenAPI document "Wambito API". Ev
 
 ## Traps
 
-- Guests' placeholder emails `@guest.lukitas.invalid` are live data (part 2b). Don't rename.
-- `lukas_app`/`lukas` in DB URLs are part 2b infrastructure.
+- See root `AGENTS.md`: 2b names (DB role and name, guests' email domain), secrets.
 - Better Auth tables: `pnpm --filter @wambito/api auth:generate` writes
   `packages/db/src/schema/auth.ts`; then add a migration in `packages/db`.
 - Rate limits trust one X-Forwarded-For hop set by Caddy: `docs/deploy/api.md`.
