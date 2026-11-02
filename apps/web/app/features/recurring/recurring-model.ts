@@ -1,4 +1,4 @@
-import { addMonths, type IsoDate, monthOf, occurrences, type RecurrenceRule } from "@lukas/core";
+import { addMonths, type IsoDate, monthOf, occurrences, type RecurrenceRule } from "@wambito/core";
 
 /** A yearly rule comes round within 12 months of any month, so 13 months always find it. */
 const LOOKAHEAD_MONTHS = 13;

@@ -1,4 +1,4 @@
-import type { Month } from "@lukas/core";
+import type { Month } from "@wambito/core";
 import { useEffect, useId, useRef, useState } from "react";
 import { Link } from "react-router";
 import { useTranslations } from "use-intl";

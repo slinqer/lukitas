@@ -1,8 +1,8 @@
 import { describe, expect, test } from "vitest";
 import { assistantEmail, claimEmail, signInEmail } from "../src/emails/sign-in.ts";
 
-const WEB_URL = "https://lukitas.example";
-const link = `${WEB_URL}/auth/verify?email=a%40lukas.test&code=123456&lang=es&next=%2Fapp%2Finsights`;
+const WEB_URL = "https://wambito.example";
+const link = `${WEB_URL}/auth/verify?email=a%40wambito.test&code=123456&lang=es&next=%2Fapp%2Finsights`;
 const input = { code: "123456", link, webUrl: WEB_URL, expiresInMinutes: 10 };
 
 /** The visible text of the HTML: no tags, no style, no hidden preheader. */
@@ -18,32 +18,32 @@ const visibleText = (html: string) =>
 describe("sign-in email", () => {
   test("Spanish: subject, preheader, heading, code, button, expiry, ignore note, footer", () => {
     const mail = signInEmail({ ...input, locale: "es" });
-    expect(mail.subject).toBe("Tu código de Lukitas: 123456");
-    expect(mail.html).toContain("Tu código para entrar a Lukitas: 123456");
+    expect(mail.subject).toBe("Tu código de Wambito: 123456");
+    expect(mail.html).toContain("Tu código para entrar a Wambito: 123456");
     const text = visibleText(mail.html);
     expect(text).toContain("¡Hola! Este es tu código para entrar");
     expect(text).toContain("123456");
-    expect(text).toContain("ENTRAR A LUKITAS");
+    expect(text).toContain("ENTRAR A WAMBITO");
     expect(text).toContain("El código y el enlace vencen en 10 minutos.");
     expect(text).toContain(
       "Si no pediste este correo, ignóralo: nadie puede entrar sin este código.",
     );
-    expect(text).toContain("Lukitas · gratis y de código abierto");
+    expect(text).toContain("Wambito · gratis y de código abierto");
     expect(mail.html).toContain('lang="es"');
   });
 
   test("English: subject, preheader, heading, code, button, expiry, ignore note, footer", () => {
     const mail = signInEmail({ ...input, locale: "en", expiresInMinutes: 15 });
-    expect(mail.subject).toBe("Your Lukitas code: 123456");
-    expect(mail.html).toContain("Your Lukitas sign-in code: 123456");
+    expect(mail.subject).toBe("Your Wambito code: 123456");
+    expect(mail.html).toContain("Your Wambito sign-in code: 123456");
     const text = visibleText(mail.html);
     expect(text).toContain("Hi! Here is your sign-in code");
-    expect(text).toContain("SIGN IN TO LUKITAS");
+    expect(text).toContain("SIGN IN TO WAMBITO");
     expect(text).toContain("The code and the link expire in 15 minutes.");
     expect(text).toContain(
       "If you didn't ask for this email, ignore it: nobody can sign in without this code.",
     );
-    expect(text).toContain("Lukitas · free and open source");
+    expect(text).toContain("Wambito · free and open source");
     expect(mail.html).toContain('lang="en"');
   });
 
@@ -80,48 +80,48 @@ describe("sign-in email", () => {
       "¡Hola! Este es tu código para entrar",
     );
     expect(signInEmail({ ...input, locale: "es" }).text).toContain(
-      "Lukitas · gratis y de código abierto",
+      "Wambito · gratis y de código abierto",
     );
   });
 
   test("Italian: subject, preheader, heading, button, expiry (singular too), ignore note, footer", () => {
     const mail = signInEmail({ ...input, locale: "it" });
-    expect(mail.subject).toBe("Il tuo codice Lukitas: 123456");
-    expect(mail.html).toContain("Il tuo codice per entrare in Lukitas: 123456");
+    expect(mail.subject).toBe("Il tuo codice Wambito: 123456");
+    expect(mail.html).toContain("Il tuo codice per entrare in Wambito: 123456");
     expect(mail.html).toContain('lang="it"');
     const text = visibleText(mail.html);
     expect(text).toContain("Ciao! Questo è il tuo codice per entrare");
-    expect(text).toContain("ENTRA IN LUKITAS");
+    expect(text).toContain("ENTRA IN WAMBITO");
     expect(text).toContain("Il codice e il link scadono tra 10 minuti.");
     expect(text).toContain(
       "Se non hai chiesto questa email, ignorala: nessuno può entrare senza questo codice.",
     );
-    expect(text).toContain("Lukitas · gratis e open source");
+    expect(text).toContain("Wambito · gratis e open source");
     expect(signInEmail({ ...input, locale: "it", expiresInMinutes: 1 }).text).toContain(
       "scadono tra 1 minuto.",
     );
     // Not Spanish, not English.
-    expect(text).not.toMatch(/Tu código|Your Lukitas|ENTRAR A/);
+    expect(text).not.toMatch(/Tu código|Your Wambito|ENTRAR A/);
   });
 
   test("European Portuguese: the tu form, ligação and not link, no Brazilian words", () => {
     const mail = signInEmail({ ...input, locale: "pt" });
-    expect(mail.subject).toBe("O teu código Lukitas: 123456");
-    expect(mail.html).toContain("Código para entrares em Lukitas: 123456");
+    expect(mail.subject).toBe("O teu código Wambito: 123456");
+    expect(mail.html).toContain("Código para entrares em Wambito: 123456");
     expect(mail.html).toContain('lang="pt"');
     const text = visibleText(mail.html);
     expect(text).toContain("Olá! Este é o teu código para entrar");
-    expect(text).toContain("ENTRAR EM LUKITAS");
+    expect(text).toContain("ENTRAR EM WAMBITO");
     expect(text).toContain("O código e a ligação expiram dentro de 10 minutos.");
     expect(text).toContain(
       "Se não pediste este email, ignora-o: ninguém consegue entrar sem este código.",
     );
-    expect(text).toContain("Lukitas · grátis e de código aberto");
+    expect(text).toContain("Wambito · grátis e de código aberto");
     expect(signInEmail({ ...input, locale: "pt", expiresInMinutes: 1 }).text).toContain(
       "dentro de 1 minuto.",
     );
     expect(text).not.toMatch(
-      /Tu código|Your Lukitas|ENTRAR A|(?<![\p{L}])(você|seu código|celular|ônibus)(?![\p{L}])/iu,
+      /Tu código|Your Wambito|ENTRAR A|(?<![\p{L}])(você|seu código|celular|ônibus)(?![\p{L}])/iu,
     );
   });
 
@@ -138,7 +138,7 @@ describe("sign-in email", () => {
     expect(/https?:\/\/\S+/.exec(mail.text)?.[0]).toBe(link);
   });
 
-  test("Lukitas waves at the top: the image URL is built from WEB_URL, with size and alt", () => {
+  test("Wambi waves at the top: the image URL is built from WEB_URL, with size and alt", () => {
     const mail = signInEmail({ ...input, locale: "es" });
     const img = /<img[^>]*lukitas-wave\.png[^>]*>/.exec(mail.html)?.[0] ?? "";
     expect(img).toContain(`src="${WEB_URL}/email/lukitas-wave.png"`);
@@ -221,7 +221,7 @@ describe("claim email (a guest saves their progress)", () => {
     expect(text).toContain("Tu código para guardar tu progreso");
     expect(text).toContain("123456");
     expect(text).toContain("El código vence en 10 minutos.");
-    expect(text).not.toContain("ENTRAR A LUKITAS");
+    expect(text).not.toContain("ENTRAR A WAMBITO");
     expect(text).not.toContain("enlace");
     expect(mail.html).toContain('lang="es"');
     expect(mail.html).not.toContain("/auth/verify");
@@ -233,7 +233,7 @@ describe("claim email (a guest saves their progress)", () => {
     const text = visibleText(mail.html);
     expect(text).toContain("Your code to save your progress");
     expect(text).toContain("The code expires in 10 minutes.");
-    expect(text).not.toContain("SIGN IN TO LUKITAS");
+    expect(text).not.toContain("SIGN IN TO WAMBITO");
     expect(text).not.toMatch(/\blink\b/i);
   });
 
@@ -242,9 +242,9 @@ describe("claim email (a guest saves their progress)", () => {
     expect(mail.subject).toBe("Il tuo codice per salvare i tuoi progressi: 123456");
     const text = visibleText(mail.html);
     expect(text).toContain("Il tuo codice per salvare i tuoi progressi");
-    expect(text).toContain("Scrivilo in Lukitas per salvare i tuoi progressi con questa email.");
+    expect(text).toContain("Scrivilo in Wambito per salvare i tuoi progressi con questa email.");
     expect(text).toContain("Il codice scade tra 10 minuti.");
-    expect(text).not.toContain("ENTRA IN LUKITAS");
+    expect(text).not.toContain("ENTRA IN WAMBITO");
     expect(text).not.toMatch(/\blink\b|pulsante/i);
     expect(mail.html).toContain('lang="it"');
   });
@@ -254,9 +254,9 @@ describe("claim email (a guest saves their progress)", () => {
     expect(mail.subject).toBe("O teu código para guardares o teu progresso: 123456");
     const text = visibleText(mail.html);
     expect(text).toContain("O teu código para guardares o teu progresso");
-    expect(text).toContain("Escreve-o em Lukitas para guardar o teu progresso com este email.");
+    expect(text).toContain("Escreve-o em Wambito para guardar o teu progresso com este email.");
     expect(text).toContain("O código expira dentro de 10 minutos.");
-    expect(text).not.toContain("ENTRAR EM LUKITAS");
+    expect(text).not.toContain("ENTRAR EM WAMBITO");
     expect(text).not.toMatch(/\bligação\b|\blink\b|botão/i);
     expect(mail.html).toContain('lang="pt"');
   });
@@ -279,7 +279,7 @@ describe("claim email (a guest saves their progress)", () => {
 });
 
 describe("assistant sign-in email", () => {
-  const consent = `${WEB_URL}/oauth/verify?email=a%40lukas.test&code=123456&lang=es&next=%2Foauth%2Fconsent%3Fx%3D1`;
+  const consent = `${WEB_URL}/oauth/verify?email=a%40wambito.test&code=123456&lang=es&next=%2Foauth%2Fconsent%3Fx%3D1`;
   const assistant = { ...input, link: consent };
 
   test("the code comes first, for the assistant's window; the button is the computer's way", () => {

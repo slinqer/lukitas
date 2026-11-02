@@ -1,5 +1,5 @@
-import { lastDay, monthOf } from "@lukas/core";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { lastDay, monthOf } from "@wambito/core";
 import { expect, fireEvent, fn, screen, userEvent, waitFor, within } from "storybook/test";
 import {
   backgroundBehind,

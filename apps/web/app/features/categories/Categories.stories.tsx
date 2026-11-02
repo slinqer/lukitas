@@ -1,5 +1,5 @@
-import { addMonths, monthOf } from "@lukas/core";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { addMonths, monthOf } from "@wambito/core";
 import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 import { expectTarget } from "../../../.storybook/story-utils.ts";
 import { HomeStage, STORY_TODAY } from "../home/story-harness.tsx";

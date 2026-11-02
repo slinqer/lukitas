@@ -40,7 +40,7 @@ export default defineConfig({
         xfwd: true,
         rewrite: () => "/api/.well-known/oauth-authorization-server/auth",
       },
-      // The MCP server (`pnpm --filter @lukas/mcp dev`) on this same origin, as Caddy serves it.
+      // The MCP server (`pnpm --filter @wambito/mcp dev`) on this same origin, as Caddy serves it.
       "/mcp": { target: "http://localhost:3001", changeOrigin: false, xfwd: true },
       "/.well-known/oauth-protected-resource": {
         target: "http://localhost:3001",

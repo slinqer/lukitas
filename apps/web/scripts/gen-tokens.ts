@@ -6,7 +6,7 @@
  * `color.themes` is the default: it applies on `:root` and on its own `[data-theme]` selector so
  * it can also be forced inside a subtree. Other themes override colors and shadows only.
  *
- * Usage: pnpm --filter @lukas/web tokens
+ * Usage: pnpm --filter @wambito/web tokens
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";

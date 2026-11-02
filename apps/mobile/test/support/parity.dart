@@ -176,7 +176,7 @@ class ParityFixture {
     if (found == null) {
       fail(
         'The fixture of $storyId has no answer to GET ${key(pathAndQuery)}. Add it to APP_GETS in '
-        'apps/web/scripts/parity-fixtures.ts and run `pnpm --filter @lukas/web parity:fixtures`.',
+        'apps/web/scripts/parity-fixtures.ts and run `pnpm --filter @wambito/web parity:fixtures`.',
       );
     }
     return found;
@@ -201,11 +201,11 @@ class ParityFixture {
 
 /// The stories' saved data (test/parity/fixtures).
 abstract final class ParityFixtures {
-  /// The fixture of [storyId]; run `pnpm --filter @lukas/web parity:fixtures` to (re)make them.
+  /// The fixture of [storyId]; run `pnpm --filter @wambito/web parity:fixtures` to (re)make them.
   static ParityFixture load(String storyId) {
     final file = File('$_parityDir/fixtures/$storyId.json');
     if (!file.existsSync()) {
-      fail('No fixture for $storyId: run `pnpm --filter @lukas/web parity:fixtures`.');
+      fail('No fixture for $storyId: run `pnpm --filter @wambito/web parity:fixtures`.');
     }
     return ParityFixture.fromJson(jsonDecode(file.readAsStringSync()) as Map<String, Object?>);
   }

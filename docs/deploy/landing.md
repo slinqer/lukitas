@@ -15,13 +15,13 @@ app, when there is one, runs on its own origin, and the build says so with `VITE
 ## Build
 
 ```sh
-VITE_SITE_URL=https://wambito.com pnpm --filter @lukas/web build:landing
+VITE_SITE_URL=https://wambito.com pnpm --filter @wambito/web build:landing
 ```
 
 The release, with the calls to action opening the live app:
 
 ```sh
-VITE_SITE_URL=https://wambito.com VITE_APP_URL=https://app.wambito.com pnpm --filter @lukas/web build:landing
+VITE_SITE_URL=https://wambito.com VITE_APP_URL=https://app.wambito.com pnpm --filter @wambito/web build:landing
 ```
 
 - `VITE_SITE_URL` is the site's public origin (no path). Set it in the environment or in `apps/web/.env`: both are read the same way, for the generated files and for the app code. It is required: the script stops with a
@@ -87,16 +87,16 @@ so the canonical links and the sitemap point to the new origin.
 
 ## Switching back once the app exists
 
-Stop using `build:landing`: a plain `pnpm --filter @lukas/web build` (without `VITE_LANDING_ONLY`)
+Stop using `build:landing`: a plain `pnpm --filter @wambito/web build` (without `VITE_LANDING_ONLY`)
 keeps the sign-in calls to action, the "Empezar" card and the SPA fallback, and `robots.txt` hides
 the app's routes again. Keep passing `VITE_SITE_URL` so the generated files carry the right origin.
 Without it the placeholder `https://lukas.app` is used.
 
 ## Checking a build
 
-`pnpm --filter @lukas/web e2e:landing-only` builds the landing-only release with a test origin and
+`pnpm --filter @wambito/web e2e:landing-only` builds the landing-only release with a test origin and
 runs its end-to-end suite (links, copy, origin, 404 page, accessibility).
-`pnpm --filter @lukas/web e2e:landing-only-app` does the same with a test `VITE_APP_URL` and checks
+`pnpm --filter @wambito/web e2e:landing-only-app` does the same with a test `VITE_APP_URL` and checks
 that the calls to action open its sign-in and nothing says "coming soon". `pnpm --filter
-@lukas/web e2e:landing` does it for the default build. Each overwrites `apps/web/build/client`, so
+@wambito/web e2e:landing` does it for the default build. Each overwrites `apps/web/build/client`, so
 build the release again afterwards.

@@ -23,13 +23,13 @@ import {
   updateProfileSchema,
   updateRecurrenceSchema,
   updateTransactionSchema,
-} from "@lukas/core";
+} from "@wambito/core";
 import type { DemoSeed } from "./demo-data.ts";
 
 /**
  * The demo's backend: an in-memory stand-in for the API, behind a `fetch` that `ApiProvider`
  * hands to the screens (`<ApiProvider mode="demo" fetch={demo.fetch}>`). It answers the `/api/v1/*`
- * routes the screens use with the same shapes, applies the same `@lukas/core` rules (month
+ * routes the screens use with the same shapes, applies the same `@wambito/core` rules (month
  * summaries, budgets, recurrences, cost of living), validates bodies with the same zod schemas and
  * fails with the same problem+json codes. Nothing leaves the page: no network, no storage. A reload
  * builds it again from the seed; `reset()` does the same in place.

@@ -5,9 +5,9 @@ const base = {
   DATABASE_URL: "postgres://lukas_app:x@db:5432/lukas",
   DATABASE_ADMIN_URL: "postgres://lukas:x@db:5432/lukas",
   BETTER_AUTH_SECRET: "s".repeat(40),
-  API_URL: "https://api.lukas.app",
-  WEB_URL: "https://lukas.app",
-  MAIL_FROM: "Lukitas <hola@lukas.app>",
+  API_URL: "https://api.wambito.test",
+  WEB_URL: "https://wambito.test",
+  MAIL_FROM: "Wambito <hola@wambito.test>",
   RESEND_API_KEY: "re_123",
   NODE_ENV: "production",
 };
@@ -176,21 +176,21 @@ describe("GUEST_SIGNUP", () => {
   });
 });
 
-describe("LUKITAS_VERSION", () => {
+describe("WAMBITO_VERSION", () => {
   test("is the version the build was given, and unset (or blank) when it was given none", () => {
     expect(
-      loadConfig({ ...base, CLIENT_IP_HEADER: "fly-client-ip" }).LUKITAS_VERSION,
+      loadConfig({ ...base, CLIENT_IP_HEADER: "fly-client-ip" }).WAMBITO_VERSION,
     ).toBeUndefined();
     expect(
-      loadConfig({ ...base, CLIENT_IP_HEADER: "fly-client-ip", LUKITAS_VERSION: " " })
-        .LUKITAS_VERSION,
+      loadConfig({ ...base, CLIENT_IP_HEADER: "fly-client-ip", WAMBITO_VERSION: " " })
+        .WAMBITO_VERSION,
     ).toBeUndefined();
     expect(
       loadConfig({
         ...base,
         CLIENT_IP_HEADER: "fly-client-ip",
-        LUKITAS_VERSION: "0.0.0-dev.abc1234",
-      }).LUKITAS_VERSION,
+        WAMBITO_VERSION: "0.0.0-dev.abc1234",
+      }).WAMBITO_VERSION,
     ).toBe("0.0.0-dev.abc1234");
   });
 });

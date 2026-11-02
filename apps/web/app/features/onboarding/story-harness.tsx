@@ -1,4 +1,4 @@
-import { addMonths, monthOf, todayIn } from "@lukas/core";
+import { addMonths, monthOf, todayIn } from "@wambito/core";
 import { useState } from "react";
 import { MemoryRouter, Route, Routes } from "react-router";
 import { exposeStoryFetch } from "../../../.storybook/parity.ts";

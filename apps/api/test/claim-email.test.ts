@@ -1,25 +1,25 @@
-import { emailThrottle, transactions, user, verification } from "@lukas/db";
-import { eq, sql } from "@lukas/db/orm";
+import { emailThrottle, transactions, user, verification } from "@wambito/db";
+import { eq, sql } from "@wambito/db/orm";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { codeFrom, createTestApp, type TestApp } from "./harness.ts";
 
 type Session = { userId: string; headers: { authorization: string } };
 
 const ALLOWED = [
-  "keep@lukas.test",
-  "english@lukas.test",
-  "italiano@lukas.test",
-  "portugues@lukas.test",
-  "taken@lukas.test",
-  "race@lukas.test",
-  "owner@lukas.test",
-  "wrong@lukas.test",
-  "retry@lukas.test",
-  "expired@lukas.test",
-  "mine@lukas.test",
-  "throttle@lukas.test",
-  "other@lukas.test",
-  "retry2@lukas.test",
+  "keep@wambito.test",
+  "english@wambito.test",
+  "italiano@wambito.test",
+  "portugues@wambito.test",
+  "taken@wambito.test",
+  "race@wambito.test",
+  "owner@wambito.test",
+  "wrong@wambito.test",
+  "retry@wambito.test",
+  "expired@wambito.test",
+  "mine@wambito.test",
+  "throttle@wambito.test",
+  "other@wambito.test",
+  "retry2@wambito.test",
 ];
 
 async function guest(t: TestApp, headers: Record<string, string> = {}): Promise<Session> {
@@ -96,23 +96,23 @@ describe("a guest claims an email in place", () => {
   afterAll(() => t?.stop());
 
   test("claiming an allowlisted email keeps the same user id and every transaction", async () => {
-    const g = await guest(t, { "x-lukas-timezone": "America/Bogota", "x-lukas-locale": "es" });
+    const g = await guest(t, { "x-wambito-timezone": "America/Bogota", "x-wambito-locale": "es" });
     await addTransactions(t, g, 3);
 
-    const code = await sendAndRead(t, g, "keep@lukas.test");
-    const mail = t.mailer.lastTo("keep@lukas.test");
+    const code = await sendAndRead(t, g, "keep@wambito.test");
+    const mail = t.mailer.lastTo("keep@wambito.test");
     expect(mail?.subject).toBe(`Tu código para guardar tu progreso: ${code}`);
 
-    const res = await verify(t, g, "keep@lukas.test", code);
+    const res = await verify(t, g, "keep@wambito.test", code);
     expect(res.status).toBe(200);
     const body = await res.json();
-    expect(body).toMatchObject({ id: g.userId, email: "keep@lukas.test", isAnonymous: false });
+    expect(body).toMatchObject({ id: g.userId, email: "keep@wambito.test", isAnonymous: false });
     // The same profile DTO as GET /v1/me, and the guest's session still works.
     expect(body).toEqual(await me(t, g.headers));
     expect(await transactionCount(t, g.headers)).toBe(3);
 
     const [stored] = await t.admin.select().from(user).where(eq(user.id, g.userId));
-    expect(stored).toMatchObject({ email: "keep@lukas.test", emailVerified: true });
+    expect(stored).toMatchObject({ email: "keep@wambito.test", emailVerified: true });
     expect(stored?.isAnonymous).toBe(false);
     const rows = await t.admin.select().from(transactions).where(eq(transactions.userId, g.userId));
     expect(rows).toHaveLength(3);
@@ -124,28 +124,28 @@ describe("a guest claims an email in place", () => {
     expect(codes.filter((row) => row.identifier.includes(g.userId))).toEqual([]);
 
     // A later email sign-in reaches the same user and its data.
-    const signedIn = await t.signIn("keep@lukas.test");
+    const signedIn = await t.signIn("keep@wambito.test");
     expect(signedIn.userId).toBe(g.userId);
     expect(await transactionCount(t, signedIn.headers)).toBe(3);
   });
 
   test("the claim email is in the guest's language", async () => {
-    const g = await guest(t, { "x-lukas-locale": "en" });
-    const code = await sendAndRead(t, g, "english@lukas.test");
-    const mail = t.mailer.lastTo("english@lukas.test");
+    const g = await guest(t, { "x-wambito-locale": "en" });
+    const code = await sendAndRead(t, g, "english@wambito.test");
+    const mail = t.mailer.lastTo("english@wambito.test");
     expect(mail?.subject).toBe(`Your code to save your progress: ${code}`);
     expect(mail?.text).toContain("Your code to save your progress");
   });
 
   test("the claim email is in Italian or Portuguese for those guests", async () => {
-    const it = await guest(t, { "x-lukas-locale": "it-IT" });
-    const itCode = await sendAndRead(t, it, "italiano@lukas.test");
-    expect(t.mailer.lastTo("italiano@lukas.test")?.subject).toBe(
+    const it = await guest(t, { "x-wambito-locale": "it-IT" });
+    const itCode = await sendAndRead(t, it, "italiano@wambito.test");
+    expect(t.mailer.lastTo("italiano@wambito.test")?.subject).toBe(
       `Il tuo codice per salvare i tuoi progressi: ${itCode}`,
     );
-    const pt = await guest(t, { "x-lukas-locale": "pt-PT" });
-    const ptCode = await sendAndRead(t, pt, "portugues@lukas.test");
-    expect(t.mailer.lastTo("portugues@lukas.test")?.subject).toBe(
+    const pt = await guest(t, { "x-wambito-locale": "pt-PT" });
+    const ptCode = await sendAndRead(t, pt, "portugues@wambito.test");
+    expect(t.mailer.lastTo("portugues@wambito.test")?.subject).toBe(
       `O teu código para guardares o teu progresso: ${ptCode}`,
     );
   });
@@ -153,24 +153,24 @@ describe("a guest claims an email in place", () => {
   test("a non-allowlisted email gets sign_in_not_allowed and no mail is sent", async () => {
     const g = await guest(t);
     const before = t.mailer.sent.length;
-    for (const email of ["stranger@lukas.test", "temp-x@guest.lukitas.invalid"]) {
+    for (const email of ["stranger@wambito.test", "temp-x@guest.lukitas.invalid"]) {
       const res = await send(t, g, email);
       expect(res.status).toBe(403);
       expect(await res.json()).toMatchObject({ code: "sign_in_not_allowed" });
     }
     expect(t.mailer.sent).toHaveLength(before);
     const throttle = await t.admin.select().from(emailThrottle);
-    expect(throttle.map((row) => row.email)).not.toContain("stranger@lukas.test");
+    expect(throttle.map((row) => row.email)).not.toContain("stranger@wambito.test");
     expect((await me(t, g.headers)).isAnonymous).toBe(true);
   });
 
   test("an email that belongs to another user gets email_taken, no mail, the guest unchanged", async () => {
-    const owner = await t.signIn("taken@lukas.test");
+    const owner = await t.signIn("taken@wambito.test");
     const g = await guest(t);
     const profileBefore = await me(t, g.headers);
     const before = t.mailer.sent.length;
 
-    for (const email of ["taken@lukas.test", " Taken@Lukas.TEST "]) {
+    for (const email of ["taken@wambito.test", " Taken@Wambito.TEST "]) {
       const res = await send(t, g, email);
       expect(res.status).toBe(409);
       expect(await res.json()).toMatchObject({ code: "email_taken" });
@@ -178,14 +178,14 @@ describe("a guest claims an email in place", () => {
     expect(t.mailer.sent).toHaveLength(before);
     expect(await me(t, g.headers)).toEqual(profileBefore);
     // The owner is untouched too.
-    expect((await me(t, owner.headers)).email).toBe("taken@lukas.test");
+    expect((await me(t, owner.headers)).email).toBe("taken@wambito.test");
   });
 
   test("two guests claiming the same email: exactly one wins, the other gets email_taken", async () => {
     const a = await guest(t);
     const b = await guest(t);
-    const codeA = await sendAndRead(t, a, "race@lukas.test");
-    const codeB = await sendAndRead(t, b, "race@lukas.test");
+    const codeA = await sendAndRead(t, a, "race@wambito.test");
+    const codeB = await sendAndRead(t, b, "race@wambito.test");
 
     // Hold both claims at their UPDATE until both are there, so they really race: the unique
     // email constraint, not an earlier check, has to decide.
@@ -205,8 +205,8 @@ describe("a guest claims an email in place", () => {
     await isLocked;
 
     const both = Promise.all([
-      verify(t, a, "race@lukas.test", codeA),
-      verify(t, b, "race@lukas.test", codeB),
+      verify(t, a, "race@wambito.test", codeA),
+      verify(t, b, "race@wambito.test", codeB),
     ]);
     try {
       await waitFor(async () => {
@@ -229,26 +229,26 @@ describe("a guest claims an email in place", () => {
     expect(await loserResponse?.json()).toMatchObject({ code: "email_taken" });
     const [winner, loser] = loserIndex === 0 ? [b, a] : [a, b];
     expect(await me(t, winner.headers)).toMatchObject({
-      email: "race@lukas.test",
+      email: "race@wambito.test",
       isAnonymous: false,
     });
     expect((await me(t, loser.headers)).isAnonymous).toBe(true);
-    const owners = await t.admin.select().from(user).where(eq(user.email, "race@lukas.test"));
+    const owners = await t.admin.select().from(user).where(eq(user.email, "race@wambito.test"));
     expect(owners.map((row) => row.id)).toEqual([winner.userId]);
   });
 
   test("a non-guest session gets not_a_guest", async () => {
-    const owner = await t.signIn("owner@lukas.test");
+    const owner = await t.signIn("owner@wambito.test");
     const before = t.mailer.sent.length;
-    const sent = await send(t, owner, "mine@lukas.test");
+    const sent = await send(t, owner, "mine@wambito.test");
     expect(sent.status).toBe(409);
     expect(await sent.json()).toMatchObject({ code: "not_a_guest" });
     expect(t.mailer.sent).toHaveLength(before);
 
-    const verified = await verify(t, owner, "mine@lukas.test", "123456");
+    const verified = await verify(t, owner, "mine@wambito.test", "123456");
     expect(verified.status).toBe(409);
     expect(await verified.json()).toMatchObject({ code: "not_a_guest" });
-    expect((await me(t, owner.headers)).email).toBe("owner@lukas.test");
+    expect((await me(t, owner.headers)).email).toBe("owner@wambito.test");
   });
 
   // The same messages as sign-in (spec §4.2): a typo is `invalid_code`, the third wrong try and
@@ -256,17 +256,17 @@ describe("a guest claims an email in place", () => {
   // unknown code is `invalid_or_expired_code`.
   test("a wrong code 3 times invalidates it", async () => {
     const g = await guest(t);
-    const code = await sendAndRead(t, g, "wrong@lukas.test");
+    const code = await sendAndRead(t, g, "wrong@wambito.test");
     for (let i = 0; i < 2; i++) {
-      const res = await verify(t, g, "wrong@lukas.test", wrongCode(code));
+      const res = await verify(t, g, "wrong@wambito.test", wrongCode(code));
       expect(res.status).toBe(400);
       expect(await res.json()).toMatchObject({ code: "invalid_code" });
     }
-    const third = await verify(t, g, "wrong@lukas.test", wrongCode(code));
+    const third = await verify(t, g, "wrong@wambito.test", wrongCode(code));
     expect(third.status).toBe(403);
     expect(await third.json()).toMatchObject({ code: "too_many_attempts" });
     // The right code is refused afterwards: the code is used up.
-    const res = await verify(t, g, "wrong@lukas.test", code);
+    const res = await verify(t, g, "wrong@wambito.test", code);
     expect(res.status).toBe(403);
     expect(await res.json()).toMatchObject({ code: "too_many_attempts" });
     expect((await me(t, g.headers)).isAnonymous).toBe(true);
@@ -274,30 +274,30 @@ describe("a guest claims an email in place", () => {
 
   test("one wrong try is invalid_code, and the right code still works after it", async () => {
     const g = await guest(t);
-    const code = await sendAndRead(t, g, "retry@lukas.test");
-    const res = await verify(t, g, "retry@lukas.test", wrongCode(code));
+    const code = await sendAndRead(t, g, "retry@wambito.test");
+    const res = await verify(t, g, "retry@wambito.test", wrongCode(code));
     expect(res.status).toBe(400);
     expect(await res.json()).toMatchObject({ code: "invalid_code" });
-    expect((await verify(t, g, "retry@lukas.test", code)).status).toBe(200);
+    expect((await verify(t, g, "retry@wambito.test", code)).status).toBe(200);
   });
 
   test("two wrong tries still leave the right code working", async () => {
     const g = await guest(t);
-    const code = await sendAndRead(t, g, "retry2@lukas.test");
+    const code = await sendAndRead(t, g, "retry2@wambito.test");
     for (let i = 0; i < 2; i++) {
-      expect((await verify(t, g, "retry2@lukas.test", wrongCode(code))).status).toBe(400);
+      expect((await verify(t, g, "retry2@wambito.test", wrongCode(code))).status).toBe(400);
     }
-    expect((await verify(t, g, "retry2@lukas.test", code)).status).toBe(200);
+    expect((await verify(t, g, "retry2@wambito.test", code)).status).toBe(200);
   });
 
   test("an expired code is refused", async () => {
     const g = await guest(t);
-    const code = await sendAndRead(t, g, "expired@lukas.test");
+    const code = await sendAndRead(t, g, "expired@wambito.test");
     await t.admin
       .update(verification)
       .set({ expiresAt: new Date(Date.now() - 1000) })
       .where(sql`${verification.identifier} like ${`%${g.userId}%`}`);
-    const res = await verify(t, g, "expired@lukas.test", code);
+    const res = await verify(t, g, "expired@wambito.test", code);
     expect(res.status).toBe(400);
     expect(await res.json()).toMatchObject({ code: "invalid_or_expired_code" });
     expect((await me(t, g.headers)).isAnonymous).toBe(true);
@@ -306,30 +306,30 @@ describe("a guest claims an email in place", () => {
   test("a code only works for the guest it was sent for, and for that email", async () => {
     const a = await guest(t);
     const b = await guest(t);
-    const code = await sendAndRead(t, a, "mine@lukas.test");
-    const stolen = await verify(t, b, "mine@lukas.test", code);
+    const code = await sendAndRead(t, a, "mine@wambito.test");
+    const stolen = await verify(t, b, "mine@wambito.test", code);
     expect(stolen.status).toBe(400);
     expect(await stolen.json()).toMatchObject({ code: "invalid_or_expired_code" });
-    const otherEmail = await verify(t, a, "other@lukas.test", code);
+    const otherEmail = await verify(t, a, "other@wambito.test", code);
     expect(otherEmail.status).toBe(400);
     expect((await me(t, b.headers)).isAnonymous).toBe(true);
     // A's code still works for A.
-    expect((await verify(t, a, "mine@lukas.test", code)).status).toBe(200);
+    expect((await verify(t, a, "mine@wambito.test", code)).status).toBe(200);
   });
 
   test("sign-in codes and claim codes share the per-email throttle", async () => {
     const g = await guest(t);
     for (let i = 0; i < 2; i++) {
       const res = await t.request("POST", "/auth/email-otp/send-verification-otp", {
-        body: { email: "throttle@lukas.test", type: "sign-in" },
+        body: { email: "throttle@wambito.test", type: "sign-in" },
       });
       expect(res.status).toBe(200);
     }
     for (let i = 0; i < 3; i++) {
-      expect((await send(t, g, "throttle@lukas.test")).status).toBe(204);
+      expect((await send(t, g, "throttle@wambito.test")).status).toBe(204);
     }
     const before = t.mailer.sent.length;
-    const res = await send(t, g, "throttle@lukas.test");
+    const res = await send(t, g, "throttle@wambito.test");
     expect(res.status).toBe(429);
     expect(await res.json()).toMatchObject({ code: "too_many_requests" });
     expect(t.mailer.sent).toHaveLength(before);

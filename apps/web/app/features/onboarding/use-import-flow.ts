@@ -1,5 +1,5 @@
-import { addMonths, monthOf, type SupportedCurrency, todayIn } from "@lukas/core";
 import { useQueryClient } from "@tanstack/react-query";
+import { addMonths, monthOf, type SupportedCurrency, todayIn } from "@wambito/core";
 import { useState } from "react";
 import { useTranslations } from "use-intl";
 import { useApi } from "../../api/ApiProvider.tsx";

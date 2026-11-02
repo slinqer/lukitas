@@ -10,7 +10,7 @@ import type {
   UpdateCategory,
   UpdateRecurrence,
   UpdateTransaction,
-} from "@lukas/core";
+} from "@wambito/core";
 import type { z } from "zod";
 
 export type MonthSummaryDto = z.infer<typeof monthSummaryDto>;
@@ -35,15 +35,15 @@ export interface TransactionQuery {
 }
 
 /**
- * The person's Lukitas as domain operations, not HTTP routes: the tools are written against this,
- * so they serve the remote MCP (over the API) today and a local Lukitas on the device later.
+ * The person's Wambito as domain operations, not HTTP routes: the tools are written against this,
+ * so they serve the remote MCP (over the API) today and a local Wambito on the device later.
  *
- * Amounts are integer hundredths, signed (expenses negative), as everywhere in Lukitas. Months are
+ * Amounts are integer hundredths, signed (expenses negative), as everywhere in Wambito. Months are
  * "YYYY-MM", dates "YYYY-MM-DD". Implementations throw `ToolError` for problems the model can fix
  * (`not_found`, `category_not_found`, `validation_failed`, `category_name_taken`…), with the API's
  * problem code.
  */
-export interface Lukitas {
+export interface Wambito {
   profile(): Promise<Profile>;
   monthSummary(month: string): Promise<MonthSummaryDto>;
   /** Live transactions, newest first (date, then id). */

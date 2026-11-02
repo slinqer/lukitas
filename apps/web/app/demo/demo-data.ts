@@ -1,4 +1,4 @@
-import type { CategoryKind } from "@lukas/core";
+import type { CategoryKind } from "@wambito/core";
 import type { Locale } from "../i18n/format.ts";
 
 /**

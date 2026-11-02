@@ -1,5 +1,5 @@
-import { type Db, session, user } from "@lukas/db";
-import { and, eq, inArray, sql } from "@lukas/db/orm";
+import { type Db, session, user } from "@wambito/db";
+import { and, eq, inArray, sql } from "@wambito/db/orm";
 
 /** A guest idle for longer than this is deleted (spec §4.4). */
 export const GUEST_INACTIVE_DAYS = 60;

@@ -7,8 +7,8 @@ import {
   monthOf,
   monthSchema,
   type CreateTransaction as NewTransaction,
-} from "@lukas/core";
-import { recurrences, type Tx, transactions, withUser } from "@lukas/db";
+} from "@wambito/core";
+import { recurrences, type Tx, transactions, withUser } from "@wambito/db";
 import {
   and,
   type Column,
@@ -22,7 +22,7 @@ import {
   or,
   type SQL,
   sql,
-} from "@lukas/db/orm";
+} from "@wambito/db/orm";
 import type { AppDeps } from "../deps.ts";
 import type { Grant } from "../env.ts";
 import { idempotent } from "../http/idempotency.ts";

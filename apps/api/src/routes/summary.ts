@@ -1,7 +1,7 @@
 import { createRoute, z } from "@hono/zod-openapi";
-import { firstDay, lastDay, monthSchema, monthSummary } from "@lukas/core";
-import { categories, categoryBudgets, transactions, withUser } from "@lukas/db";
-import { and, asc, gte, isNull, lte } from "@lukas/db/orm";
+import { firstDay, lastDay, monthSchema, monthSummary } from "@wambito/core";
+import { categories, categoryBudgets, transactions, withUser } from "@wambito/db";
+import { and, asc, gte, isNull, lte } from "@wambito/db/orm";
 import type { AppDeps } from "../deps.ts";
 import { jsonResponse, problems } from "../http/openapi.ts";
 import { router } from "../http/router.ts";

@@ -1,4 +1,4 @@
-import type { Profile } from "./lukitas.ts";
+import type { Profile } from "./wambito.ts";
 
 type Locale = Profile["locale"];
 type State = "ok" | "near" | "over";

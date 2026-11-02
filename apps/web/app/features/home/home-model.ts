@@ -5,7 +5,7 @@ import {
   type MonthSummary,
   NEAR_LIMIT_RATIO,
   type TransactionDto,
-} from "@lukas/core";
+} from "@wambito/core";
 import type { FeedbackEvent } from "../../feedback/feedback.ts";
 
 // -- Transactions by day ---------------------------------------------------------------------------

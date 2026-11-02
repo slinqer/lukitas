@@ -1,6 +1,6 @@
 import { createRoute, z } from "@hono/zod-openapi";
-import { oauthAccessToken, oauthClient, oauthConsent, oauthRefreshToken } from "@lukas/db";
-import { and, desc, eq, inArray, max } from "@lukas/db/orm";
+import { oauthAccessToken, oauthClient, oauthConsent, oauthRefreshToken } from "@wambito/db";
+import { and, desc, eq, inArray, max } from "@wambito/db/orm";
 import type { AppDeps } from "../deps.ts";
 import { jsonResponse, problems } from "../http/openapi.ts";
 import { ApiError } from "../http/problem.ts";

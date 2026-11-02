@@ -39,8 +39,8 @@ const names = async (query = "", headers = a) =>
 
 beforeAll(async () => {
   t = await createTestApp();
-  a = (await t.signIn("a@lukas.test")).headers;
-  b = (await t.signIn("b@lukas.test")).headers;
+  a = (await t.signIn("a@wambito.test")).headers;
+  b = (await t.signIn("b@wambito.test")).headers;
   supermercado = await category(a, "Supermercado");
   restaurante = await category(a, "Restaurante");
   const old = await category(a, "Old");

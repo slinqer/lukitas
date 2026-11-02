@@ -1,6 +1,6 @@
-import { MemoryLukitas, PROMPTS, TOOLS } from "@lukas/ai-assistant-tools";
 import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import { type AuthInfo, OAuthError, OAuthErrorCode } from "@modelcontextprotocol/server";
+import { MemoryWambito, PROMPTS, TOOLS } from "@wambito/ai-assistant-tools";
 import { beforeEach, describe, expect, test } from "vitest";
 import { createMcpApp } from "../src/app.ts";
 
@@ -22,10 +22,10 @@ const TOKENS: Record<string, string[]> = {
   read: ["finance:read"],
 };
 
-let lukitas: MemoryLukitas;
+let wambito: MemoryWambito;
 let app: ReturnType<typeof createMcpApp>;
 beforeEach(() => {
-  lukitas = new MemoryLukitas({ categories: [CATEGORY], profile: { locale: "en" } });
+  wambito = new MemoryWambito({ categories: [CATEGORY], profile: { locale: "en" } });
   app = createMcpApp({
     config: {
       MCP_URL,
@@ -46,7 +46,7 @@ beforeEach(() => {
         };
       },
     },
-    lukitasFor: () => lukitas,
+    wambitoFor: () => wambito,
   });
 });
 
@@ -138,7 +138,7 @@ describe.each(["modern", "legacy"] as const)("the %s protocol", (mode) => {
     expect(result.isError).toBeFalsy();
     expect(result.structuredContent).toMatchObject({ alreadySaved: false });
     expect((result.content as { type: string; text: string }[])[0]?.text).toContain("Almuerzo");
-    const { items } = await lukitas.listTransactions({ limit: 10 });
+    const { items } = await wambito.listTransactions({ limit: 10 });
     expect(items.map((i) => [i.name, i.amount])).toEqual([["Almuerzo", -1800000]]);
     await client.close();
   });
@@ -177,7 +177,7 @@ test("a finance:read token cannot write: the write tool asks for the scope", asy
       },
     }),
   ).rejects.toThrow();
-  expect((await lukitas.listTransactions({ limit: 10 })).items).toEqual([]);
+  expect((await wambito.listTransactions({ limit: 10 })).items).toEqual([]);
   await client.close();
 });
 

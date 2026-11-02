@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
-import { type Db, idempotencyKeys, withUser } from "@lukas/db";
-import { and, eq, lt } from "@lukas/db/orm";
+import { type Db, idempotencyKeys, withUser } from "@wambito/db";
+import { and, eq, lt } from "@wambito/db/orm";
 import { createMiddleware } from "hono/factory";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 import type { AppEnv } from "../env.ts";

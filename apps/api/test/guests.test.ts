@@ -1,5 +1,5 @@
-import { accounts, user } from "@lukas/db";
-import { eq } from "@lukas/db/orm";
+import { accounts, user } from "@wambito/db";
+import { eq } from "@wambito/db/orm";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { createTestApp, type TestApp } from "./harness.ts";
 
@@ -34,7 +34,7 @@ async function me(t: TestApp, headers: { authorization: string }) {
 describe("guest sign-up, open (with an allowlist set)", () => {
   let t: TestApp;
   beforeAll(async () => {
-    t = await createTestApp({ SIGN_IN_ALLOWLIST: ["founder@lukas.test"] });
+    t = await createTestApp({ SIGN_IN_ALLOWLIST: ["founder@wambito.test"] });
   });
   afterAll(() => t?.stop());
 
@@ -64,7 +64,7 @@ describe("guest sign-up, open (with an allowlist set)", () => {
   });
 
   test("an email user is not anonymous", async () => {
-    const founder = await t.signIn("founder@lukas.test");
+    const founder = await t.signIn("founder@wambito.test");
     expect((await me(t, founder.headers)).isAnonymous).toBe(false);
   });
 });
@@ -84,7 +84,7 @@ describe("guest sign-up, turned off", () => {
   });
 
   test("email sign-in still works", async () => {
-    const a = await t.signIn("a@lukas.test");
+    const a = await t.signIn("a@wambito.test");
     expect((await me(t, a.headers)).isAnonymous).toBe(false);
   });
 });
@@ -103,20 +103,33 @@ describe("guests", () => {
       ["America/New_York", "USD"],
     ];
     for (const [timezone, currency] of cases) {
-      const g = await guest(t, { "x-lukas-timezone": timezone, "x-lukas-locale": "en" });
+      const g = await guest(t, { "x-wambito-timezone": timezone, "x-wambito-locale": "en" });
       expect(await me(t, g.headers)).toMatchObject({ timezone, locale: "en", currency });
     }
   });
 
-  test("x-lukas-locale sets the locale; without it, Spanish", async () => {
-    const es = await guest(t, { "x-lukas-timezone": "America/Bogota", "x-lukas-locale": "es" });
+  // 2b: remove. The installed APK still sends the old x-lukas-* names.
+  test("the old x-lukas-timezone and -locale set the new profile as the new ones do", async () => {
+    const g = await guest(t, { "x-lukas-timezone": "Europe/Lisbon", "x-lukas-locale": "pt-PT" });
+    expect(await me(t, g.headers)).toMatchObject({
+      timezone: "Europe/Lisbon",
+      locale: "pt",
+      currency: "EUR",
+    });
+  });
+
+  test("x-wambito-locale sets the locale; without it, Spanish", async () => {
+    const es = await guest(t, { "x-wambito-timezone": "America/Bogota", "x-wambito-locale": "es" });
     expect((await me(t, es.headers)).locale).toBe("es");
-    const none = await guest(t, { "x-lukas-timezone": "America/Bogota" });
+    const none = await guest(t, { "x-wambito-timezone": "America/Bogota" });
     expect((await me(t, none.headers)).locale).toBe("es");
   });
 
-  test("a region in x-lukas-locale counts, as on the web: es-CO in New York → COP", async () => {
-    const g = await guest(t, { "x-lukas-timezone": "America/New_York", "x-lukas-locale": "es-CO" });
+  test("a region in x-wambito-locale counts, as on the web: es-CO in New York → COP", async () => {
+    const g = await guest(t, {
+      "x-wambito-timezone": "America/New_York",
+      "x-wambito-locale": "es-CO",
+    });
     expect(await me(t, g.headers)).toMatchObject({ locale: "es", currency: "COP" });
   });
 
@@ -136,13 +149,13 @@ describe("guests", () => {
       ["it-IT", "America/Bogota", { locale: "it", currency: "COP" }],
     ];
     for (const [locale, timezone, expected] of cases) {
-      const g = await guest(t, { "x-lukas-timezone": timezone, "x-lukas-locale": locale });
+      const g = await guest(t, { "x-wambito-timezone": timezone, "x-wambito-locale": locale });
       expect(await me(t, g.headers)).toMatchObject(expected);
     }
   });
 
   test("the profile's language can be set to it or pt, and stays", async () => {
-    const g = await guest(t, { "x-lukas-timezone": "Europe/Rome", "x-lukas-locale": "es" });
+    const g = await guest(t, { "x-wambito-timezone": "Europe/Rome", "x-wambito-locale": "es" });
     for (const locale of ["it", "pt"]) {
       const res = await t.request("PATCH", "/v1/me", { headers: g.headers, body: { locale } });
       expect(res.status).toBe(200);
@@ -154,7 +167,7 @@ describe("guests", () => {
 
   test("a zone that isn't an IANA name is ignored: UTC, and USD", async () => {
     for (const timezone of ["+05:00", "Not/AZone", "Europe/Lisbon; drop table", ""]) {
-      const g = await guest(t, { "x-lukas-timezone": timezone });
+      const g = await guest(t, { "x-wambito-timezone": timezone });
       expect(await me(t, g.headers)).toMatchObject({ timezone: "UTC", currency: "USD" });
     }
   });
@@ -166,14 +179,14 @@ describe("guests", () => {
       ["US/Eastern", "America/New_York", "USD"],
     ];
     for (const [sent, timezone, currency] of cases) {
-      const g = await guest(t, { "x-lukas-timezone": sent });
+      const g = await guest(t, { "x-wambito-timezone": sent });
       expect(await me(t, g.headers)).toMatchObject({ timezone, currency });
     }
   });
 
   test("RLS: a guest never sees another guest's rows", async () => {
-    const a = await guest(t, { "x-lukas-timezone": "America/Bogota" });
-    const b = await guest(t, { "x-lukas-timezone": "America/Bogota" });
+    const a = await guest(t, { "x-wambito-timezone": "America/Bogota" });
+    const b = await guest(t, { "x-wambito-timezone": "America/Bogota" });
     const cat = await t.request("POST", "/v1/categories", {
       headers: a.headers,
       body: { name: "Mercado", kind: "expense", icon: "cart", color: "orange" },
@@ -206,7 +219,7 @@ describe("guests", () => {
   });
 
   test("a guest who then signs in with an email keeps the guest account and its rows", async () => {
-    const g = await guest(t, { "x-lukas-timezone": "America/Bogota" });
+    const g = await guest(t, { "x-wambito-timezone": "America/Bogota" });
     const cat = await t.request("POST", "/v1/categories", {
       headers: g.headers,
       body: { name: "Mercado", kind: "expense", icon: "cart", color: "orange" },
@@ -216,14 +229,14 @@ describe("guests", () => {
     // Signing in with the guest's session still attached must not delete the guest user.
     const sent = await t.request("POST", "/auth/email-otp/send-verification-otp", {
       headers: g.headers,
-      body: { email: "owner@lukas.test", type: "sign-in" },
+      body: { email: "owner@wambito.test", type: "sign-in" },
     });
     expect(sent.status).toBe(200);
-    const mail = t.mailer.lastTo("owner@lukas.test");
+    const mail = t.mailer.lastTo("owner@wambito.test");
     const code = /(\d{6})$/.exec(mail?.subject ?? "")?.[1];
     const signedIn = await t.request("POST", "/auth/sign-in/email-otp", {
       headers: g.headers,
-      body: { email: "owner@lukas.test", otp: code },
+      body: { email: "owner@wambito.test", otp: code },
     });
     expect(signedIn.status).toBe(200);
     // The email user is a second user, not the guest.
@@ -256,7 +269,7 @@ describe("guests", () => {
   });
 });
 
-describe("app sign-ups by email (x-lukas-timezone on the creating request)", () => {
+describe("app sign-ups by email (x-wambito-timezone on the creating request)", () => {
   let t: TestApp;
   beforeAll(async () => {
     t = await createTestApp();
@@ -280,9 +293,9 @@ describe("app sign-ups by email (x-lukas-timezone on the creating request)", () 
   }
 
   test("a new email user from the app gets the device's zone, language and currency", async () => {
-    const headers = await signUpByEmail("bogota@lukas.test", {
-      "x-lukas-timezone": "America/Bogota",
-      "x-lukas-locale": "en-US",
+    const headers = await signUpByEmail("bogota@wambito.test", {
+      "x-wambito-timezone": "America/Bogota",
+      "x-wambito-locale": "en-US",
     });
     expect(await me(t, headers)).toMatchObject({
       isAnonymous: false,
@@ -300,7 +313,7 @@ describe("app sign-ups by email (x-lukas-timezone on the creating request)", () 
   }
 
   test("a new account starts with the eight suggested categories, in the sign-up's language", async () => {
-    const web = await signUpByEmail("starter-it@lukas.test", { "x-lukas-locale": "it" });
+    const web = await signUpByEmail("starter-it@wambito.test", { "x-wambito-locale": "it" });
     expect(await categoryNames(web)).toEqual([
       "Supermercato",
       "Ristorante",
@@ -312,8 +325,8 @@ describe("app sign-ups by email (x-lukas-timezone on the creating request)", () 
       "Stipendio",
     ]);
     const phone = await guest(t, {
-      "x-lukas-timezone": "Europe/Lisbon",
-      "x-lukas-locale": "pt-PT",
+      "x-wambito-timezone": "Europe/Lisbon",
+      "x-wambito-locale": "pt-PT",
     });
     expect(await categoryNames(phone.headers)).toEqual([
       "Supermercado",
@@ -328,29 +341,29 @@ describe("app sign-ups by email (x-lukas-timezone on the creating request)", () 
   });
 
   test("without a hint the browser's language names them, else Spanish", async () => {
-    const browser = await signUpByEmail("starter-en@lukas.test", {
+    const browser = await signUpByEmail("starter-en@wambito.test", {
       "accept-language": "en-GB,en;q=0.9",
     });
     expect((await categoryNames(browser))[0]).toBe("Groceries");
-    const none = await signUpByEmail("starter-es@lukas.test", {});
+    const none = await signUpByEmail("starter-es@wambito.test", {});
     expect((await categoryNames(none))[0]).toBe("Supermercado");
   });
 
   test("signing in again, or claiming an email as a guest, adds none", async () => {
-    await signUpByEmail("again@lukas.test", {});
-    const again = await signUpByEmail("again@lukas.test", {});
+    await signUpByEmail("again@wambito.test", {});
+    const again = await signUpByEmail("again@wambito.test", {});
     expect(await categoryNames(again)).toHaveLength(8);
-    const g = await guest(t, { "x-lukas-timezone": "America/Bogota" });
+    const g = await guest(t, { "x-wambito-timezone": "America/Bogota" });
     const claimed = await t.request("POST", "/auth/email-otp/send-verification-otp", {
       headers: g.headers,
-      body: { email: "claimer@lukas.test", type: "sign-in" },
+      body: { email: "claimer@wambito.test", type: "sign-in" },
     });
     expect(claimed.status).toBe(200);
     expect(await categoryNames(g.headers)).toHaveLength(8);
   });
 
-  test("a new email user from the web (no x-lukas-timezone) keeps UTC, Spanish and EUR", async () => {
-    const headers = await signUpByEmail("web@lukas.test", { "x-lukas-locale": "en" });
+  test("a new email user from the web (no x-wambito-timezone) keeps UTC, Spanish and EUR", async () => {
+    const headers = await signUpByEmail("web@wambito.test", { "x-wambito-locale": "en" });
     expect(await me(t, headers)).toMatchObject({
       isAnonymous: false,
       timezone: "UTC",

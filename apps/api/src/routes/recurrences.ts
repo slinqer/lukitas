@@ -4,9 +4,9 @@ import {
   firstDay,
   type RecurrenceDto,
   updateRecurrenceSchema,
-} from "@lukas/core";
-import { recurrences, type Tx, transactions, withUser } from "@lukas/db";
-import { and, asc, eq, gte, isNull } from "@lukas/db/orm";
+} from "@wambito/core";
+import { recurrences, type Tx, transactions, withUser } from "@wambito/db";
+import { and, asc, eq, gte, isNull } from "@wambito/db/orm";
 import type { AppDeps } from "../deps.ts";
 import { jsonBody, jsonResponse, problems } from "../http/openapi.ts";
 import { ApiError } from "../http/problem.ts";

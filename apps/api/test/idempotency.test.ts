@@ -22,8 +22,8 @@ beforeAll(async () => {
   t.app.post("/v1/test/fails-once", idempotent(t.db), async (c) =>
     ++failsOnce === 1 ? c.json({ code: "nope" }, 500) : c.json({ ok: true }, 201),
   );
-  a = (await t.signIn("a@lukas.test")).headers;
-  b = (await t.signIn("b@lukas.test")).headers;
+  a = (await t.signIn("a@wambito.test")).headers;
+  b = (await t.signIn("b@wambito.test")).headers;
 });
 afterAll(() => t?.stop());
 afterEach(() => vi.useRealTimers());

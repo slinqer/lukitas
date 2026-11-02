@@ -1,5 +1,5 @@
-import { type CategoryDto, type RecurrenceDto, todayIn } from "@lukas/core";
 import { useQuery } from "@tanstack/react-query";
+import { type CategoryDto, type RecurrenceDto, todayIn } from "@wambito/core";
 import { type ReactNode, useState } from "react";
 import { useTranslations } from "use-intl";
 import { useApi } from "../../api/ApiProvider.tsx";

@@ -13,7 +13,7 @@ const configSchema = z.object({
   RATE_LIMIT_PER_MINUTE: z.coerce.number().int().positive().default(120),
   MCP_PORT: z.coerce.number().int().default(3001),
   /** As the API's /health, the build's version. */
-  LUKITAS_VERSION: z
+  WAMBITO_VERSION: z
     .preprocess((v) => (v === "" ? undefined : v), z.string().trim().optional())
     .optional(),
 });

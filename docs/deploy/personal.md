@@ -22,7 +22,7 @@ What the API gained for it (also useful for any deployment):
   the owner credential. Migrations are a separate step: `apps/api/Dockerfile.prod` also builds
   `dist/bootstrap.js`, which creates the `lukas_app` role (password from `APP_DB_PASSWORD`; the role
   exists only in the development `docker/postgres/init.sql` otherwise) and applies the migrations.
-  It is idempotent. Locally: `DATABASE_ADMIN_URL=... APP_DB_PASSWORD=... pnpm --filter @lukas/db bootstrap`.
+  It is idempotent. Locally: `DATABASE_ADMIN_URL=... APP_DB_PASSWORD=... pnpm --filter @wambito/db bootstrap`.
 - **A production image**: `apps/api/Dockerfile.prod` (multi-stage, `node:22-alpine`, one esbuild
   bundle per entry point, runs with `node`, non-root, health check on `/api/health`).
 

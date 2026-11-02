@@ -1,5 +1,5 @@
-import { monthOf, todayIn } from "@lukas/core";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { monthOf, todayIn } from "@wambito/core";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 import { expectTarget } from "../../../.storybook/story-utils.ts";

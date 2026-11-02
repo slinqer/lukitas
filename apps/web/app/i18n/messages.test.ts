@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { LukasMessageKey } from "@lukas/core";
+import type { LukasMessageKey } from "@wambito/core";
 import { createTranslator } from "use-intl/core";
 import { describe, expect, it } from "vitest";
 import { CATALOGS } from "./catalog.ts";

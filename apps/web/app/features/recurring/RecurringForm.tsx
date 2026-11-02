@@ -1,4 +1,4 @@
-import type { CategoryDto, IsoDate, RecurrenceDto } from "@lukas/core";
+import type { CategoryDto, IsoDate, RecurrenceDto } from "@wambito/core";
 import { type FormEvent, useCallback, useEffect, useId, useRef, useState } from "react";
 import { useTranslations } from "use-intl";
 import { ApiProblem, problemMessage, type Translator } from "../../api/errors.ts";

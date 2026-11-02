@@ -1,5 +1,5 @@
 import { serve } from "@hono/node-server";
-import { createDb, runMigrations } from "@lukas/db";
+import { createDb, runMigrations } from "@wambito/db";
 import { createApp } from "./app.ts";
 import { loadConfig } from "./config.ts";
 import { type Mailer, ResendMailer, SmtpMailer } from "./mailer.ts";
@@ -23,7 +23,7 @@ if (pinned) console.log(`E2E_NOW: the clock is pinned to ${pinned.toISOString()}
 const app = createApp({ config, db, mailer, now: pinned ? () => new Date(pinned) : undefined });
 
 serve({ fetch: app.fetch, port: config.PORT }, ({ port }) => {
-  console.log(`Lukitas API listening on http://localhost:${port}`);
+  console.log(`Wambito API listening on http://localhost:${port}`);
 });
 
 // Guests idle for over 60 days are deleted once a day (spec §4.4). Always the real clock: the

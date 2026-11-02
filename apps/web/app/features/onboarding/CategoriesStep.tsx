@@ -1,4 +1,4 @@
-import type { CategoryKind } from "@lukas/core";
+import type { CategoryKind } from "@wambito/core";
 import { type ReactNode, useId, useRef, useState } from "react";
 import { useTranslations } from "use-intl";
 import { CategoryChip } from "../../ui/CategoryChip.tsx";

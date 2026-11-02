@@ -1,4 +1,4 @@
-import type { TransactionDto } from "@lukas/core";
+import type { TransactionDto } from "@wambito/core";
 import {
   createContext,
   type ReactNode,

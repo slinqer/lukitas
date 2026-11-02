@@ -9,7 +9,7 @@ nothing to attribute and no license to carry: they are released under the reposi
 
 Each sound is a few plain sine tones with a short fade in and out, joined and encoded as mono MP3
 (22.05 kHz, 48 kbps) by [`apps/web/scripts/gen-feedback-sounds.ts`](../../../web/scripts/gen-feedback-sounds.ts),
-which calls `ffmpeg` (with `libmp3lame`). To regenerate them: `pnpm --filter @lukas/web sounds`,
+which calls `ffmpeg` (with `libmp3lame`). To regenerate them: `pnpm --filter @wambito/web sounds`,
 then copy the files here. The notes (frequency in Hz, length in seconds) are listed in that script.
 
 | File                | Web event      | Plays in the app on       |

@@ -11,8 +11,8 @@ the two side by side, with the pixels that differ marked.
 From the repository root (Flutter on PATH: `export PATH="$HOME/development/flutter/bin:$PATH"`):
 
 ```sh
-pnpm --filter @lukas/web parity:fixtures        # the stories' data → apps/mobile/test/parity/fixtures
-pnpm --filter @lukas/web parity:shots           # the stories' pictures → apps/mobile/test/parity/web
+pnpm --filter @wambito/web parity:fixtures        # the stories' data → apps/mobile/test/parity/fixtures
+pnpm --filter @wambito/web parity:shots           # the stories' pictures → apps/mobile/test/parity/web
 cd apps/mobile
 flutter test --update-goldens test/parity       # the app's pictures → test/parity/app
 dart run tool/parity/compose.dart --max 2       # side by side → build/parity; fails over 2% of ink
@@ -311,7 +311,7 @@ when the app's picture changes. The web shots are regenerated only when the web 
   scrolls the app's own page to the same offset (`position.jumpTo`, or as far as it goes), so the gradient in those
   pictures is the one a phone shows.
   - The charts are Recharts on the web and a `CustomPainter` in the app (`lib/insights/chart_geometry.dart` is a port of
-    what Recharts computes). `pnpm --filter @lukas/web parity:insights-geometry` reads what the web draws for the
+    what Recharts computes). `pnpm --filter @wambito/web parity:insights-geometry` reads what the web draws for the
     insights stories (sector paths, bars, grid, axis names, the budget line) into
     `apps/mobile/test/insights/recharts_geometry.json`, which `chart_geometry_test.dart` checks the port against, with the
     stories' own data.

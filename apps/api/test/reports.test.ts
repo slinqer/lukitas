@@ -8,7 +8,7 @@ let ids: Record<string, string>;
 
 beforeAll(async () => {
   t = await createTestApp();
-  a = (await t.signIn("a@lukas.test")).headers;
+  a = (await t.signIn("a@wambito.test")).headers;
   ids = await seedOctober2026(t, a);
   await t.request("POST", "/v1/transactions", {
     headers: a,
@@ -94,7 +94,7 @@ describe("recurrences no screen has opened yet", () => {
   beforeAll(async () => {
     vi.useFakeTimers({ toFake: ["Date"] });
     vi.setSystemTime(new Date("2026-11-15T12:00:00Z"));
-    r = (await t.signIn("r@lukas.test")).headers;
+    r = (await t.signIn("r@wambito.test")).headers;
     const make = async (name: string, kind: "income" | "expense") => {
       const res = await t.request("POST", "/v1/categories", {
         headers: r,
@@ -175,7 +175,7 @@ describe("cost of living", () => {
     // Sign in under the fake clock so the session is not expired relative to it.
     vi.useFakeTimers({ toFake: ["Date"] });
     vi.setSystemTime(new Date("2026-11-15T12:00:00Z"));
-    c = (await t.signIn("c@lukas.test")).headers;
+    c = (await t.signIn("c@wambito.test")).headers;
     cIds = await seedOctober2026(t, c);
     const post = (categoryId: string, amount: number, date: string) =>
       t.request("POST", "/v1/transactions", {

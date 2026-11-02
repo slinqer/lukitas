@@ -9,7 +9,7 @@
  * played and finished its animations, emoji move onto the shared Noto Color Emoji, and the page
  * is taken when two pictures in a row come out the same, with CSS animations at rest.
  *
- *   pnpm --filter @lukas/web parity:shots [id filter]
+ *   pnpm --filter @wambito/web parity:shots [id filter]
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";

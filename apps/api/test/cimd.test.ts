@@ -47,7 +47,7 @@ describe("Client ID Metadata Documents", () => {
     answers.set(CLIENT_ID, () =>
       Response.json(document, { headers: { "cache-control": "max-age=60" } }),
     );
-    const { headers } = await t.signIn("cimd@lukas.test");
+    const { headers } = await t.signIn("cimd@wambito.test");
     const res = await t.request("GET", `/auth/oauth2/authorize?${authorizeQuery(CLIENT_ID)}`, {
       headers,
     });
@@ -61,7 +61,7 @@ describe("Client ID Metadata Documents", () => {
       moved,
       () => new Response(null, { status: 302, headers: { location: "https://claude.ai/x" } }),
     );
-    const { headers } = await t.signIn("redirect@lukas.test");
+    const { headers } = await t.signIn("redirect@wambito.test");
     const res = await t.request("GET", `/auth/oauth2/authorize?${authorizeQuery(moved)}`, {
       headers,
     });
@@ -71,7 +71,7 @@ describe("Client ID Metadata Documents", () => {
   test("a document whose client_id is another URL is refused", async () => {
     const other = "https://other.example/client.json";
     answers.set(other, () => Response.json(document));
-    const { headers } = await t.signIn("mismatch@lukas.test");
+    const { headers } = await t.signIn("mismatch@wambito.test");
     const res = await t.request("GET", `/auth/oauth2/authorize?${authorizeQuery(other)}`, {
       headers,
     });

@@ -1,5 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
-import { formatMinorAsDecimal } from "@lukas/core";
+import { formatMinorAsDecimal } from "@wambito/core";
 import {
   accounts,
   categories,
@@ -9,8 +9,8 @@ import {
   transactions,
   user,
   withUser,
-} from "@lukas/db";
-import { and, asc, eq, isNull, sql } from "@lukas/db/orm";
+} from "@wambito/db";
+import { and, asc, eq, isNull, sql } from "@wambito/db/orm";
 import {
   type ClaimCodeResult,
   consumeClaimCode,

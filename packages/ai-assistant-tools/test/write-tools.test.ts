@@ -6,7 +6,7 @@ import { call, NOW, setup, tool, transaction } from "./harness.ts";
 const lunch = { name: "Almuerzo", amount: 18000, category: "comida" };
 
 async function all(ctx: Parameters<typeof call>[2]) {
-  return (await ctx.lukitas.listTransactions({ limit: 1000 })).items;
+  return (await ctx.wambito.listTransactions({ limit: 1000 })).items;
 }
 
 async function rejection(promise: Promise<unknown>): Promise<ToolError> {
@@ -85,7 +85,7 @@ describe("add_transactions", () => {
 
   it("saves 50 in chunks of 20 for the API, each with its own key", async () => {
     const { ctx } = setup();
-    const spy = vi.spyOn(ctx.lukitas, "addTransactions");
+    const spy = vi.spyOn(ctx.wambito, "addTransactions");
     const items = Array.from({ length: 50 }, (_, i) => ({ ...lunch, amount: 1000 + i }));
     const { structured } = await call("add_transactions", { items }, ctx);
     expect(structured.saved).toBe(50);
@@ -145,9 +145,9 @@ describe("add_transactions", () => {
   it("a retry after a broken first call saves only what was missing", async () => {
     const { ctx } = setup();
     const items = Array.from({ length: 50 }, (_, i) => ({ ...lunch, amount: 1000 + i }));
-    const real = ctx.lukitas.addTransactions.bind(ctx.lukitas);
+    const real = ctx.wambito.addTransactions.bind(ctx.wambito);
     const spy = vi
-      .spyOn(ctx.lukitas, "addTransactions")
+      .spyOn(ctx.wambito, "addTransactions")
       .mockImplementationOnce(real)
       .mockImplementationOnce(() => Promise.reject(new Error("stream broke")));
     await expect(call("add_transactions", { items }, ctx)).rejects.toThrow("stream broke");
@@ -267,7 +267,7 @@ describe("delete_transactions and restore_transactions", () => {
         Array.from({ length: 30 }, () => transaction(c.comida, -1800000, "2026-10-30")),
     });
     const ids = (await all(ctx)).map((t) => t.id);
-    const spy = vi.spyOn(ctx.lukitas, "deleteTransactions");
+    const spy = vi.spyOn(ctx.wambito, "deleteTransactions");
     const deleted = await call("delete_transactions", { ids }, ctx);
     expect(spy.mock.calls.map(([chunk]) => chunk.length)).toEqual([20, 10]);
     expect(deleted.structured.deleted).toBe(30);
@@ -292,7 +292,7 @@ describe("delete_transactions and restore_transactions", () => {
 describe("set_budget", () => {
   it("defaults effectiveFrom to the current month", async () => {
     const { ctx, cats } = setup();
-    const spy = vi.spyOn(ctx.lukitas, "setBudget");
+    const spy = vi.spyOn(ctx.wambito, "setBudget");
     const { structured } = await call(
       "set_budget",
       { category: "transporte", amount: 150000 },
@@ -358,7 +358,7 @@ describe("manage_recurring", () => {
       ctx,
     );
     const id = created.structured.recurrence.id;
-    expect(await ctx.lukitas.listRecurrences()).toEqual([
+    expect(await ctx.wambito.listRecurrences()).toEqual([
       expect.objectContaining({
         name: "Arriendo",
         amount: -150000000,
@@ -370,11 +370,11 @@ describe("manage_recurring", () => {
     ]);
 
     await call("manage_recurring", { action: "update", id, amount: 1600000 }, ctx);
-    expect((await ctx.lukitas.listRecurrences())[0]?.amount).toBe(-160000000);
+    expect((await ctx.wambito.listRecurrences())[0]?.amount).toBe(-160000000);
 
     const stopped = await call("manage_recurring", { action: "stop", id }, ctx);
     expect(stopped.structured.action).toBe("stop");
-    expect((await ctx.lukitas.listRecurrences())[0]?.endDate).toBe("2026-10-31");
+    expect((await ctx.wambito.listRecurrences())[0]?.endDate).toBe("2026-10-31");
   });
 
   it("stops a rule that has not started yet by removing it", async () => {
@@ -391,7 +391,7 @@ describe("manage_recurring", () => {
       ctx,
     );
     await call("manage_recurring", { action: "stop", id: created.structured.recurrence.id }, ctx);
-    expect(await ctx.lukitas.listRecurrences()).toEqual([]);
+    expect(await ctx.wambito.listRecurrences()).toEqual([]);
   });
 
   it("asks for what each action needs", async () => {

@@ -1,4 +1,4 @@
-import type { CategoryDto, CategoryKind, MonthSummary } from "@lukas/core";
+import type { CategoryDto, CategoryKind, MonthSummary } from "@wambito/core";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useTranslations } from "use-intl";

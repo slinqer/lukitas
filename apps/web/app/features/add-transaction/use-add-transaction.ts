@@ -1,11 +1,11 @@
+import { useQueryClient } from "@tanstack/react-query";
 import {
   type CategoryDto,
   type MonthSummary,
   monthOf,
   type TransactionDto,
   todayIn,
-} from "@lukas/core";
-import { useQueryClient } from "@tanstack/react-query";
+} from "@wambito/core";
 import { createElement, Fragment, useMemo, useState } from "react";
 import { useTranslations } from "use-intl";
 import { ApiProblem, problemMessage, type Translator } from "../../api/errors.ts";

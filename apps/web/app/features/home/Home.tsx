@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import {
   type CategoryDto,
   type Month,
@@ -5,8 +6,7 @@ import {
   monthOf,
   type TransactionDto,
   todayIn,
-} from "@lukas/core";
-import { useQueryClient } from "@tanstack/react-query";
+} from "@wambito/core";
 import { type RefObject, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router";
 import { useTranslations } from "use-intl";

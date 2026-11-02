@@ -59,7 +59,7 @@ describe("PROMPTS", () => {
 describe("serverInstructions", () => {
   const text = serverInstructions();
 
-  it("carries the Lukitas rules", () => {
+  it("carries the Wambito rules", () => {
     expect(text).toContain("18 lukas");
     expect(text).toContain("$18.000");
     expect(text).toContain("una luka");

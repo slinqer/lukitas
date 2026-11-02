@@ -8,7 +8,7 @@ import {
   type Month,
   monthSchema,
   monthsBetween,
-} from "@lukas/core";
+} from "@wambito/core";
 import {
   categories,
   categoryBudgets,
@@ -16,8 +16,8 @@ import {
   type Tx,
   transactions,
   withUser,
-} from "@lukas/db";
-import { and, eq, gte, isNull, lte, or, sql } from "@lukas/db/orm";
+} from "@wambito/db";
+import { and, eq, gte, isNull, lte, or, sql } from "@wambito/db/orm";
 import type { AppDeps } from "../deps.ts";
 import type { SessionUser } from "../env.ts";
 import { jsonResponse, problems } from "../http/openapi.ts";

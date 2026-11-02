@@ -1,4 +1,4 @@
-import type { MonthSummary, TransactionDto } from "@lukas/core";
+import type { MonthSummary, TransactionDto } from "@wambito/core";
 import { describe, expect, it } from "vitest";
 import {
   feedbackForSave,

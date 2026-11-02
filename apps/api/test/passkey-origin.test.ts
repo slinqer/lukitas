@@ -25,12 +25,12 @@ describe("the Android app's passkey origin", () => {
   });
 
   test("passkeys accept only the web without ANDROID_CERT_SHA256, and the app's keys with it", () => {
-    const web = { WEB_URL: "https://app-lukas.example.com" };
+    const web = { WEB_URL: "https://app-wambito.example.com" };
     expect(passkeyOrigins({ ...web, ANDROID_CERT_SHA256: undefined })).toEqual([
-      "https://app-lukas.example.com",
+      "https://app-wambito.example.com",
     ]);
     expect(passkeyOrigins({ ...web, ANDROID_CERT_SHA256: [FINGERPRINT_A, FINGERPRINT_B] })).toEqual(
-      ["https://app-lukas.example.com", ORIGIN_A, ORIGIN_B],
+      ["https://app-wambito.example.com", ORIGIN_A, ORIGIN_B],
     );
   });
 });
@@ -40,9 +40,9 @@ describe("ANDROID_CERT_SHA256 in the config", () => {
     DATABASE_URL: "postgres://lukas_app:x@db:5432/lukas",
     DATABASE_ADMIN_URL: "postgres://lukas:x@db:5432/lukas",
     BETTER_AUTH_SECRET: "s".repeat(40),
-    API_URL: "https://lukas.app/api",
-    WEB_URL: "https://lukas.app",
-    MAIL_FROM: "Lukitas <hola@lukas.app>",
+    API_URL: "https://wambito.test/api",
+    WEB_URL: "https://wambito.test",
+    MAIL_FROM: "Wambito <hola@wambito.test>",
     RESEND_API_KEY: "re_123",
     NODE_ENV: "development",
   };
@@ -237,7 +237,7 @@ describe("a passkey from the Android app (end to end)", () => {
   }
 
   test("registers and signs in with the app's apk-key-hash origin, and gets a bearer token", async () => {
-    const { res, passkey } = await register("app-passkey@lukas.test", ORIGIN_A);
+    const { res, passkey } = await register("app-passkey@wambito.test", ORIGIN_A);
     expect(res.status).toBe(200);
 
     const signedIn = await signInWith(passkey, ORIGIN_A);
@@ -246,19 +246,19 @@ describe("a passkey from the Android app (end to end)", () => {
     expect(token).toBeTruthy();
     const me = await t.request("GET", "/v1/me", { headers: { authorization: `Bearer ${token}` } });
     expect(me.status).toBe(200);
-    expect(((await me.json()) as { email: string }).email).toBe("app-passkey@lukas.test");
+    expect(((await me.json()) as { email: string }).email).toBe("app-passkey@wambito.test");
   });
 
   test("the web's own origin still works", async () => {
-    const { res, passkey } = await register("web-passkey@lukas.test", "http://localhost:5173");
+    const { res, passkey } = await register("web-passkey@wambito.test", "http://localhost:5173");
     expect(res.status).toBe(200);
     expect((await signInWith(passkey, "http://localhost:5173")).status).toBe(200);
   });
 
   test("an app signed with another key is refused, at registration and at sign-in", async () => {
-    await expectRegistrationRefused((await register("other-key@lukas.test", ORIGIN_B)).res);
+    await expectRegistrationRefused((await register("other-key@wambito.test", ORIGIN_B)).res);
 
-    const { passkey } = await register("other-key-2@lukas.test", ORIGIN_A);
+    const { passkey } = await register("other-key-2@wambito.test", ORIGIN_A);
     const signedIn = await signInWith(passkey, ORIGIN_B);
     expect(signedIn.status).toBe(400);
     expect(((await signedIn.json()) as { code: string }).code).toBe("AUTHENTICATION_FAILED");
@@ -274,7 +274,7 @@ describe("without ANDROID_CERT_SHA256", () => {
   afterAll(() => t?.stop());
 
   test("an app passkey is refused: the web only", async () => {
-    const { headers } = await t.signIn("no-app@lukas.test");
+    const { headers } = await t.signIn("no-app@wambito.test");
     const options = await t.request("GET", "/auth/passkey/generate-register-options", { headers });
     const { challenge } = (await options.json()) as { challenge: string };
     const res = await t.request("POST", "/auth/passkey/verify-registration", {

@@ -1,4 +1,4 @@
-import { type CategoryDto, type RecurrenceDto, todayIn } from "@lukas/core";
+import { type CategoryDto, type RecurrenceDto, todayIn } from "@wambito/core";
 import { useId, useState } from "react";
 import { useTranslations } from "use-intl";
 import { ApiProblem, problemMessage, type Translator } from "../../api/errors.ts";

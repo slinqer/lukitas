@@ -1,4 +1,4 @@
-import { addMonths, monthOf, todayIn } from "@lukas/core";
+import { addMonths, monthOf, todayIn } from "@wambito/core";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { createTestApp, type TestApp } from "./harness.ts";
 
@@ -9,8 +9,8 @@ const thisMonth = monthOf(todayIn("UTC"));
 
 beforeAll(async () => {
   t = await createTestApp();
-  a = (await t.signIn("a@lukas.test")).headers;
-  b = (await t.signIn("b@lukas.test")).headers;
+  a = (await t.signIn("a@wambito.test")).headers;
+  b = (await t.signIn("b@wambito.test")).headers;
 });
 afterAll(() => t?.stop());
 
@@ -106,7 +106,7 @@ describe("categories", () => {
 describe("changing a category's kind", () => {
   let c: { authorization: string };
   beforeAll(async () => {
-    c = (await t.signIn("kind@lukas.test")).headers;
+    c = (await t.signIn("kind@wambito.test")).headers;
   });
   const patch = (id: string, body: object) =>
     t.request("PATCH", `/v1/categories/${id}`, { headers: c, body });

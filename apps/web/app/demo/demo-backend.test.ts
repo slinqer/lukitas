@@ -1,4 +1,4 @@
-import { addMonths, type MonthSummary, monthOf, type TransactionDto, todayIn } from "@lukas/core";
+import { addMonths, type MonthSummary, monthOf, type TransactionDto, todayIn } from "@wambito/core";
 import { describe, expect, it } from "vitest";
 import { type ApiClient, createApiClient } from "../api/client.ts";
 import type { ApiProblem } from "../api/errors.ts";

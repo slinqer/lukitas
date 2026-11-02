@@ -1,4 +1,4 @@
-import type { SupportedCurrency } from "@lukas/core";
+import type { SupportedCurrency } from "@wambito/core";
 import { useCallback, useState } from "react";
 
 /**

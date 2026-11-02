@@ -1,4 +1,4 @@
-import { type Lukitas, type Profile, ToolError } from "@lukas/ai-assistant-tools";
+import { type Profile, ToolError, type Wambito } from "@wambito/ai-assistant-tools";
 import createClient from "openapi-fetch";
 import type { paths } from "./api/schema.d.ts";
 
@@ -14,7 +14,7 @@ interface Problem {
 /** What the API's answer means for the model: its problem code and words, or a plain failure. */
 function toToolError(status: number, problem: Problem | undefined): ToolError {
   const code = problem?.code ?? (status === 404 ? "not_found" : `http_${status}`);
-  const message = problem?.detail ?? problem?.title ?? `Lukitas answered ${status}`;
+  const message = problem?.detail ?? problem?.title ?? `Wambito answered ${status}`;
   return new ToolError(code, message, problem?.errors ? { errors: problem.errors } : undefined);
 }
 
@@ -31,10 +31,10 @@ async function unwrap<T>(
 }
 
 /**
- * The person's Lukitas over the HTTP API, with the assistant's own access token: the API applies
+ * The person's Wambito over the HTTP API, with the assistant's own access token: the API applies
  * every rule and the token's scopes, exactly as for the app.
  */
-export function apiLukitas(baseUrl: string, token: string, fetchImpl?: typeof fetch): Lukitas {
+export function apiWambito(baseUrl: string, token: string, fetchImpl?: typeof fetch): Wambito {
   const api: ApiClient = createClient<paths>({
     baseUrl: baseUrl.replace(/\/+$/, ""),
     headers: { authorization: `Bearer ${token}` },

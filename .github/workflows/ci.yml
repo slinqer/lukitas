@@ -17,21 +17,21 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       # The Storybook tests in `pnpm test` run in Vitest browser mode on Playwright Chromium.
-      - run: pnpm --filter @lukas/web exec playwright install --with-deps chromium
+      - run: pnpm --filter @wambito/web exec playwright install --with-deps chromium
       # Wambito depends on nothing at the founder's personal domain (docs/superpowers keeps history).
       - run: "! git grep -n -I -i -e 'anderson''laverde' -- . ':!docs/superpowers'"
       - run: pnpm lint
       # Generated files must be committed as generated. tokens.css comes from the design system's
-      # tokens.json: run `pnpm --filter @lukas/web tokens` and commit it.
-      - run: pnpm --filter @lukas/web tokens
+      # tokens.json: run `pnpm --filter @wambito/web tokens` and commit it.
+      - run: pnpm --filter @wambito/web tokens
       - run: git diff --exit-code apps/web/app/styles/tokens.css
       # The web's API types are generated from the API's OpenAPI document (built from the app, no
       # server or database). Fails when apps/web/app/api/schema.d.ts is stale: run
-      # `pnpm --filter @lukas/web api:types` (with the API running) or add --file, and commit it.
-      - run: pnpm --filter @lukas/web api:types --file
+      # `pnpm --filter @wambito/web api:types` (with the API running) or add --file, and commit it.
+      - run: pnpm --filter @wambito/web api:types --file
       - run: git diff --exit-code apps/web/app/api/schema.d.ts
-      # The MCP server's copy of the same types: `pnpm --filter @lukas/mcp api:types`.
-      - run: pnpm --filter @lukas/mcp api:types
+      # The MCP server's copy of the same types: `pnpm --filter @wambito/mcp api:types`.
+      - run: pnpm --filter @wambito/mcp api:types
       - run: git diff --exit-code apps/mcp/src/api/schema.d.ts
       - run: pnpm typecheck
       # Unit, API integration and Storybook tests. Integration tests start Postgres with
@@ -65,21 +65,21 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @lukas/web exec playwright install --with-deps chromium
+      - run: pnpm --filter @wambito/web exec playwright install --with-deps chromium
       # The dev stack: Postgres, Mailpit and the API (which applies the migrations on start), with
       # the development defaults. The e2e's global setup waits for the API and Mailpit.
       - run: cp .env.example .env
       - run: docker compose up -d --build
       # App flows against `pnpm dev` (Playwright starts it) and the stack, at phone and desktop
       # sizes, axe on every screen included.
-      - run: pnpm --filter @lukas/web e2e
+      - run: pnpm --filter @wambito/web e2e
       - if: failure()
         run: docker compose logs api
       # The landing as it ships, built three ways: the full site, the landing-only release without
       # an app, and the landing-only release with one. Each script builds first.
-      - run: pnpm --filter @lukas/web e2e:landing
-      - run: pnpm --filter @lukas/web e2e:landing-only
-      - run: pnpm --filter @lukas/web e2e:landing-only-app
+      - run: pnpm --filter @wambito/web e2e:landing
+      - run: pnpm --filter @wambito/web e2e:landing-only
+      - run: pnpm --filter @wambito/web e2e:landing-only-app
       - if: failure()
         uses: actions/upload-artifact@v4
         with:
@@ -118,7 +118,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       # The landing-only release, built as docs/deploy/landing.md says.
-      - run: pnpm --filter @lukas/web build:landing
+      - run: pnpm --filter @wambito/web build:landing
         env:
           VITE_SITE_URL: https://wambito.com
           VITE_APP_URL: https://app.wambito.com

@@ -2,7 +2,7 @@ import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/cli
 import { createLocalJWKSet, type JSONWebKeySet } from "jose";
 import { afterAll, beforeAll, expect, test } from "vitest";
 import { createTestApp, type TestApp } from "../../api/test/harness.ts";
-import { apiLukitas } from "../src/api-lukitas.ts";
+import { apiWambito } from "../src/api-wambito.ts";
 import { createMcpApp } from "../src/app.ts";
 import { jwtVerifier } from "../src/verifier.ts";
 
@@ -26,9 +26,9 @@ beforeAll(async () => {
   mcp = createMcpApp({
     config,
     verifier: jwtVerifier(config, createLocalJWKSet(jwks)),
-    lukitasFor: (token) => apiLukitas(t.config.API_URL, token, fetchApi),
+    wambitoFor: (token) => apiWambito(t.config.API_URL, token, fetchApi),
   });
-  ({ headers } = await t.signIn("e2e@lukas.test"));
+  ({ headers } = await t.signIn("e2e@wambito.test"));
   await t.request("POST", "/v1/categories", {
     headers,
     body: { name: "Almuerzos", kind: "expense", icon: "food", color: "orange" },
@@ -52,7 +52,7 @@ async function connect(token: string) {
 }
 
 test("an assistant notes an expense that the person then sees, saved as mcp", async () => {
-  const { accessToken } = await t.authorize("e2e@lukas.test", { headers });
+  const { accessToken } = await t.authorize("e2e@wambito.test", { headers });
   const client = await connect(accessToken);
   const result = await client.callTool({
     name: "add_transactions",

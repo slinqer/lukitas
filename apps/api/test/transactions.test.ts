@@ -1,5 +1,5 @@
-import { transactions } from "@lukas/db";
-import { eq } from "@lukas/db/orm";
+import { transactions } from "@wambito/db";
+import { eq } from "@wambito/db/orm";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { createTestApp, type TestApp } from "./harness.ts";
 
@@ -33,8 +33,8 @@ async function category(headers: typeof a, name: string) {
 
 beforeAll(async () => {
   t = await createTestApp();
-  a = (await t.signIn("a@lukas.test")).headers;
-  b = (await t.signIn("b@lukas.test")).headers;
+  a = (await t.signIn("a@wambito.test")).headers;
+  b = (await t.signIn("b@wambito.test")).headers;
   ocio = await category(a, "Ocio");
   archived = await category(a, "Old");
   await t.request("PATCH", `/v1/categories/${archived}`, { headers: a, body: { archived: true } });
@@ -63,7 +63,7 @@ describe("transactions", () => {
   });
 
   test("list filters by a date range and by text, ignoring case and accents", async () => {
-    const { headers } = await t.signIn("search@lukas.test");
+    const { headers } = await t.signIn("search@wambito.test");
     const comida = await category(headers, "Comida");
     const add = (name: string, date: string, note?: string) =>
       create({ name, amount: -1000, date, categoryId: comida, ...(note ? { note } : {}) }, headers);

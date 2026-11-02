@@ -1,5 +1,5 @@
 {
-  "name": "@lukas/web",
+  "name": "@wambito/web",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -26,7 +26,7 @@
     "@better-auth/passkey": "^1.7.11",
     "@fontsource/fredoka": "^5.3.0",
     "@fontsource/nunito": "^5.3.0",
-    "@lukas/core": "workspace:*",
+    "@wambito/core": "workspace:*",
     "@react-router/node": "^8.5.0",
     "@react-three/drei": "^10.7.9",
     "@react-three/fiber": "^9.8.2",

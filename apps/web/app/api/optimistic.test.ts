@@ -1,5 +1,5 @@
-import type { CategoryDto, MonthSummary, TransactionDto } from "@lukas/core";
 import { QueryClient } from "@tanstack/react-query";
+import type { CategoryDto, MonthSummary, TransactionDto } from "@wambito/core";
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   optimisticAdd,

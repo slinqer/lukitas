@@ -1,4 +1,4 @@
-import type { CategoryDto, CategoryKind, CategorySummary } from "@lukas/core";
+import type { CategoryDto, CategoryKind, CategorySummary } from "@wambito/core";
 
 /**
  * What the Categorías tab lists for one kind: the rows of the month, in order, and the archived

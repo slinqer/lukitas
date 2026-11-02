@@ -1,4 +1,4 @@
-import { SUGGESTED_CATEGORIES, type SuggestedCategory } from "@lukas/core";
+import { SUGGESTED_CATEGORIES, type SuggestedCategory } from "@wambito/core";
 import type { Locale } from "../../i18n/format.ts";
 
 export { SUGGESTED_CATEGORIES, type SuggestedCategory };

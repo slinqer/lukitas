@@ -8,7 +8,7 @@ import '../theme/text_styles.dart';
 import 'lk_theme.dart';
 import 'pressable.dart';
 
-/// The month [months] away from [month] (`YYYY-MM`), as the web's `addMonths` of @lukas/core.
+/// The month [months] away from [month] (`YYYY-MM`), as the web's `addMonths` of @wambito/core.
 String addMonths(String month, int months) {
   final parts = month.split('-').map(int.parse).toList();
   final index = parts[0] * 12 + (parts[1] - 1) + months;

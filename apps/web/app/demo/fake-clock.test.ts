@@ -1,4 +1,4 @@
-import { monthOf, todayIn } from "@lukas/core";
+import { monthOf, todayIn } from "@wambito/core";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createApiClient } from "../api/client.ts";
 import { createDemoBackend } from "./demo-backend.ts";

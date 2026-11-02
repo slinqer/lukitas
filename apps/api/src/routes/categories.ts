@@ -1,7 +1,7 @@
 import { createRoute, z } from "@hono/zod-openapi";
-import { type CategoryDto, effectiveBudget, firstDay, type Month } from "@lukas/core";
-import { categories, categoryBudgets, type Tx, transactions, withUser } from "@lukas/db";
-import { asc, eq, isNull } from "@lukas/db/orm";
+import { type CategoryDto, effectiveBudget, firstDay, type Month } from "@wambito/core";
+import { categories, categoryBudgets, type Tx, transactions, withUser } from "@wambito/db";
+import { asc, eq, isNull } from "@wambito/db/orm";
 import type { AppDeps } from "../deps.ts";
 import { isUniqueViolation } from "../http/db-errors.ts";
 import { jsonBody, jsonResponse, problems } from "../http/openapi.ts";

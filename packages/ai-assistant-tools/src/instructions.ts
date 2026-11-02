@@ -1,8 +1,8 @@
 /**
- * The Lukitas rules every client gets, whatever else it supports (spec §4.4). In English, which
+ * The Wambito rules every client gets, whatever else it supports (spec §4.4). In English, which
  * models follow best, with the Spanish the person actually speaks as examples.
  */
-const INSTRUCTIONS = `Lukitas is the person's personal finance app: their transactions (movements), categories, monthly budgets and recurring payments. Answer in the person's language and currency, using the formatted amounts the tools return.
+const INSTRUCTIONS = `Wambito is the person's personal finance app: their transactions (movements), categories, monthly budgets and recurring payments. Answer in the person's language and currency, using the formatted amounts the tools return.
 
 Amounts
 - In Colombian Spanish "luka" means a thousand pesos: "18 lukas" is $18.000 (send amount 18000); "una luka" is $1.000; "un palo" or "un millón" is $1.000.000.

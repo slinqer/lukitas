@@ -1,4 +1,4 @@
-import type { CategorySummary, MonthSummary } from "@lukas/core";
+import type { CategorySummary, MonthSummary } from "@wambito/core";
 import { describe, expect, it } from "vitest";
 import { moodFor } from "./mood.ts";
 

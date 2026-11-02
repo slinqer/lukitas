@@ -1,4 +1,4 @@
-import type { Profile } from "./lukitas.ts";
+import type { Profile } from "./wambito.ts";
 
 type Locale = Profile["locale"];
 
@@ -49,10 +49,10 @@ const monthReview: AssistantPrompt = {
   messages(locale, args) {
     const month = args.month?.trim();
     const texts: Texts = {
-      es: `Haz la revisión de ${month ? `mi mes ${month}` : "este mes"} en Lukitas. Usa get_month_overview para el resumen: ingresos, gastos y lo que queda. Luego compara con el mes anterior usando spending_by_category para cada uno de los dos meses y dime qué categorías crecieron más. Termina con los presupuestos en riesgo (cerca del límite o pasados). Sé breve y concreto, con los montos tal como vienen.`,
-      en: `Review ${month ? `my month ${month}` : "this month"} in Lukitas. Use get_month_overview for the overview: income, expenses and what is left. Then compare with the previous month using spending_by_category for each of the two months and tell me which categories grew most. End with the budgets at risk (near the limit or over). Keep it short and concrete, with the amounts as they come.`,
-      it: `Fai la revisione di ${month ? `il mio mese ${month}` : "questo mese"} in Lukitas. Usa get_month_overview per il riepilogo: entrate, spese e quanto resta. Poi confronta con il mese precedente usando spending_by_category per ciascuno dei due mesi e dimmi quali categorie sono cresciute di più. Chiudi con i budget a rischio (vicini al limite o superati). Sii breve e concreto, con gli importi come arrivano.`,
-      pt: `Faz a revisão de ${month ? `o meu mês ${month}` : "este mês"} no Lukitas. Usa get_month_overview para o resumo: receitas, despesas e o que falta. Depois compara com o mês anterior usando spending_by_category para cada um dos dois meses e diz-me que categorias mais cresceram. Termina com os orçamentos em risco (perto do limite ou ultrapassados). Sê breve e concreto, com os montantes tal como vêm.`,
+      es: `Haz la revisión de ${month ? `mi mes ${month}` : "este mes"} en Wambito. Usa get_month_overview para el resumen: ingresos, gastos y lo que queda. Luego compara con el mes anterior usando spending_by_category para cada uno de los dos meses y dime qué categorías crecieron más. Termina con los presupuestos en riesgo (cerca del límite o pasados). Sé breve y concreto, con los montos tal como vienen.`,
+      en: `Review ${month ? `my month ${month}` : "this month"} in Wambito. Use get_month_overview for the overview: income, expenses and what is left. Then compare with the previous month using spending_by_category for each of the two months and tell me which categories grew most. End with the budgets at risk (near the limit or over). Keep it short and concrete, with the amounts as they come.`,
+      it: `Fai la revisione di ${month ? `il mio mese ${month}` : "questo mese"} in Wambito. Usa get_month_overview per il riepilogo: entrate, spese e quanto resta. Poi confronta con il mese precedente usando spending_by_category per ciascuno dei due mesi e dimmi quali categorie sono cresciute di più. Chiudi con i budget a rischio (vicini al limite o superati). Sii breve e concreto, con gli importi come arrivano.`,
+      pt: `Faz a revisão de ${month ? `o meu mês ${month}` : "este mês"} no Wambito. Usa get_month_overview para o resumo: receitas, despesas e o que falta. Depois compara com o mês anterior usando spending_by_category para cada um dos dois meses e diz-me que categorias mais cresceram. Termina com os orçamentos em risco (perto do limite ou ultrapassados). Sê breve e concreto, com os montantes tal como vêm.`,
     };
     return [{ role: "user", text: pick(texts)(locale) }];
   },
@@ -87,10 +87,10 @@ const dictateExpenses: AssistantPrompt = {
   messages(locale, args) {
     const list = args.gastos?.trim();
     const texts: Texts = {
-      es: `Voy a dictarte varios gastos para Lukitas. Primero mira list_categories. Arma la lista con nombre, monto, categoría y fecha de cada uno (sin fecha es hoy), muéstramela y espera a que la confirme. Cuando diga que sí, guárdalos todos en una sola llamada a add_transactions.${list ? `\n\nMis gastos: ${list}` : " ¿Cuáles son?"}`,
-      en: `I am going to dictate several expenses for Lukitas. First look at list_categories. Put together the list with the name, amount, category and date of each one (no date means today), show it to me and wait for me to confirm. When I say yes, save them all in a single add_transactions call.${list ? `\n\nMy expenses: ${list}` : " What are they?"}`,
-      it: `Ti detterò alcune spese per Lukitas. Prima guarda list_categories. Prepara l'elenco con nome, importo, categoria e data di ciascuna (senza data è oggi), mostramelo e aspetta che lo confermi. Quando dico di sì, salvale tutte con una sola chiamata a add_transactions.${list ? `\n\nLe mie spese: ${list}` : " Quali sono?"}`,
-      pt: `Vou ditar-te várias despesas para o Lukitas. Primeiro vê list_categories. Prepara a lista com nome, montante, categoria e data de cada uma (sem data é hoje), mostra-ma e espera que eu confirme. Quando eu disser que sim, guarda-as todas numa só chamada a add_transactions.${list ? `\n\nAs minhas despesas: ${list}` : " Quais são?"}`,
+      es: `Voy a dictarte varios gastos para Wambito. Primero mira list_categories. Arma la lista con nombre, monto, categoría y fecha de cada uno (sin fecha es hoy), muéstramela y espera a que la confirme. Cuando diga que sí, guárdalos todos en una sola llamada a add_transactions.${list ? `\n\nMis gastos: ${list}` : " ¿Cuáles son?"}`,
+      en: `I am going to dictate several expenses for Wambito. First look at list_categories. Put together the list with the name, amount, category and date of each one (no date means today), show it to me and wait for me to confirm. When I say yes, save them all in a single add_transactions call.${list ? `\n\nMy expenses: ${list}` : " What are they?"}`,
+      it: `Ti detterò alcune spese per Wambito. Prima guarda list_categories. Prepara l'elenco con nome, importo, categoria e data di ciascuna (senza data è oggi), mostramelo e aspetta che lo confermi. Quando dico di sì, salvale tutte con una sola chiamata a add_transactions.${list ? `\n\nLe mie spese: ${list}` : " Quali sono?"}`,
+      pt: `Vou ditar-te várias despesas para o Wambito. Primeiro vê list_categories. Prepara a lista com nome, montante, categoria e data de cada uma (sem data é hoje), mostra-ma e espera que eu confirme. Quando eu disser que sim, guarda-as todas numa só chamada a add_transactions.${list ? `\n\nAs minhas despesas: ${list}` : " Quais são?"}`,
     };
     return [{ role: "user", text: pick(texts)(locale) }];
   },
@@ -113,10 +113,10 @@ const howAmIDoing: AssistantPrompt = {
   args: [],
   messages(locale) {
     const texts: Texts = {
-      es: "¿Cómo voy este mes en Lukitas? Usa get_month_overview y respóndeme en dos o tres frases: cuánto me queda y qué presupuestos están cerca del límite o pasados.",
-      en: "How am I doing this month in Lukitas? Use get_month_overview and answer in two or three sentences: what is left and which budgets are near the limit or over.",
-      it: "Come sto andando questo mese in Lukitas? Usa get_month_overview e rispondimi in due o tre frasi: quanto mi resta e quali budget sono vicini al limite o superati.",
-      pt: "Como estou este mês no Lukitas? Usa get_month_overview e responde-me em duas ou três frases: quanto me falta e que orçamentos estão perto do limite ou ultrapassados.",
+      es: "¿Cómo voy este mes en Wambito? Usa get_month_overview y respóndeme en dos o tres frases: cuánto me queda y qué presupuestos están cerca del límite o pasados.",
+      en: "How am I doing this month in Wambito? Use get_month_overview and answer in two or three sentences: what is left and which budgets are near the limit or over.",
+      it: "Come sto andando questo mese in Wambito? Usa get_month_overview e rispondimi in due o tre frasi: quanto mi resta e quali budget sono vicini al limite o superati.",
+      pt: "Como estou este mês no Wambito? Usa get_month_overview e responde-me em duas ou três frases: quanto me falta e que orçamentos estão perto do limite ou ultrapassados.",
     };
     return [{ role: "user", text: pick(texts)(locale) }];
   },

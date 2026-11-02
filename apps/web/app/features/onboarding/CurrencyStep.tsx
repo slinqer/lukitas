@@ -1,4 +1,4 @@
-import { SUPPORTED_CURRENCIES, type SupportedCurrency } from "@lukas/core";
+import { SUPPORTED_CURRENCIES, type SupportedCurrency } from "@wambito/core";
 import { useTranslations } from "use-intl";
 import { intlTag } from "../../i18n/format.ts";
 import { useLocale } from "../../i18n/IntlProvider.tsx";

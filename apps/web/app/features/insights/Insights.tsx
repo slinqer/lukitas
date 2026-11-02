@@ -1,4 +1,4 @@
-import { type Month, monthOf, todayIn } from "@lukas/core";
+import { type Month, monthOf, todayIn } from "@wambito/core";
 import { useEffect, useState } from "react";
 import { useTranslations } from "use-intl";
 import { useAllCategories, useMe, useReportByCategory, useTrend } from "../../api/queries.ts";

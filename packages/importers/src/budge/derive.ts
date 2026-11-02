@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { addMonths, type CategoryKind, type Month, monthOf, monthsBetween } from "@lukas/core";
+import { addMonths, type CategoryKind, type Month, monthOf, monthsBetween } from "@wambito/core";
 import { normalizeName } from "../category-style.ts";
 import type { BudgeRow } from "./parse.ts";
 

@@ -13,7 +13,7 @@ export default defineConfig({
       "motion/react",
       "react-router",
       "use-intl",
-      "@lukas/core > zod",
+      "@wambito/core > zod",
       "three",
       "@react-three/fiber",
       "three/examples/jsm/environments/RoomEnvironment.js",

@@ -6,12 +6,12 @@ import {
   monthsBetween,
   type TransactionDto,
   todayIn,
-} from "@lukas/core";
+} from "@wambito/core";
 import { z } from "zod";
 import { resolveCategory } from "../categories.ts";
 import { ToolError } from "../errors.ts";
-import type { Profile } from "../lukitas.ts";
 import { formatMoney, fromMinor } from "../money.ts";
+import type { Profile } from "../wambito.ts";
 
 /** The longest range a report covers, as the API. */
 export const MAX_MONTHS = 36;

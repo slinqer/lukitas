@@ -5,7 +5,7 @@
  * with its own code (apps/mobile/lib/insights/chart_geometry.dart, a port of what Recharts computes),
  * and its tests check that the same data gives the same arcs, points and labels.
  *
- *   pnpm --filter @lukas/web parity:insights-geometry
+ *   pnpm --filter @wambito/web parity:insights-geometry
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";

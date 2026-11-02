@@ -1,4 +1,4 @@
-import type { TransactionDto } from "@lukas/core";
+import type { TransactionDto } from "@wambito/core";
 import { useEffect, useId, useRef, useState } from "react";
 import { useTranslations } from "use-intl";
 import { formatAmountInput, formatDay, lukasHint } from "../../i18n/format.ts";

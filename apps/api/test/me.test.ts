@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { sql } from "@lukas/db/orm";
+import { sql } from "@wambito/db/orm";
 import { afterAll, beforeAll, expect, test } from "vitest";
 import { createTestApp, type TestApp } from "./harness.ts";
 
@@ -21,8 +21,8 @@ async function seed(headers: { authorization: string }, name: string) {
 
 beforeAll(async () => {
   t = await createTestApp();
-  a = await t.signIn("a@lukas.test");
-  b = await t.signIn("b@lukas.test");
+  a = await t.signIn("a@wambito.test");
+  b = await t.signIn("b@wambito.test");
   await seed(a.headers, "Supermercado");
   await seed(b.headers, "Other");
 });
@@ -37,7 +37,7 @@ test("profile can be read and updated", async () => {
   const me = await (await t.request("GET", "/v1/me", { headers: a.headers })).json();
   expect(me).toEqual({
     id: a.userId,
-    email: "a@lukas.test",
+    email: "a@wambito.test",
     timezone: "America/Bogota",
     locale: "en",
     // `a` has a movement (seeded above): reading the profile stamped the welcome as done.
@@ -54,7 +54,7 @@ const readMe = async (headers: { authorization: string }) =>
 test("an account that already has a movement is stamped as onboarded when its profile is read", async () => {
   // An account that predates the welcome (the app's, made before it existed): it has data, and
   // no `onboardingCompletedAt`. Reading it stamps it, so neither client sends it to the welcome.
-  const old = await t.signIn("old@lukas.test");
+  const old = await t.signIn("old@wambito.test");
   await seed(old.headers, "Casa");
   const before = Date.now();
   const me = await readMe(old.headers);
@@ -65,7 +65,7 @@ test("an account that already has a movement is stamped as onboarded when its pr
 });
 
 test("an empty account is not stamped: it is the one the welcome is for", async () => {
-  const fresh = await t.signIn("fresh@lukas.test");
+  const fresh = await t.signIn("fresh@wambito.test");
   expect((await readMe(fresh.headers)).onboardingCompletedAt).toBeNull();
   // Categories alone are not movements.
   await t.request("POST", "/v1/categories", {
@@ -76,7 +76,7 @@ test("an empty account is not stamped: it is the one the welcome is for", async 
 });
 
 test("an account that is already stamped is left as it is", async () => {
-  const done = await t.signIn("done@lukas.test");
+  const done = await t.signIn("done@wambito.test");
   const patched = (await (
     await t.request("PATCH", "/v1/me", {
       headers: done.headers,
@@ -107,7 +107,7 @@ async function importInWelcome(headers: { authorization: string }) {
 test("an account that imports during its welcome is not stamped; a manual movement stamps it", async () => {
   // The welcome's import step comes before categories and budgets: the account has rows by then,
   // but it is still in its welcome, and a restart must resume it.
-  const welcoming = await t.signIn("welcoming@lukas.test");
+  const welcoming = await t.signIn("welcoming@wambito.test");
   await importInWelcome(welcoming.headers);
   expect((await readMe(welcoming.headers)).onboardingCompletedAt).toBeNull();
   // A PATCH answers with the same profile: it does not stamp either.
@@ -122,12 +122,12 @@ test("an account that imports during its welcome is not stamped; a manual moveme
 });
 
 test("a movement of another account does not stamp this one", async () => {
-  const other = await t.signIn("other@lukas.test");
+  const other = await t.signIn("other@wambito.test");
   expect((await readMe(other.headers)).onboardingCompletedAt).toBeNull();
 });
 
 test("the currency can be chosen while the account has no transactions", async () => {
-  const c = await t.signIn("c@lukas.test");
+  const c = await t.signIn("c@wambito.test");
   const res = await t.request("PATCH", "/v1/me", { headers: c.headers, body: { currency: "COP" } });
   expect(res.status).toBe(200);
   expect(((await res.json()) as { currency: string }).currency).toBe("COP");
@@ -180,7 +180,7 @@ test("the currency is locked once the account has transactions", async () => {
 });
 
 test("a soft-deleted transaction still locks the currency", async () => {
-  const d = await t.signIn("d@lukas.test");
+  const d = await t.signIn("d@wambito.test");
   const cat = (await (
     await t.request("POST", "/v1/categories", {
       headers: d.headers,
@@ -200,7 +200,7 @@ test("a soft-deleted transaction still locks the currency", async () => {
 
 test("a recurrence locks the currency, even before any transaction", async () => {
   // A recurrence would later materialize its old-currency amount in the new currency.
-  const r = await t.signIn("recurrence-lock@lukas.test");
+  const r = await t.signIn("recurrence-lock@wambito.test");
   const cat = (await (
     await t.request("POST", "/v1/categories", {
       headers: r.headers,
@@ -238,7 +238,7 @@ test("a recurrence locks the currency, even before any transaction", async () =>
 });
 
 test("unsupported currencies are rejected", async () => {
-  const e = await t.signIn("e@lukas.test");
+  const e = await t.signIn("e@wambito.test");
   // COP, USD and EUR only at launch (spec §2.4): the other Latin American currencies wait.
   for (const currency of ["JPY", "MXN", "ARS", "CLP", "PEN", "cop", "", 5]) {
     const res = await t.request("PATCH", "/v1/me", { headers: e.headers, body: { currency } });
@@ -292,7 +292,7 @@ test("JSON export contains only the user's data", async () => {
     categories: { name: string }[];
     transactions: { name: string }[];
   };
-  expect(data.user.email).toBe("a@lukas.test");
+  expect(data.user.email).toBe("a@wambito.test");
   expect(data.categories.map((c) => c.name)).toEqual(["Supermercado"]);
   expect(data.transactions.map((x) => x.name)).toEqual(["Supermercado purchase"]);
 });

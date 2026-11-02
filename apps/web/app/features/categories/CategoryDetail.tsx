@@ -5,7 +5,7 @@ import {
   monthOf,
   type TransactionDto,
   todayIn,
-} from "@lukas/core";
+} from "@wambito/core";
 import { type ReactNode, useId, useState } from "react";
 import { useLocation, useParams, useSearchParams } from "react-router";
 import { useTranslations } from "use-intl";

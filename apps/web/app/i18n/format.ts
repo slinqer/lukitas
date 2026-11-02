@@ -1,4 +1,4 @@
-import { InvalidAmountError, type IsoDate, type Month, parseDecimalToMinor } from "@lukas/core";
+import { InvalidAmountError, type IsoDate, type Month, parseDecimalToMinor } from "@wambito/core";
 
 export type Locale = "es" | "en" | "it" | "pt";
 

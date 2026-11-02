@@ -1,5 +1,5 @@
-import { SUPPORTED_CURRENCIES, type SupportedCurrency } from "@lukas/core";
 import { useQueryClient } from "@tanstack/react-query";
+import { SUPPORTED_CURRENCIES, type SupportedCurrency } from "@wambito/core";
 import { useId, useMemo, useState } from "react";
 import { useTranslations } from "use-intl";
 import { ApiProblem, type Translator } from "../../api/errors.ts";

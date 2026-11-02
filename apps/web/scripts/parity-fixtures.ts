@@ -9,12 +9,12 @@
  * every GET in APP_GETS is asked again of that same API. A story without a fake API (a component's)
  * gets a fixture with the clock and no answers.
  *
- *   pnpm --filter @lukas/web parity:fixtures [id filter]
+ *   pnpm --filter @wambito/web parity:fixtures [id filter]
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
-import { monthOf, todayIn } from "@lukas/core";
+import { monthOf, todayIn } from "@wambito/core";
 import { chromium } from "playwright";
 import {
   buildStorybook,

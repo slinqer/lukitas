@@ -1,4 +1,4 @@
-import type { MonthSummary } from "@lukas/core";
+import type { MonthSummary } from "@wambito/core";
 
 export type LukasMood = "happy" | "worried" | "celebrating";
 
