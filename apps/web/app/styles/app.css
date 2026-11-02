@@ -927,10 +927,6 @@
   .lk-wambi.is-hop .lk-wambi-body {
     animation: lk-wambi-hop var(--celebrate) ease-in-out infinite;
   }
-  /* One short pop toward where he points, once when he mounts; then he holds still. */
-  .lk-wambi.is-nudge .lk-wambi-body {
-    animation: lk-wambi-nudge 400ms ease-out 1;
-  }
   .lk-wambi-sweat {
     position: absolute;
     left: 66%;
@@ -1016,17 +1012,6 @@
   }
   82% {
     transform: translateY(0) scale(0.97, 1.03);
-  }
-}
-
-/* A small pop to the right (about 3%), easing back to where he stands. */
-@keyframes lk-wambi-nudge {
-  0%,
-  100% {
-    transform: translateX(0) scale(1);
-  }
-  35% {
-    transform: translateX(3%) scale(1.025);
   }
 }
 

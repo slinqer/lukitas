@@ -66,9 +66,8 @@
   .lk-traveler-mood.is-active {
     opacity: 1;
   }
-  /* Poses that aren't showing hold still (their sheet and their nudge). */
-  .lk-traveler-mood:not(.is-active) .lk-wambi-sprite,
-  .lk-traveler-mood:not(.is-active) .lk-wambi-body {
+  /* Poses that aren't showing hold still. */
+  .lk-traveler-mood:not(.is-active) .lk-wambi-sprite {
     animation-play-state: paused;
   }
 

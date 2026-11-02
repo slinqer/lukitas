@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 
 /** What Wambi does in a section of the landing page. */
-export type WambiPose = "wave" | "point" | "think" | "celebrate";
+export type WambiPose = "wave" | "celebrate";
 
-const POSES: readonly WambiPose[] = ["wave", "point", "think", "celebrate"];
+const POSES: readonly WambiPose[] = ["wave", "celebrate"];
 
 /** A stretch of the page: from `start` (page progress, 0 to 1) to the next section's start. */
 export interface ScrollSection {

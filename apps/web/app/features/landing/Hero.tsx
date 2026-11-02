@@ -11,7 +11,7 @@ import { CodeLink } from "./OpenSource.tsx";
 
 /**
  * The headline with "lukas" ("money", "dinheiro", "soldi") on a gold marker, taking turns with what
- * money is called elsewhere, what Wambito is, one primary action and "Pruébalo sin cuenta" (the demo)
+ * money is called elsewhere, one line that introduces Wambi, one primary action and "Pruébalo sin cuenta" (the demo)
  * beside it, with the perks under them, and Wambi waving. Without an app to open (landing-only, coming soon) there
  * is no demo either, so only the primary action shows.
  */

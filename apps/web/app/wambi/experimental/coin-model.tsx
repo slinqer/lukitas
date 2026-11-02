@@ -22,9 +22,9 @@ import {
 import type { WambiPose } from "../use-scroll-pose.ts";
 import { WAMBI_3D_PALETTE as C } from "./wambi3d-palette.ts";
 
-/** Everything the coin can do: the scroll poses, carrying a mini coin, flying between spots, and
- * worried. */
-export type CoinPose = WambiPose | "carry" | "travel" | "worried";
+/** Everything the coin can do: the scroll poses, pointing, carrying a mini coin, flying between
+ * spots, and worried. */
+export type CoinPose = WambiPose | "point" | "carry" | "travel" | "worried";
 
 /** What drives the model each frame; Wambi3D writes it, the model eases toward it. */
 export interface CoinDrive {
@@ -221,7 +221,6 @@ const EXPRESSIONS: Record<CoinPose, Expression> = {
   wave: { eyesOpen: true, mouth: "grin", browTilt: 0, browLift: 0 },
   point: { eyesOpen: true, mouth: "grin", browTilt: 0, browLift: 0.02 },
   carry: { eyesOpen: true, mouth: "smile", browTilt: 0, browLift: 0.03 },
-  think: { eyesOpen: true, mouth: "smile", browTilt: 0.12, browLift: 0.05 },
   celebrate: { eyesOpen: false, mouth: "grin", browTilt: 0, browLift: 0.05 },
   travel: { eyesOpen: true, mouth: "o", browTilt: 0, browLift: 0.06 },
   worried: { eyesOpen: true, mouth: "o", browTilt: 0.38, browLift: 0.02 },
@@ -255,13 +254,6 @@ function limbsFor(pose: CoinPose, t: number, celebrate: number): Limbs {
         left: { raise: 0.35, fwd: 0.1, reach: 1 },
         right: { raise: 2.55 + Math.sin(t * 2.4) * 0.06, fwd: 0.15, reach: 1.15 },
         legs: { leftKick: 0, rightKick: 0, spread: 0.08 },
-      };
-    case "think":
-      // A hand at his chin, the other hanging.
-      return {
-        left: { raise: 0.9, fwd: 1.1, reach: 0.9 },
-        right: { raise: 0.3, fwd: 0.1, reach: 1 },
-        legs: { leftKick: 0, rightKick: 0, spread: 0.07 },
       };
     case "celebrate":
       return {
@@ -310,7 +302,6 @@ const HANDS: Record<CoinPose, readonly [HandShape, HandShape]> = {
   wave: ["open", "relaxed"],
   point: ["point", "relaxed"],
   carry: ["relaxed", "fist"],
-  think: ["point", "relaxed"],
   celebrate: ["fist", "fist"],
   travel: ["open", "open"],
   worried: ["fist", "fist"],

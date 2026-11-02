@@ -15,7 +15,7 @@ export function WhatsNext() {
   const { locale } = useLocale();
   return (
     <section id="whats-next" className="lk-landing-section" aria-labelledby="whats-next-title">
-      <div className="lk-landing-section-head is-plain">
+      <div className="lk-landing-section-head">
         <h2 id="whats-next-title">{t("landing.title")}</h2>
         <p className="lk-landing-lede">{t("intro")}</p>
       </div>

@@ -10,7 +10,7 @@ import "./traveling-wambi.css";
 /** The entrance's still frame: the first frame of the wave sheet, not playing. */
 const TUCKED_ART: WambiMoodArt = { ...LANDING_ART.wave, play: false, frame: 0 };
 /** Pose layers, in a fixed order so React keeps each one's node (and its loaded sheet). */
-const POSE_ORDER: readonly WambiPose[] = ["wave", "point", "think", "celebrate"];
+const POSE_ORDER: readonly WambiPose[] = ["wave", "celebrate"];
 /** The attribute on `<html>` that makes the prerendered Wambi in the spots step aside. */
 const LIVE_ATTRIBUTE = "data-wambi-live";
 
@@ -52,8 +52,8 @@ function tuckClip(reveal: number): string {
  * stretch on hover or tap (only his body takes the pointer), and, with a fine pointer, a tilt of
  * up to ±12° toward it. Once per session, with the hero in view, he rolls in from the side away
  * from the text, settles, unfolds and waves (`entranceFrame`). On every arrival at a spot its
- * gesture plays once (the pose's layer remounts) and then he rests: he waves, points (one nudge),
- * thinks (the dots rise once, then three stay) and celebrates; nothing loops.
+ * gesture plays once (the pose's layer remounts) and then he rests: he waves in the hero and
+ * celebrates in the closing; nothing loops.
  *
  * Client-only, and mounted after the page's spots are in the DOM: the landing mounts him once the
  * page has loaded and is idle, and only without reduced motion. The prerendered Wambi in the spots

@@ -7,13 +7,11 @@ import { entrancePhase, rollAt } from "./entrance.ts";
 import type { WambiMood } from "./mood.ts";
 import type { WambiPose } from "./use-scroll-pose.ts";
 
-const POSES: readonly WambiPose[] = ["wave", "point", "think", "celebrate"];
+const POSES: readonly WambiPose[] = ["wave", "celebrate"];
 
-/** The mood a pose shows (his class and name): celebrating for celebrate, else happy. */
+/** The mood a pose shows (his class and name): happy waving, celebrating celebrating. */
 const POSE_MOOD: Record<WambiPose, WambiMood> = {
   wave: "happy",
-  point: "happy",
-  think: "happy",
   celebrate: "celebrating",
 };
 

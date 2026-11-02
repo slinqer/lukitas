@@ -12,35 +12,21 @@ import {
 } from "./traveling.ts";
 
 describe("spotPose", () => {
-  it("reads the landing's spots: waves, points, thinks, points, celebrates", () => {
-    const spots = [
-      { id: "hero", pose: "wave" },
-      { id: "ways", pose: "point" },
-      { id: "how", pose: "think" },
-      { id: "faq", pose: "point" },
-      { id: "closing", pose: "celebrate" },
-    ];
-    expect(spots.map((spot) => [spot.id, spotPose(spot.pose)])).toEqual([
-      ["hero", "wave"],
-      ["ways", "point"],
-      ["how", "think"],
-      ["faq", "point"],
-      ["closing", "celebrate"],
-    ]);
+  it("reads the landing's two spots: the hero waves, the closing celebrates", () => {
+    expect(spotPose("wave")).toBe("wave");
+    expect(spotPose("celebrate")).toBe("celebrate");
   });
 
-  it("waves for a missing or unknown pose (the old carry included)", () => {
-    expect(spotPose(undefined)).toBe("wave");
-    expect(spotPose("dance")).toBe("wave");
-    expect(spotPose("carry")).toBe("wave");
+  it("waves for a missing or unknown pose (the old point, think and carry included)", () => {
+    for (const pose of [undefined, "dance", "point", "think", "carry"]) {
+      expect(spotPose(pose)).toBe("wave");
+    }
   });
 });
 
 describe("poseMood", () => {
-  it("celebrates on the celebrate pose and is happy on every other", () => {
+  it("is happy waving and celebrating on the celebrate pose", () => {
     expect(poseMood("wave")).toBe("happy");
-    expect(poseMood("point")).toBe("happy");
-    expect(poseMood("think")).toBe("happy");
     expect(poseMood("celebrate")).toBe("celebrating");
   });
 });

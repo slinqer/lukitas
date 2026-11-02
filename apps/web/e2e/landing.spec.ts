@@ -17,8 +17,8 @@ const LOCALES = [
     headline: "Tus lukas, por fin claras.",
     highlight: "lukas🇨🇴",
     annotation: "¡Gratis, y siempre lo será!",
-    lead: "Wambito es tu presupuesto, y te va a dar gusto cuidarlo.",
-    description: "Anota un gasto en segundos y mira en qué se va cada luka.",
+    lead: "Wambi te acompaña para que cuidar tu plata dé gusto.",
+    removedDescription: "Anota un gasto en segundos y mira en qué se va cada luka.",
     newTab: "(se abre en una pestaña nueva)",
     perks: "Gratis para siempre · Código abierto · Sin contraseñas",
     openSourcePerk: "Código abierto",
@@ -57,8 +57,8 @@ const LOCALES = [
     headline: "Your money, finally clear.",
     highlight: "money",
     annotation: "Free, and it always will be!",
-    lead: "Wambito is your budget, and you'll actually enjoy looking after it.",
-    description: "Log an expense in seconds and see where every buck goes.",
+    lead: "Wambi keeps you company, so looking after your money feels good.",
+    removedDescription: "Log an expense in seconds and see where every buck goes.",
     newTab: "(opens in a new tab)",
     perks: "Free forever · Open source · No passwords",
     openSourcePerk: "Open source",
@@ -95,8 +95,8 @@ const LOCALES = [
     headline: "I tuoi soldi, finalmente chiari.",
     highlight: "soldi",
     annotation: "Gratis, e lo sarà sempre!",
-    lead: "Wambito è il tuo budget, e ti farà piacere prendertene cura.",
-    description: "Annota una spesa in pochi secondi e guarda dove va ogni centesimo.",
+    lead: "Wambi ti fa compagnia, così prenderti cura dei tuoi soldi è un piacere.",
+    removedDescription: "Annota una spesa in pochi secondi e guarda dove va ogni centesimo.",
     newTab: "(si apre in una nuova scheda)",
     perks: "Gratis per sempre · Open source · Senza password",
     openSourcePerk: "Open source",
@@ -138,8 +138,8 @@ const LOCALES = [
     headline: "O teu dinheiro, finalmente claro.",
     highlight: "dinheiro",
     annotation: "Grátis, e vai ser sempre!",
-    lead: "Wambito é o teu orçamento, e vais gostar de cuidar dele.",
-    description: "Regista uma despesa em segundos e vê para onde vai cada cêntimo.",
+    lead: "O Wambi faz-te companhia para que cuidar do teu dinheiro seja um prazer.",
+    removedDescription: "Regista uma despesa em segundos e vê para onde vai cada cêntimo.",
     newTab: "(abre num novo separador)",
     perks: "Grátis para sempre · Código aberto · Sem palavras-passe",
     openSourcePerk: "Código aberto",
@@ -585,8 +585,10 @@ for (const l of LOCALES) {
       );
 
       const description = hero.locator(".lk-landing-description");
-      await expect(description).toHaveText(`${l.lead} ${l.description}`);
+      // One sentence that introduces Wambi; the old second sentence is gone.
+      await expect(description).toHaveText(l.lead);
       await expect(description.locator(".lk-landing-lead")).toHaveText(l.lead);
+      await expect(hero).not.toContainText(l.removedDescription);
 
       // The visible text is the perks; the link to GitHub adds a hidden "opens in a new tab".
       await expect(hero.locator(".lk-landing-perks")).toHaveText(
@@ -960,30 +962,18 @@ for (const l of LOCALES) {
       expect(await sprite.evaluate((el) => el.getAnimations().length)).toBe(0);
     });
 
-    test("shows Wambi's still pose on every other stop, and celebrates once", async ({ page }) => {
+    test("keeps Wambi only in the hero and the closing, where he celebrates once", async ({
+      page,
+    }) => {
       await page.goto(l.path);
-      // Without JavaScript nobody travels: each spot keeps its prerendered still.
-      const stills = [
-        ["ways", "point", "/wambi/pointing.webp", "0% 0%"],
-        ["how", "think", "/wambi/thinking.webp", "33.333% 100%"],
-        ["faq", "point", "/wambi/pointing.webp", "0% 0%"],
-      ] as const;
-      for (const [id, pose, sheet, frame] of stills) {
-        const spot = page.locator(`[data-wambi-spot='${id}']`);
-        await expect(spot).toHaveAttribute("data-wambi-pose", pose);
-        await expect(spot).toHaveAttribute("aria-hidden", "true");
-        const sprite = spot.locator(".lk-wambi-sprite");
-        await expect(sprite).toHaveCSS(
-          "background-image",
-          new RegExp(sheet.replaceAll(".", "\\.")),
-        );
-        await expect(sprite).toHaveCSS("background-position", frame);
-        expect(
-          await spot
-            .locator(".lk-wambi")
-            .evaluate((el) => el.getAnimations({ subtree: true }).length),
-        ).toBe(0);
-      }
+      // Two spots, and no other Wambi anywhere in the page (not even in the demo chips).
+      expect(
+        await page
+          .locator("[data-wambi-spot]")
+          .evaluateAll((spots) => spots.map((spot) => (spot as HTMLElement).dataset.wambiSpot)),
+      ).toEqual(["hero", "closing"]);
+      await expect(page.locator("main .lk-wambi")).toHaveCount(2);
+      await expect(page.locator("#how .lk-landing-saved")).toBeVisible();
       // The closing celebrates in one pass, then rests on frame 4 (fists up): nothing loops.
       const closing = page.locator("[data-wambi-spot='closing'] .lk-wambi-sprite");
       await expect(closing).toHaveClass(/is-once/);

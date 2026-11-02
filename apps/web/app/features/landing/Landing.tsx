@@ -20,10 +20,9 @@ import "./landing.css";
 
 /**
  * The live, 2.5D Wambi (the founder's sprite sheets plus CSS depth), mounted once the page has
- * loaded and the browser is idle. He stands on the page's Wambi spots (hero → ways → how it works
- * → FAQ → closing) in each spot's pose: waves, points, thinks, points, celebrates, each gesture
- * once on arriving. Until then, under reduced motion and without JavaScript, the prerendered 2D
- * Wambi in every spot stays, as a still frame (the hero waves once). (The 3D Wambi is an experiment in
+ * loaded and the browser is idle. He stands on the page's two Wambi spots, the hero and the
+ * closing: he waves once there, then goes straight to the closing and celebrates once. Until then,
+ * under reduced motion and without JavaScript, the prerendered 2D Wambi in both spots stays. (The 3D Wambi is an experiment in
  * `app/wambi/experimental/` and never loads here.)
  */
 function TravelingWambi() {

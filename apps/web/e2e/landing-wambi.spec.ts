@@ -5,8 +5,8 @@ import { expect, type Page, test } from "@playwright/test";
 
 /**
  * The 2.5D Wambi on the built landing page, with JavaScript on: the founder's sprite sheets in an
- * overlay that mounts once the page is idle, rolls in once per session, takes each spot's pose
- * (waves, points, thinks, points, celebrates: each gesture once on arriving, nothing loops),
+ * overlay that mounts once the page is idle, rolls in once per session, stands only on the hero
+ * (waves) and the closing (celebrates), each gesture once on arriving, nothing loops,
  * never stands over text and never takes clicks but on his body; the prerendered 2D Wambi stays
  * under reduced motion. No WebGL, no three.js. Also the JavaScript budget of `/`.
  */
@@ -147,16 +147,30 @@ test.describe("2.5D Wambi", () => {
     await expect(layer.locator(".lk-traveler-roller")).toHaveCSS("transform", "none");
   });
 
-  test("plays each stop's gesture once on arriving, again on each return, then rests", async ({
+  test("stops only at the hero and the closing, each gesture once per arrival, then rests", async ({
     page,
   }) => {
     await page.addInitScript(() => sessionStorage.setItem("wambito.entrance", "seen"));
     await page.goto("/");
     const layer = page.locator("[data-wambi-traveler]");
     await expect(layer).toBeVisible({ timeout: 30_000 });
+    // Two stops on the whole page, and no other Wambi in between.
+    expect(
+      await page
+        .locator("[data-wambi-spot]")
+        .evaluateAll((spots) => spots.map((spot) => (spot as HTMLElement).dataset.wambiSpot)),
+    ).toEqual(["hero", "closing"]);
+    expect(
+      await page
+        .locator("main .lk-wambi")
+        .evaluateAll((all) =>
+          all.map((el) => el.closest<HTMLElement>("[data-wambi-spot]")?.dataset.wambiSpot),
+        ),
+    ).toEqual(["hero", "closing"]);
+
     const active = layer.locator(".lk-traveler-mood.is-active");
     const sprite = active.locator(".lk-wambi-sprite");
-    /** No animation left in his pose (sheet or nudge): he rests. */
+    /** No animation left in his pose: he rests. */
     const rests = async () => {
       await expect
         .poll(() => active.evaluate((el) => el.getAnimations({ subtree: true }).length), {
@@ -165,13 +179,12 @@ test.describe("2.5D Wambi", () => {
         .toBe(0);
     };
     await rests();
-    // Every start of a gesture (a sheet's x track, or the pointing nudge), per pose, from here on.
+    // Every start of a gesture (a sheet's x track), per pose, from here on.
     await page.evaluate(() => {
       const w = window as unknown as { __gestures: Record<string, number> };
       w.__gestures = {};
       document.addEventListener("animationstart", (event) => {
-        const name = event.animationName;
-        if (!name.includes("sprite-x") && !name.includes("wambi-nudge")) return;
+        if (!event.animationName.includes("sprite-x")) return;
         const pose = (event.target as HTMLElement).closest<HTMLElement>("[data-pose]")?.dataset
           .pose;
         if (pose) w.__gestures[pose] = (w.__gestures[pose] ?? 0) + 1;
@@ -183,13 +196,11 @@ test.describe("2.5D Wambi", () => {
         pose,
       );
     const journey = [
-      { stop: "ways", pose: "point" },
-      { stop: "how", pose: "think" },
-      { stop: "faq", pose: "point" },
-      { stop: "how", pose: "think" },
-      { stop: "hero", pose: "wave" },
+      { stop: "closing", pose: "celebrate", rest: "0% 100%" },
+      { stop: "hero", pose: "wave", rest: "0% 0%" },
+      { stop: "closing", pose: "celebrate", rest: "0% 100%" },
     ];
-    for (const { stop, pose } of journey) {
+    for (const { stop, pose, rest } of journey) {
       const started = await gestures(pose);
       await scrollToSpot(page, stop);
       await expect(layer).toHaveAttribute("data-spot", stop);
@@ -199,76 +210,17 @@ test.describe("2.5D Wambi", () => {
       await expect
         .poll(() => centerDistance(page, `[data-wambi-spot='${stop}']`, "[data-wambi-traveler]"))
         .toBeLessThan(8);
-      if (pose === "point") {
-        // The pointing still: one nudge, no sheet playing at all.
-        expect(await activeSheet(page)).toContain("/wambi/pointing.webp");
-        await expect(sprite).not.toHaveClass(/is-playing/);
-        await expect(active.locator(".lk-wambi")).toHaveClass(/is-nudge/);
-      } else {
-        // One pass of the sheet, never an endless loop.
-        await expect(sprite).toHaveClass(/is-once/);
-        expect(await sprite.evaluate((el) => getComputedStyle(el).animationIterationCount)).toBe(
-          "2, 1",
-        );
-      }
+      // One pass of the sheet, never an endless loop; then he rests (wave frame 0, celebrate 4).
+      await expect(sprite).toHaveClass(/is-once/);
+      expect(await sprite.evaluate((el) => getComputedStyle(el).animationIterationCount)).toBe(
+        "2, 1",
+      );
       await rests();
-      // He rests: waving on frame 0, thinking on frame 5 (three dots), pointing on his still.
-      const rest = { wave: "0% 0%", think: "33.333% 100%", point: "0% 0%" }[pose];
-      await expect(sprite).toHaveCSS("background-position", rest as string);
-      // Nothing more starts while he stands there.
+      await expect(sprite).toHaveCSS("background-position", rest);
+      // Nothing more starts while he stands there, and nothing in him loops (the idle bob aside).
       const after = await gestures(pose);
       await page.waitForTimeout(800);
       expect(await gestures(pose)).toBe(after);
-    }
-    expect(await activeSheet(page)).toContain("/wambi/wave.webp");
-  });
-
-  test("thinks once in how it works, then rests on three dots", async ({ page }) => {
-    await page.addInitScript(() => sessionStorage.setItem("wambito.entrance", "seen"));
-    await page.goto("/");
-    const layer = page.locator("[data-wambi-traveler]");
-    await expect(layer).toBeVisible({ timeout: 30_000 });
-    await scrollToSpot(page, "how");
-    await expect(layer).toHaveAttribute("data-pose", "think");
-    await expect.poll(() => activeSheet(page)).toContain("/wambi/thinking.webp");
-    const sprite = layer.locator(".lk-traveler-mood[data-pose='think'] .lk-wambi-sprite");
-    await expect(sprite).toHaveClass(/is-once/);
-    // One 1.8s pass: the columns run once per row (900ms), the rows once.
-    const timing = await sprite.evaluate((el) =>
-      el.getAnimations().map((a) => {
-        const t = a.effect?.getComputedTiming();
-        return [t?.duration, t?.iterations];
-      }),
-    );
-    expect(timing).toEqual([
-      [900, 2],
-      [1800, 1],
-    ]);
-    await expect
-      .poll(() => sprite.evaluate((el) => el.getAnimations().length), { timeout: 5000 })
-      .toBe(0);
-    // Frame 6 of the sheet (index 5): second column, second row.
-    await expect(sprite).toHaveCSS("background-position", "33.333% 100%");
-  });
-
-  test("points with one nudge at ways and the FAQ, and nothing loops", async ({ page }) => {
-    await page.addInitScript(() => sessionStorage.setItem("wambito.entrance", "seen"));
-    await page.goto("/");
-    const layer = page.locator("[data-wambi-traveler]");
-    await expect(layer).toBeVisible({ timeout: 30_000 });
-    for (const stop of ["ways", "faq"]) {
-      await scrollToSpot(page, stop);
-      await expect(layer).toHaveAttribute("data-spot", stop);
-      await expect(layer).toHaveAttribute("data-pose", "point");
-      await expect.poll(() => activeSheet(page)).toContain("/wambi/pointing.webp");
-      const wambi = layer.locator(".lk-traveler-mood.is-active .lk-wambi");
-      await expect(wambi).toHaveClass(/is-nudge/);
-      await expect
-        .poll(() => wambi.evaluate((el) => el.getAnimations({ subtree: true }).length), {
-          timeout: 3000,
-        })
-        .toBe(0);
-      // Nothing anywhere in him loops: every animation left is finite (the idle bob aside).
       const endless = await layer.evaluate((el) =>
         el
           .getAnimations({ subtree: true })
@@ -287,22 +239,21 @@ test.describe("2.5D Wambi", () => {
     await expect(layer).toHaveAttribute("data-pose", "celebrate");
   });
 
-  test("thinks in how it works and celebrates once next to the final call to action", async ({
-    page,
-  }) => {
+  test("goes from the hero straight to the closing and celebrates once there", async ({ page }) => {
     const errors = collectErrors(page);
     await page.addInitScript(() => sessionStorage.setItem("wambito.entrance", "seen"));
     await page.goto("/");
     const layer = page.locator("[data-wambi-traveler]");
     await expect(layer).toBeVisible({ timeout: 30_000 });
 
-    await scrollToSpot(page, "how");
-    await expect(layer).toHaveAttribute("data-spot", "how");
-    await expect(layer).toHaveAttribute("data-pose", "think");
-    await expect.poll(() => activeSheet(page)).toContain("/wambi/thinking.webp");
-    await expect
-      .poll(() => centerDistance(page, "[data-wambi-spot='how']", "[data-wambi-traveler]"))
-      .toBeLessThan(8);
+    // Halfway down the page he still stands on the hero, or is on his way: never a middle stop.
+    await page.evaluate(() =>
+      window.scrollTo({
+        top: (document.documentElement.scrollHeight - window.innerHeight) / 2,
+        behavior: "instant",
+      }),
+    );
+    await expect(layer).toHaveAttribute("data-spot", /^(hero|closing)$/);
 
     await page.evaluate(() =>
       window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "instant" }),
@@ -402,11 +353,11 @@ test.describe("2.5D Wambi", () => {
   });
 
   test("never leaves a spot empty when a sheet fails to load", async ({ page }) => {
-    await page.route("**/wambi/thinking.webp", (route) => route.abort());
+    await page.route("**/wambi/celebrate.webp", (route) => route.abort());
     await page.addInitScript(() => sessionStorage.setItem("wambito.entrance", "seen"));
     await page.goto("/");
     await expect(page.locator("[data-wambi-traveler]")).toBeVisible({ timeout: 30_000 });
-    await scrollToSpot(page, "how");
+    await scrollToSpot(page, "closing");
     // Give the failed sheet time to fail and the layer time to react.
     await page.waitForTimeout(1500);
     const state = await page.evaluate(async () => {
@@ -437,7 +388,7 @@ test.describe("2.5D Wambi", () => {
       expect(state).toEqual({ steppedAside: true, live: false, heroVisible: true });
     } else {
       // He stands on the spot, showing a sheet that actually loaded (the pose he held).
-      expect(state).toEqual({ steppedAside: false, spot: "how", sheetLoads: true });
+      expect(state).toEqual({ steppedAside: false, spot: "closing", sheetLoads: true });
     }
   });
 
@@ -455,7 +406,7 @@ test.describe("2.5D Wambi", () => {
     expect(await sprite.evaluate((el) => el.getAnimations().length)).toBe(0);
   });
 
-  test("keeps a still frame on every stop under reduced motion", async ({ page }) => {
+  test("keeps a still frame on both stops under reduced motion", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
     await settle(page);
@@ -463,9 +414,6 @@ test.describe("2.5D Wambi", () => {
     await expect(page.locator("canvas")).toHaveCount(0);
     const stills = [
       ["#hero [data-slot='hero-mascot']", "/wambi/wave.webp", "0% 0%"],
-      ["[data-wambi-spot='ways']", "/wambi/pointing.webp", "0% 0%"],
-      ["[data-wambi-spot='how']", "/wambi/thinking.webp", "33.333% 100%"],
-      ["[data-wambi-spot='faq']", "/wambi/pointing.webp", "0% 0%"],
       ["[data-wambi-spot='closing']", "/wambi/celebrate.webp", "0% 100%"],
     ] as const;
     for (const [spot, sheet, frame] of stills) {

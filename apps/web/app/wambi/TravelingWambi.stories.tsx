@@ -5,8 +5,7 @@ import { ENTRANCE_STORAGE_KEY } from "./entrance.ts";
 import { TravelingWambi } from "./TravelingWambi.tsx";
 
 /**
- * The landing's traveling Wambi on a small page with three spots (like the landing's hero, "how it
- * works" and closing): he rolls in once per session, stands on the spot in view in its pose, turns
+ * The landing's traveling Wambi on a small page with its two spots (the hero and the closing): he rolls in once per session, stands on the spot in view in its pose, turns
  * edge-on between spots, and hops on hover or tap. On the landing the page mounts him only once it
  * has loaded and is idle, and never under reduced motion.
  */
@@ -28,12 +27,6 @@ const meta = {
           data-wambi-pose="wave"
           data-wambi-enter-from="right"
           style={{ width: 220, height: 220, marginInline: "auto" }}
-        />
-        <div style={{ height: "90vh" }} />
-        <div
-          data-wambi-spot="how"
-          data-wambi-pose="think"
-          style={{ width: 120, height: 120, marginInlineStart: "auto" }}
         />
         <div style={{ height: "90vh" }} />
         <div
@@ -71,15 +64,6 @@ function activeSheet(layer: HTMLElement): string {
   return sprite ? getComputedStyle(sprite).backgroundImage : "";
 }
 
-/** Scrolls so the spot's center sits where it takes over (40% down the viewport). */
-function scrollToSpot(id: string) {
-  const spot = document.querySelector<HTMLElement>(`[data-wambi-spot='${id}']`);
-  const box = spot?.getBoundingClientRect();
-  if (!box) return;
-  const top = box.top + window.scrollY + box.height / 2 - window.innerHeight * 0.4 + 2;
-  window.scrollTo({ top, behavior: "instant" });
-}
-
 /** First visit: he rolls in (tucked into his coin), unfolds and waves, then stands on the hero. */
 export const Entrance: Story = {
   play: async ({ canvasElement }) => {
@@ -103,8 +87,8 @@ export const Entrance: Story = {
 };
 
 /**
- * He takes each spot's pose and plays its gesture once on arriving (thinking rests on frame 5, three
- * dots), and only his body takes the pointer: a tap makes him hop.
+ * He takes each spot's pose and plays its gesture once on arriving (the closing's celebration rests
+ * on frame 4), and only his body takes the pointer: a tap makes him hop.
  */
 export const SpotsAndHop: Story = {
   beforeEach: () => {
@@ -121,23 +105,16 @@ export const SpotsAndHop: Story = {
     await waitFor(() => expect(layer.querySelector(".lk-traveler-hop.is-hopping")).not.toBeNull());
     await waitFor(() => expect(layer.querySelector(".lk-traveler-hop.is-hopping")).toBeNull());
 
-    scrollToSpot("how");
-    await waitFor(() => expect(layer.dataset.pose).toBe("think"));
-    await expect(layer.dataset.spot).toBe("how");
-    await waitFor(() => expect(activeSheet(layer)).toContain("/wambi/thinking.webp"));
-    const thinking = () => layer.querySelector(".lk-traveler-mood.is-active .lk-wambi-sprite");
-    await expect(thinking()).toHaveClass("is-once");
-    await waitFor(() => expect(thinking()?.getAnimations()).toHaveLength(0), { timeout: 5000 });
-    // Frame 5 of the 4×2 sheet: second column, second row.
-    await expect(thinking() && getComputedStyle(thinking() as Element).backgroundPosition).toBe(
-      "33.333% 100%",
-    );
-
     window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "instant" });
     await waitFor(() => expect(layer.dataset.pose).toBe("celebrate"));
+    await expect(layer.dataset.spot).toBe("closing");
     await waitFor(() => expect(activeSheet(layer)).toContain("/wambi/celebrate.webp"));
-    await expect(layer.querySelector(".lk-traveler-mood.is-active .lk-wambi-sprite")).toHaveClass(
-      "is-once",
-    );
+    const celebrating = () => layer.querySelector(".lk-traveler-mood.is-active .lk-wambi-sprite");
+    await expect(celebrating()).toHaveClass("is-once");
+    await waitFor(() => expect(celebrating()?.getAnimations()).toHaveLength(0), { timeout: 5000 });
+    // Frame 4 of the 4×2 sheet: first column, second row.
+    await expect(
+      celebrating() && getComputedStyle(celebrating() as Element).backgroundPosition,
+    ).toBe("0% 100%");
   },
 };

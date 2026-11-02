@@ -7,10 +7,7 @@ import type { WambiPose } from "./use-scroll-pose.ts";
 
 export type { WambiMood } from "./mood.ts";
 
-/**
- * A sprite sheet: a full grid of square frames in reading order, played as a seamless loop. A
- * single still image is a 1×1 sheet.
- */
+/** A sprite sheet: a full grid of square frames in reading order, played as a seamless loop. */
 export interface WambiSprite {
   /** Public URL of the transparent sheet. */
   src: string;
@@ -31,10 +28,9 @@ export interface WambiMoodArt {
   stillFrame: number;
   /**
    * CSS treatment for moods without their own sheet: `shiver` adds a small side-to-side shake and
-   * a sweat drop, `hop` a jump with squash and stretch plus sparkles. `nudge` is one short pop
-   * toward the right (where the pointing still points) when he mounts, then he holds still.
+   * a sweat drop, `hop` a jump with squash and stretch plus sparkles.
    */
-  treatment: "none" | "shiver" | "hop" | "nudge";
+  treatment: "none" | "shiver" | "hop";
 }
 
 /** The founder's sheets: 4×2 frames each, 500px cells. Each loop is timed by eye for its mood. */
@@ -43,13 +39,6 @@ const WAVE: WambiSprite = { src: "/wambi/wave.webp", columns: 4, rows: 2, loopMs
 const WORRIED: WambiSprite = { src: "/wambi/worried.webp", columns: 4, rows: 2, loopMs: 2000 };
 /** Celebrating jumps with fists up among sparkles: quicker and bouncier. */
 const CELEBRATE: WambiSprite = { src: "/wambi/celebrate.webp", columns: 4, rows: 2, loopMs: 1000 };
-/** Thinking: a hand at his chin while thought dots rise one by one; one calm pass. */
-const THINKING: WambiSprite = { src: "/wambi/thinking.webp", columns: 4, rows: 2, loopMs: 1800 };
-/**
- * Pointing to the right: a single still (500px, scaled from the founder's 1254px drawing so he
- * stands as big as in the sheets, soles at the same height).
- */
-const POINTING: WambiSprite = { src: "/wambi/pointing.webp", columns: 1, rows: 1, loopMs: 0 };
 
 /**
  * The art per mood: every mood plays its own sheet. Under reduced motion each shows one still
@@ -64,23 +53,14 @@ export const WAMBI_ART: Record<WambiMood, WambiMoodArt> = {
 };
 
 /**
- * The landing's journey, one art per pose: he waves (hero), points (ways, FAQ), thinks (how it
- * works) and celebrates (closing). Each gesture plays once when he arrives (`playOnce`), then he
- * rests on `frame`, which is also his still under reduced motion and without JavaScript: thinking
- * rests on frame 5 (three dots), celebrating on frame 4 (fists up). Pointing is a still with a
- * `nudge` toward where he points.
+ * The landing's two poses: he waves (hero) and celebrates (closing). Each plays once when he
+ * arrives (`playOnce`), then he rests on `frame`, which matches his still under reduced motion:
+ * waving on frame 0, celebrating on frame 4 (fists up). Nothing on the landing loops.
  */
 export const LANDING_ART: Record<WambiPose, WambiMoodArt> = {
   wave: WAMBI_ART.happy,
-  point: { sprite: POINTING, play: false, frame: 0, stillFrame: 0, treatment: "nudge" },
-  think: { sprite: THINKING, play: true, frame: 5, stillFrame: 5, treatment: "none" },
   celebrate: { ...WAMBI_ART.celebrating, frame: 4 },
 };
-
-/** The same art held still: what a landing spot shows before (or without) the live Wambi. */
-export function stillArt(art: WambiMoodArt): WambiMoodArt {
-  return { ...art, play: false, frame: art.stillFrame, treatment: "none" };
-}
 
 export interface WambiProps {
   mood: WambiMood;
@@ -205,7 +185,6 @@ export function Wambi({
         `is-${mood}`,
         moving && treatment === "shiver" && "is-shiver",
         moving && treatment === "hop" && "is-hop",
-        moving && treatment === "nudge" && "is-nudge",
       )}
       style={{ width: size, height: size }}
       ref={ref}

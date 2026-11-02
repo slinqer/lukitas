@@ -6,7 +6,6 @@ import { cx } from "../../ui/cx.ts";
 import { PressLink } from "../../ui/PressLink.tsx";
 import { appLinkProps } from "./links.ts";
 import { NewTabHint } from "./NewTabHint.tsx";
-import { WambiSpot } from "./WambiSpot.tsx";
 
 function Icon({ tone, children }: { tone: "gold" | "candy" | "good"; children: ReactNode }) {
   return (
@@ -29,7 +28,6 @@ export function UseItYourWay() {
     <section id="ways" className="lk-landing-section" aria-labelledby="ways-title">
       <div className="lk-landing-section-head">
         <h2 id="ways-title">{t("title")}</h2>
-        <WambiSpot id="ways" pose="point" />
       </div>
       <ul className="lk-landing-cards is-ways">
         <li className={cx("lk-landing-card", !COMING_SOON && "is-live")}>
