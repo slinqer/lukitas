@@ -265,23 +265,41 @@ cases_direct() {
   nothing "direct: other hosts get nothing (Host: 127.0.0.1:8080)" 127.0.0.1 -H 'Host: 127.0.0.1:8080' \
     "http://$WEB_IP/api/x"
   nothing "direct: other hosts get nothing (Host: other.example)" other.example \
-    -H 'Host: other.example' "http://$WEB_IP/sign-in"
+    -H 'Host: other.example' "http://$WEB_IP/sign-in?code=other-host-query"
   # Where those redirects lead: HTTPS for any other name has no certificate, so no answer at all.
   nothing "direct: other hosts get nothing (HTTPS by address)" "$WEB_IP" -k "https://$WEB_IP/api/x"
   nothing "direct: other hosts get nothing (HTTPS for other.example)" other.example -k \
     --resolve "other.example:443:$WEB_IP" "https://other.example/sign-in"
 
-  # Last, so every request above has been logged: the peer, never the spoofed address. (A request
-  # naming another host is logged by Caddy's default access logger with its headers, the spoofed
-  # one among them, but never as the visitor: only the site's own log, http.log.access.logN, sets
-  # visitor_ip.)
+  # Last, so every request above has been logged: the peer, never the spoofed address. Requests
+  # naming another host are not logged at all (Caddy's default access log would keep their headers
+  # and query strings, where sign-in codes travel); the app's host keeps its minimal log.
   curl_app -o /dev/null -H 'Cf-Connecting-Ip: 203.0.113.7' -H 'X-Forwarded-For: 198.51.100.9' "$app/api/log-direct"
   check_log_visitor "direct: log has the peer" /api/log-direct "$CLIENT_IP"
-  if grep -F 203.0.113.7 "$tmp/web.log" | grep -qE '"visitor_ip":"203\.0\.113\.7"|"logger":"http\.log\.access\.log'; then
-    fail "direct: the site's log never has the spoofed address ($(grep -F 203.0.113.7 "$tmp/web.log" | head -n 1))"
+  if grep -qF 203.0.113.7 "$tmp/web.log"; then
+    fail "direct: log never has the spoofed address ($(grep -F 203.0.113.7 "$tmp/web.log" | head -n 1))"
   else
-    ok "direct: the site's log never has the spoofed address"
+    ok "direct: log never has the spoofed address"
   fi
+  if grep -qF other-host-query "$tmp/web.log"; then
+    fail "direct: other hosts' query strings not logged ($(grep -F other-host-query "$tmp/web.log" | head -n 1))"
+  else
+    ok "direct: other hosts' query strings not logged"
+  fi
+  # The app's host on port 80 (the redirect) still lands in the site's log, without its query.
+  curl_app -o /dev/null 'http://app.localhost/auth/verify-redirect?code=app-host-query'
+  case "$(log_line_of /auth/verify-redirect)" in
+    *'"logger":"http.log.access.log'*) ok "direct: HTTP redirect logged by the site's log" ;;
+    *) fail "direct: HTTP redirect logged by the site's log ($(log_line_of /auth/verify-redirect))" ;;
+  esac
+  if grep -qF app-host-query "$tmp/web.log"; then
+    fail "direct: the redirect's query string not logged"
+  else
+    ok "direct: the redirect's query string not logged"
+  fi
+  # And the local listener keeps its log too.
+  curl_web -o /dev/null http://web:8080/api/log-local
+  check_log_visitor "direct: local listener logged" /api/log-local "$CLIENT_IP"
 }
 
 for s in $run_sets; do "cases_$s"; done

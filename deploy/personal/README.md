@@ -161,9 +161,9 @@ docker compose stop                # stop everything, keep everything
 ./up.sh --skip-web                 # start it again
 ```
 
-Start it with `./up.sh`, not a bare `docker compose up -d`: in the direct way that would also try
-to start `cloudflared`, which has no tunnel there. Everything has `restart: unless-stopped`, so it
-comes back after a reboot once Docker (Desktop) is up.
+In the direct way `cloudflared` is switched off in the override, so a bare `docker compose up -d`
+starts everything else and no tunnel. Everything has `restart: unless-stopped`, so it comes back
+after a reboot once Docker (Desktop) is up.
 In Docker Desktop settings, turn on **Start Docker Desktop when you sign in to your computer**.
 
 **Never run `docker volume rm lukitas-personal-db`**: that deletes the database. The volume is
@@ -433,8 +433,9 @@ tunnel.)
 for. Moving to a new hostname invalidates every passkey; email codes still work, and each person
 registers a passkey again after signing in.
 
-1. **`.env`.** On the server (Docker, and Node 22 with pnpm for the web build), clone the
-   repository and write `deploy/personal/.env` from `.env.example`, with:
+1. **`.env`.** On the server (Docker with Compose 2.24.4 or newer, see `docker compose version`;
+   and Node 22 with pnpm for the web build), clone the repository and write
+   `deploy/personal/.env` from `.env.example`, with:
    - `PUBLIC_HOSTNAME=app.wambito.com`;
    - the same `BETTER_AUTH_SECRET` as the old install, so sessions survive;
    - mail through Resend, since Bridge stays on the Mac: `RESEND_API_KEY`, with `SMTP_URL` empty and
@@ -448,8 +449,8 @@ registers a passkey again after signing in.
    its certificate (it keeps trying, which is harmless). Check it on the local listener:
 
    ```sh
-   ./up.sh       # build, migrate, start; checks http://127.0.0.1:8088 through the healthcheck
-   ./smoke.sh
+   ./up.sh       # build, migrate, start (waits for web's healthcheck on its plain-HTTP listener)
+   ./smoke.sh    # checks http://127.0.0.1:8088 from the server
    ```
 3. **Backups first.** Set up the copy in R2 ([above](#backups-in-cloudflare-r2)) and drill a full
    restore from it, before real data arrives.
@@ -484,10 +485,10 @@ it. On the Mac, `./uninstall-backup.sh` removes the launchd agent once the serve
 | File | What |
 |---|---|
 | `docker-compose.yml` | The stack: postgres, migrate, api, mcp, web, cloudflared |
-| `docker-compose.direct.yml` | The direct way (`COMPOSE_FILE` in `.env`): web on 80 and 443 with its certificates in a volume, the plain-HTTP listener on `127.0.0.1` |
+| `docker-compose.direct.yml` | The direct way (`COMPOSE_FILE` in `.env`): web on 80 and 443 with its certificates in a volume, the plain-HTTP listener on `127.0.0.1`, no cloudflared |
 | `routes.caddy` | Every route, the same for both ways: static app, SPA fallback, cache rules, `/api` and `/mcp` proxies, blocked paths, landing redirects, access log |
 | `Caddyfile` | The tunnel's Caddy: plain HTTP behind cloudflared, the client's address from `Cf-Connecting-Ip` |
-| `Caddyfile.direct` | The direct way's Caddy: automatic HTTPS and HSTS for `PUBLIC_HOSTNAME`, the client's address from the TCP peer |
+| `Caddyfile.direct` | The direct way's Caddy: automatic HTTPS and HSTS for `PUBLIC_HOSTNAME`, the client's address from the TCP peer, no log of requests for other hosts |
 | `cloudflared.yml` | Tunnel ingress for `app.wambito.com` |
 | `Dockerfile.web` | Caddy with the web build inside (the API image is `apps/api/Dockerfile.prod`) |
 | `web-entrypoint.sh` `assetlinks.json.template` | At start, write `/.well-known/assetlinks.json` from `ANDROID_CERT_SHA256` |

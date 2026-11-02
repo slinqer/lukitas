@@ -84,6 +84,20 @@ up_services() {
   fi
 }
 
+# compose_command: the docker compose command line `compose` runs, before its arguments, quoted for
+# a person to copy (restore.sh prints commands with it).
+compose_command() {
+  local files f line
+  files="$(compose_files)" || exit 1
+  line="docker compose --env-file $(printf '%q' "$ENV_FILE")"
+  while IFS= read -r f; do
+    line="$line -f $(printf '%q' "$f")"
+  done <<EOF
+$files
+EOF
+  printf '%s' "$line"
+}
+
 # compose ARGS...: docker compose for this install, with its compose files (compose_files).
 # Refuses `down -v` (and `rm -v`): the database lives in a volume, and nothing here should ever
 # remove it.

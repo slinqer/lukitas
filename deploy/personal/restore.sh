@@ -146,8 +146,8 @@ deleted_warning() {
     echo "In the dump but not in the live database, so deleted since the dump (delete each again;"
     echo "its data goes with it):"
     printf '%s\n' "$deleted_since" | while read -r id email; do
-      printf '  %s\n    docker compose --env-file %s -f %s exec postgres psql -U lukitas -d lukitas -c "delete from \\"user\\" where id = %s"\n' \
-        "$email" "$ENV_FILE" "$DIR/docker-compose.yml" "'$id'"
+      printf '  %s\n    %s exec postgres psql -U lukitas -d lukitas -c "delete from \\"user\\" where id = %s"\n' \
+        "$email" "$(compose_command)" "'$id'"
     done
   elif [ -z "$live_accounts" ]; then
     echo "The live database has no accounts to compare with: delete again anyone who deleted their"
@@ -191,4 +191,4 @@ compose up -d --wait $services
 say "Restored from $file"
 deleted_warning
 echo "The previous database is still there as $before. When you are sure, drop it:"
-echo "  docker compose --env-file $ENV_FILE -f $DIR/docker-compose.yml exec postgres psql -U lukitas -d postgres -c 'drop database $before'"
+echo "  $(compose_command) exec postgres psql -U lukitas -d postgres -c 'drop database $before'"

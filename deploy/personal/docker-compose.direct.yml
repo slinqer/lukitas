@@ -1,7 +1,8 @@
 # The direct way: a server with its own public address serves the install itself, with no tunnel.
 # Chosen in .env with COMPOSE_FILE=docker-compose.yml:docker-compose.direct.yml (README, "Moving to a
-# server"); the scripts here and a `docker compose` typed by hand in this folder both read it. Only
-# web changes: cloudflared is not started (up.sh) and needs no TUNNEL_ID.
+# server"); the scripts here and a `docker compose` typed by hand in this folder both read it. Needs
+# Docker Compose 2.24.4 or newer (`!override`). web changes, and cloudflared is off: no tunnel, no
+# TUNNEL_ID.
 #
 #   internet ──80, 443, 443/udp──> web (Caddy, Caddyfile.direct) ──/api/*──> api ──> postgres
 #                                   │ Let's Encrypt certificate for PUBLIC_HOSTNAME, in web-caddy-data
@@ -28,6 +29,12 @@ services:
       - web-caddy-data:/data
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/sign-in"]
+
+  # Not started here, not even by a bare `docker compose up -d`: there is no tunnel, and its
+  # credentials file would not exist. (A profile nobody enables. Naming it, as restore.sh's
+  # `compose stop cloudflared ...` does, is harmless.)
+  cloudflared:
+    profiles: ["tunnel"]
 
 volumes:
   web-caddy-data:

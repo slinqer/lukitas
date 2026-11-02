@@ -8,7 +8,8 @@
 # What it checks: which files lib.sh hands to docker compose, and that it refuses any other file;
 # what web publishes in each way (direct: 80, 443 and 443/udp to the world, the plain-HTTP listener
 # on 127.0.0.1 only; tunnel: 127.0.0.1 only, as before); which Caddy config web runs; which services
-# up.sh starts (cloudflared only in the tunnel way, and not with --no-tunnel).
+# up.sh starts (cloudflared only in the tunnel way, and not with --no-tunnel); that a bare
+# `docker compose up` in the direct way has no cloudflared either; the command restore.sh prints.
 set -euo pipefail
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Settings from the shell would win over the test's .env (as they do for docker compose).
@@ -61,6 +62,8 @@ check "tunnel ports: 127.0.0.1 only, as before" "127.0.0.1:8088->80/tcp" "$(web_
 check "tunnel command: the image's (Caddyfile)" null "$(web_json .command)"
 check "services: tunnel" "api mcp web cloudflared" "$(up_services 1)"
 check "services: tunnel, --no-tunnel" "api mcp web" "$(up_services 0)"
+check "tunnel: compose knows cloudflared" cloudflared "$(compose config --services | grep -x cloudflared || true)"
+check "tunnel: printed command" "docker compose --env-file $ENV_FILE -f $DIR/docker-compose.yml" "$(compose_command)"
 
 # The plain default, written out, is the same.
 with_env written COMPOSE_FILE=docker-compose.yml
@@ -90,6 +93,13 @@ case "$(web_json '.healthcheck.test | join(" ")')" in
 esac
 check "services: direct" "api mcp web" "$(up_services 1)"
 check "services: direct, --no-tunnel" "api mcp web" "$(up_services 0)"
+# What a bare `docker compose up -d` would start: everything but cloudflared.
+check "direct: a bare compose up has no cloudflared" "" "$(compose config --services | grep -x cloudflared || true)"
+check "direct: a bare compose up has the rest" "api mcp migrate postgres web" \
+  "$(compose config --services | sort | tr '\n' ' ' | sed 's/ $//')"
+check "direct: printed command" \
+  "docker compose --env-file $ENV_FILE -f $DIR/docker-compose.yml -f $DIR/docker-compose.direct.yml" \
+  "$(compose_command)"
 
 with_env direct-port COMPOSE_FILE=docker-compose.yml:docker-compose.direct.yml WEB_PORT=9099
 check "direct ports: WEB_PORT moves the local listener" "127.0.0.1:9099->8080/tcp" \

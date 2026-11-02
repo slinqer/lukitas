@@ -4,6 +4,12 @@
 # client's address; the routes, the same for every way of serving, are in routes.caddy.
 {
 	admin off
+	# Requests that name no site of this file (scanners asking for the server's address, other
+	# names) are not logged: Caddy's default access log would keep their headers and query strings.
+	# The sites below keep their own minimal log (routes.caddy).
+	log default {
+		exclude http.log.access
+	}
 }
 
 {$PUBLIC_HOSTNAME} {
