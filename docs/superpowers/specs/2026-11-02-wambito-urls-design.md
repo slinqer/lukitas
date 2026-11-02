@@ -117,9 +117,14 @@ one. And through the tunnel, Cloudflare ends TLS, so it could read every request
 amounts, transactions, tokens. Pointing DNS at the VPS removes that third party and the
 `cloudflared` container.
 
-- **DNS:** `A` and `AAAA` records for `app.wambito.com` to the VPS, **DNS only** (grey cloud). The
+- **DNS:** only an `A` record for `app.wambito.com` to the VPS, **DNS only** (grey cloud). The
   orange cloud (Cloudflare's proxy) was rejected because it ends TLS at Cloudflare again. The
   `wambito.com` zone stays on Cloudflare for the landing Worker and Email Routing.
+  **No `AAAA` record at cutover**: the compose network is IPv4-only, so over IPv6 every visitor
+  would reach the API as the network's gateway and share one sign-in limit. Phones on IPv6-only
+  networks still reach the `A` record through their carrier's NAT64/464XLAT. Native IPv6
+  (`enable_ipv6` with a ULA subnet and a fixed IPv6 for `web` in the direct override, verified on
+  the server with `curl -6`) is a later, separate change.
 - **Firewall:** Hetzner's Cloud Firewall, outside the machine:
   - in: 22/tcp (SSH, key only, ideally only from the founder's address), 80/tcp, 443/tcp and
     443/udp (HTTP/3);
@@ -149,8 +154,9 @@ amounts, transactions, tokens. Pointing DNS at the VPS removes that third party 
     the client sent. The access log records the same peer address.
   - The API side does not change: `CLIENT_IP_HEADER=x-forwarded-for` and
     `TRUSTED_PROXIES=<Caddy's fixed address>`.
-  - Docker keeps the real source address for published ports when its firewall rules handle them
-    (IPv4, and IPv6 with `ip6tables`). That is checked on the VPS, for both address families, in
+  - Docker keeps the real source address of IPv4 connections to published ports. IPv6 would go
+    through docker-proxy and show up as the network's gateway, because the compose network has no
+    IPv6; that is why there is no `AAAA` record yet. The IPv4 address is checked on the VPS in
     step 6 of the cutover, before the phones move (§5, §6).
 - **What we give up:** Cloudflare's DDoS shield and hiding the VPS's address. Hetzner's own basic
   DDoS protection, the firewall above and the existing rate limits in the API and the MCP are
@@ -160,8 +166,9 @@ amounts, transactions, tokens. Pointing DNS at the VPS removes that third party 
 
 1. **Hosts.**
    - `deploy/personal`: defaults `app.wambito.com` (`PUBLIC_HOSTNAME`) and `https://wambito.com`
-     (`LANDING_URL`) in `docker-compose.yml`, `up.sh`, `smoke.sh`, `cloudflared.yml` and
-     `.env.example`.
+     (`LANDING_URL`) in `docker-compose.yml`, `up.sh`, `smoke.sh` and `.env.example`.
+     `cloudflared.yml` names no hostname: a tunnel only receives the names routed to it, so the
+     same file keeps serving the Mac's old hostname until the cutover.
    - Android: the App Links host in `AndroidManifest.xml` and `default_server` in
      `build.gradle.kts`.
    - The app's default server in `server_address.dart`, and its doc comment in `client.dart`.
@@ -223,11 +230,19 @@ phones); **C** is Claude (commands, checks, records to add).
 6. **F + C:** expose the VPS directly (§3.6):
    - In Hetzner, attach the Cloud Firewall: 22/tcp from the founder's address with key-only SSH,
      plus 80/tcp, 443/tcp and 443/udp.
-   - In Cloudflare, add `A` and `AAAA` records for `app.wambito.com` to the VPS, **DNS only**.
-   - `./up.sh --skip-web` so Caddy gets its certificate.
+   - In Cloudflare, add an `A` record for `app.wambito.com` to the VPS, **DNS only**. No `AAAA`
+     (§3.6).
+   - Once the record resolves, `docker compose restart web` in `deploy/personal` (where Compose
+     reads `COMPOSE_FILE`), and watch `docker compose logs -f web` until Caddy has obtained the
+     certificate. `./up.sh --skip-web` does not do it: it does not recreate `web`, and Caddy,
+     started before DNS, is in ACME's backoff.
    - Run `./smoke.sh` locally, then the public checks of §6.
 7. **F:** in GitHub, replace `CLOUDFLARE_API_TOKEN` with a token limited to the `wambito.com` zone.
    Re-run `deploy-landing` on main; check `https://wambito.com`.
+
+   Until this step, `/` on the Mac and on the VPS redirects (`LANDING_URL` now defaults to
+   `https://wambito.com`) to an empty site. It is harmless: the app's paths are unaffected. A home
+   install can set `LANDING_URL` explicitly.
 8. **F:** on each phone, install the `com.wambito.app` APK and uninstall the old app. Sign in with
    the emailed code (from `hola@wambito.com`) and register the passkey again.
 9. **F:** in Claude and ChatGPT, remove the old connector and add `https://app.wambito.com/mcp`.
@@ -255,7 +270,8 @@ why step 10 is last.
   - The certificate's issuer is Let's Encrypt, not Cloudflare.
   - The response has `Strict-Transport-Security`.
   - From outside, a request with a made-up `Cf-Connecting-Ip` or `X-Forwarded-For` is logged by
-    Caddy and counted by the API under the real address. Checked over IPv4 and IPv6.
+    Caddy and counted by the API under the real address. Checked over IPv4 (`curl -4`); there is
+    no `AAAA` record yet.
   - Only 22, 80 and 443 answer from outside (a port scan of the VPS).
   - A code reaches the founder's inbox from `hola@wambito.com`.
   - Feedback sent from the app reaches the founder's inbox.

@@ -35,7 +35,9 @@ The direct way (`COMPOSE_FILE` in `.env`, see [Moving to a server](#moving-to-a-
   gets "Lukitas todavía no está abierto al público" and no email is sent.
 - **The landing lives elsewhere.** `/`, `/en`, `/it`, `/pt` and the roadmaps redirect (302, same path and query)
   to the public landing at `LANDING_URL` (default `https://wambito.com`), whose
-  buttons come back here to `/sign-in` and `/demo`. The web build gets the same value
+  buttons come back here to `/sign-in` and `/demo`. Until the landing is deployed at `wambito.com`
+  that redirect points at an empty site; the app's own paths are not affected. A home install can
+  set `LANDING_URL` in `.env` to its own landing. The web build gets the same value
   (`VITE_LANDING_URL`), so the sign-in screen's logo and the end of "delete my account" leave
   for the landing too.
 - **Assistants connect at `/mcp`.** Claude or ChatGPT add `https://<host>/mcp` as a connector,
@@ -107,17 +109,21 @@ another name and give it to the commands with `--origincert "$CLOUDFLARED_ORIGIN
 tunnel needs only the credentials `.json`.)
 
 ```sh
-cloudflared tunnel login                       # opens the browser: choose wambito.com
+cloudflared tunnel login                       # opens the browser: choose <your zone>
 cloudflared tunnel create lukitas-personal     # prints the tunnel id, writes ~/.cloudflared/<id>.json
-cloudflared tunnel route dns lukitas-personal app.wambito.com
+cloudflared tunnel route dns lukitas-personal <your PUBLIC_HOSTNAME>
 ```
 
-Put the id in `.env` as `TUNNEL_ID`. In the Cloudflare dashboard for wambito.com, switch on
+The tunnel is for an install at home. `app.wambito.com` is served directly by the server (see
+[Moving to a server](#moving-to-a-server)), so a home install uses a hostname of its own, in a zone
+you own, and sets it as `PUBLIC_HOSTNAME`.
+
+Put the id in `.env` as `TUNNEL_ID`. In the Cloudflare dashboard for your zone, switch on
 **SSL/TLS > Edge Certificates > Always Use HTTPS** and **HSTS** (through the tunnel Caddy sets no HSTS
 itself, because TLS ends at Cloudflare; in the direct way it does both). The stack mounts
 `~/.cloudflared/<TUNNEL_ID>.json` read-only into the `cloudflared` container; it does not see `cert.pem` (the login certificate). Treat the
-`.json` as a secret: anyone with it can run your tunnel. `cloudflared.yml` already routes
-`app.wambito.com` to the web container.
+`.json` as a secret: anyone with it can run your tunnel. `cloudflared.yml` sends every hostname you
+routed to the tunnel to the web container; it has no hostname of its own to edit.
 
 ### 4. First start
 
@@ -463,15 +469,29 @@ registers a passkey again after signing in.
    - **Firewall, outside the machine:** in Hetzner, a Cloud Firewall attached to the server that lets
      in only 22/tcp from your own address (SSH with keys only: `PasswordAuthentication no`), plus
      80/tcp, 443/tcp and 443/udp (HTTP/3). Not `ufw`: Docker publishes ports around it.
-   - **DNS:** `A` and `AAAA` records for `PUBLIC_HOSTNAME` to the server, **DNS only** (grey cloud).
-     Cloudflare's proxy (orange cloud) would end TLS at Cloudflare again.
-   - `./up.sh --skip-web`, so Caddy gets its certificate (`docker compose logs web` shows it).
+   - **DNS:** only an `A` record for `PUBLIC_HOSTNAME` to the server, **DNS only** (grey cloud).
+     Cloudflare's proxy (orange cloud) would end TLS at Cloudflare again. No `AAAA` record yet:
+     the compose network has no IPv6, so every IPv6 visitor would reach the API as the network's
+     gateway and share one sign-in limit. Phones on IPv6-only networks still reach an IPv4 address
+     through their carrier's NAT64/464XLAT. Native IPv6 (`enable_ipv6` with a ULA subnet and a fixed
+     IPv6 for `web` in the direct override, verified on the server with `curl -6`) is a later,
+     separate change.
+   - Once the `A` record resolves, `docker compose restart web` (in `deploy/personal`, where
+     Compose reads `COMPOSE_FILE`). `./up.sh --skip-web` would not do it: it does not recreate
+     `web`, and Caddy, started before DNS, is waiting out ACME's backoff. Watch
+     `docker compose logs -f web` until it says the certificate was obtained.
    - `./smoke.sh` on the server, then from outside: `https://app.wambito.com/sign-in` answers with
      `Strict-Transport-Security`, and `http://` redirects to it. Check that the API sees real client
-     addresses, over IPv4 and IPv6 (`curl -4` and `curl -6` from another network, then
-     `docker compose logs web | tail`): `visitor_ip` must be the address you came from, not a
-     Docker address (172.x, or the IPv6 gateway). Fix that before the phones move: sign-in limits
-     count by that address. (See [How the client address gets to the API](#how-the-client-address-gets-to-the-api).)
+     addresses over IPv4 (`curl -4` from another network, then `docker compose logs web | tail`):
+     `visitor_ip` must be the address you came from, not a Docker address (172.x). Fix that
+     before the phones move: sign-in limits count by that address. (See
+     [How the client address gets to the API](#how-the-client-address-gets-to-the-api).)
+   - The rest of the outside checks: a request with a made-up `Cf-Connecting-Ip` or
+     `X-Forwarded-For` is logged under your real address, not the made-up one; the certificate's
+     issuer is Let's Encrypt (`openssl s_client -connect app.wambito.com:443 -servername app.wambito.com </dev/null 2>/dev/null | openssl x509 -noout -issuer`);
+     and a port scan from outside shows only 22, 80 and 443.
+   - Until the landing is deployed at `wambito.com`, `/` on the server redirects to an empty site.
+     It is harmless: the app's paths are not affected.
 
 Keep the old machine's last dump until the server has its own.
 
@@ -489,7 +509,7 @@ it. On the Mac, `./uninstall-backup.sh` removes the launchd agent once the serve
 | `routes.caddy` | Every route, the same for both ways: static app, SPA fallback, cache rules, `/api` and `/mcp` proxies, blocked paths, landing redirects, access log |
 | `Caddyfile` | The tunnel's Caddy: plain HTTP behind cloudflared, the client's address from `Cf-Connecting-Ip` |
 | `Caddyfile.direct` | The direct way's Caddy: automatic HTTPS and HSTS for `PUBLIC_HOSTNAME`, the client's address from the TCP peer, no log of requests for other hosts |
-| `cloudflared.yml` | Tunnel ingress for `app.wambito.com` |
+| `cloudflared.yml` | Tunnel ingress: everything the tunnel receives goes to `web`; no hostname in it |
 | `Dockerfile.web` | Caddy with the web build inside (the API image is `apps/api/Dockerfile.prod`) |
 | `web-entrypoint.sh` `assetlinks.json.template` | At start, write `/.well-known/assetlinks.json` from `ANDROID_CERT_SHA256` |
 | `.env.example` | Every setting, documented |
@@ -520,9 +540,12 @@ Where Caddy takes the address from depends on the way:
   on this machine) is counted by the address Docker shows.
 - **Direct** (`Caddyfile.direct`): anyone can reach Caddy, so it trusts no header. The address is the
   TCP peer's; sending `CF-Connecting-IP` or `X-Forwarded-For` changes nothing (`./test-caddy.sh
-  direct` checks both). Docker keeps the real source address for published ports when its own
-  firewall rules handle them (IPv4, and IPv6 with `ip6tables`); when they do not, every visitor
-  shows up as one Docker address. Check it after the move, for both
+  direct` checks both). Docker keeps the real source address of IPv4 connections to published
+  ports; when it does not, every visitor shows up as one Docker address. IPv6 is different: the
+  compose network is IPv4-only, so connections to a published port over IPv6 go through
+  docker-proxy and arrive as the network's gateway. Keeping the real IPv6 address needs IPv6 on the
+  compose network itself, which this install does not enable yet. That is why the DNS has no `AAAA`
+  record. Check the IPv4 address after the move
   ([Moving to a server](#moving-to-a-server), step 5).
 
 ## Troubleshooting
@@ -533,7 +556,7 @@ Where Caddy takes the address from depends on the way:
   `SMTP_URL`; on a server, a wrong `RESEND_API_KEY` or the domain not verified in Resend
   (`docker compose logs api | tail`, either way); the address is not in `SIGN_IN_ALLOWLIST` (the
   app says so).
-- **The certificate does not come (direct way)**: `docker compose logs web`. The `A`/`AAAA` records
+- **The certificate does not come (direct way)**: `docker compose logs web`. The `A` record
   must point at this server, DNS only, and 80 and 443 must be open in the Cloud Firewall.
 - **`up.sh` says port or subnet in use**: change `WEB_PORT` or `NETWORK_PREFIX` in `.env`.
 - **API restarts at start**: `docker compose logs api` prints which variable is wrong.
