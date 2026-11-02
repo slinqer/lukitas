@@ -70,7 +70,7 @@ class LaunchLinksTest {
     fun `a web link to the configured server's host goes on to the app`() {
         assertFalse(LaunchLinks.isForeignWebLink(view(verify), "app.wambito.com"))
         // Hosts are not case-sensitive.
-        assertFalse(LaunchLinks.isForeignWebLink(view(verify), "App-Lukas.AndersonLaverde.com"))
+        assertFalse(LaunchLinks.isForeignWebLink(view(verify), "App.Wambito.com"))
         // The dev stack, from the emulator.
         assertFalse(LaunchLinks.isForeignWebLink(view("http://10.0.2.2:3000/auth/verify?code=1"), "10.0.2.2"))
     }
