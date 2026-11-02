@@ -7,6 +7,7 @@
 #                GitHub URLs, key and emulator labels).
 #   2b: remove   transition code that carries the old name over; part 2b deletes it.
 #   history      the plans and specs, which keep the names they were written with.
+#   docs-rule    agent maps (AGENTS.md) that name the old words in order to say they stay.
 # A file holding more than one kind may list them comma-joined (`money, 2b`). Directory globs are
 # only for whole folders that part 2b rewrites; everything else lists the files that have a hit.
 # A file lists every reason for what remains in it.
@@ -148,3 +149,14 @@ apps/mobile/android/app/src/test/kotlin/com/wambito/app/launch/LaunchLinksTest.k
 # --- history ---
 docs/superpowers/**                                        # history
 CONTRIBUTING.md                                            # history
+
+# --- docs-rule: the agent maps, which name the money slang and the 2b names as rules ---
+AGENTS.md  # docs-rule
+apps/api/AGENTS.md  # docs-rule
+apps/mobile/AGENTS.md  # docs-rule
+apps/web/AGENTS.md  # docs-rule
+deploy/landing/AGENTS.md  # docs-rule
+docs/AGENTS.md  # docs-rule
+packages/ai-assistant-tools/AGENTS.md  # docs-rule
+packages/core/AGENTS.md  # docs-rule
+packages/db/AGENTS.md  # docs-rule
