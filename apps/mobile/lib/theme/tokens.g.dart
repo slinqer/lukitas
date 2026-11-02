@@ -114,7 +114,7 @@ class WambitoColors {
   /// Over budget: bar fill and 'Te pasaste X' line. Always paired with words.
   final Color over;
 
-  /// Lukitas, the logo gradient start, celebration sparkles, the active tab label (night).
+  /// Wambi, the logo gradient start, celebration sparkles, the active tab label (night).
   final Color gold;
 
   /// Text on a solid gold fill: the landing's marker highlight only. Dark ink in both themes (14.6:1 night, 11.1:1 day).
@@ -123,7 +123,7 @@ class WambitoColors {
   /// Logo gradient end and celebration confetti. Decorative only.
   final Color candy;
 
-  /// The soft ground shadow under the landing's traveling Lukitas: the center of a radial ellipse that fades to transparent. Decorative only.
+  /// The soft ground shadow under the landing's traveling Wambi: the center of a radial ellipse that fades to transparent. Decorative only.
   final Color wambiShadow;
 
   /// Income bars in charts. Day: 3.3:1 on surface, and 3.4:1 against chart-expense, so the two bars never differ by hue alone.
@@ -343,13 +343,13 @@ abstract final class WambitoTokens {
   /// The ¡Anotado! celebration before the toast settles.
   static const durationCelebrate = Duration(milliseconds: 1200);
 
-  /// One loop of worried Lukitas's side-to-side shiver: short bursts of shaking, then a pause.
+  /// One loop of worried Wambi's side-to-side shiver: short bursts of shaking, then a pause.
   static const durationShiver = Duration(milliseconds: 1600);
 
-  /// One loop of the landing Lukitas's idle bob: up a little and back, his shadow shrinking with it.
+  /// One loop of the landing Wambi's idle bob: up a little and back, his shadow shrinking with it.
   static const durationBob = Duration(milliseconds: 2600);
 
-  /// The landing Lukitas's hop on hover or tap: crouch, spring up, land with a squash, settle.
+  /// The landing Wambi's hop on hover or tap: crouch, spring up, land with a squash, settle.
   static const durationHop = Duration(milliseconds: 520);
 
   /// A deleted row folding away while the rows under it slide up.

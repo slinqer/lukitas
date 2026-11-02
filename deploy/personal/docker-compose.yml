@@ -1,4 +1,4 @@
-# Personal install of Lukitas: its own stack on one machine, reached through a Cloudflare tunnel.
+# Personal install of Wambito: its own stack on one machine, reached through a Cloudflare tunnel.
 # Not the development stack (../../docker-compose.yml): different project, volume, network and
 # database, nothing shared with it. Run it with the scripts here (up.sh, update.sh, ...), which pass
 # the right --env-file. See README.md.

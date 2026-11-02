@@ -137,7 +137,7 @@ when the app's picture changes. The web shots are regenerated only when the web 
   - The shots wait for Storybook's "finished" phase, after the story has rendered, played and
     finished its animations.
   - Then they take pictures until two in a row are identical. CSS animations are taken at rest:
-    finite ones at their end, endless ones (Lukitas' sprite) at their first frame.
+    finite ones at their end, endless ones (Wambi's sprite) at their first frame.
   - The app test uses `pumpAndSettle`.
 - **Fonts.** Both sides draw Fredoka and Nunito, from the web's `@fontsource` files and from the
   app's bundled upstream files.
@@ -162,9 +162,9 @@ when the app's picture changes. The web shots are regenerated only when the web 
   - `test/parity/emoji_font_test.dart` checks that `sbixFromCbdt` converts the committed file. It
     also fails when an emoji in any fixture, or anywhere in the web's and the app's code, has no
     picture in it, so a missing emoji is reported rather than drawn as a box.
-- **Randomness.** Home's Lukitas picks one of three phrasings of a line at random. The shots pin
+- **Randomness.** Home's Wambi picks one of three phrasings of a line at random. The shots pin
   `Math.random` to 0 (`RANDOM_SCRIPT` in `apps/web/scripts/parity-storybook.ts`), so every picture shows
-  the first phrasing, and the home pairs ask the app for it too (`lukasVariantProvider`).
+  the first phrasing, and the home pairs ask the app for it too (`wambiVariantProvider`).
 - **The story's page.** Storybook pads every story by 16px (`.storybook/preview.tsx`) while the bottom bar
   stays fixed to the viewport, and the web's background gradient is as tall as its page (a long list
   stretches it, and `min-h-dvh` keeps a short page a screen tall) and scrolls away with it. A screen pair puts
@@ -328,7 +328,7 @@ when the app's picture changes. The web shots are regenerated only when the web 
     the web's 30 second wait before "Reenviar código", counted by the app's own clock (`clockProvider`, pinned like the
     story's), so its pairs show "Reenviar en 30 s".
   - **The email field's focus.** The app focuses it on opening (the person tapped "Entrar con mi correo", and a Stage
-    3 test pins it); the web leaves it alone so the keyboard does not cover Lukitas. The pairs put the focus down
+    3 test pins it); the web leaves it alone so the keyboard does not cover Wambi. The pairs put the focus down
     (`_putFocusDown`) where the story has none.
   - **"Usar passkey" is "Entrar con huella" in the pairs** (`EmailScreen.passkeyLabel`), as the detail's "Editar" is
     in the budget pairs: the email screen's button keeps Stage 3's words and the web's sign-in has the others.
@@ -349,7 +349,7 @@ when the app's picture changes. The web shots are regenerated only when the web 
   - **The passkey offer** is wired as the web wires it (`use-finish-sign-in.ts`, `shouldOfferPasskey`): right after an
     email sign-in (the code or the magic link, never a passkey sign-in, a claim or a guest), when the phone can use
     passkeys, the account has none (`GET /api/auth/passkey/list-user-passkeys`) and it has not answered on this phone.
-    The answer is kept per account on the phone (`passkey.offered`, as the web keeps `lukas.passkey.offered` in
+    The answer is kept per account on the phone (`passkey.offered`, as the web keeps `wambito.passkey.offered` in
     `localStorage`). Its pairs are the stories' `Offer`, `OfferDayEnglish`, `WaitingForTheFingerprint` and `Failed`.
 - **Settings (`settings-*`).** The web's Settings has six cards, and the app draws them all as the web does (Preferencias,
   "Hora y moneda", the passkeys, "Tus datos" with its import link to the app's own page and the export's two buttons, "Comentarios
@@ -398,14 +398,14 @@ when the app's picture changes. The web shots are regenerated only when the web 
   `feedback-celebration--mid-flight*` stop the live one part of the way through (`freezeAt`: every animation paused at
   that fraction of one `--celebrate`, its look kept as plain styles, the stay made an hour long first) and the app is
   stopped at the same moment (`parityGolden(settleAfterAct: false)` and a pump of that long once the celebration and
-  Lukitas' sprite have started). The pairs: half way above the spot, clear of the toast, with no spot, a tenth in, by day in
+  Wambi's sprite have started). The pairs: half way above the spot, clear of the toast, with no spot, a tenth in, by day in
   English at three quarters, and under reduced motion. The 28 pieces are the web's (`confettiBurst`), the easings are its
-  keyframes' (`confettiAt`, `lukitasAt`).
+  keyframes' (`confettiAt`, `wambiAt`).
   - Under reduced motion the controller must not take the system's shortened durations (`AnimationBehavior.preserve`): the
     web still fades him over the same stay.
-  - The sprite's loops are the web's (`LukasSprite.loopMs`: wave 1200, worried 2000, celebrate 1000 ms) and the
-    celebration's plays for the whole stay (`LukitasFace.endless`).
-- **Toasts** are the web's `ToastHost` everywhere now (above the Navigator, in `LukitasApp`): the Material snackbar is gone
+  - The sprite's loops are the web's (`WambiSprite.loopMs`: wave 1200, worried 2000, celebrate 1000 ms) and the
+    celebration's plays for the whole stay (`WambiFace.endless`).
+- **Toasts** are the web's `ToastHost` everywhere now (above the Navigator, in `WambitoApp`): the Material snackbar is gone
   (`lib/home/toast.dart`). The shell lifts them 92px above its bottom bar. `animateBar: false` (tests only; the app's
   `toastBarAnimatesProvider`) stops the time bar, which asks for a frame all the way to the end of the toast, so a test that
   settles the frames would wait the toast out.

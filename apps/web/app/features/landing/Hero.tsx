@@ -10,7 +10,7 @@ import { NewTabHint } from "./NewTabHint.tsx";
 import { CodeLink } from "./OpenSource.tsx";
 
 /**
- * The headline with "lukas" on a gold marker (in Spanish, taking turns with what money is called elsewhere), what Wambi is, one primary action and "Pruébalo sin cuenta" (the demo) beside it, with
+ * The headline with "lukas" on a gold marker (in Spanish, taking turns with what money is called elsewhere), what Wambito is, one primary action and "Pruébalo sin cuenta" (the demo) beside it, with
  * the perks under them, and Wambi waving. Without an app to open (landing-only, coming soon) there
  * is no demo either, so only the primary action shows.
  */

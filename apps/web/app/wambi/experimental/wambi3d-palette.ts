@@ -1,6 +1,6 @@
 /**
  * The 3D Wambi's colors: art, not UI. They are picked from the character concept
- * (docs/brand/lukas-mascot-concept.webp) and only ever reach WebGL materials, never the DOM, so
+ * (docs/brand/wambi-mascot-concept.webp) and only ever reach WebGL materials, never the DOM, so
  * they are literal values here instead of design tokens (which stay the source for every color on
  * the page). Keep them in this one module.
  */

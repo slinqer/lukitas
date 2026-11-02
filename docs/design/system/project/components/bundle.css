@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800;900&display=swap");
 
-/* Lukas components. Every color, space and radius comes from tokens.css. Prefix: lk- */
+/* Wambito components. Every color, space and radius comes from tokens.css. Prefix: lk- */
 
 body {
   margin: 0;
@@ -479,7 +479,7 @@ body {
   cursor: pointer;
 }
 
-/* Lukas speech bubble */
+/* Wambi speech bubble */
 .lk-bubble {
   font-size: 12px;
   font-weight: 800;

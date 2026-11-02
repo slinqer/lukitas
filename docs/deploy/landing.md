@@ -1,6 +1,6 @@
 # Deploying the landing page (Cloudflare)
 
-Lukitas can ship as the landing page alone: the prerendered pages (`/` in Spanish, `/en` in
+Wambito can ship as the landing page alone: the prerendered pages (`/` in Spanish, `/en` in
 English, and the roadmap at `/roadmap` and `/en/roadmap`), a 404 page and the static files. The
 app, when there is one, runs on its own origin, and the build says so with `VITE_APP_URL`:
 
@@ -8,7 +8,7 @@ app, when there is one, runs on its own origin, and the build says so with `VITE
   GitHub" and links to the repository; nothing leads to the app.
 - **With `VITE_APP_URL`** (the release): the calls to action read "Empieza ahora" / "Get started"
   and "Entrar" / "Sign in" and open `${VITE_APP_URL}/sign-in?lang=<es|en>`. The "En la web" card
-  links to the app too, and the closing text says Lukitas already works and is being tested with a
+  links to the app too, and the closing text says Wambito already works and is being tested with a
   small group ("Si te invitaron, entra con tu correo"), because only allowlisted emails can sign
   in there.
 
@@ -32,7 +32,7 @@ VITE_SITE_URL=https://wambito.com VITE_APP_URL=https://app.wambito.com pnpm --fi
   script stops with a message when it is set but is not an `http(s)` origin. It only has an effect
   in this landing-only build; a normal build serves the app from its own origin.
 - The script builds with `VITE_LANDING_ONLY=true`. The output is `apps/web/build/client`:
-  `index.html`, `en/index.html`, `roadmap/index.html`, `en/roadmap/index.html`, `404.html`, `assets/`, `lukas/`, `og-*.png`, `robots.txt`,
+  `index.html`, `en/index.html`, `roadmap/index.html`, `en/roadmap/index.html`, `404.html`, `assets/`, `wambi/`, `og-*.png`, `robots.txt`,
   `sitemap.xml` and `_headers`.
 - There is no `__spa-fallback.html`, and `404.html` is at the top level, so Cloudflare serves
   it (with a 404 status) for any other path instead of treating the site as a single-page app.
@@ -71,7 +71,7 @@ cd deploy/landing && npx wrangler@4 deploy
 ```
 
 The first run asks you to sign in to Cloudflare (`npx wrangler@4 login`). Every run publishes a new
-version of the `lukitas-landing` Worker.
+version of the `lukitas-landing` Worker (renamed in part 2b).
 
 - `not_found_handling: "404-page"` serves `404.html` with a 404 status for unknown paths.
 - `html_handling: "drop-trailing-slash"` serves `/en` directly (matching the canonical link) and
@@ -90,7 +90,7 @@ so the canonical links and the sitemap point to the new origin.
 Stop using `build:landing`: a plain `pnpm --filter @wambito/web build` (without `VITE_LANDING_ONLY`)
 keeps the sign-in calls to action, the "Empezar" card and the SPA fallback, and `robots.txt` hides
 the app's routes again. Keep passing `VITE_SITE_URL` so the generated files carry the right origin.
-Without it the placeholder `https://lukas.app` is used.
+Without it the placeholder `https://wambito.test` is used.
 
 ## Checking a build
 

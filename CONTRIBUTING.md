@@ -1,6 +1,6 @@
-# Contributing to Lukitas
+# Contributing to Wambito
 
-Thanks for helping! Lukitas is a free, open-source personal finance app: your budget, and you'll actually enjoy looking after it; see the [README](README.md) and the [design spec](docs/superpowers/specs/2026-10-20-lukas-design.md).
+Thanks for helping! Wambito is a free, open-source personal finance app: your budget, and you'll actually enjoy looking after it; see the [README](README.md) and the [design spec](docs/superpowers/specs/2026-10-20-lukas-design.md).
 
 ## Setup
 

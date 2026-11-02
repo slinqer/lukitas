@@ -1,6 +1,6 @@
 # F-Droid: what is ready and what a submission still needs
 
-Lukitas is built to be listed on F-Droid, but nothing has been submitted (spec section 1: "no F-Droid submission"). This is the ledger for the day it is: what is already in the repo, what was measured, and what the submission will have to solve. Nothing below is solved yet.
+Wambito is built to be listed on F-Droid, but nothing has been submitted (spec section 1: "no F-Droid submission"). This is the ledger for the day it is: what is already in the repo, what was measured, and what the submission will have to solve. Nothing below is solved yet.
 
 ## Ready now
 
@@ -22,7 +22,7 @@ Lukitas is built to be listed on F-Droid, but nothing has been submitted (spec s
 
 The APKs themselves are normalised by AGP (entry timestamps fixed, no signature, nothing from the clock), so the container is stable. Across checkout paths exactly two files differ, in both ABIs:
 
-- `lib/<abi>/libapp.so`, the Dart AOT snapshot: it contains the absolute `file:///…/.dart_tool/flutter_build/dart_plugin_registrant.dart` of the build tree and a name hash derived from it (`_PluginRegistrant@<hash>`), and everything after it shifts. This is also a privacy leak: **the founder's published APK carries his home directory and user name** (`/Users/<name>/projects/lukas/…`). Building in a container or VM at a neutral fixed path fixes the leak and the F-Droid mismatch together, and is the first thing to try.
+- `lib/<abi>/libapp.so`, the Dart AOT snapshot: it contains the absolute `file:///…/.dart_tool/flutter_build/dart_plugin_registrant.dart` of the build tree and a name hash derived from it (`_PluginRegistrant@<hash>`), and everything after it shifts. This is also a privacy leak: **the founder's published APK carries his home directory and user name** (`/Users/<name>/projects/<checkout>/…`). Building in a container or VM at a neutral fixed path fixes the leak and the F-Droid mismatch together, and is the first thing to try.
 - `lib/<abi>/libdartjni.so`, built by CMake from the `jni` plugin: 19 bytes differ (probably the build id, or path-derived data; not investigated).
 
 What this means for F-Droid: F-Droid builds at its own fixed path (under `build/<applicationId>` of its build server) and signs the result with its own key, so its APK is not the founder's. For F-Droid's reproducible-build verification (publishing the developer's signature on F-Droid's build, `Binaries:` in the recipe) the founder's build has to be made at the same absolute path, which means a container that mounts the checkout there. Without that, the founder's APK and F-Droid's are two different, individually reproducible builds, F-Droid ships its own, users who switch between them have to reinstall, and `ANDROID_CERT_SHA256` lists both fingerprints (`release.md`).

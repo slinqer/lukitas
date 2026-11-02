@@ -26,7 +26,7 @@ export const DEFAULT_THEME_PREF: ThemePref = "night";
  * Inline script placed first in `<head>`: sets `data-theme` before the first paint so a stored
  * "day" preference never flashes the default night theme. Plain ES5, no imports. Only an explicit
  * stored "auto" follows the OS; a missing or invalid value, blocked storage or no matchMedia all
- * give night. It reads the key as `readStored` does, moving an old `wambito.theme` to the new key
+ * give night. It reads the key as `readStored` does, moving an old `lukas.theme` to the new key
  * (2b: remove that migration).
  */
 const NEW_KEY = JSON.stringify(THEME_STORAGE_KEY);
