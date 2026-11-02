@@ -16,8 +16,8 @@ const widgetSnapshotVersion = 3;
 
 /// The two widgets' receivers (`android/.../widget/`), which `updateWidgets` asks to redraw.
 const widgetReceivers = [
-  'com.andersonlaverde.lukitas.widget.LukitasSmallWidgetReceiver',
-  'com.andersonlaverde.lukitas.widget.LukitasMediumWidgetReceiver',
+  'com.wambito.app.widget.LukitasSmallWidgetReceiver',
+  'com.wambito.app.widget.LukitasMediumWidgetReceiver',
 ];
 
 /// Where the snapshot is kept. The app stores it with `home_widget`, which writes Android's

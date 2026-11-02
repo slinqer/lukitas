@@ -5,9 +5,9 @@
 //     --dart-define=LUKITAS_SERVER=http://10.0.2.2:3000
 //
 // The permission question is asked on a phone that has not been asked, so the first test needs the
-// permission not yet given (a fresh install, or `adb shell pm revoke com.andersonlaverde.lukitas
+// permission not yet given (a fresh install, or `adb shell pm revoke com.wambito.app
 // android.permission.POST_NOTIFICATIONS`). The second needs it given, which only a person or adb
-// can do: `adb shell pm grant com.andersonlaverde.lukitas android.permission.POST_NOTIFICATIONS`
+// can do: `adb shell pm grant com.wambito.app android.permission.POST_NOTIFICATIONS`
 // (the test tells which one is missing). The jobs run for real through WorkManager, reading the
 // session where the app keeps it; the notice's tap is the very PendingIntent the shade would send.
 import 'package:dio/dio.dart';

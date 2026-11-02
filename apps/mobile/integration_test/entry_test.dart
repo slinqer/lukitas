@@ -255,7 +255,7 @@ void main() {
     );
     final intentUri =
         'intent://${server.host}:${server.port}/auth/verify?$query'
-        '#Intent;scheme=${server.scheme};package=com.andersonlaverde.lukitas;'
+        '#Intent;scheme=${server.scheme};package=com.wambito.app;'
         'S.browser_fallback_url=${Uri.encodeComponent(fallback.toString())};end';
     await const MethodChannel('lukitas/test').invokeMethod<void>('openIntentUri', intentUri);
     await _pumpUntil(tester, find.byKey(const Key('welcome.page')));

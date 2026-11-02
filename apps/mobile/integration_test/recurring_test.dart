@@ -4,7 +4,7 @@
 //   flutter test integration_test/recurring_test.dart -d emulator-5554 \
 //     --dart-define=LUKITAS_SERVER=http://10.0.2.2:3000
 //
-// It needs the notification permission given (`adb shell pm grant com.andersonlaverde.lukitas
+// It needs the notification permission given (`adb shell pm grant com.wambito.app
 // android.permission.POST_NOTIFICATIONS`), because "Hoy vence…" is scheduled only for a phone that
 // can post it, and the job runs for real through WorkManager. The emulator's language decides the
 // copy, so buttons and fields are found by key.

@@ -22,7 +22,7 @@ val dartDefines: Map<String, String> =
         ?: emptyMap()
 
 android {
-    namespace = "com.andersonlaverde.lukitas"
+    namespace = "com.wambito.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -32,7 +32,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.andersonlaverde.lukitas"
+        applicationId = "com.wambito.app"
         // Android 8 (API 26) or newer (spec section 6.3).
         minSdk = 26
         targetSdk = flutter.targetSdkVersion

@@ -39,7 +39,7 @@ describe("appIntentUrl", () => {
     expect(appIntentUrl(ORIGIN, QUERY)).toBe(
       "intent://app.wambito.com/auth/verify" +
         "?email=ana%40example.com&code=424242&lang=es&next=%2Fapp%2Finsights&from=app" +
-        "#Intent;scheme=https;package=com.andersonlaverde.lukitas;" +
+        "#Intent;scheme=https;package=com.wambito.app;" +
         "S.browser_fallback_url=" +
         encodeURIComponent(
           `${ORIGIN}/auth/verify?email=ana%40example.com&code=424242&lang=es&next=%2Fapp%2Finsights`,
@@ -51,7 +51,7 @@ describe("appIntentUrl", () => {
   it("keeps a port, and always asks for https", () => {
     expect(appIntentUrl("http://localhost:5173", "?code=1&from=app")).toBe(
       "intent://localhost:5173/auth/verify?code=1&from=app" +
-        "#Intent;scheme=https;package=com.andersonlaverde.lukitas;" +
+        "#Intent;scheme=https;package=com.wambito.app;" +
         `S.browser_fallback_url=${encodeURIComponent("http://localhost:5173/auth/verify?code=1")};end`,
     );
   });

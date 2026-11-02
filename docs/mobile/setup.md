@@ -159,7 +159,7 @@ serves the official model zips (the emulator has no real microphone, so it hears
 ```sh
 python3 -m http.server 8765 --directory <folder with vosk-model-small-es-0.42.zip>
 # once the app is installed by the run below (the test waits for the download):
-adb -s emulator-5554 shell pm grant com.andersonlaverde.lukitas android.permission.RECORD_AUDIO
+adb -s emulator-5554 shell pm grant com.wambito.app android.permission.RECORD_AUDIO
 flutter test integration_test/voice_engine_test.dart -d emulator-5554 \
   --dart-define=VOICE_MODELS_URL=http://10.0.2.2:8765
 ```
@@ -177,7 +177,7 @@ intent Glance used to give it, which showed "Page Not Found" while the app ran) 
 which reads the session where the app keeps it and asks the dev stack for the summary; then it
 signs out and checks the widget keeps no figure. To look at the widgets themselves, long-press the
 emulator's home screen, open Widgets and drag a Lukitas one out; the Quick Settings tile is added
-with `adb -s emulator-5554 shell cmd statusbar add-tile com.andersonlaverde.lukitas/.tile.CaptureTileService`.
+with `adb -s emulator-5554 shell cmd statusbar add-tile com.wambito.app/.tile.CaptureTileService`.
 
 With the voice models served as for `voice_engine_test.dart` (and the microphone granted),
 `widget_test.dart` also runs a test with the real speech engine: 🎤 tapped, the sentence ended, 🎤
@@ -204,7 +204,7 @@ Central on the first run.
 `integration_test/notices_test.dart` covers the two local notices (Task 16). The first test needs the
 notification permission not yet given (a fresh install), the second needs it given: install with
 `adb -s emulator-5554 install -r -g build/app/outputs/flutter-apk/app-debug.apk` and
-`adb -s emulator-5554 shell pm grant com.andersonlaverde.lukitas android.permission.POST_NOTIFICATIONS`
+`adb -s emulator-5554 shell pm grant com.wambito.app android.permission.POST_NOTIFICATIONS`
 right before it. It gives the profile a zone where it is about noon ("Hoy vence…" never goes out before 9:00 there), makes two recurring payments due today through the API, brings the app back to the foreground so it schedules the job, runs the "Hoy vence…" job
 once through WorkManager, checks the notice's text, and taps it (the same PendingIntent the shade
 sends) from Settings, expecting home. With `--dart-define=TAP_BY_HAND=true` it waits for you to tap
@@ -224,7 +224,7 @@ android`), and that the `intent://` form the web page's "Abrir en Lukitas" offer
 `https` in the product) starts the app and signs in. The emulator has no passkey provider, so the
 passkey on the email screen is covered by the widget tests, and by hand with Proton Pass on a phone.
 
-Why the permission matters: a fresh install has not been given the notification permission, so the question a guest is asked about notices (Task 16) covers the screen and the other files' taps miss. `flutter test` uninstalls the app when it ends, so each file needs the app installed by hand first: `adb install -r -t -g build/app/outputs/flutter-apk/app-debug.apk` and `adb shell pm grant com.andersonlaverde.lukitas android.permission.POST_NOTIFICATIONS` (the notices file's two tests are run separately, with `--plain-name`, one with the permission revoked and one with it granted).
+Why the permission matters: a fresh install has not been given the notification permission, so the question a guest is asked about notices (Task 16) covers the screen and the other files' taps miss. `flutter test` uninstalls the app when it ends, so each file needs the app installed by hand first: `adb install -r -t -g build/app/outputs/flutter-apk/app-debug.apk` and `adb shell pm grant com.wambito.app android.permission.POST_NOTIFICATIONS` (the notices file's two tests are run separately, with `--plain-name`, one with the permission revoked and one with it granted).
 
 The first Gradle build also installs `platforms;android-35` and `cmake;3.22.1` into the SDK: the
 `jni` plugin (pulled in through `flutter_secure_storage`'s dependencies) builds against them.

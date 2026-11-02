@@ -10,7 +10,7 @@ import 'package:lukitas/theme/tokens.g.dart';
 // side it cannot import: the colours, the secure storage options, the snapshot version, the
 // receivers' names, and the manifest entries.
 
-const _widget = 'android/app/src/main/kotlin/com/andersonlaverde/lukitas/widget';
+const _widget = 'android/app/src/main/kotlin/com/wambito/app/widget';
 final _manifest = File('android/app/src/main/AndroidManifest.xml').readAsStringSync();
 
 String _kotlin(String file) => File('$_widget/$file').readAsStringSync();

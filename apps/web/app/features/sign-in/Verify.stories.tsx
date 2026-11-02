@@ -81,7 +81,7 @@ export const OffersTheApp: Story = {
     await expect(open).toHaveAttribute(
       "href",
       `intent://${host}/auth/verify${APP_SEARCH}` +
-        "#Intent;scheme=https;package=com.andersonlaverde.lukitas;" +
+        "#Intent;scheme=https;package=com.wambito.app;" +
         `S.browser_fallback_url=${encodeURIComponent(
           `${origin}/auth/verify?email=ana%40example.com&code=${GOOD_CODE}&lang=es`,
         )};end`,

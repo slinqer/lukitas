@@ -31,7 +31,7 @@ MOBILE="$(cd "$HERE/.." && pwd)"
 source "$HERE/release-lib.sh"
 
 ABIS=(arm64-v8a armeabi-v7a)
-PACKAGE="com.andersonlaverde.lukitas"
+PACKAGE="com.wambito.app"
 SECRET_NAMES=(LUKITAS_KEYSTORE LUKITAS_KEY_ALIAS LUKITAS_KEYSTORE_PASSWORD LUKITAS_KEY_PASSWORD)
 
 die() {

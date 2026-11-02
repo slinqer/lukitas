@@ -31,7 +31,7 @@ while [ $# -gt 0 ]; do
 done
 server="${LUKITAS_SERVER:-http://10.0.2.2:3000}"
 mailpit="${MAILPIT_URL:-http://10.0.2.2:8025}"
-package="com.andersonlaverde.lukitas"
+package="com.wambito.app"
 notification="android.permission.POST_NOTIFICATIONS"
 
 cd "$MOBILE"

@@ -67,7 +67,7 @@ void main() {
         'JavaScript:alert(1)',
         'intent://scan/#Intent;scheme=zxing;package=com.google.zxing.client.android;end',
         'intent:#Intent;action=android.intent.action.CALL;end',
-        'file:///data/data/com.andersonlaverde.lukitas/databases/x',
+        'file:///data/data/com.wambito.app/databases/x',
         'content://com.android.contacts/contacts',
         'tel:+34600000000',
         'sms:+34600000000?body=hi',

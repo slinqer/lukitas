@@ -4,7 +4,7 @@
 // served from this machine (the official files, unchanged), e.g. from a folder holding them:
 //
 //   python3 -m http.server 8765
-//   adb -s emulator-5554 shell pm grant com.andersonlaverde.lukitas android.permission.RECORD_AUDIO
+//   adb -s emulator-5554 shell pm grant com.wambito.app android.permission.RECORD_AUDIO
 //   flutter test integration_test/voice_engine_test.dart -d emulator-5554 \
 //     --dart-define=VOICE_MODELS_URL=http://10.0.2.2:8765
 //
