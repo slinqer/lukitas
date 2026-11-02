@@ -4,7 +4,7 @@
          behind a cold start, so the app opens night, its default, with no white flash.
          test/tooling/widget_android_test.dart pins it to the token. -->
     <color name="wambito_night_bg">#15122B</color>
-    <!-- The launcher icon's tile (WambitoColors.day.onGold, the dark ink on gold): the adaptive
-         icon's background. test/tooling/widget_android_test.dart pins it to the token. -->
-    <color name="wambito_icon_bg">#221A47</color>
+    <!-- The launcher icon's tile (WambitoColors.day.brandPlum, the brand-plum token): the
+         adaptive icon's background. test/tooling/widget_android_test.dart pins it to the token. -->
+    <color name="wambito_icon_bg">#422145</color>
 </resources>

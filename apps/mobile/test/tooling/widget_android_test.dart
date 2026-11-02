@@ -160,10 +160,10 @@ void main() {
     final bg = RegExp(r'<color name="wambito_icon_bg">#([0-9A-Fa-f]{6})</color>')
         .firstMatch(colors)!
         .group(1)!;
-    expect(0xFF000000 | int.parse(bg, radix: 16), _argb(WambitoColors.day.onGold));
+    expect(0xFF000000 | int.parse(bg, radix: 16), _argb(WambitoColors.day.brandPlum));
     final foreground = File('$res/drawable/ic_launcher_foreground.xml').readAsStringSync();
-    expect(foreground, contains('android:fillColor="#${_hex(WambitoColors.day.gold)}"'));
-    expect(foreground, contains('android:fillColor="#${_hex(WambitoColors.day.onGold)}"'));
+    expect(foreground, contains('android:fillColor="#${_hex(WambitoColors.day.brandGold)}"'));
+    expect(foreground, contains('android:fillColor="#${_hex(WambitoColors.day.brandPlum)}"'));
     // The legacy launcher PNGs, one per density (48 dp).
     const sizes = {'mdpi': 48, 'hdpi': 72, 'xhdpi': 96, 'xxhdpi': 144, 'xxxhdpi': 192};
     for (final MapEntry(key: density, value: px) in sizes.entries) {
