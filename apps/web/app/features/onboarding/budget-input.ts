@@ -1,4 +1,4 @@
-import { InvalidAmountError } from "@lukas/core";
+import { InvalidAmountError } from "@wambito/core";
 import { formatAmountInput, intlTag, type Locale, parseAmountInput } from "../../i18n/format.ts";
 import {
   type AmountFormat,

@@ -1,5 +1,5 @@
-import type { CategoryDto, TransactionDto } from "@lukas/core";
-import { MemoryLukitas, type Profile, TOOLS, type ToolContext } from "../src/index.ts";
+import type { CategoryDto, TransactionDto } from "@wambito/core";
+import { MemoryWambito, type Profile, TOOLS, type ToolContext } from "../src/index.ts";
 import { category, transaction } from "./fixtures.ts";
 
 /** 2026-11-01 03:00 UTC is still Saturday 2026-10-31 in Bogotá. */
@@ -20,14 +20,14 @@ export function setup(
     viajes: category("Viajes", "expense", { archived: true }),
   };
   const now = opts.now ?? (() => NOW);
-  const lukitas = new MemoryLukitas({
+  const wambito = new MemoryWambito({
     profile: opts.profile,
     categories: Object.values(cats),
     transactions: opts.transactions?.(cats) ?? [],
     now,
   });
-  const ctx: ToolContext = { lukitas, userId: "user-1", now };
-  return { cats, lukitas, ctx };
+  const ctx: ToolContext = { wambito, userId: "user-1", now };
+  return { cats, wambito, ctx };
 }
 
 export type Categories = Record<

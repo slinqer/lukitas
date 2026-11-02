@@ -5,13 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/budgets/budgets_repository.dart';
-import 'package:lukitas/files/files_channel.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/import/import_repository.dart';
-import 'package:lukitas/import/import_screen.dart';
-import 'package:lukitas/ui/app_shell.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/budgets/budgets_repository.dart';
+import 'package:wambito/files/files_channel.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/import/import_repository.dart';
+import 'package:wambito/import/import_screen.dart';
+import 'package:wambito/ui/app_shell.dart';
 
 import '../import/fakes.dart' show importOf, sampleStats;
 import '../support/parity.dart';
@@ -214,7 +214,7 @@ void main() {
           locale: locale,
           overrides: _overrides(fixture, _World(currency: currency, dropsBudgets: budgeted)),
           act: (t) async {
-            await precacheLukitas(t);
+            await precacheWambi(t);
             await act?.call(t);
           },
         );
@@ -267,7 +267,7 @@ void main() {
       locale: const Locale('en'),
       overrides: _overrides(fixture, _World(currency: 'EUR')),
       act: (t) async {
-        await precacheLukitas(t);
+        await precacheWambi(t);
         await _preview(t);
       },
     );
@@ -282,7 +282,7 @@ void main() {
       theme: 'day',
       overrides: _overrides(fixture, _World(currency: 'COP', dropsBudgets: true)),
       act: (t) async {
-        await precacheLukitas(t);
+        await precacheWambi(t);
         await _imported(t);
       },
     );

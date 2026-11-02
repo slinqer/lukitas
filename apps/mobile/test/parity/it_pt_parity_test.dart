@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/api/session.dart';
-import 'package:lukitas/home/home_screen.dart';
-import 'package:lukitas/recurring/recurring_repository.dart';
-import 'package:lukitas/settings/passkeys_settings.dart';
-import 'package:lukitas/settings/preferences.dart';
-import 'package:lukitas/settings/settings_screen.dart';
-import 'package:lukitas/ui/app_shell.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/api/session.dart';
+import 'package:wambito/home/home_screen.dart';
+import 'package:wambito/recurring/recurring_repository.dart';
+import 'package:wambito/settings/passkeys_settings.dart';
+import 'package:wambito/settings/preferences.dart';
+import 'package:wambito/settings/settings_screen.dart';
+import 'package:wambito/ui/app_shell.dart';
 
 import '../entry/fakes.dart';
 import '../support/parity.dart';
@@ -127,7 +127,7 @@ Future<void> _homeTransactions(
     locale: locale,
     overrides: parityHomeOverrides(FixtureHomeRepository(fixture)),
     act: (t) async {
-      await precacheLukitas(t);
+      await precacheWambi(t);
       await t.tap(find.text(movements));
       await t.pumpAndSettle();
     },
@@ -152,7 +152,7 @@ Future<void> _addSheet(
       add: FixtureAddRepository(fixture),
     ),
     act: (t) async {
-      await precacheLukitas(t);
+      await precacheWambi(t);
       await t.tap(find.byKey(const Key('home.add')));
       await t.pumpAndSettle();
       await _keys(t, '39,9');

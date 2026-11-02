@@ -91,7 +91,7 @@ class NoticeWorkersTest {
         server = TinyHttpServer { request ->
             requests += request
             whileAnswering?.invoke()
-            when (request.path.removePrefix("/lukitas")) {
+            when (request.path.removePrefix("/wambito")) {
                 "/api/v1/me" -> meStatus to me()
                 "/api/v1/transactions" -> {
                     val cursor = Regex("cursor=([^&]*)").find(request.query)?.groupValues?.get(1) ?: ""
@@ -262,10 +262,10 @@ class NoticeWorkersTest {
 
     @Test
     fun `the server chosen in Settings is used, with any path it has`() {
-        session.serverUrl = "http://127.0.0.1:${server.port}/lukitas/"
+        session.serverUrl = "http://127.0.0.1:${server.port}/wambito/"
         pages[""] = page(item("Arriendo", "2026-10-22"))
         runDue()
-        assertEquals(listOf("/lukitas/api/v1/me", "/lukitas/api/v1/transactions"), requests.map { it.path })
+        assertEquals(listOf("/wambito/api/v1/me", "/wambito/api/v1/transactions"), requests.map { it.path })
         assertEquals("Hoy vence Arriendo", text(posted().single()))
     }
 
@@ -318,7 +318,7 @@ class NoticeWorkersTest {
         pages["p2"] = page(item("Spotify", "2026-10-22"))
         runDue()
         assertEquals(3, requests.size)
-        assertEquals(listOf("1", "1", "1"), requests.map { it.headers["x-lukas-background"] })
+        assertEquals(listOf("1", "1", "1"), requests.map { it.headers["x-wambito-background"] })
     }
 
     @Test
@@ -428,7 +428,7 @@ class NoticeWorkersTest {
         pages[""] = page(item("Arriendo", "2026-10-22"))
         runDue()
         val tap = shadowOf(posted().single().contentIntent).savedIntent
-        assertEquals("lukitas://due", tap.dataString)
+        assertEquals("wambito://due", tap.dataString)
         // The same not-exported alias the widget uses: no other app can start it.
         assertEquals("com.wambito.app.LaunchLinkAlias", tap.component?.className)
         assertTrue(posted().single().flags and Notification.FLAG_AUTO_CANCEL != 0)
@@ -500,7 +500,7 @@ class NoticeWorkersTest {
         runGuest()
         runGuest()
         val tap = shadowOf(posted().single().contentIntent).savedIntent
-        assertEquals("lukitas://progress", tap.dataString)
+        assertEquals("wambito://progress", tap.dataString)
         assertEquals("com.wambito.app.LaunchLinkAlias", tap.component?.className)
     }
 }

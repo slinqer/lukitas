@@ -18,7 +18,7 @@ const testMatch =
     ? /landing-only\.spec\.ts$/
     : landingMode === "app"
       ? /landing-only-app\.spec\.ts$/
-      : /landing(-lukas)?\.spec\.ts$/;
+      : /landing(-wambi)?\.spec\.ts$/;
 
 /** `E2E_BUILT_PORT` picks another port, e.g. to run beside a server another checkout reuses. */
 const port = Number(process.env.E2E_BUILT_PORT ?? 4180);

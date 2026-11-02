@@ -1,6 +1,6 @@
 import { useTranslations } from "use-intl";
-import { LukasSpot } from "./LukasSpot.tsx";
 import { CodeLink } from "./OpenSource.tsx";
+import { WambiSpot } from "./WambiSpot.tsx";
 
 /** The questions, in order. `privacy` is also the footer's privacy link target. */
 const QUESTIONS = ["what", "import", "passwords", "privacy", "free", "languages"] as const;
@@ -16,7 +16,7 @@ export function Faq() {
     <section id="faq" className="lk-landing-section" aria-labelledby="faq-title">
       <div className="lk-landing-section-head">
         <h2 id="faq-title">{t("title")}</h2>
-        <LukasSpot id="faq" pose="point" mood="happy" />
+        <WambiSpot id="faq" pose="point" mood="happy" />
       </div>
       <ul className="lk-landing-faq">
         {QUESTIONS.map((key) => (

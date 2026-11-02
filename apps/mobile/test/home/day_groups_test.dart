@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/home/day_groups.dart';
+import 'package:wambito/home/day_groups.dart';
 
 import 'fixtures.dart';
 

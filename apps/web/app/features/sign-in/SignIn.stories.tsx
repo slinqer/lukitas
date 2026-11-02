@@ -27,13 +27,13 @@ const digits = (canvas: ReturnType<typeof within>) =>
 const currentPage = (canvas: ReturnType<typeof within>) =>
   canvas.getByRole("status", { name: "Current page" });
 
-/** The email step: Lukitas, the email field and "send code". No fingerprint button without WebAuthn. */
+/** The email step: Wambi, the email field and "send code". No fingerprint button without WebAuthn. */
 export const EmailStep: Story = {
   args: { auth: fakeAuth() },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole("heading", { level: 1, name: "Entra a Lukitas" })).toBeVisible();
-    await expect(canvas.getByRole("img", { name: "Lukitas, contento" })).toBeVisible();
+    await expect(canvas.getByRole("heading", { level: 1, name: "Entra a Wambito" })).toBeVisible();
+    await expect(canvas.getByRole("img", { name: "Wambi, contento" })).toBeVisible();
     const email = canvas.getByRole("textbox", { name: "Tu correo" });
     await expect(email).toHaveAttribute("type", "email");
     // Its name comes from a real, visible label, never from the placeholder.
@@ -114,7 +114,7 @@ export const TooManyCodes: Story = {
     await expect(await canvas.findByRole("alert")).toHaveTextContent(
       "Pediste muchos códigos seguidos. Espera unos minutos e inténtalo otra vez.",
     );
-    await expect(canvas.getByRole("heading", { level: 1, name: "Entra a Lukitas" })).toBeVisible();
+    await expect(canvas.getByRole("heading", { level: 1, name: "Entra a Wambito" })).toBeVisible();
   },
 };
 
@@ -280,7 +280,7 @@ export const NoFingerprintButtonYet: Story = {
   args: { auth: fakeAuth({ passkeysAvailable: () => true, passkeyUsedHere: () => false }) },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole("heading", { level: 1, name: "Entra a Lukitas" })).toBeVisible();
+    await expect(canvas.getByRole("heading", { level: 1, name: "Entra a Wambito" })).toBeVisible();
     await expect(canvas.queryByRole("button", { name: "Entrar con huella" })).toBeNull();
     await expect(canvas.queryByText("o con tu correo")).toBeNull();
     await expect(canvas.getByRole("textbox", { name: "Tu correo" })).toHaveAttribute(

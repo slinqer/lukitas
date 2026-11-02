@@ -1,6 +1,6 @@
-import { addMonths, monthOf, todayIn } from "@lukas/core";
-import { accounts, categories, recurrences, type Tx, transactions, withUser } from "@lukas/db";
-import { and, eq, isNull } from "@lukas/db/orm";
+import { addMonths, monthOf, todayIn } from "@wambito/core";
+import { accounts, categories, recurrences, type Tx, transactions, withUser } from "@wambito/db";
+import { and, eq, isNull } from "@wambito/db/orm";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { materializeRecurrences } from "../src/services/materialize.ts";
 import { stopCategoryRecurrences } from "../src/services/recurrence-stop.ts";
@@ -25,7 +25,7 @@ interface Row {
 
 beforeAll(async () => {
   t = await createTestApp();
-  a = (await t.signIn("a@lukas.test")).headers;
+  a = (await t.signIn("a@wambito.test")).headers;
   const res = await t.request("POST", "/v1/categories", {
     headers: a,
     body: { name: "suscripciones", kind: "expense", icon: "umbrella", color: "pink" },
@@ -360,7 +360,7 @@ describe("recurrence and currency change race", () => {
   });
 
   test("a new recurrence waits for a currency change in flight", async () => {
-    const { userId, headers } = await t.signIn("race-recurrence@lukas.test");
+    const { userId, headers } = await t.signIn("race-recurrence@wambito.test");
     const categoryId = await category(headers);
     let created: Promise<Response> | undefined;
     await withUser(t.db, userId, async (tx) => {
@@ -381,7 +381,7 @@ describe("recurrence and currency change race", () => {
   });
 
   test("a currency change waits for a recurrence being created, then finds the account locked", async () => {
-    const { userId, headers } = await t.signIn("race-recurrence-patch@lukas.test");
+    const { userId, headers } = await t.signIn("race-recurrence-patch@wambito.test");
     const categoryId = await category(headers);
     let patch: Promise<Response> | undefined;
     await withUser(t.db, userId, async (tx) => {
@@ -467,7 +467,7 @@ describe("materializing and removing recurrences race", () => {
     );
 
   test("a recurrence DELETE waits for a report materializing, then removes what it added", async () => {
-    const { userId, headers, recurrenceId } = await setUp("race-mat-delete@lukas.test");
+    const { userId, headers, recurrenceId } = await setUp("race-mat-delete@wambito.test");
     let deleted: Promise<Response> | undefined;
     await withUser(t.db, userId, async (tx) => {
       // The report's side: next month's occurrences, not committed yet.
@@ -482,7 +482,7 @@ describe("materializing and removing recurrences race", () => {
   });
 
   test("a category archive waits for a report materializing, then removes what it added", async () => {
-    const { userId, headers, categoryId } = await setUp("race-mat-archive@lukas.test");
+    const { userId, headers, categoryId } = await setUp("race-mat-archive@wambito.test");
     let archived: Promise<Response> | undefined;
     await withUser(t.db, userId, async (tx) => {
       expect(await materializeRecurrences(tx, userId, next, month)).toBe(1);
@@ -499,7 +499,7 @@ describe("materializing and removing recurrences race", () => {
   });
 
   test("a report waits for a recurrence DELETE in flight, then sees the rule gone", async () => {
-    const { userId, headers, recurrenceId } = await setUp("race-delete-mat@lukas.test");
+    const { userId, headers, recurrenceId } = await setUp("race-delete-mat@wambito.test");
     let report: Promise<Response> | undefined;
     await withUser(t.db, userId, async (tx) => {
       // The DELETE's side: the account lock, then its pending rows and the rule go.
@@ -516,7 +516,7 @@ describe("materializing and removing recurrences race", () => {
   });
 
   test("a report waits for a category archive in flight, then skips the archived category", async () => {
-    const { userId, headers, categoryId } = await setUp("race-archive-mat@lukas.test");
+    const { userId, headers, categoryId } = await setUp("race-archive-mat@wambito.test");
     let list: Promise<Response> | undefined;
     await withUser(t.db, userId, async (tx) => {
       // The archive's side, as PATCH /v1/categories/:id does it.
@@ -549,7 +549,7 @@ describe("a transaction saved with repeat", () => {
     ).items.filter((i) => i.name === "Gimnasio");
 
   beforeAll(async () => {
-    headers = (await t.signIn("repeat@lukas.test")).headers;
+    headers = (await t.signIn("repeat@wambito.test")).headers;
     const res = await t.request("POST", "/v1/categories", {
       headers,
       body: { name: "salud", kind: "expense", icon: "star", color: "green" },

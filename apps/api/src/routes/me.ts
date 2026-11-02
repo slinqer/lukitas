@@ -1,5 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
-import { formatMinorAsDecimal } from "@lukas/core";
+import { formatMinorAsDecimal } from "@wambito/core";
 import {
   accounts,
   categories,
@@ -9,8 +9,8 @@ import {
   transactions,
   user,
   withUser,
-} from "@lukas/db";
-import { and, asc, eq, isNull, sql } from "@lukas/db/orm";
+} from "@wambito/db";
+import { and, asc, eq, isNull, sql } from "@wambito/db/orm";
 import {
   type ClaimCodeResult,
   consumeClaimCode,
@@ -335,7 +335,7 @@ export function meRoutes(deps: AppDeps) {
           200,
           {
             "content-type": "text/csv; charset=utf-8",
-            "content-disposition": `attachment; filename="lukas-export-${stamp}.csv"`,
+            "content-disposition": `attachment; filename="wambito-export-${stamp}.csv"`,
           },
         );
       }
@@ -348,7 +348,7 @@ export function meRoutes(deps: AppDeps) {
       };
       return c.body(JSON.stringify(body), 200, {
         "content-type": "application/json",
-        "content-disposition": `attachment; filename="lukas-export-${stamp}.json"`,
+        "content-disposition": `attachment; filename="wambito-export-${stamp}.json"`,
       });
     },
   );

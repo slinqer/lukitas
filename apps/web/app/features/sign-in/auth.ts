@@ -223,7 +223,7 @@ async function settle<T, R>(
 
 /** The headers the API reads to write the email and to name a new account's categories (apps/api/src/auth.ts). */
 function hintHeaders({ locale, next }: CodeHints): Record<string, string> {
-  return { "x-lukas-locale": locale, ...(next ? { "x-lukas-next": safeNext(next) } : {}) };
+  return { "x-wambito-locale": locale, ...(next ? { "x-wambito-next": safeNext(next) } : {}) };
 }
 
 /** The real thing: Better Auth's emailOTP and passkey plugins under /api/auth. */

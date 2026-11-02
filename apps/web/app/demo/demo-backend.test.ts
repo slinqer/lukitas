@@ -1,4 +1,4 @@
-import { addMonths, type MonthSummary, monthOf, type TransactionDto, todayIn } from "@lukas/core";
+import { addMonths, type MonthSummary, monthOf, type TransactionDto, todayIn } from "@wambito/core";
 import { describe, expect, it } from "vitest";
 import { type ApiClient, createApiClient } from "../api/client.ts";
 import type { ApiProblem } from "../api/errors.ts";
@@ -70,7 +70,7 @@ describe("the demo's invented user", () => {
   it("is Valentina in pesos and Bogotá in Spanish, in euros and Lisbon in English", async () => {
     const es = (await demo("es").api.GET("/v1/me")).data;
     expect(es).toMatchObject({
-      email: "valentina@demo.lukas.app",
+      email: "valentina@demo.wambito.test",
       locale: "es",
       timezone: "America/Bogota",
       currency: "COP",
@@ -78,7 +78,7 @@ describe("the demo's invented user", () => {
     expect(es?.onboardingCompletedAt).not.toBeNull();
     const en = (await demo("en").api.GET("/v1/me")).data;
     expect(en).toMatchObject({
-      email: "valentina@demo.lukas.app",
+      email: "valentina@demo.wambito.test",
       locale: "en",
       timezone: "Europe/Lisbon",
       currency: "EUR",

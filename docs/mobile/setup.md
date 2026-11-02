@@ -106,7 +106,7 @@ id: they must all be in the `timezone` package's `latest_all` database (the test
 
 ## Emulator (AVD `lukitas-api36`)
 
-Create it once:
+Create it once. The AVD keeps the name `lukitas-api36` (it is a label on your machine, made before the rename; any name works if you change the commands below):
 
 ```sh
 export JAVA_HOME=~/development/jdk/jdk-17.0.21+9/Contents/Home
@@ -138,7 +138,7 @@ emulator -avd lukitas-api36 -no-window -no-audio -gpu swiftshader_indirect &
 adb wait-for-device shell 'while [ "$(getprop sys.boot_completed)" != 1 ]; do sleep 1; done'
 cd apps/mobile
 flutter test integration_test -d emulator-5554 \
-  --dart-define=LUKITAS_SERVER=http://10.0.2.2:3000 \
+  --dart-define=WAMBITO_SERVER=http://10.0.2.2:3000 \
   --dart-define=MAILPIT_URL=http://10.0.2.2:8025
 ```
 
@@ -146,7 +146,7 @@ flutter test integration_test -d emulator-5554 \
 
 They read sign-in codes and links from Mailpit, as the web's e2e suite does. The API allows 5 code
 requests per 10 minutes from one address, and the emulator is one address. So the script gives each
-file a made-up client address (`--dart-define=LUKITAS_CLIENT_IP`, as the web's e2e gives each browser
+file a made-up client address (`--dart-define=WAMBITO_CLIENT_IP`, as the web's e2e gives each browser
 its own `x-forwarded-for`): a debug build sends it as `x-forwarded-for`, and the dev stack counts it.
 A release build never sends it, and the API's limits are unchanged. Running one file by hand, pass the
 define too, or the whole suite shares the emulator's address.
@@ -166,17 +166,17 @@ flutter test integration_test/voice_engine_test.dart -d emulator-5554 \
 
 `integration_test/categories_test.dart` creates a category from home's Categorías tab, renames it and changes its colour in the detail, archives it (after the question) and restores it, checking the server after each step. It needs the notification permission given, like the others.
 
-`integration_test/import_test.dart` imports a Budge file through the real `lukitas/files` channel (`android/.../files/FilesChannel.kt`): the system's document picker cannot be driven from a test, so the debug build lets the test hand the next pick a file in the app's cache (`injectPick`, refused by a release build), and that file goes through the same bounded, off-the-main-thread read as a picked document. It checks a file over 5 MB (refused by the channel, nothing sent), a malformed one (the API's refusal), the sample (22 rows: the preview, nothing in the account until the confirm, then the transactions, the categories and the file's currency on the server), the same file again, and a 2,000-row file (imported whole, with the longest gap between frames kept short). The real picker (`ACTION_OPEN_DOCUMENT`) and the share sheet are not exercised by it.
+`integration_test/import_test.dart` imports a Budge file through the real `wambito/files` channel (`android/.../files/FilesChannel.kt`): the system's document picker cannot be driven from a test, so the debug build lets the test hand the next pick a file in the app's cache (`injectPick`, refused by a release build), and that file goes through the same bounded, off-the-main-thread read as a picked document. It checks a file over 5 MB (refused by the channel, nothing sent), a malformed one (the API's refusal), the sample (22 rows: the preview, nothing in the account until the confirm, then the transactions, the categories and the file's currency on the server), the same file again, and a 2,000-row file (imported whole, with the longest gap between frames kept short). The real picker (`ACTION_OPEN_DOCUMENT`) and the share sheet are not exercised by it.
 
 `integration_test/welcome_test.dart` signs in as a new email user (the code comes from Mailpit) and goes through the welcome: the currency (dollars, wherever the phone is), a restart of the app in the middle (the welcome is where it was left), "No, empiezo de cero", the categories, a budget, and home; then it checks the account on the server (`onboardingCompletedAt`, the currency, the suggested categories, the budget) and that a later start goes straight home. A second test takes "Entrar directo". An account with no `onboardingCompletedAt` is sent to the welcome after any email sign-in, so `entry_test.dart` waits for it there; a guest, and a guest that saves its progress with an email, land on home.
 
 `integration_test/widget_test.dart` covers the home-screen widget (Task 15): it presses the
 widget's ＋, 🎤 and body the way the widget does (the very intent `launch/LaunchLinks.kt` builds, started
-through the debug-only `lukitas/test` channel; the body also with the `glance-action:/CALLBACK?...`
+through the debug-only `wambito/test` channel; the body also with the `glance-action:/CALLBACK?...`
 intent Glance used to give it, which showed "Page Not Found" while the app ran) and runs the refresh job once through WorkManager,
 which reads the session where the app keeps it and asks the dev stack for the summary; then it
 signs out and checks the widget keeps no figure. To look at the widgets themselves, long-press the
-emulator's home screen, open Widgets and drag a Lukitas one out; the Quick Settings tile is added
+emulator's home screen, open Widgets and drag a Wambito one out; the Quick Settings tile is added
 with `adb -s emulator-5554 shell cmd statusbar add-tile com.wambito.app/.tile.CaptureTileService`.
 
 With the voice models served as for `voice_engine_test.dart` (and the microphone granted),
@@ -193,7 +193,7 @@ captured before (the model is loaded at the app's start):
 python3 -m http.server 8765 --directory <folder with both model zips>
 adb -s emulator-5554 install -r -t -g build/app/outputs/flutter-apk/app-debug.apk
 flutter test integration_test/voice_latency_test.dart -d emulator-5554 \
-  --dart-define=LUKITAS_SERVER=http://10.0.2.2:3000 \
+  --dart-define=WAMBITO_SERVER=http://10.0.2.2:3000 \
   --dart-define=VOICE_MODELS_URL=http://10.0.2.2:8765 --dart-define=VOICE_USED=true
 ```
 
@@ -219,8 +219,8 @@ there.
 (the voice models, the speech engine, the sounds) are registered at start, and that "Más en la web"
 refuses anything but http and https. `integration_test/entry_test.dart` includes the claim: a guest
 with a movement saves their progress to an email from Mailpit and keeps the movement. It also checks
-that a sign-in started in the app writes its link with `from=app` (the app sends `x-lukas-client:
-android`), and that the `intent://` form the web page's "Abrir en Lukitas" offers (scheme `http` here,
+that a sign-in started in the app writes its link with `from=app` (the app sends `x-wambito-client:
+android`), and that the `intent://` form the web page's "Abrir en Wambito" offers (scheme `http` here,
 `https` in the product) starts the app and signs in. The emulator has no passkey provider, so the
 passkey on the email screen is covered by the widget tests, and by hand with Proton Pass on a phone.
 

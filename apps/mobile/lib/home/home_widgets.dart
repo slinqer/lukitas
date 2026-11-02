@@ -5,7 +5,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../l10n/app_localizations.dart';
 import '../money/format.dart';
 import '../theme/surfaces.dart';
@@ -66,10 +66,10 @@ class HomeHero extends StatelessWidget {
       label: label,
       child: HeroCard(
         padding: const EdgeInsets.fromLTRB(
-          LukitasTokens.space4,
-          LukitasTokens.space3,
-          LukitasTokens.space4,
-          LukitasTokens.space4,
+          WambitoTokens.space4,
+          WambitoTokens.space3,
+          WambitoTokens.space4,
+          WambitoTokens.space4,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,7 +92,7 @@ class HomeHero extends StatelessWidget {
             ),
             if (hasBudget) ...[
               Padding(
-                padding: const EdgeInsets.only(top: LukitasTokens.space2),
+                padding: const EdgeInsets.only(top: WambitoTokens.space2),
                 child: BudgetBar(
                   spent: summary.spent,
                   budget: summary.budgetTotal,
@@ -153,10 +153,10 @@ class HomeHeroPlaceholder extends StatelessWidget {
     label: label,
     child: const HeroCard(
       padding: EdgeInsets.fromLTRB(
-        LukitasTokens.space4,
-        LukitasTokens.space3,
-        LukitasTokens.space4,
-        LukitasTokens.space4,
+        WambitoTokens.space4,
+        WambitoTokens.space3,
+        WambitoTokens.space4,
+        WambitoTokens.space4,
       ),
       child: SizedBox(width: double.infinity, height: 140 - 12 - 16),
     ),
@@ -208,7 +208,7 @@ class DayHeading extends StatelessWidget {
     return Semantics(
       header: true,
       child: Padding(
-        padding: const EdgeInsets.only(top: LukitasTokens.space1, bottom: LukitasTokens.space2),
+        padding: const EdgeInsets.only(top: WambitoTokens.space1, bottom: WambitoTokens.space2),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -262,24 +262,24 @@ class NudgeCard extends StatelessWidget {
       child: CustomPaint(
         foregroundPainter: DashedBorderPainter(
           color: colors.stroke,
-          radius: LukitasTokens.radiusLg,
+          radius: WambitoTokens.radiusLg,
           width: 2,
         ),
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: colors.surfaceRow,
-            borderRadius: BorderRadius.circular(LukitasTokens.radiusLg),
+            borderRadius: BorderRadius.circular(WambitoTokens.radiusLg),
           ),
           child: Padding(
             // `padding: var(--space-3)` inside the 2px border.
-            padding: const EdgeInsets.all(LukitasTokens.space3 + 2),
+            padding: const EdgeInsets.all(WambitoTokens.space3 + 2),
             child: Row(
-              spacing: LukitasTokens.space3,
+              spacing: WambitoTokens.space3,
               children: [
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: LukitasTokens.space1,
+                    spacing: WambitoTokens.space1,
                     children: [
                       Semantics(
                         header: true,
@@ -385,7 +385,7 @@ class DashedBorderPainter extends CustomPainter {
 /// darker band around them. [bleed] is the side padding of the content, which the strip reaches
 /// past.
 class HomeTabsStrip extends StatelessWidget {
-  const HomeTabsStrip({super.key, required this.child, this.bleed = LukitasTokens.space4});
+  const HomeTabsStrip({super.key, required this.child, this.bleed = WambitoTokens.space4});
 
   final Widget child;
 
@@ -395,7 +395,7 @@ class HomeTabsStrip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(bleed, LukitasTokens.space2, bleed, LukitasTokens.space1),
+      padding: EdgeInsets.fromLTRB(bleed, WambitoTokens.space2, bleed, WambitoTokens.space1),
       child: child,
     );
   }

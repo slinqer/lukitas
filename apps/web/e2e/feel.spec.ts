@@ -93,7 +93,7 @@ test.describe("the tab pager", () => {
     await expect(tab(page, "Categorías")).toHaveAttribute("aria-selected", "true");
     const budgets = page.getByRole("tabpanel", { name: "Categorías" });
     await expect.poll(async () => Math.round((await budgets.boundingBox())?.x ?? -1)).toBe(16);
-    expect(await page.evaluate(() => localStorage.getItem("lukas.home.view"))).toBe("budgets");
+    expect(await page.evaluate(() => localStorage.getItem("wambito.home.view"))).toBe("budgets");
   });
 
   test("a short flick switches, a short slow drag snaps back", async ({ page }) => {
@@ -471,7 +471,7 @@ test.describe("the keypad on short phones", () => {
     for (const theme of ["night", "day"] as const) {
       test(`every key and the save button show, ${lang}, ${theme}`, async ({ page }) => {
         test.setTimeout(120_000);
-        await page.addInitScript((value) => localStorage.setItem("lukas.theme", value), theme);
+        await page.addInitScript((value) => localStorage.setItem("wambito.theme", value), theme);
         const l =
           lang === "es"
             ? {
@@ -774,7 +774,7 @@ test.describe("the whole sheet on a phone", () => {
   });
 });
 
-test.describe("Lukitas after a payment", () => {
+test.describe("Wambi after a payment", () => {
   /** The demo on a clock that runs from 21 October 2026, and can be fast-forwarded. */
   async function openDemoOnClock(page: Page) {
     await page.clock.install({ time: new Date("2026-10-21T18:00:00Z") });
@@ -825,7 +825,7 @@ const intersects = (a: Box, b: Box) =>
 
 /**
  * Saves 5.000 in Mercado (touch on phones, the mouse on wide screens), then, while the undo toast
- * is up and Lukitas past his pop, returns his box, the toast's and the add button's.
+ * is up and Wambi past his pop, returns his box, the toast's and the add button's.
  */
 async function celebrate(page: Page, touch: boolean) {
   const press = (target: Locator) => (touch ? tap(page, target) : target.click());
@@ -849,18 +849,18 @@ async function celebrate(page: Page, touch: boolean) {
   await press(sheet.getByRole("button", { name: "Guardar", exact: true }));
   const toast = page.getByRole("status").locator(".lk-toast");
   await expect(toast).toContainText("Deshacer");
-  const lukas = page.locator(".lk-celebration-lukas");
-  await expect(lukas).toBeVisible();
+  const wambi = page.locator(".lk-celebration-wambi");
+  await expect(wambi).toBeVisible();
   // Past the pop (it lasts one --celebrate, 1.2 s): standing where he lands.
   await page.waitForTimeout(300);
-  const lukasBox = await lukas.boundingBox();
+  const wambiBox = await wambi.boundingBox();
   const toastBox = await toast.boundingBox();
   const button = touch
     ? plus(page)
     : page.getByRole("navigation").getByRole("button", { name: "Agregar" });
   const buttonBox = await button.boundingBox();
-  if (!lukasBox || !toastBox || !buttonBox) throw new Error("not on screen");
-  return { lukasBox, toastBox, buttonBox };
+  if (!wambiBox || !toastBox || !buttonBox) throw new Error("not on screen");
+  return { wambiBox, toastBox, buttonBox };
 }
 
 test.describe("the celebration", () => {
@@ -868,18 +868,18 @@ test.describe("the celebration", () => {
     { width: 390, height: 844 },
     { width: 360, height: 640 },
   ]) {
-    test(`at ${size.width}×${size.height}, Lukitas lands clear of the toast and the ＋, which stays tappable`, async ({
+    test(`at ${size.width}×${size.height}, Wambi lands clear of the toast and the ＋, which stays tappable`, async ({
       page,
     }) => {
       await page.setViewportSize(size);
       await openDemo(page);
-      const { lukasBox, toastBox, buttonBox } = await celebrate(page, true);
-      expect(intersects(lukasBox, toastBox), "Lukitas over the undo toast").toBe(false);
-      expect(intersects(lukasBox, buttonBox), "Lukitas over the ＋").toBe(false);
+      const { wambiBox, toastBox, buttonBox } = await celebrate(page, true);
+      expect(intersects(wambiBox, toastBox), "Wambi over the undo toast").toBe(false);
+      expect(intersects(wambiBox, buttonBox), "Wambi over the ＋").toBe(false);
       // Centered on the ＋'s column, somewhere above it.
-      expect(lukasBox.y + lukasBox.height).toBeLessThanOrEqual(buttonBox.y + 1);
+      expect(wambiBox.y + wambiBox.height).toBeLessThanOrEqual(buttonBox.y + 1);
       expect(
-        Math.abs(lukasBox.x + lukasBox.width / 2 - (buttonBox.x + buttonBox.width / 2)),
+        Math.abs(wambiBox.x + wambiBox.width / 2 - (buttonBox.x + buttonBox.width / 2)),
       ).toBeLessThan(2);
       expect(
         await page.locator(".lk-celebration").evaluate((el) => getComputedStyle(el).pointerEvents),
@@ -889,7 +889,7 @@ test.describe("the celebration", () => {
         x: buttonBox.x + buttonBox.width / 2,
         y: buttonBox.y + buttonBox.height / 2,
       };
-      // (Once the closing sheet's backdrop is gone, while Lukitas is still up.)
+      // (Once the closing sheet's backdrop is gone, while Wambi is still up.)
       await expect
         .poll(() =>
           page.evaluate(
@@ -905,14 +905,14 @@ test.describe("the celebration", () => {
   }
 
   test(
-    "on a wide screen, Lukitas lands clear of the toast and Agregar",
+    "on a wide screen, Wambi lands clear of the toast and Agregar",
     { tag: "@desktop" },
     async ({ page }, testInfo) => {
       test.skip(testInfo.project.name !== "desktop", "Wide screens: the desktop project");
       await openDemo(page);
-      const { lukasBox, toastBox, buttonBox } = await celebrate(page, false);
-      expect(intersects(lukasBox, toastBox), "Lukitas over the undo toast").toBe(false);
-      expect(intersects(lukasBox, buttonBox), "Lukitas over Agregar").toBe(false);
+      const { wambiBox, toastBox, buttonBox } = await celebrate(page, false);
+      expect(intersects(wambiBox, toastBox), "Wambi over the undo toast").toBe(false);
+      expect(intersects(wambiBox, buttonBox), "Wambi over Agregar").toBe(false);
     },
   );
 });

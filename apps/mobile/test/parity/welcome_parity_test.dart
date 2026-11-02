@@ -4,21 +4,21 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/import/budgets_form.dart';
-import 'package:lukitas/import/import_state.dart';
-import 'package:lukitas/ui/app_shell.dart';
-import 'package:lukitas/welcome/budgets_step.dart';
-import 'package:lukitas/welcome/categories_step.dart';
-import 'package:lukitas/welcome/category_chips.dart';
-import 'package:lukitas/welcome/currency_step.dart';
-import 'package:lukitas/welcome/import_step.dart';
-import 'package:lukitas/welcome/suggested_categories.dart';
-import 'package:lukitas/welcome/welcome_step.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/import/budgets_form.dart';
+import 'package:wambito/import/import_state.dart';
+import 'package:wambito/ui/app_shell.dart';
+import 'package:wambito/welcome/budgets_step.dart';
+import 'package:wambito/welcome/categories_step.dart';
+import 'package:wambito/welcome/category_chips.dart';
+import 'package:wambito/welcome/currency_step.dart';
+import 'package:wambito/welcome/import_step.dart';
+import 'package:wambito/welcome/suggested_categories.dart';
+import 'package:wambito/welcome/welcome_step.dart';
 
 import '../import/fakes.dart' show importOf, sampleStats;
 import '../support/parity.dart';
-import '../support/parity_home.dart' show precacheLukitas;
+import '../support/parity_home.dart' show precacheWambi;
 
 /// The welcome's steps against the stories that show them: `onboarding-welcome--*`
 /// (apps/web/app/features/onboarding/Onboarding.stories.tsx), each as Storybook shows it after its
@@ -224,7 +224,7 @@ void main() {
           theme: theme,
           locale: locale,
           act: (t) async {
-            await precacheLukitas(t);
+            await precacheWambi(t);
             await act?.call(t);
           },
         );
@@ -367,7 +367,7 @@ void main() {
       _frame(const _Categories('en')),
       theme: 'day',
       locale: const Locale('en'),
-      act: precacheLukitas,
+      act: precacheWambi,
     );
   });
 
@@ -379,7 +379,7 @@ void main() {
       _frame(const _Budgets(currency: 'COP')),
       theme: 'day',
       act: (t) async {
-        await precacheLukitas(t);
+        await precacheWambi(t);
         await _enter(t, 'groceries', '300000');
         await _enter(t, 'home', '4300000');
         await t.pumpAndSettle();

@@ -2,7 +2,7 @@
  * The origin used until the production domain is settled. Setting VITE_SITE_URL at build time
  * replaces it everywhere (canonical, hreflang, Open Graph, sitemap, robots).
  */
-export const DEFAULT_SITE_ORIGIN = "https://lukas.app";
+export const DEFAULT_SITE_ORIGIN = "https://wambito.test";
 
 /**
  * A plain `http(s)` origin without surrounding whitespace or trailing slashes, or a clear error

@@ -1,4 +1,4 @@
-import type { CategoryDto, CategorySummary } from "@lukas/core";
+import type { CategoryDto, CategorySummary } from "@wambito/core";
 import { describe, expect, it } from "vitest";
 import { categoryLists } from "./category-lists.ts";
 

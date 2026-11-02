@@ -22,17 +22,17 @@ interface TestDatabase {
 
 /** A throwaway Postgres with nothing in it: no `lukas_app` role, no tables. */
 export async function startBareDatabase(): Promise<Pick<TestDatabase, "adminUrl" | "stop">> {
-  return process.env.LUKAS_TEST_DB === "local" ? startLocalCluster() : startContainer();
+  return process.env.WAMBITO_TEST_DB === "local" ? startLocalCluster() : startContainer();
 }
 
 /**
  * Starts a throwaway Postgres with the `lukas_app` role and all migrations applied.
- * Uses a Docker container by default; set LUKAS_TEST_DB=local to use the `initdb`/`pg_ctl`
+ * Uses a Docker container by default; set WAMBITO_TEST_DB=local to use the `initdb`/`pg_ctl`
  * binaries on PATH instead (handy when Docker is not running).
  */
 export async function startTestDatabase(): Promise<TestDatabase> {
   const { adminUrl, stop } =
-    process.env.LUKAS_TEST_DB === "local" ? await startLocalCluster() : await startContainer();
+    process.env.WAMBITO_TEST_DB === "local" ? await startLocalCluster() : await startContainer();
   const admin = postgres(adminUrl, { max: 1, onnotice: () => {} });
   await admin.unsafe(await readFile(INIT_SQL, "utf8"));
   await admin.end();
@@ -65,7 +65,7 @@ async function freePort(): Promise<number> {
 }
 
 async function startLocalCluster() {
-  const dir = await mkdtemp(join(tmpdir(), "lukas-pg-"));
+  const dir = await mkdtemp(join(tmpdir(), "wambito-pg-"));
   const data = join(dir, "data");
   const port = await freePort();
   await run("initdb", ["-D", data, "-U", "postgres", "--auth=trust", "-E", "UTF8"]);

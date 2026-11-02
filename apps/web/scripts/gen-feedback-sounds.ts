@@ -1,6 +1,6 @@
 /**
  * Synthesizes the feedback sounds (app/feedback/sounds/*.mp3) from plain sine tones with ffmpeg,
- * so they are original work with no third-party samples. Run: `pnpm --filter @lukas/web sounds`.
+ * so they are original work with no third-party samples. Run: `pnpm --filter @wambito/web sounds`.
  * Needs ffmpeg with libmp3lame on the PATH. Each sound is a few short notes: [frequency Hz, seconds].
  */
 import { execFileSync } from "node:child_process";

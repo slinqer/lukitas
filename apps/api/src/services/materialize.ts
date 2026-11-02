@@ -1,6 +1,6 @@
-import { addMonths, firstDay, type Month, occurrences } from "@lukas/core";
-import { accounts, categories, recurrences, type Tx, transactions } from "@lukas/db";
-import { asc, eq, isNull } from "@lukas/db/orm";
+import { addMonths, firstDay, type Month, occurrences } from "@wambito/core";
+import { accounts, categories, recurrences, type Tx, transactions } from "@wambito/db";
+import { asc, eq, isNull } from "@wambito/db/orm";
 import { defaultAccount } from "./transactions.ts";
 
 /**

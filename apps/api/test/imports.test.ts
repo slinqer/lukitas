@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
-import { accounts, imports, type Tx, transactions, withUser } from "@lukas/db";
-import { eq } from "@lukas/db/orm";
+import { accounts, imports, type Tx, transactions, withUser } from "@wambito/db";
+import { eq } from "@wambito/db/orm";
 import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
 import { createTestApp, type TestApp } from "./harness.ts";
 
@@ -67,8 +67,8 @@ const countTransactions = async (headers = a) => {
 
 beforeAll(async () => {
   t = await createTestApp();
-  a = (await t.signIn("a@lukas.test")).headers;
-  b = (await t.signIn("b@lukas.test")).headers;
+  a = (await t.signIn("a@wambito.test")).headers;
+  b = (await t.signIn("b@wambito.test")).headers;
   // A category the user created by hand must be reused, not duplicated.
   await t.request("POST", "/v1/categories", {
     headers: a,
@@ -173,7 +173,7 @@ describe("Budge import", () => {
 describe("the file's currency", () => {
   let c: { authorization: string };
   beforeAll(async () => {
-    c = (await t.signIn("c@lukas.test")).headers;
+    c = (await t.signIn("c@wambito.test")).headers;
   });
   const setCurrency = (currency: string) =>
     t.request("PATCH", "/v1/me", { headers: c, body: { currency } });
@@ -233,7 +233,7 @@ describe("import confirm and currency change race", () => {
   };
 
   test("a currency change waits for an import in flight, then finds the account locked", async () => {
-    const { userId, headers } = await t.signIn("race-patch@lukas.test");
+    const { userId, headers } = await t.signIn("race-patch@wambito.test");
     const category = (await (
       await t.request("POST", "/v1/categories", {
         headers,
@@ -270,7 +270,7 @@ describe("import confirm and currency change race", () => {
   });
 
   test("an import confirm waits for a currency change in flight, then refuses the stale preview", async () => {
-    const { userId, headers } = await t.signIn("race-confirm@lukas.test");
+    const { userId, headers } = await t.signIn("race-confirm@wambito.test");
     const preview = (await (await upload(headers, FIXTURE)).json()) as Preview;
     let confirm: Promise<Response> | undefined;
     await withUser(t.db, userId, async (tx) => {
@@ -290,7 +290,7 @@ describe("import confirm and currency change race", () => {
 
   test("fired together, either the import or the currency change wins, never both", async () => {
     for (let i = 0; i < 4; i++) {
-      const { headers } = await t.signIn(`race-both-${i}@lukas.test`);
+      const { headers } = await t.signIn(`race-both-${i}@wambito.test`);
       const preview = (await (await upload(headers, FIXTURE)).json()) as Preview;
       const [confirm, patch] = await Promise.all([
         t.request("POST", `/v1/imports/${preview.id}/confirm`, { headers }),
@@ -331,7 +331,7 @@ describe("the preview's monthly averages", () => {
 
   test("cover the last complete months the file has, up to 3", async () => {
     // In November the window would be Aug–Oct; the sample starts in September, so Sep–Oct, over 2.
-    const stats = await previewAt("2026-11-15T12:00:00Z", "avg-nov@lukas.test");
+    const stats = await previewAt("2026-11-15T12:00:00Z", "avg-nov@wambito.test");
     expect(stats.averageWindow).toEqual({ from: "2026-09", to: "2026-10", months: 2 });
     const averages = stats.averageMonthlySpending;
     // Ocio: 9,50 − 5 (a refund) + 120 = 124,50 € over 2 months.
@@ -342,7 +342,7 @@ describe("the preview's monthly averages", () => {
 
   test("leave out the month still running", async () => {
     // On 21 October only September is complete. The 120 € flight in October doesn't count yet.
-    const stats = await previewAt("2026-10-21T12:00:00Z", "avg-oct@lukas.test");
+    const stats = await previewAt("2026-10-21T12:00:00Z", "avg-oct@wambito.test");
     expect(stats.averageWindow).toEqual({ from: "2026-09", to: "2026-09", months: 1 });
     expect(amountOf(stats.averageMonthlySpending, "Ocio")).toBe(450);
     expect(amountOf(stats.averageMonthlySpending, "Taxes")).toBeUndefined();
@@ -351,7 +351,7 @@ describe("the preview's monthly averages", () => {
 
 describe("two confirms of the same preview at once", () => {
   test("the second finds it confirmed and changes nothing", async () => {
-    const { userId, headers } = await t.signIn("double-confirm@lukas.test");
+    const { userId, headers } = await t.signIn("double-confirm@wambito.test");
     const preview = (await (await upload(headers, FIXTURE)).json()) as Preview;
     let both: Promise<Response[]> | undefined;
     await withUser(t.db, userId, async (tx) => {
@@ -404,7 +404,7 @@ describe("archived categories on import", () => {
     ).items.length;
 
   test("a category that exists only archived is brought back and used", async () => {
-    const { headers } = await t.signIn("archived-only@lukas.test");
+    const { headers } = await t.signIn("archived-only@wambito.test");
     const ocio = await create(headers, "Ocio");
     await archive(headers, ocio);
     const preview = (await (await upload(headers, FIXTURE)).json()) as Preview;
@@ -420,7 +420,7 @@ describe("archived categories on import", () => {
   });
 
   test("an active match wins over an archived twin", async () => {
-    const { headers } = await t.signIn("archived-twin@lukas.test");
+    const { headers } = await t.signIn("archived-twin@wambito.test");
     const old = await create(headers, "ocio");
     await archive(headers, old);
     const active = await create(headers, "Ocio");
@@ -434,7 +434,7 @@ describe("archived categories on import", () => {
 
 describe("adopting the file's currency on confirm", () => {
   test("the preview of an empty account anticipates the file's currency, and confirm adopts it", async () => {
-    const { headers } = await t.signIn("adopt@lukas.test");
+    const { headers } = await t.signIn("adopt@wambito.test");
     await t.request("PATCH", "/v1/me", { headers, body: { currency: "COP" } });
     const groceries = (await (
       await t.request("POST", "/v1/categories", {
@@ -484,7 +484,7 @@ describe("adopting the file's currency on confirm", () => {
   });
 
   test("an account that got transactions since can't adopt: currency_locked, nothing imported", async () => {
-    const { headers } = await t.signIn("adopt-locked@lukas.test");
+    const { headers } = await t.signIn("adopt-locked@wambito.test");
     await t.request("PATCH", "/v1/me", { headers, body: { currency: "COP" } });
     const preview = (await (await upload(headers, FIXTURE)).json()) as Preview & {
       stats: { adoptsCurrency: boolean };
@@ -510,7 +510,7 @@ describe("adopting the file's currency on confirm", () => {
   });
 
   test("an account with a recurrence can't adopt: the preview keeps its currency, confirm is currency_locked", async () => {
-    const { headers } = await t.signIn("adopt-recurrence@lukas.test");
+    const { headers } = await t.signIn("adopt-recurrence@wambito.test");
     await t.request("PATCH", "/v1/me", { headers, body: { currency: "COP" } });
     // Previewed while the account is still free to adopt the file's currency...
     const preview = (await (await upload(headers, FIXTURE)).json()) as Preview & {
@@ -556,7 +556,7 @@ describe("adopting the file's currency on confirm", () => {
   });
 
   test("an account with transactions previews in its own currency (rows rejected)", async () => {
-    const { headers } = await t.signIn("adopt-has-tx@lukas.test");
+    const { headers } = await t.signIn("adopt-has-tx@wambito.test");
     await t.request("PATCH", "/v1/me", { headers, body: { currency: "COP" } });
     const cat = (await (
       await t.request("POST", "/v1/categories", {

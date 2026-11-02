@@ -20,53 +20,53 @@ interface Copy {
 
 const COPY = {
   es: {
-    subject: (code: string) => `Tu código de Lukitas: ${code}`,
-    preheader: (code: string) => `Tu código para entrar a Lukitas: ${code}`,
+    subject: (code: string) => `Tu código de Wambito: ${code}`,
+    preheader: (code: string) => `Tu código para entrar a Wambito: ${code}`,
     heading: "¡Hola! Este es tu código para entrar",
-    lead: "Escríbelo en Lukitas, o toca el botón para entrar directo.",
-    button: "ENTRAR A LUKITAS",
+    lead: "Escríbelo en Wambito, o toca el botón para entrar directo.",
+    button: "ENTRAR A WAMBITO",
     buttonFallback: "¿El botón no funciona? Copia este enlace en tu navegador:",
     expiry: (m: number) => `El código y el enlace vencen en ${plural(m, "minuto", "minutos")}.`,
     ignore: "Si no pediste este correo, ignóralo: nadie puede entrar sin este código.",
-    footer: "Lukitas · gratis y de código abierto",
-    alt: "Lukitas saludando",
+    footer: "Wambito · gratis y de código abierto",
+    alt: "Wambi saludando",
   },
   en: {
-    subject: (code: string) => `Your Lukitas code: ${code}`,
-    preheader: (code: string) => `Your Lukitas sign-in code: ${code}`,
+    subject: (code: string) => `Your Wambito code: ${code}`,
+    preheader: (code: string) => `Your Wambito sign-in code: ${code}`,
     heading: "Hi! Here is your sign-in code",
-    lead: "Type it into Lukitas, or tap the button to go straight in.",
-    button: "SIGN IN TO LUKITAS",
+    lead: "Type it into Wambito, or tap the button to go straight in.",
+    button: "SIGN IN TO WAMBITO",
     buttonFallback: "Button not working? Copy this link into your browser:",
     expiry: (m: number) => `The code and the link expire in ${plural(m, "minute", "minutes")}.`,
     ignore: "If you didn't ask for this email, ignore it: nobody can sign in without this code.",
-    footer: "Lukitas · free and open source",
-    alt: "Lukitas waving hello",
+    footer: "Wambito · free and open source",
+    alt: "Wambi waving hello",
   },
   it: {
-    subject: (code: string) => `Il tuo codice Lukitas: ${code}`,
-    preheader: (code: string) => `Il tuo codice per entrare in Lukitas: ${code}`,
+    subject: (code: string) => `Il tuo codice Wambito: ${code}`,
+    preheader: (code: string) => `Il tuo codice per entrare in Wambito: ${code}`,
     heading: "Ciao! Questo è il tuo codice per entrare",
-    lead: "Scrivilo in Lukitas, oppure tocca il pulsante per entrare subito.",
-    button: "ENTRA IN LUKITAS",
+    lead: "Scrivilo in Wambito, oppure tocca il pulsante per entrare subito.",
+    button: "ENTRA IN WAMBITO",
     buttonFallback: "Il pulsante non funziona? Copia questo link nel tuo browser:",
     expiry: (m: number) => `Il codice e il link scadono tra ${plural(m, "minuto", "minuti")}.`,
     ignore: "Se non hai chiesto questa email, ignorala: nessuno può entrare senza questo codice.",
-    footer: "Lukitas · gratis e open source",
-    alt: "Lukitas che saluta",
+    footer: "Wambito · gratis e open source",
+    alt: "Wambi che saluta",
   },
   pt: {
-    subject: (code: string) => `O teu código Lukitas: ${code}`,
-    preheader: (code: string) => `Código para entrares em Lukitas: ${code}`,
+    subject: (code: string) => `O teu código Wambito: ${code}`,
+    preheader: (code: string) => `Código para entrares em Wambito: ${code}`,
     heading: "Olá! Este é o teu código para entrar",
-    lead: "Escreve-o em Lukitas ou toca no botão para entrares logo.",
-    button: "ENTRAR EM LUKITAS",
+    lead: "Escreve-o em Wambito ou toca no botão para entrares logo.",
+    button: "ENTRAR EM WAMBITO",
     buttonFallback: "O botão não funciona? Copia esta ligação para o teu navegador:",
     expiry: (m: number) =>
       `O código e a ligação expiram dentro de ${plural(m, "minuto", "minutos")}.`,
     ignore: "Se não pediste este email, ignora-o: ninguém consegue entrar sem este código.",
-    footer: "Lukitas · grátis e de código aberto",
-    alt: "Lukitas a acenar",
+    footer: "Wambito · grátis e de código aberto",
+    alt: "Wambi a acenar",
   },
 } satisfies Record<Locale, Copy>;
 
@@ -75,9 +75,9 @@ const CLAIM_COPY = {
   es: {
     ...COPY.es,
     subject: (code: string) => `Tu código para guardar tu progreso: ${code}`,
-    preheader: (code: string) => `Tu código para guardar tu progreso en Lukitas: ${code}`,
+    preheader: (code: string) => `Tu código para guardar tu progreso en Wambito: ${code}`,
     heading: "Tu código para guardar tu progreso",
-    lead: "Escríbelo en Lukitas para guardar tu progreso con este correo.",
+    lead: "Escríbelo en Wambito para guardar tu progreso con este correo.",
     button: undefined,
     buttonFallback: undefined,
     expiry: (m: number) => `El código vence en ${plural(m, "minuto", "minutos")}.`,
@@ -86,9 +86,9 @@ const CLAIM_COPY = {
   en: {
     ...COPY.en,
     subject: (code: string) => `Your code to save your progress: ${code}`,
-    preheader: (code: string) => `Your code to save your progress in Lukitas: ${code}`,
+    preheader: (code: string) => `Your code to save your progress in Wambito: ${code}`,
     heading: "Your code to save your progress",
-    lead: "Type it into Lukitas to save your progress with this email.",
+    lead: "Type it into Wambito to save your progress with this email.",
     button: undefined,
     buttonFallback: undefined,
     expiry: (m: number) => `The code expires in ${plural(m, "minute", "minutes")}.`,
@@ -98,9 +98,9 @@ const CLAIM_COPY = {
   it: {
     ...COPY.it,
     subject: (code: string) => `Il tuo codice per salvare i tuoi progressi: ${code}`,
-    preheader: (code: string) => `Il tuo codice per salvare i tuoi progressi in Lukitas: ${code}`,
+    preheader: (code: string) => `Il tuo codice per salvare i tuoi progressi in Wambito: ${code}`,
     heading: "Il tuo codice per salvare i tuoi progressi",
-    lead: "Scrivilo in Lukitas per salvare i tuoi progressi con questa email.",
+    lead: "Scrivilo in Wambito per salvare i tuoi progressi con questa email.",
     button: undefined,
     buttonFallback: undefined,
     expiry: (m: number) => `Il codice scade tra ${plural(m, "minuto", "minuti")}.`,
@@ -110,9 +110,9 @@ const CLAIM_COPY = {
   pt: {
     ...COPY.pt,
     subject: (code: string) => `O teu código para guardares o teu progresso: ${code}`,
-    preheader: (code: string) => `O teu código para guardares o teu progresso em Lukitas: ${code}`,
+    preheader: (code: string) => `O teu código para guardares o teu progresso em Wambito: ${code}`,
     heading: "O teu código para guardares o teu progresso",
-    lead: "Escreve-o em Lukitas para guardar o teu progresso com este email.",
+    lead: "Escreve-o em Wambito para guardar o teu progresso com este email.",
     button: undefined,
     buttonFallback: undefined,
     expiry: (m: number) => `O código expira dentro de ${plural(m, "minuto", "minutos")}.`,
@@ -122,14 +122,14 @@ const CLAIM_COPY = {
 
 /**
  * Signing in to let an assistant in (spec §6.1): the person is in the assistant's own browser
- * window, often on a phone where the link would open the Lukitas app or another browser. So the
+ * window, often on a phone where the link would open the Wambito app or another browser. So the
  * code comes first, to be typed there; the button is for a computer, where it opens the same browser.
  */
 const ASSISTANT_COPY = {
   es: {
     ...COPY.es,
     subject: (code: string) => `Tu código para conectar tu asistente: ${code}`,
-    preheader: (code: string) => `Tu código para conectar tu asistente a Lukitas: ${code}`,
+    preheader: (code: string) => `Tu código para conectar tu asistente a Wambito: ${code}`,
     heading: "Tu código para conectar tu asistente",
     lead: "Escríbelo en la ventana de tu asistente. En un computador también puedes tocar el botón.",
     button: "CONTINUAR EN EL NAVEGADOR",
@@ -137,7 +137,7 @@ const ASSISTANT_COPY = {
   en: {
     ...COPY.en,
     subject: (code: string) => `Your code to connect your assistant: ${code}`,
-    preheader: (code: string) => `Your code to connect your assistant to Lukitas: ${code}`,
+    preheader: (code: string) => `Your code to connect your assistant to Wambito: ${code}`,
     heading: "Your code to connect your assistant",
     lead: "Type it into your assistant's window. On a computer you can also tap the button.",
     button: "CONTINUE IN THE BROWSER",
@@ -145,7 +145,7 @@ const ASSISTANT_COPY = {
   it: {
     ...COPY.it,
     subject: (code: string) => `Il tuo codice per collegare il tuo assistente: ${code}`,
-    preheader: (code: string) => `Il tuo codice per collegare il tuo assistente a Lukitas: ${code}`,
+    preheader: (code: string) => `Il tuo codice per collegare il tuo assistente a Wambito: ${code}`,
     heading: "Il tuo codice per collegare il tuo assistente",
     lead: "Scrivilo nella finestra del tuo assistente. Da un computer puoi anche toccare il pulsante.",
     button: "CONTINUA NEL BROWSER",
@@ -153,7 +153,7 @@ const ASSISTANT_COPY = {
   pt: {
     ...COPY.pt,
     subject: (code: string) => `O teu código para ligares o teu assistente: ${code}`,
-    preheader: (code: string) => `O teu código para ligares o teu assistente a Lukitas: ${code}`,
+    preheader: (code: string) => `O teu código para ligares o teu assistente a Wambito: ${code}`,
     heading: "O teu código para ligares o teu assistente",
     lead: "Escreve-o na janela do teu assistente. Num computador também podes tocar no botão.",
     button: "CONTINUAR NO NAVEGADOR",
@@ -231,7 +231,7 @@ function codeEmail(copy: Copy, input: CodeEmailInput & { link?: string }): Omit<
   const code = escapeHtml(input.code);
   const link = input.link === undefined ? undefined : escapeHtml(input.link);
   const webHref = escapeHtml(web);
-  const image = escapeHtml(`${web}/email/lukitas-wave.png`);
+  const image = escapeHtml(`${web}/email/wambi-wave.png`);
   const expiry = escapeHtml(copy.expiry(input.expiresInMinutes));
 
   const text = [
@@ -295,7 +295,7 @@ function codeEmail(copy: Copy, input: CodeEmailInput & { link?: string }): Omit<
 </td>
 </tr>
 <tr>
-<td align="center" style="padding:4px 0 0 0;font-family:${DISPLAY};font-size:36px;line-height:42px;font-weight:700;color:${C.candy};letter-spacing:0.5px;">Lukitas</td>
+<td align="center" style="padding:4px 0 0 0;font-family:${DISPLAY};font-size:36px;line-height:42px;font-weight:700;color:${C.candy};letter-spacing:0.5px;">Wambito</td>
 </tr>
 <tr>
 <td align="center" style="padding:6px 0 20px 0;">

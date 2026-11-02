@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import { expectEdge, expectFocusRing, expectTarget } from "../../.storybook/story-utils.ts";
+import { readStored } from "../lib/stored.ts";
+import { THEME_STORED } from "../theme/theme-bootstrap.ts";
 import { ThemeToggle } from "./ThemeToggle.tsx";
 
 const meta = {
@@ -11,7 +13,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const stored = () => localStorage.getItem("lukas.theme");
+const stored = () => readStored(THEME_STORED);
 const theme = () => document.documentElement.dataset.theme;
 
 /** Night (the default): a moon, labeled with what a press does; it switches to day and back, and remembers. */

@@ -1,5 +1,5 @@
 import { ToolError } from "./errors.ts";
-import type { Profile } from "./lukitas.ts";
+import type { Profile } from "./wambito.ts";
 
 /**
  * Every amount is stored in hundredths of the currency, whatever its ISO exponent (COP too): core,
@@ -31,7 +31,7 @@ export function fromMinor(minor: number): number {
   return Math.abs(minor) / MINOR_UNIT;
 }
 
-/** `pt` alone is Brazilian in CLDR; Lukitas writes European Portuguese, and Italy's Italian. */
+/** `pt` alone is Brazilian in CLDR; Wambito writes European Portuguese, and Italy's Italian. */
 function intlTag(locale: Profile["locale"]): string {
   return locale === "it" ? "it-IT" : locale === "pt" ? "pt-PT" : locale;
 }

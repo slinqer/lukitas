@@ -12,7 +12,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 
 /**
- * The phone's motor (lib/feedback/feedback_platform.dart), on the `lukitas/haptics` method channel.
+ * The phone's motor (lib/feedback/feedback_platform.dart), on the `wambito/haptics` method channel.
  *
  * `vibrate({waveform, primitives})` → Boolean (a motor played it) plays the feel of an event (see [HapticSpec]). On Android 11
  * (API 30) and up, when the motor supports every primitive asked for (or its fallback), it plays a
@@ -25,7 +25,7 @@ import io.flutter.plugin.common.MethodChannel
 class HapticsChannel(context: Context, messenger: BinaryMessenger) :
     MethodChannel.MethodCallHandler {
 
-    private val methods = MethodChannel(messenger, "lukitas/haptics")
+    private val methods = MethodChannel(messenger, "wambito/haptics")
     private val vibrator: Vibrator? = vibratorOf(context)
 
     init {

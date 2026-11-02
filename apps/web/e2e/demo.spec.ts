@@ -178,7 +178,7 @@ test("es: every demo screen keeps its links in /demo, and settings turns off wha
   const api = watchApi(page);
   await page.goto("/demo?lang=es");
   await expect(page.getByRole("region", { name: l.left })).toBeVisible();
-  await expect(page).toHaveTitle("Demo · Inicio · Lukitas");
+  await expect(page).toHaveTitle("Demo · Inicio · Wambito");
   await expectLinksStayInDemo(page);
 
   // Insights from the bottom bar or the sidebar.
@@ -186,7 +186,7 @@ test("es: every demo screen keeps its links in /demo, and settings turns off wha
   await expect(page).toHaveURL(/\/demo\/insights$/);
   await expect(page.getByRole("heading", { name: l.insights, level: 1 })).toBeVisible();
   await expect(page.getByRole("complementary", { name: "Demo" })).toBeVisible();
-  await expect(page).toHaveTitle("Demo · Análisis · Lukitas");
+  await expect(page).toHaveTitle("Demo · Análisis · Wambito");
   await expectLinksStayInDemo(page);
 
   // Categories are managed in home's Categorías tab; from it, one category's detail.
@@ -212,7 +212,7 @@ test("es: every demo screen keeps its links in /demo, and settings turns off wha
   // Settings: no sign-in to speak of; export, delete, passkeys and import are off, with the note.
   await openSection(page, l, l.settings);
   await expect(page).toHaveURL(/\/demo\/settings$/);
-  await expect(page).toHaveTitle("Demo · Ajustes · Lukitas");
+  await expect(page).toHaveTitle("Demo · Ajustes · Wambito");
   await expect(page.getByText(l.viewing)).toBeVisible();
   await expect(page.getByText(/Entraste como/)).toHaveCount(0);
   await expect(page.getByRole("button", { name: l.exportJson })).toBeDisabled();
@@ -253,14 +253,14 @@ test("en: reloading a deep link keeps the demo in English and in euros", async (
   const api = watchApi(page);
   await page.goto("/demo?lang=en");
   await expect(page.getByRole("region", { name: l.left })).toBeVisible();
-  await expect(page).toHaveTitle("Demo · Home · Lukitas");
+  await expect(page).toHaveTitle("Demo · Home · Wambito");
   await page.getByRole("navigation").getByRole("link", { name: l.insights }).click();
   await expect(page).toHaveURL(/\/demo\/insights$/);
 
   // No ?lang in the URL any more: the tab remembers it.
   await page.reload();
   await expect(page.getByRole("heading", { name: l.insights, level: 1 })).toBeVisible();
-  await expect(page).toHaveTitle("Demo · Insights · Lukitas");
+  await expect(page).toHaveTitle("Demo · Insights · Wambito");
   await expect(page.getByRole("complementary", { name: "Demo" })).toContainText(l.banner);
   await expect(page.getByText(/€[\d,]+\.\d\d/).first()).toBeVisible();
 

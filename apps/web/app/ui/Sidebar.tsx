@@ -55,7 +55,7 @@ export function Sidebar({ current, onAdd, soon = [], base = "/app" }: SidebarPro
       <PressButton className="mt-(--space-4)" onClick={onAdd}>
         {t("nav.add")}
       </PressButton>
-      {/* Free space under Agregar, where Lukitas lands when something is celebrated. */}
+      {/* Free space under Agregar, where Wambi lands when something is celebrated. */}
       <span aria-hidden="true" className="mt-(--space-4) block h-24" data-celebration-anchor="96" />
     </nav>
   );

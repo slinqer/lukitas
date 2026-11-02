@@ -67,7 +67,7 @@ void _quietly(Future<void> Function() call) {
   }
 }
 
-/// Counts the moments Lukitas celebrates by himself, apart from a save or a payment he talks about
+/// Counts the moments Wambi celebrates by himself, apart from a save or a payment he talks about
 /// (home shows those through its own events): a batch from quick capture. Each is a new number, so
 /// two in a row both count.
 class Celebration extends Notifier<int> {

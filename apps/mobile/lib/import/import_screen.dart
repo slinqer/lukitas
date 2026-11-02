@@ -10,14 +10,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../add/add_sheet.dart';
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../api/session.dart';
 import '../budgets/budgets_repository.dart';
 import '../capture/capture_sheet.dart';
 import '../home/category_look.dart';
 import '../home/home_controller.dart';
 import '../home/home_repository.dart' show HomeFailure;
-import '../home/lukitas_face.dart';
+import '../home/wambi_face.dart';
 import '../home/shell_navigation.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/text_styles.dart';
@@ -168,11 +168,11 @@ class _ImportScreenState extends ConsumerState<ImportScreen> {
       onNavigate: (to) => navigateFromShell(context, ref, to, current: 'import'),
       // The web's page has no back link: `pt-4`, then the title.
       header: null,
-      top: LukitasTokens.space4,
+      top: WambitoTokens.space4,
       mainBottom: 0,
       children: [
         Row(
-          spacing: LukitasTokens.space3,
+          spacing: WambitoTokens.space3,
           children: [
             // The web's `<span className="shrink-0">` holds the face as an inline box: 7px of line
             // (the baseline's descent) under it make the row 79px tall.
@@ -181,7 +181,7 @@ class _ImportScreenState extends ConsumerState<ImportScreen> {
               height: 79,
               child: Align(
                 alignment: Alignment.topLeft,
-                child: LukitasFace(mood: LukitasMood.happy, size: 72, decorative: true),
+                child: WambiFace(mood: WambiMood.happy, size: 72, decorative: true),
               ),
             ),
             Expanded(
@@ -210,7 +210,7 @@ class _ImportScreenState extends ConsumerState<ImportScreen> {
           Column(
             key: const Key('import.budgets'),
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: LukitasTokens.space3,
+            spacing: WambitoTokens.space3,
             children: [
               Semantics(
                 header: true,

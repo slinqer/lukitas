@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import {
   type CategoryDto,
   type Month,
@@ -5,8 +6,7 @@ import {
   monthOf,
   type TransactionDto,
   todayIn,
-} from "@lukas/core";
-import { useQueryClient } from "@tanstack/react-query";
+} from "@wambito/core";
 import { type RefObject, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router";
 import { useTranslations } from "use-intl";
@@ -21,11 +21,9 @@ import {
 } from "../../api/queries.ts";
 import { formatDay, formatMoney, formatMonth } from "../../i18n/format.ts";
 import { useLocale } from "../../i18n/IntlProvider.tsx";
-import { moodFor } from "../../lukas/mood.ts";
 import { BudgetBar } from "../../ui/BudgetBar.tsx";
 import { categoryLook } from "../../ui/category-look.ts";
 import { cx } from "../../ui/cx.ts";
-import { LukasBubble } from "../../ui/LukasBubble.tsx";
 import { Money } from "../../ui/Money.tsx";
 import { type Pager, PagerTrack, usePager } from "../../ui/Pager.tsx";
 import { PressButton } from "../../ui/PressButton.tsx";
@@ -35,6 +33,8 @@ import { SwipeRow } from "../../ui/SwipeRow.tsx";
 import { useToast } from "../../ui/Toast.tsx";
 import { TransactionRow } from "../../ui/TransactionRow.tsx";
 import { useWideScreen } from "../../ui/use-wide-screen.ts";
+import { WambiBubble } from "../../ui/WambiBubble.tsx";
+import { moodFor } from "../../wambi/mood.ts";
 import { useTransactionSheet } from "../add-transaction/TransactionSheetProvider.tsx";
 import type { TransactionEvent } from "../add-transaction/use-add-transaction.ts";
 import { CategoriesTab } from "../categories/CategoriesTab.tsx";
@@ -42,7 +42,7 @@ import { createSuggestions, useHasTransactions } from "../onboarding/onboarding-
 import { SUGGESTED_CATEGORIES } from "../onboarding/suggested-categories.ts";
 import { useAppPath } from "./app-path.ts";
 import { HomeHeader } from "./HomeHeader.tsx";
-import { type DayGroup, groupByDay, homeLukasLine, overallState } from "./home-model.ts";
+import { type DayGroup, groupByDay, homeWambiLine, overallState } from "./home-model.ts";
 import {
   type HomeView,
   requestedView,
@@ -52,16 +52,16 @@ import {
 } from "./home-storage.ts";
 import type { SignOutRequest } from "./use-sign-out.ts";
 
-/** How long Lukitas celebrates after a save or a payment. */
+/** How long Wambi celebrates after a save or a payment. */
 const CELEBRATE_MS = 2500;
-/** How long Lukitas talks about a save or a payment before going back to the month. */
+/** How long Wambi talks about a save or a payment before going back to the month. */
 const EVENT_LINE_MS = 10_000;
 /** The phone's pages, in order: Movimientos first (founder decision 2026-10-22). */
 const VIEWS: readonly HomeView[] = ["transactions", "budgets"];
 
 /**
  * Home (`/app`, spec §2.5): the month (the person's current one by default, earlier ones
- * browsable), Lukitas with a line about it, what is left (or, without budgets, what was spent),
+ * browsable), Wambi with a line about it, what is left (or, without budgets, what was spent),
  * and two lists: Movimientos (by day: today on top, the upcoming pending ones next, then the past)
  * and Categorías (one row per spending category, opening its detail). On phones they are two
  * pages that follow the finger (a sideways drag anywhere on the screen but a row, which has its
@@ -80,7 +80,7 @@ export function Home({ signOut }: HomeProps = {}) {
   const today = todayIn(me.timezone);
   const current = monthOf(today);
   const [month, setMonth] = useState<Month>(current);
-  const lukasEvent = useFreshEvent();
+  const wambiEvent = useFreshEvent();
   return (
     <MonthView
       key={me.id}
@@ -91,12 +91,12 @@ export function Home({ signOut }: HomeProps = {}) {
       month={month}
       onMonth={setMonth}
       signOut={signOut}
-      lukasEvent={lukasEvent}
+      wambiEvent={wambiEvent}
     />
   );
 }
 
-/** The save or payment Lukitas is talking about, if any, and a key that changes when he stops. */
+/** The save or payment Wambi is talking about, if any, and a key that changes when he stops. */
 interface FreshEvent {
   event: TransactionEvent | null;
   /** Changes when an event's line ends, so the month's line comes back without an announcement. */
@@ -104,7 +104,7 @@ interface FreshEvent {
 }
 
 /**
- * The latest save or payment while Lukitas should still talk about it: one made while home is
+ * The latest save or payment while Wambi should still talk about it: one made while home is
  * open, for `EVENT_LINE_MS`. Then, or once home is left and opened again, he is back to the
  * month's line (founder feedback 2026-10-22: a line that stayed for ages, about who knows what).
  */
@@ -131,7 +131,7 @@ interface MonthViewProps {
   month: Month;
   onMonth(month: Month): void;
   signOut?: SignOutRequest | undefined;
-  lukasEvent: FreshEvent;
+  wambiEvent: FreshEvent;
 }
 
 function MonthView({
@@ -142,7 +142,7 @@ function MonthView({
   month,
   onMonth,
   signOut,
-  lukasEvent,
+  wambiEvent,
 }: MonthViewProps) {
   const t = useTranslations("home");
   const { locale } = useLocale();
@@ -191,14 +191,14 @@ function MonthView({
       <main className="flex flex-col gap-(--space-3)" {...pager.surface}>
         {summary.data && categories.data && transactions.data ? (
           <>
-            <Lukitas
+            <HomeWambi
               summary={summary.data}
               categories={categories.data}
               items={transactions.data}
               today={today}
               current={current}
               money={money}
-              fresh={lukasEvent}
+              fresh={wambiEvent}
             />
             <Hero
               summary={summary.data}
@@ -238,9 +238,9 @@ function MonthView({
   );
 }
 
-// -- Lukitas ---------------------------------------------------------------------------------------
+// -- Wambi ---------------------------------------------------------------------------------------
 
-function Lukitas({
+function HomeWambi({
   summary,
   categories,
   items,
@@ -261,7 +261,7 @@ function Lukitas({
   const event = fresh.event && fresh.event.month === summary.month ? fresh.event : null;
   const names = useMemo(() => new Map(categories.map((c) => [c.id, c.name])), [categories]);
 
-  const line = homeLukasLine({
+  const line = homeWambiLine({
     summary,
     today,
     todayCount: items.filter((tx) => tx.date === today).length,
@@ -294,7 +294,7 @@ function Lukitas({
   const closedGreen = summary.month < current && summary.budgetTotal > 0 && summary.remaining >= 0;
 
   return (
-    <LukasBubble
+    <WambiBubble
       message={message}
       mood={moodFor(summary, celebrating || closedGreen)}
       quietKey={fresh.quietKey}

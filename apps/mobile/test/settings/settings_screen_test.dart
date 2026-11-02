@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/session.dart';
-import 'package:lukitas/feedback/feedback.dart';
-import 'package:lukitas/home/home_screen.dart';
-import 'package:lukitas/entry/entry_screen.dart';
-import 'package:lukitas/settings/licenses.dart';
-import 'package:lukitas/settings/preferences.dart';
-import 'package:lukitas/settings/settings_parts.dart' show LkSwitch;
-import 'package:lukitas/ui/sheet.dart' show LkSheetScope;
-import 'package:lukitas/api/server_url.dart';
+import 'package:wambito/api/session.dart';
+import 'package:wambito/feedback/feedback.dart';
+import 'package:wambito/home/home_screen.dart';
+import 'package:wambito/entry/entry_screen.dart';
+import 'package:wambito/settings/licenses.dart';
+import 'package:wambito/settings/preferences.dart';
+import 'package:wambito/settings/settings_parts.dart' show LkSwitch;
+import 'package:wambito/ui/sheet.dart' show LkSheetScope;
+import 'package:wambito/api/server_url.dart';
 
 import '../home/fakes.dart';
 import 'harness.dart';
@@ -56,7 +56,7 @@ void main() {
       // The pages the app has not (the landing, the roadmap): named in the card, with the links.
       // The web's app pages (import, recurring, categories) have their places in the app.
       expect(find.bySemanticsLabel('Más en la web'), findsWidgets);
-      expect(find.bySemanticsLabel('La página de Lukitas y lo que viene.'), findsOneWidget);
+      expect(find.bySemanticsLabel('La página de Wambito y lo que viene.'), findsOneWidget);
       expect(find.byKey(const Key('settings.roadmap')), findsOneWidget);
       await tester.tap(find.byKey(const Key('settings.web')));
       await tester.pumpAndSettle();
@@ -216,7 +216,7 @@ void main() {
 
     testWidgets('a guest\'s Settings offers Guarda tu progreso at the top', (tester) async {
       await pumpSettingsApp(tester, guest: true, location: '/settings');
-      expect(find.text('Estás usando Lukitas sin correo.'), findsOneWidget);
+      expect(find.text('Estás usando Wambito sin correo.'), findsOneWidget);
       await tester.tap(find.byKey(const Key('settings.saveProgress')));
       await tester.pumpAndSettle();
       expect(find.text(_honestEs), findsOneWidget);
@@ -524,7 +524,7 @@ void main() {
       expect(env.container.read(sessionProvider).status, SessionStatus.signedOut);
     });
 
-    testWidgets('"Usar el de Lukitas" puts the default address back in the field', (tester) async {
+    testWidgets('"Usar el de Wambito" puts the default address back in the field', (tester) async {
       await pumpSettingsApp(tester, location: '/settings');
       await _tap(tester, 'settings.server');
       await tester.enterText(find.byKey(const Key('settings.server.field')), 'https://x.org');
@@ -597,7 +597,7 @@ void main() {
     testWidgets('About lists every dependency\'s licence and the model\'s', (tester) async {
       await pumpSettingsApp(tester, location: '/settings');
       await _tap(tester, 'settings.about');
-      expect(find.text('Acerca de Lukitas'), findsOneWidget);
+      expect(find.text('Acerca de Wambito'), findsOneWidget);
       expect(find.textContaining('AGPL-3.0'), findsOneWidget);
 
       await tester.tap(find.byKey(const Key('about.licenses')));
@@ -609,7 +609,7 @@ void main() {
           .descendant(of: find.byType(LicensePage), matching: find.byType(Scrollable))
           .first;
       for (final name in [
-        'Lukitas feedback sounds',
+        'Wambito feedback sounds',
         'androidx.core:core 1.15.0',
         'vosk-android 0.3.75',
         'vosk-model-small-en-us-0.15',

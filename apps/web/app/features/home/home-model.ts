@@ -1,11 +1,11 @@
 import {
   type IsoDate,
-  type LukasMessageInput,
-  lukasMessage,
   type MonthSummary,
   NEAR_LIMIT_RATIO,
   type TransactionDto,
-} from "@lukas/core";
+  type WambiMessageInput,
+  wambiMessage,
+} from "@wambito/core";
 import type { FeedbackEvent } from "../../feedback/feedback.ts";
 
 // -- Transactions by day ---------------------------------------------------------------------------
@@ -57,17 +57,17 @@ export function groupByDay(items: TransactionDto[], today: IsoDate): DayGroup[] 
   });
 }
 
-// -- What Lukitas says -----------------------------------------------------------------------------
+// -- What Wambi says -----------------------------------------------------------------------------
 
-export interface LukasLineInput extends Omit<LukasMessageInput, "event"> {
-  event?: LukasMessageInput["event"] | undefined;
+export interface WambiLineInput extends Omit<WambiMessageInput, "event"> {
+  event?: WambiMessageInput["event"] | undefined;
   categoryName(id: string): string;
   /** Formats cents in the person's currency and locale. */
   money(cents: number): string;
 }
 
-export interface LukasLine {
-  /** Catalog key: `lukas.<key>` (pick a variant: `.1`, `.2`, `.3`) or a single `home.*` line. */
+export interface WambiLine {
+  /** Catalog key: `wambi.<key>` (pick a variant: `.1`, `.2`, `.3`) or a single `home.*` line. */
   key: string;
   varied: boolean;
   params: Record<string, string | number>;
@@ -77,16 +77,16 @@ export interface LukasLine {
 const MONEY_PARAMS = new Set(["remaining", "over", "amount", "spent"]);
 
 /**
- * The line Lukitas says on home: core's rule-based message with its parameters ready for the
+ * The line Wambi says on home: core's rule-based message with its parameters ready for the
  * catalog (a category's id becomes its name, cents become money, an unnamed movement takes its
  * category's name). Two cases core cannot know
- * about get their own line, so Lukitas never says something false: without any budget there is
+ * about get their own line, so Wambi never says something false: without any budget there is
  * nothing "left", so he talks about what was spent; and a month over its total budget is never
  * "on track", even if each category alone is fine.
  */
-export function homeLukasLine(input: LukasLineInput): LukasLine {
+export function homeWambiLine(input: WambiLineInput): WambiLine {
   const { categoryName, money, event, ...core } = input;
-  const message = lukasMessage({ ...core, ...(event ? { event } : {}) });
+  const message = wambiMessage({ ...core, ...(event ? { event } : {}) });
   const { summary } = input;
   const aboutTheMonth =
     message.key === "on_track" ||
@@ -95,12 +95,12 @@ export function homeLukasLine(input: LukasLineInput): LukasLine {
 
   if (aboutTheMonth && summary.budgetTotal === 0) {
     return summary.spent === 0
-      ? { key: "home.lukas_empty", varied: false, params: {} }
-      : { key: "home.lukas_no_budget", varied: false, params: { spent: money(summary.spent) } };
+      ? { key: "home.wambi_empty", varied: false, params: {} }
+      : { key: "home.wambi_no_budget", varied: false, params: { spent: money(summary.spent) } };
   }
   if (aboutTheMonth && summary.remaining < 0) {
     return {
-      key: "home.lukas_over_total",
+      key: "home.wambi_over_total",
       varied: false,
       params: { over: money(-summary.remaining) },
     };
@@ -114,7 +114,7 @@ export function homeLukasLine(input: LukasLineInput): LukasLine {
   }
   // A movement without a name is called by its category.
   if (params.name === "") params.name = params.category ?? "";
-  return { key: `lukas.${message.key}`, varied: true, params };
+  return { key: `wambi.${message.key}`, varied: true, params };
 }
 
 // -- The add sheet ---------------------------------------------------------------------------------

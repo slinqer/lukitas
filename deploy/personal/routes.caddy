@@ -30,7 +30,7 @@ header {
 	-Server
 }
 
-# --- MCP: assistants (Claude, ChatGPT) reach the person's Lukitas here, with an OAuth token. --
+# --- MCP: assistants (Claude, ChatGPT) reach the person's Wambito here, with an OAuth token. --
 # The protected resource metadata (RFC 9728) tells them where to get one: the API's OAuth server.
 @mcp path /mcp /mcp/* /.well-known/oauth-protected-resource /.well-known/oauth-protected-resource/*
 handle @mcp {

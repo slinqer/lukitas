@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/add/add_sheet.dart';
-import 'package:lukitas/launch/launch_links.dart';
-import 'package:lukitas/notices/notice_backend.dart';
-import 'package:lukitas/notices/notice_platform.dart';
+import 'package:wambito/add/add_sheet.dart';
+import 'package:wambito/launch/launch_links.dart';
+import 'package:wambito/notices/notice_backend.dart';
+import 'package:wambito/notices/notice_platform.dart';
 
 import '../launch/launch_links_test.dart' show FakeLaunchLinks;
 import '../settings/harness.dart';
@@ -41,7 +41,7 @@ void main() {
     expect(find.byKey(const Key('notices.askWhy')), findsOneWidget);
     expect(
       tester.widget<Text>(find.byKey(const Key('notices.askWhy'))).data,
-      'Así Lukitas puede avisarte a las 9:00 los días en que vence un pago recurrente.',
+      'Así Wambito puede avisarte a las 9:00 los días en que vence un pago recurrente.',
     );
     expect(
       platform.callsNamed('requestPermission'),
@@ -67,7 +67,7 @@ void main() {
     await pump(tester, guest: true, hasRecurring: false);
     expect(
       tester.widget<Text>(find.byKey(const Key('notices.askWhy'))).data,
-      'Así Lukitas puede avisarte si pasan 45 días sin abrirlo y tu cuenta no tiene correo, antes de que se borren tus datos.',
+      'Así Wambito puede avisarte si pasan 45 días sin abrirlo y tu cuenta no tiene correo, antes de que se borren tus datos.',
     );
   });
 
@@ -75,7 +75,7 @@ void main() {
     await pump(tester, locale: const Locale('en'));
     expect(
       tester.widget<Text>(find.byKey(const Key('notices.askWhy'))).data,
-      'So Lukitas can tell you at 9:00 on the days a recurring payment is due.',
+      'So Wambito can tell you at 9:00 on the days a recurring payment is due.',
     );
     final ask = find.byKey(const Key('notices.ask'));
     expect(find.descendant(of: ask, matching: find.text('NOT NOW')), findsOneWidget);
@@ -85,7 +85,7 @@ void main() {
   testWidgets(
     'the question waits for home, with no sheet over it, and does not appear over Settings',
     (tester) async {
-      final links = FakeLaunchLinks('lukitas://add');
+      final links = FakeLaunchLinks('wambito://add');
       final platform = FakeNoticePlatform();
       final env = await pumpSettingsApp(
         tester,
@@ -147,7 +147,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('notices.ask')), findsOneWidget);
 
-    links.open('lukitas://due');
+    links.open('wambito://due');
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('notices.ask')), findsNothing);
     expect(platform.callsNamed('requestPermission'), isEmpty);

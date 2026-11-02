@@ -5,12 +5,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderScope;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/add/add_sheet.dart' show sheetsWithInputProvider;
-import 'package:lukitas/capture/capture_repository.dart';
-import 'package:lukitas/capture/capture_sheet.dart';
-import 'package:lukitas/capture/engine/speech_engine.dart';
-import 'package:lukitas/capture/models_download.dart';
-import 'package:lukitas/home/home_screen.dart';
+import 'package:wambito/add/add_sheet.dart' show sheetsWithInputProvider;
+import 'package:wambito/capture/capture_repository.dart';
+import 'package:wambito/capture/capture_sheet.dart';
+import 'package:wambito/capture/engine/speech_engine.dart';
+import 'package:wambito/capture/models_download.dart';
+import 'package:wambito/home/home_screen.dart';
 
 import '../add/fakes.dart';
 import '../home/fakes.dart';

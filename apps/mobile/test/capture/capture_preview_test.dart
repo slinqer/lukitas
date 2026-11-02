@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/capture/parser/parse.dart';
-import 'package:lukitas/capture/preview/capture_preview.dart';
+import 'package:wambito/capture/parser/parse.dart';
+import 'package:wambito/capture/preview/capture_preview.dart';
 
 const _food = Category(id: 'food', name: 'Comida', kind: Kind.expense);
 const _transport = Category(id: 'uber', name: 'Uber', kind: Kind.expense);

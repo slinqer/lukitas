@@ -25,11 +25,11 @@ resolveAppOrigin(env.appUrl);
 const PUBLIC_PAGES = SITE_PAGES.flatMap((page) => LOCALES.map((locale) => PAGE_PATH[page][locale]));
 
 /**
- * Where the build goes: `build` (apps/web/build) unless LUKAS_BUILD_DIR says otherwise. The
+ * Where the build goes: `build` (apps/web/build) unless WAMBITO_BUILD_DIR says otherwise. The
  * personal install builds the full app elsewhere (deploy/personal/up.sh), so it does not replace
  * the landing release that sits in build/client.
  */
-const buildDirectory = process.env.LUKAS_BUILD_DIR || "build";
+const buildDirectory = process.env.WAMBITO_BUILD_DIR || "build";
 
 export default {
   buildDirectory,

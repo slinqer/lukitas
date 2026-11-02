@@ -3,13 +3,13 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/theme/surfaces.dart';
-import 'package:lukitas/theme/theme.dart';
-import 'package:lukitas/theme/tokens.g.dart';
+import 'package:wambito/theme/surfaces.dart';
+import 'package:wambito/theme/theme.dart';
+import 'package:wambito/theme/tokens.g.dart';
 
 void main() {
-  const nightLk = LukitasTheme.night;
-  const dayLk = LukitasTheme.day;
+  const nightLk = WambitoTheme.night;
+  const dayLk = WambitoTheme.day;
   final night = nightLk.colors;
 
   group('edgeShadow: the web\'s shadow-edge-*', () {
@@ -140,7 +140,7 @@ void main() {
   });
 
   test('the theme carries the shadows of its mode', () {
-    expect(nightTheme.extension<LukitasTheme>()!.shadows, LukitasShadows.night);
-    expect(dayTheme.extension<LukitasTheme>()!.shadows, LukitasShadows.day);
+    expect(nightTheme.extension<WambitoTheme>()!.shadows, WambitoShadows.night);
+    expect(dayTheme.extension<WambitoTheme>()!.shadows, WambitoShadows.day);
   });
 }

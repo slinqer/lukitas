@@ -3,20 +3,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lukitas/api/session.dart';
-import 'package:lukitas/app.dart';
-import 'package:lukitas/capture/models_download.dart';
-import 'package:lukitas/feedback/feedback.dart';
-import 'package:lukitas/home/home_cache.dart';
-import 'package:lukitas/home/home_controller.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/home/widget_snapshot.dart';
-import 'package:lukitas/recurring/recurring_repository.dart';
-import 'package:lukitas/router.dart';
-import 'package:lukitas/settings/assistants_repository.dart';
-import 'package:lukitas/settings/server_status.dart';
-import 'package:lukitas/settings/settings_store.dart';
-import 'package:lukitas/settings/url_opener.dart';
+import 'package:wambito/api/session.dart';
+import 'package:wambito/app.dart';
+import 'package:wambito/capture/models_download.dart';
+import 'package:wambito/feedback/feedback.dart';
+import 'package:wambito/home/home_cache.dart';
+import 'package:wambito/home/home_controller.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/home/widget_snapshot.dart';
+import 'package:wambito/recurring/recurring_repository.dart';
+import 'package:wambito/router.dart';
+import 'package:wambito/settings/assistants_repository.dart';
+import 'package:wambito/settings/server_status.dart';
+import 'package:wambito/settings/settings_store.dart';
+import 'package:wambito/settings/url_opener.dart';
 
 import '../capture/fakes.dart';
 import '../entry/fakes.dart';
@@ -149,7 +149,7 @@ Future<SettingsEnv> pumpSettingsApp(
   );
   addTearDown(container.dispose);
   await tester.pumpWidget(
-    UncontrolledProviderScope(container: container, child: const LukitasApp()),
+    UncontrolledProviderScope(container: container, child: const WambitoApp()),
   );
   if (settle) {
     await tester.pumpAndSettle();

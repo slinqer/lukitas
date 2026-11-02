@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/ui/press_button.dart';
-import 'package:lukitas/ui/sheet.dart';
-import 'package:lukitas/ui/toast.dart';
+import 'package:wambito/ui/press_button.dart';
+import 'package:wambito/ui/sheet.dart';
+import 'package:wambito/ui/toast.dart';
 
-import 'package:lukitas/l10n/app_localizations.dart';
-import 'package:lukitas/theme/theme.dart';
+import 'package:wambito/l10n/app_localizations.dart';
+import 'package:wambito/theme/theme.dart';
 
 import '../support/fonts.dart';
 import '../support/ui_app.dart';

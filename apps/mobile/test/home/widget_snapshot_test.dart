@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/home/widget_snapshot.dart';
+import 'package:wambito/home/widget_snapshot.dart';
 
 import 'fakes.dart';
 import 'fixtures.dart';
@@ -112,7 +112,7 @@ void main() {
     test('is one JSON document under one key, and both widgets are told to redraw', () async {
       final store = FakeWidgetStore();
       await saveWidgetSnapshot(store, signedOutSnapshot(hideAmount: false, theme: 'dark'));
-      expect(store.saved.keys, ['lukitas.widget.snapshot']);
+      expect(store.saved.keys, ['wambito.widget.snapshot']);
       expect(written(store)['signedIn'], false);
       expect(store.updates, 1);
     });

@@ -3,10 +3,10 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/add/add_repository.dart';
-import 'package:lukitas/api/client.dart';
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/home/home_repository.dart';
+import 'package:wambito/add/add_repository.dart';
+import 'package:wambito/api/client.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/home/home_repository.dart';
 
 const _transaction = {
   'id': 't1',

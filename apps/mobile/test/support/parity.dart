@@ -7,11 +7,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/app.dart' show withAppHosts;
-import 'package:lukitas/home/home_controller.dart';
-import 'package:lukitas/l10n/app_localizations.dart';
-import 'package:lukitas/theme/text_styles.dart';
-import 'package:lukitas/theme/theme.dart';
+import 'package:wambito/app.dart' show withAppHosts;
+import 'package:wambito/home/home_controller.dart';
+import 'package:wambito/l10n/app_localizations.dart';
+import 'package:wambito/theme/text_styles.dart';
+import 'package:wambito/theme/theme.dart';
 
 import 'emoji_font.dart';
 import 'fonts.dart';
@@ -176,7 +176,7 @@ class ParityFixture {
     if (found == null) {
       fail(
         'The fixture of $storyId has no answer to GET ${key(pathAndQuery)}. Add it to APP_GETS in '
-        'apps/web/scripts/parity-fixtures.ts and run `pnpm --filter @lukas/web parity:fixtures`.',
+        'apps/web/scripts/parity-fixtures.ts and run `pnpm --filter @wambito/web parity:fixtures`.',
       );
     }
     return found;
@@ -201,11 +201,11 @@ class ParityFixture {
 
 /// The stories' saved data (test/parity/fixtures).
 abstract final class ParityFixtures {
-  /// The fixture of [storyId]; run `pnpm --filter @lukas/web parity:fixtures` to (re)make them.
+  /// The fixture of [storyId]; run `pnpm --filter @wambito/web parity:fixtures` to (re)make them.
   static ParityFixture load(String storyId) {
     final file = File('$_parityDir/fixtures/$storyId.json');
     if (!file.existsSync()) {
-      fail('No fixture for $storyId: run `pnpm --filter @lukas/web parity:fixtures`.');
+      fail('No fixture for $storyId: run `pnpm --filter @wambito/web parity:fixtures`.');
     }
     return ParityFixture.fromJson(jsonDecode(file.readAsStringSync()) as Map<String, Object?>);
   }
@@ -360,7 +360,7 @@ class ParityStoryFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<LukitasTheme>()!.colors;
+    final colors = Theme.of(context).extension<WambitoTheme>()!.colors;
     final body = TextStyle(
       fontFamily: LkText.textFamily,
       fontFamilyFallback: parityFallbackFamilies,

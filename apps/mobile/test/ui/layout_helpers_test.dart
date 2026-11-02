@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/ui/confirm_sheet.dart' show flexOneRow;
-import 'package:lukitas/ui/css_text.dart';
-import 'package:lukitas/ui/lk_theme.dart';
-import 'package:lukitas/ui/outset_box.dart';
-import 'package:lukitas/ui/pixel_snap.dart';
+import 'package:wambito/ui/confirm_sheet.dart' show flexOneRow;
+import 'package:wambito/ui/css_text.dart';
+import 'package:wambito/ui/lk_theme.dart';
+import 'package:wambito/ui/outset_box.dart';
+import 'package:wambito/ui/pixel_snap.dart';
 
 import '../support/fonts.dart';
 import '../support/ui_app.dart';

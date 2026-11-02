@@ -1,5 +1,5 @@
 // Auth instance for the Better Auth CLI, which regenerates packages/db/src/schema/auth.ts:
-//   pnpm --filter @lukas/api auth:generate
+//   pnpm --filter @wambito/api auth:generate
 import { createAuth } from "../auth.ts";
 
 export const auth = createAuth({

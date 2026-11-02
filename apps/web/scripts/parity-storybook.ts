@@ -223,10 +223,10 @@ export function clockScript(now: string): string {
 }
 
 /**
- * Runs in the page before anything else: `Math.random` always says 0. Home's Lukitas picks one of
+ * Runs in the page before anything else: `Math.random` always says 0. Home's Wambi picks one of
  * three phrasings of a line at random (`1 + Math.floor(Math.random() * 3)`), and a picture that
  * changes with every run could not be a reference: the parity pictures always show the first one
- * (the app's tests ask for it too, `lukasVariantProvider`).
+ * (the app's tests ask for it too, `wambiVariantProvider`).
  */
 export const RANDOM_SCRIPT = "Math.random = () => 0;";
 

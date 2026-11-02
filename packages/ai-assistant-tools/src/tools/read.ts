@@ -1,4 +1,4 @@
-import { addMonths } from "@lukas/core";
+import { addMonths } from "@wambito/core";
 import { z } from "zod";
 import { phrases, quote } from "../text.ts";
 import { defineTool, READ_ONLY } from "../tool.ts";
@@ -52,12 +52,12 @@ export const getMonthOverview = defineTool({
       }),
     ),
   }),
-  async handler(input, { lukitas, now }) {
-    const profile = await lukitas.profile();
+  async handler(input, { wambito, now }) {
+    const profile = await wambito.profile();
     const month = input.month ?? currentMonth(profile, now());
     const [summary, categories] = await Promise.all([
-      lukitas.monthSummary(month),
-      lukitas.listCategories(),
+      wambito.monthSummary(month),
+      wambito.listCategories(),
     ]);
     const names = byId(categories);
     const budgets = summary.categories
@@ -138,12 +138,12 @@ export const listTransactions = defineTool({
       .nullable()
       .describe("Pass it as cursor for the next page; null at the end"),
   }),
-  async handler(input, { lukitas, now }) {
-    const profile = await lukitas.profile();
+  async handler(input, { wambito, now }) {
+    const profile = await wambito.profile();
     if (input.from && input.to && input.from > input.to) throw invalid("from must not be after to");
-    const categories = await lukitas.listCategories();
+    const categories = await wambito.listCategories();
     const ranged = input.month !== undefined || input.from !== undefined || input.to !== undefined;
-    const page = await lukitas.listTransactions({
+    const page = await wambito.listTransactions({
       month: ranged ? input.month : currentMonth(profile, now()),
       from: input.from,
       to: input.to,
@@ -195,14 +195,14 @@ export const spendingByCategory = defineTool({
       }),
     ),
   }),
-  async handler(input, { lukitas, now }) {
-    const profile = await lukitas.profile();
+  async handler(input, { wambito, now }) {
+    const profile = await wambito.profile();
     const from = input.from ?? input.to ?? currentMonth(profile, now());
     const to = input.to ?? from;
     checkRange(from, to);
     const [report, categories] = await Promise.all([
-      lukitas.categoryReport({ from, to, kind: input.kind }),
-      lukitas.listCategories(),
+      wambito.categoryReport({ from, to, kind: input.kind }),
+      wambito.listCategories(),
     ]);
     const names = byId(categories);
     const items = report.items.map((i) => ({
@@ -247,12 +247,12 @@ export const spendingTrend = defineTool({
       }),
     ),
   }),
-  async handler(input, { lukitas, now }) {
-    const profile = await lukitas.profile();
+  async handler(input, { wambito, now }) {
+    const profile = await wambito.profile();
     const to = input.to ?? currentMonth(profile, now());
     const from = input.from ?? addMonths(to, -5);
     checkRange(from, to);
-    const { months } = await lukitas.trend({ from, to });
+    const { months } = await wambito.trend({ from, to });
     const rows = months.map((m) => ({
       month: m.month,
       income: money(m.income, profile),
@@ -280,9 +280,9 @@ export const listCategories = defineTool({
   annotations: READ_ONLY,
   input: z.object({}),
   output: z.object({ items: z.array(categoryOutput) }),
-  async handler(_input, { lukitas }) {
-    const profile = await lukitas.profile();
-    const items = (await lukitas.listCategories()).map((c) => toCategoryOutput(c, profile));
+  async handler(_input, { wambito }) {
+    const profile = await wambito.profile();
+    const items = (await wambito.listCategories()).map((c) => toCategoryOutput(c, profile));
     const p = phrases(profile.locale);
     const lines = [
       p.categories(items.length),
@@ -327,11 +327,11 @@ export const listRecurring = defineTool({
       }),
     ),
   }),
-  async handler(_input, { lukitas }) {
-    const profile = await lukitas.profile();
+  async handler(_input, { wambito }) {
+    const profile = await wambito.profile();
     const [recurrences, categories] = await Promise.all([
-      lukitas.listRecurrences(),
-      lukitas.listCategories(),
+      wambito.listRecurrences(),
+      wambito.listCategories(),
     ]);
     const names = byId(categories);
     const items = recurrences.map((r) => {

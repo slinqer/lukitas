@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../api/auth_api.dart';
 import '../api/session.dart';
-import '../home/lukitas_face.dart';
+import '../home/wambi_face.dart';
 import '../l10n/app_localizations.dart';
 import '../ui/lk_theme.dart';
 import '../ui/press_button.dart';
@@ -138,7 +138,7 @@ class _VerifyLinkScreenState extends ConsumerState<VerifyLinkScreen> {
   Widget _failed(AppLocalizations l10n) {
     final retry = retryableErrors.contains(_error) && emailPattern.hasMatch(_email);
     return SignInFrame(
-      mood: LukitasMood.worried,
+      mood: WambiMood.worried,
       children: [
         EntryTitle(l10n.verifyFailedTitle),
         FieldError(_error.message(l10n), textAlign: TextAlign.center),

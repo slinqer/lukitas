@@ -42,7 +42,7 @@ final _cleanGradle = [_variant('debug'), _variant('profile'), _variant('release'
 const _cleanPub = '''
 Dart SDK 3.13.5
 Flutter SDK 3.47.7
-lukitas 1.0.0+1
+wambito 1.0.0+1
 
 dependencies:
 - dio 5.11.1 [async collection http_parser meta mime path dio_web_adapter]

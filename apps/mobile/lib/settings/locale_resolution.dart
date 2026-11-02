@@ -1,6 +1,6 @@
 import 'dart:ui' show Locale;
 
-/// The languages Lukitas speaks: Spanish (the default and the fallback), English, Italian and
+/// The languages Wambito speaks: Spanish (the default and the fallback), English, Italian and
 /// European Portuguese. A region never matters here: `pt-BR` reads `pt` (European Portuguese until
 /// a Brazilian variant exists), `it-CH` reads `it`.
 const appLanguages = ['es', 'en', 'it', 'pt'];

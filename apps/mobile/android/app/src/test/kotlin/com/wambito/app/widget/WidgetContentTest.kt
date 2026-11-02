@@ -63,11 +63,11 @@ class WidgetContentTest {
         }
 
     @Test
-    fun `medium, signed in with budgets - Lukitas, the month, the progress, ＋ and 🎤`() =
+    fun `medium, signed in with budgets - Wambi, the month, the progress, ＋ and 🎤`() =
         runGlanceAppWidgetUnitTest {
             setContext(context)
             provideComposable { MediumWidgetContent(model(snapshot())) }
-            onNode(hasContentDescription("Lukitas")).assertExists()
+            onNode(hasContentDescription("Wambito")).assertExists()
             onNode(hasText("Octubre")).assertExists()
             onNode(hasText("Te quedan")).assertExists()
             onNode(hasText("$1.500.000")).assertExists()
@@ -84,7 +84,7 @@ class WidgetContentTest {
             setContext(context)
             setAppWidgetSize(DpSize(250.dp, 110.dp))
             provideComposable { SizedWidgetContent(model(snapshot())) }
-            onNode(hasContentDescription("Lukitas")).assertExists()
+            onNode(hasContentDescription("Wambito")).assertExists()
             onNode(hasContentDescription("Decir o escribir un gasto")).assertExists()
         }
 
@@ -109,8 +109,8 @@ class WidgetContentTest {
 
     @Test
     fun `both widgets use the responsive size mode`() {
-        assertEquals(widgetSizeMode, LukitasSmallWidget().sizeMode)
-        assertEquals(widgetSizeMode, LukitasMediumWidget().sizeMode)
+        assertEquals(widgetSizeMode, WambitoSmallWidget().sizeMode)
+        assertEquals(widgetSizeMode, WambitoMediumWidget().sizeMode)
     }
 
     @Test
@@ -155,7 +155,7 @@ class WidgetContentTest {
     }
 
     @Test
-    fun `signed out - Abre Lukitas para empezar, and no amount at all`() {
+    fun `signed out - Abre Wambito para empezar, and no amount at all`() {
         for (draw in listOf<@androidx.compose.runtime.Composable (WidgetModel) -> Unit>(
             { SmallWidgetContent(it) },
             { MediumWidgetContent(it) },
@@ -163,7 +163,7 @@ class WidgetContentTest {
             runGlanceAppWidgetUnitTest {
                 setContext(context)
                 provideComposable { draw(model(WidgetSnapshot(signedIn = false, locale = "es"))) }
-                onNode(hasText("Abre Lukitas para empezar")).assertExists()
+                onNode(hasText("Abre Wambito para empezar")).assertExists()
                 onNode(hasText("$")).assertDoesNotExist()
                 onNode(hasContentDescription("Agregar gasto")).assertDoesNotExist()
             }
@@ -212,10 +212,10 @@ class WidgetContentTest {
     }
 
     @Test
-    fun `worried - Lukitas' worried face`() = runGlanceAppWidgetUnitTest {
+    fun `worried - Wambi's worried face`() = runGlanceAppWidgetUnitTest {
         setContext(context)
         provideComposable { MediumWidgetContent(model(snapshot(mood = "worried"))) }
-        onNode(hasContentDescription("Lukitas")).assertExists()
+        onNode(hasContentDescription("Wambito")).assertExists()
     }
 
     /** Review Focus 4, as the widget reads its stored state: what Dart writes at a sign-out. */
@@ -244,7 +244,7 @@ class WidgetContentTest {
                 setAppWidgetSize(box)
                 setState(HomeWidgetGlanceState(prefs))
                 provideComposable { StoredWidgetContent() }
-                onNode(hasText("Abre Lukitas para empezar")).assertExists()
+                onNode(hasText("Abre Wambito para empezar")).assertExists()
                 onNode(hasText("$1.500.000")).assertDoesNotExist()
                 onNode(hasText("$")).assertDoesNotExist()
             }
@@ -260,7 +260,7 @@ class WidgetContentTest {
                 setAppWidgetSize(box)
                 setState(HomeWidgetGlanceState(prefs))
                 provideComposable { StoredWidgetContent() }
-                onNode(hasText("Abre Lukitas para empezar")).assertExists()
+                onNode(hasText("Abre Wambito para empezar")).assertExists()
                 onNode(hasText("$1.500.000")).assertDoesNotExist()
             }
         }

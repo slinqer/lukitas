@@ -1,5 +1,5 @@
-import { user } from "@lukas/db";
-import { eq } from "@lukas/db/orm";
+import { user } from "@wambito/db";
+import { eq } from "@wambito/db/orm";
 import { afterAll, afterEach, beforeAll, expect, test, vi } from "vitest";
 import { seedOctober2026 } from "./fixtures.ts";
 import { createTestApp, type TestApp } from "./harness.ts";
@@ -21,8 +21,8 @@ const summary = async (query: string, headers: { authorization: string } = a) =>
 
 beforeAll(async () => {
   t = await createTestApp();
-  a = (await t.signIn("a@lukas.test")).headers;
-  b = (await t.signIn("b@lukas.test")).headers;
+  a = (await t.signIn("a@wambito.test")).headers;
+  b = (await t.signIn("b@wambito.test")).headers;
   ids = await seedOctober2026(t, a);
 });
 afterAll(() => t?.stop());
@@ -45,7 +45,7 @@ test("the default month follows the user's time zone", async () => {
   vi.useFakeTimers({ toFake: ["Date"] });
   vi.setSystemTime(new Date("2026-11-01T03:00:00Z"));
   // Sign in under the fake clock so the session is not expired relative to it.
-  const bogota = await t.signIn("bogota@lukas.test");
+  const bogota = await t.signIn("bogota@wambito.test");
   await t.admin.update(user).set({ timezone: "America/Bogota" }).where(eq(user.id, bogota.userId));
   expect((await summary("", bogota.headers)).month).toBe("2026-10");
 });

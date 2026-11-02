@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/welcome/onboarding_draft.dart';
+import 'package:wambito/welcome/onboarding_draft.dart';
 
 import '../settings/fakes.dart';
 

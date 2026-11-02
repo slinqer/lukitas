@@ -254,7 +254,7 @@ export const PesosRecurring: Story = {
   },
 };
 
-/** Nothing yet: Lukitas explains what goes here, and the way to add one. */
+/** Nothing yet: Wambi explains what goes here, and the way to add one. */
 export const Empty: Story = {
   render: (args) => <HomeStage onRequest={args.onRequest} path="/app/recurring" noRecurrences />,
   play: async ({ canvasElement }) => {

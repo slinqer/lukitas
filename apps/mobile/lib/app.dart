@@ -26,8 +26,8 @@ Widget withAppHosts(Widget child, {bool animateToastBar = true, bool celebrate =
 final toastBarAnimatesProvider = Provider<bool>((ref) => true);
 
 /// The app shell: theme (night by default), es and en copy, and routes.
-class LukitasApp extends ConsumerWidget {
-  const LukitasApp({super.key});
+class WambitoApp extends ConsumerWidget {
+  const WambitoApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

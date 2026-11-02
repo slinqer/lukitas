@@ -5,14 +5,14 @@ import {
   type RecurrenceDto,
   type UpdateRecurrence,
   type UpdateTransaction,
-} from "@lukas/core";
+} from "@wambito/core";
 import { z } from "zod";
 import { normalizeName } from "../categories.ts";
 import { ToolError } from "../errors.ts";
-import type { Profile } from "../lukitas.ts";
 import { formatMoney, fromMinor, toMinor } from "../money.ts";
 import { phrases, quote } from "../text.ts";
 import { defineTool } from "../tool.ts";
+import type { Profile } from "../wambito.ts";
 import {
   amountInput,
   byId,
@@ -36,7 +36,7 @@ import {
 
 /** Items per write call, for the model (spec §4.3). */
 const MAX_ITEMS = 50;
-/** Items per call to Lukitas: the API's batch limit. */
+/** Items per call to Wambito: the API's batch limit. */
 const BATCH_LIMIT = 20;
 /** A re-sent `add_transactions` within this window saves nothing twice (spec §4.3). */
 const IDEMPOTENCY_WINDOW_MS = 10 * 60 * 1000;
@@ -127,9 +127,9 @@ export const addTransactions = defineTool({
     saved: z.number().int().describe("Transactions saved by this call"),
     items: z.array(transactionOutput),
   }),
-  async handler(input, { lukitas, userId, now }) {
-    const profile = await lukitas.profile();
-    const categories = await lukitas.listCategories();
+  async handler(input, { wambito, userId, now }) {
+    const profile = await wambito.profile();
+    const categories = await wambito.listCategories();
     const at = now();
     const date = today(profile, at);
     // Every category and amount is checked before the first write, so a bad item saves nothing.
@@ -148,7 +148,7 @@ export const addTransactions = defineTool({
     const results = [];
     for (const [index, chunk] of chunks(items, BATCH_LIMIT).entries()) {
       const key = await idempotencyKey(userId, index, chunk, at);
-      results.push(await lukitas.addTransactions(chunk, key));
+      results.push(await wambito.addTransactions(chunk, key));
     }
     const names = byId(categories);
     const saved = results.filter((r) => !r.replayed).reduce((n, r) => n + r.items.length, 0);
@@ -197,9 +197,9 @@ export const updateTransaction = defineTool({
       message: "Provide at least one field to change",
     }),
   output: z.object({ transaction: transactionOutput }),
-  async handler(input, { lukitas }) {
-    const profile = await lukitas.profile();
-    const categories = await lukitas.listCategories();
+  async handler(input, { wambito }) {
+    const profile = await wambito.profile();
+    const categories = await wambito.listCategories();
     const category = input.category ? findCategory(input.category, categories) : undefined;
     const patch: UpdateTransaction = {};
     if (input.name !== undefined) patch.name = input.name;
@@ -207,15 +207,15 @@ export const updateTransaction = defineTool({
     if (input.status !== undefined) patch.status = input.status;
     if (input.note !== undefined) patch.note = input.note;
     if (category) patch.categoryId = category.id;
-    // Without a new category its kind is not known before the write (Lukitas has no
+    // Without a new category its kind is not known before the write (Wambito has no
     // get-by-id): guess expense, the common case, and fix the sign below if it is income.
     if (input.amount !== undefined)
       patch.amount = toMinor(input.amount, category?.kind ?? "expense");
-    let tx = await lukitas.updateTransaction(input.id, patch);
+    let tx = await wambito.updateTransaction(input.id, patch);
     if (input.amount !== undefined || category) {
       const kind = byId(categories).get(tx.categoryId)?.kind;
       if (kind && (kind === "expense") !== tx.amount < 0) {
-        tx = await lukitas.updateTransaction(input.id, { amount: -tx.amount });
+        tx = await wambito.updateTransaction(input.id, { amount: -tx.amount });
       }
     }
     const transaction = toTransactionOutput(tx, byId(categories), profile);
@@ -242,9 +242,9 @@ export const deleteTransactions = defineTool({
     deleted: z.number().int(),
     ids: z.array(z.string()).describe("Pass them to restore_transactions to undo"),
   }),
-  async handler(input, { lukitas }) {
-    const profile = await lukitas.profile();
-    for (const chunk of chunks(input.ids, BATCH_LIMIT)) await lukitas.deleteTransactions(chunk);
+  async handler(input, { wambito }) {
+    const profile = await wambito.profile();
+    for (const chunk of chunks(input.ids, BATCH_LIMIT)) await wambito.deleteTransactions(chunk);
     return {
       structured: { deleted: input.ids.length, ids: input.ids },
       text: phrases(profile.locale).deleted(input.ids.length),
@@ -265,12 +265,12 @@ export const restoreTransactions = defineTool({
   },
   input: z.object({ ids: idsInput }),
   output: z.object({ items: z.array(transactionOutput) }),
-  async handler(input, { lukitas }) {
-    const profile = await lukitas.profile();
-    const categories = byId(await lukitas.listCategories());
+  async handler(input, { wambito }) {
+    const profile = await wambito.profile();
+    const categories = byId(await wambito.listCategories());
     const items = [];
     for (const id of input.ids) {
-      items.push(toTransactionOutput(await lukitas.restoreTransaction(id), categories, profile));
+      items.push(toTransactionOutput(await wambito.restoreTransaction(id), categories, profile));
     }
     return {
       structured: { items },
@@ -306,16 +306,16 @@ export const setBudget = defineTool({
     budget: moneyOutput,
     effectiveFrom: z.string(),
   }),
-  async handler(input, { lukitas, now }) {
-    const profile = await lukitas.profile();
-    const category = findCategory(input.category, await lukitas.listCategories(), {
+  async handler(input, { wambito, now }) {
+    const profile = await wambito.profile();
+    const category = findCategory(input.category, await wambito.listCategories(), {
       kind: "expense",
     });
     const amount = Math.round(Math.abs(input.amount) * 100);
     if (!Number.isSafeInteger(amount))
       throw new ToolError("invalid_amount", "The amount is too large");
     const effectiveFrom = input.effectiveFrom ?? currentMonth(profile, now());
-    await lukitas.setBudget(category.id, { amount, effectiveFrom });
+    await wambito.setBudget(category.id, { amount, effectiveFrom });
     const budget = money(amount, profile);
     return {
       structured: { categoryId: category.id, category: category.name, budget, effectiveFrom },
@@ -360,10 +360,10 @@ export const createCategory = defineTool({
     icon: z.string().min(1).max(40).optional().describe("One emoji, e.g. 🐶"),
   }),
   output: z.object({ category: categoryOutput }),
-  async handler(input, { lukitas }) {
-    const profile = await lukitas.profile();
-    nameTaken(input.name, await lukitas.listCategories());
-    const created = await lukitas.createCategory({
+  async handler(input, { wambito }) {
+    const profile = await wambito.profile();
+    nameTaken(input.name, await wambito.listCategories());
+    const created = await wambito.createCategory({
       name: input.name,
       kind: input.kind,
       icon: input.icon ?? DEFAULT_ICON,
@@ -399,12 +399,12 @@ export const updateCategory = defineTool({
       message: "Provide name, icon or archived",
     }),
   output: z.object({ category: categoryOutput }),
-  async handler(input, { lukitas }) {
-    const profile = await lukitas.profile();
-    const categories = await lukitas.listCategories();
+  async handler(input, { wambito }) {
+    const profile = await wambito.profile();
+    const categories = await wambito.listCategories();
     const target = findCategory(input.category, categories, { archived: true });
     if (input.name !== undefined) nameTaken(input.name, categories, target.id);
-    const updated = await lukitas.updateCategory(target.id, {
+    const updated = await wambito.updateCategory(target.id, {
       name: input.name,
       icon: input.icon,
       archived: input.archived,
@@ -498,9 +498,9 @@ export const manageRecurring = defineTool({
     recurrence: recurrenceOutput,
     removed: z.boolean().describe("True when stopping removed a rule that had not started yet"),
   }),
-  async handler(input, { lukitas, now }) {
-    const profile = await lukitas.profile();
-    const categories = await lukitas.listCategories();
+  async handler(input, { wambito, now }) {
+    const profile = await wambito.profile();
+    const categories = await wambito.listCategories();
     const names = byId(categories);
     const p = phrases(profile.locale);
     const todayIs = today(profile, now());
@@ -520,7 +520,7 @@ export const manageRecurring = defineTool({
       const category = findCategory(input.category, categories, { kind: input.kind });
       const startDate = input.startDate ?? todayIs;
       const frequency = input.frequency ?? "monthly";
-      const created = await lukitas.createRecurrence(
+      const created = await wambito.createRecurrence(
         checked({
           name: input.name,
           amount: toMinor(input.amount, category.kind),
@@ -537,18 +537,18 @@ export const manageRecurring = defineTool({
     }
 
     if (!input.id) throw invalid(`${input.action} needs the id from list_recurring`);
-    const existing = (await lukitas.listRecurrences()).find((r) => r.id === input.id);
+    const existing = (await wambito.listRecurrences()).find((r) => r.id === input.id);
     if (!existing) throw new ToolError("not_found", "Recurring transaction not found");
 
     if (input.action === "stop") {
       if (existing.startDate > todayIs) {
-        await lukitas.deleteRecurrence(existing.id);
+        await wambito.deleteRecurrence(existing.id);
         return answer(existing, p.recurringStopped, true);
       }
       if (existing.endDate !== null && existing.endDate <= todayIs) {
         return answer(existing, p.recurringStopped);
       }
-      const stopped = await lukitas.updateRecurrence(existing.id, { endDate: todayIs });
+      const stopped = await wambito.updateRecurrence(existing.id, { endDate: todayIs });
       return answer(stopped, p.recurringStopped);
     }
 
@@ -570,7 +570,7 @@ export const manageRecurring = defineTool({
     if (input.endDate !== undefined) patch.endDate = input.endDate;
     if (Object.keys(patch).length === 0) throw invalid("update needs at least one field to change");
     checked({ ...existing, ...patch });
-    const updated = await lukitas.updateRecurrence(existing.id, patch);
+    const updated = await wambito.updateRecurrence(existing.id, patch);
     return answer(updated, p.recurringUpdated);
   },
 });

@@ -1,5 +1,5 @@
 {
-  "name": "@lukas/importers",
+  "name": "@wambito/importers",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@lukas/core": "workspace:*",
+    "@wambito/core": "workspace:*",
     "csv-parse": "^6.2.1"
   }
 }

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
-import '../api/gen/lukitas_api.dart' show CreateTransactionRepeatFrequencyEnum;
+import '../api/gen/wambito_api.dart' show CreateTransactionRepeatFrequencyEnum;
 import '../l10n/app_localizations.dart';
 import '../theme/surfaces.dart';
 import '../theme/text_styles.dart';
@@ -51,9 +51,9 @@ class MoreRow extends StatelessWidget {
               border: Border.all(color: colors.controlEdge, width: 2),
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: LukitasTokens.space3),
+              padding: const EdgeInsets.symmetric(horizontal: WambitoTokens.space3),
               child: Row(
-                spacing: LukitasTokens.space2,
+                spacing: WambitoTokens.space2,
                 children: [
                   BlinkLine(
                     style: LkText.label,
@@ -105,7 +105,7 @@ class FieldLabel extends StatelessWidget {
     final colors = context.lkColors;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: LukitasTokens.space1,
+      spacing: WambitoTokens.space1,
       children: [
         ExcludeSemantics(
           child: BlinkLine(
@@ -280,7 +280,7 @@ class PendingCheckbox extends StatelessWidget {
       builder: (context, state) => ConstrainedBox(
         constraints: const BoxConstraints(minHeight: 44),
         child: Row(
-          spacing: LukitasTokens.space2,
+          spacing: WambitoTokens.space2,
           children: [
             CustomPaint(
               size: const Size.square(20),
@@ -453,7 +453,7 @@ class MoreDetails extends StatelessWidget {
     final colors = context.lkColors;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: LukitasTokens.space2,
+      spacing: WambitoTokens.space2,
       children: [
         DateField(
           key: const Key('add.date'),
@@ -478,7 +478,7 @@ class MoreDetails extends StatelessWidget {
         if (form.repeat)
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: LukitasTokens.space2,
+            spacing: WambitoTokens.space2,
             children: [
               SegmentedControl<CreateTransactionRepeatFrequencyEnum>(
                 label: l10n.recurringFormFrequencyLabel,

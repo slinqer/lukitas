@@ -1,12 +1,12 @@
 // The web's Celebration (apps/web/app/feedback/Celebration.tsx and Celebration.css): confetti and a
-// celebrating Lukitas, shown when `feedback()` reports something worth celebrating.
+// celebrating Wambi, shown when `feedback()` reports something worth celebrating.
 import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../home/lukitas_face.dart';
+import '../home/wambi_face.dart';
 import '../theme/tokens.g.dart';
 import '../ui/lk_theme.dart';
 import 'feedback_event.dart';
@@ -26,7 +26,7 @@ class CelebrationBursts extends Notifier<int> {
 
 final celebrationBurstsProvider = NotifierProvider<CelebrationBursts, int>(CelebrationBursts.new);
 
-/// px between Lukitas's feet and the element he stands above (`ABOVE_GAP`).
+/// px between Wambi's feet and the element he stands above (`ABOVE_GAP`).
 const _aboveGap = 4.0;
 
 /// How long to wait for a landing spot to appear (a screen still arriving, as after onboarding).
@@ -35,7 +35,7 @@ const _findSpotFor = Duration(milliseconds: 800);
 /// A little over the stay, so the last frame is shown (the web's `ms + 50`).
 const _lingers = Duration(milliseconds: 50);
 
-/// Where Lukitas lands: the middle of the spot, the top of his box, and his size.
+/// Where Wambi lands: the middle of the spot, the top of his box, and his size.
 class _Spot {
   const _Spot(this.x, this.top, this.size);
 
@@ -76,7 +76,7 @@ class CelebrationSpots {
     return null;
   }
 
-  /// Moves [spot] up until Lukitas's box clears every avoided box on screen (`clearOfObstacles`).
+  /// Moves [spot] up until Wambi's box clears every avoided box on screen (`clearOfObstacles`).
   _Spot _clear(_Spot spot, RenderBox? ancestor) {
     final obstacles = [for (final key in _avoid) ?_rectIn(key, ancestor)];
     var current = spot;
@@ -106,7 +106,7 @@ class _AnchorEntry {
   final double size;
 }
 
-/// Marks where Lukitas may land: the element he stands just above (the ＋ of the bottom bar, which
+/// Marks where Wambi may land: the element he stands just above (the ＋ of the bottom bar, which
 /// stays in view and tappable), [size] being his size. The first one on screen wins.
 class CelebrationAnchor extends StatefulWidget {
   const CelebrationAnchor({super.key, required this.size, required this.child});
@@ -152,7 +152,7 @@ class _CelebrationAnchorState extends State<CelebrationAnchor> {
   Widget build(BuildContext context) => KeyedSubtree(key: _key, child: widget.child);
 }
 
-/// Marks what Lukitas must never cover besides his spot: the toasts (with their Deshacer), which a
+/// Marks what Wambi must never cover besides his spot: the toasts (with their Deshacer), which a
 /// save shows at the same moment. Its box is its layout box (an entering toast's slide is ignored).
 class CelebrationAvoid extends StatefulWidget {
   const CelebrationAvoid({super.key, required this.child});
@@ -187,12 +187,12 @@ class _CelebrationAvoidState extends State<CelebrationAvoid> {
   Widget build(BuildContext context) => KeyedSubtree(key: _key, child: widget.child);
 }
 
-/// Confetti and a celebrating Lukitas over the app, when `feedback()` reports something worth
-/// celebrating ([celebratedEvents]). Lukitas lands in free space, never over text or figures: just
+/// Confetti and a celebrating Wambi over the app, when `feedback()` reports something worth
+/// celebrating ([celebratedEvents]). Wambi lands in free space, never over text or figures: just
 /// above the ＋ of the bottom bar (never on it: it stays visible and tappable), and above the undo
 /// toast while one is up ([CelebrationAvoid]); the confetti bursts from there. Purely decorative
 /// (hidden from assistive technology: the toast or screen already says what happened) and it never
-/// takes a tap. Under reduced motion there is no confetti: Lukitas shows as his still celebrating
+/// takes a tap. Under reduced motion there is no confetti: Wambi shows as his still celebrating
 /// frame and only fades in and out. Put one above the app's Navigator.
 class CelebrationHost extends ConsumerStatefulWidget {
   const CelebrationHost({super.key, required this.child});
@@ -263,7 +263,7 @@ class _CelebrationHostState extends ConsumerState<CelebrationHost> {
       }
       final spot = _spots._clear(found ?? _fallback(), host);
       setState(() => _placed = _Placed(mine, spot));
-      _hide = Timer(LukitasTokens.durationCelebrate + _lingers, () {
+      _hide = Timer(WambitoTokens.durationCelebrate + _lingers, () {
         if (mounted && mine == _id) setState(() => _placed = null);
       });
     }
@@ -389,9 +389,9 @@ const _easeOut = Curves.easeOut;
   );
 }
 
-/// Lukitas' look `t` of the way through `lk-celebration-pop`: grows up from his feet, bounces once
+/// Wambi's look `t` of the way through `lk-celebration-pop`: grows up from his feet, bounces once
 /// and shrinks back down; or, under reduced motion, `lk-celebration-fade`.
-({double scale, double opacity}) lukitasAt(double t, {required bool reduced}) {
+({double scale, double opacity}) wambiAt(double t, {required bool reduced}) {
   if (reduced) {
     // 0%: 0, 15% to 80%: 1, 100%: 0.
     if (t < 0.15) return (scale: 1, opacity: _easeOut.transform(t / 0.15));
@@ -425,7 +425,7 @@ class _Celebration extends StatefulWidget {
 class _CelebrationState extends State<_Celebration> with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
     vsync: this,
-    duration: LukitasTokens.durationCelebrate,
+    duration: WambitoTokens.durationCelebrate,
     // Under reduced motion the web still fades him in and out over the same stay: the controller
     // must not cut the stay short, as the default does for the system's "remove animations".
     animationBehavior: AnimationBehavior.preserve,
@@ -453,7 +453,7 @@ class _CelebrationState extends State<_Celebration> with SingleTickerProviderSta
       animation: _controller,
       builder: (context, _) {
         final t = _controller.value;
-        final look = lukitasAt(t, reduced: reduced);
+        final look = wambiAt(t, reduced: reduced);
         return Stack(
           clipBehavior: Clip.hardEdge,
           children: [
@@ -478,8 +478,8 @@ class _CelebrationState extends State<_Celebration> with SingleTickerProviderSta
                 child: Transform.scale(
                   scale: look.scale,
                   alignment: Alignment.bottomCenter,
-                  child: LukitasFace(
-                    mood: LukitasMood.celebrating,
+                  child: WambiFace(
+                    mood: WambiMood.celebrating,
                     size: spot.size,
                     decorative: true,
                     endless: true,

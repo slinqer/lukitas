@@ -5,6 +5,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import com.wambito.app.Migration
 import com.wambito.app.R
 import com.wambito.app.widget.SecureStorageSession
 import com.wambito.app.widget.ServerSetting
@@ -59,7 +60,7 @@ const val NOTICE_OUTCOME = "outcome"
  *
  *  * The app schedules it only for someone with an active recurring rule who allowed notifications;
  *    if the permission is gone by the time it runs, it asks the server nothing.
- *  * Its requests carry `x-lukas-background: 1`, so they never count as activity on the server.
+ *  * Its requests carry `x-wambito-background: 1`, so they never count as activity on the server.
  *  * One notice per local day: the day is recorded, and a run before 9:00 (a phone that was off
  *    overnight) posts nothing and aims at 9:00 instead.
  *  * It reads the session where the app keeps it and only reads the server; the notification
@@ -68,6 +69,7 @@ const val NOTICE_OUTCOME = "outcome"
 class DueWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
         val context = applicationContext
+        Migration.run(context) // 2b: remove
         val dependencies = NoticeHooks.of(context)
         val settings = NoticeSettings(context)
         var zone = NoticeTimes.zoneOr(settings.zone, ZoneId.systemDefault())
@@ -151,6 +153,7 @@ class DueWorker(context: Context, params: WorkerParameters) : CoroutineWorker(co
 class GuestWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
         val context = applicationContext
+        Migration.run(context) // 2b: remove
         val dependencies = NoticeHooks.of(context)
         val settings = NoticeSettings(context)
         val outcome = when {

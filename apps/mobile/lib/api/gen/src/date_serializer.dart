@@ -4,7 +4,7 @@
 
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/serializer.dart';
-import 'package:lukitas/api/gen/src/model/date.dart';
+import 'package:wambito/api/gen/src/model/date.dart';
 
 class DateSerializer implements PrimitiveSerializer<Date> {
   const DateSerializer();

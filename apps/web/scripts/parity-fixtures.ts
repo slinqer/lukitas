@@ -9,12 +9,12 @@
  * every GET in APP_GETS is asked again of that same API. A story without a fake API (a component's)
  * gets a fixture with the clock and no answers.
  *
- *   pnpm --filter @lukas/web parity:fixtures [id filter]
+ *   pnpm --filter @wambito/web parity:fixtures [id filter]
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
-import { monthOf, todayIn } from "@lukas/core";
+import { monthOf, todayIn } from "@wambito/core";
 import { chromium } from "playwright";
 import {
   buildStorybook,
@@ -79,9 +79,9 @@ async function fixtureOf(
 ): Promise<ParityFixture> {
   const { page } = await openStory(context, base, pair);
   const answers = await page.evaluate(async (appGets) => {
-    const api = window.__lukasStoryFetch;
+    const api = window.__wambitoStoryFetch;
     if (!api) return null;
-    const asked = [...(window.__lukasStoryGets ?? [])].map((path) => path.replace(/^\/api/, ""));
+    const asked = [...(window.__wambitoStoryGets ?? [])].map((path) => path.replace(/^\/api/, ""));
     const out: { path: string; status: number; body: unknown }[] = [];
     for (const path of new Set([...asked, ...appGets])) {
       const response = await api(new Request(new URL(`/api${path}`, location.href)));

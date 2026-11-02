@@ -1,4 +1,4 @@
-import type { CategoryKind } from "@lukas/core";
+import type { CategoryKind } from "@wambito/core";
 import { type FormEvent, useId, useState } from "react";
 import { useTranslations } from "use-intl";
 import { CATEGORY_GLYPHS, CATEGORY_TINTS } from "../../ui/category-look.ts";

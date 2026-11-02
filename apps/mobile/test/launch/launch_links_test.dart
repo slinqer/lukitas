@@ -3,18 +3,18 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/add/add_sheet.dart';
-import 'package:lukitas/api/auth_api.dart';
-import 'package:lukitas/api/session.dart';
-import 'package:lukitas/capture/capture_sheet.dart';
-import 'package:lukitas/capture/engine/speech_engine.dart';
-import 'package:lukitas/entry/entry_screen.dart';
-import 'package:lukitas/home/home_controller.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/home/home_screen.dart';
-import 'package:lukitas/progress/progress_screen.dart';
-import 'package:lukitas/launch/launch_links.dart';
-import 'package:lukitas/router.dart';
+import 'package:wambito/add/add_sheet.dart';
+import 'package:wambito/api/auth_api.dart';
+import 'package:wambito/api/session.dart';
+import 'package:wambito/capture/capture_sheet.dart';
+import 'package:wambito/capture/engine/speech_engine.dart';
+import 'package:wambito/entry/entry_screen.dart';
+import 'package:wambito/home/home_controller.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/home/home_screen.dart';
+import 'package:wambito/progress/progress_screen.dart';
+import 'package:wambito/launch/launch_links.dart';
+import 'package:wambito/router.dart';
 
 import '../capture/fakes.dart';
 import '../entry/fakes.dart' show FakeAuthApi;
@@ -67,18 +67,37 @@ class _KeptSession extends SessionStore {
 
 void main() {
   group('reading a link', () {
-    test('lukitas://add and lukitas://capture, nothing else', () {
-      expect(launchActionOf('lukitas://add'), LaunchAction.add);
-      expect(launchActionOf('lukitas://capture'), LaunchAction.capture);
-      expect(launchActionOf('lukitas://capture/'), LaunchAction.capture);
-      expect(launchActionOf('lukitas://due'), LaunchAction.due);
-      expect(launchActionOf('lukitas://progress'), LaunchAction.progress);
-      expect(launchActionOf('lukitas://home'), LaunchAction.home);
-      expect(launchActionOf('lukitas://settings'), isNull);
+    test('wambito://add and wambito://capture, nothing else', () {
+      expect(launchActionOf('wambito://add'), LaunchAction.add);
+      expect(launchActionOf('wambito://capture'), LaunchAction.capture);
+      expect(launchActionOf('wambito://capture/'), LaunchAction.capture);
+      expect(launchActionOf('wambito://due'), LaunchAction.due);
+      expect(launchActionOf('wambito://progress'), LaunchAction.progress);
+      expect(launchActionOf('wambito://home'), LaunchAction.home);
+      expect(launchActionOf('wambito://settings'), isNull);
       expect(launchActionOf('https://add'), isNull);
       expect(launchActionOf('https://app.wambito.com/auth/verify?code=1'), isNull);
       expect(launchActionOf(''), isNull);
       expect(launchActionOf(null), isNull);
+    });
+
+    // 2b: remove: links pinned before the rename (a widget, the tile, a shortcut) say lukitas://.
+    test('lukitas:// links still open what they did', () {
+      expect(launchActionOf('lukitas://add'), LaunchAction.add);
+      expect(launchActionOf('lukitas://capture'), LaunchAction.capture);
+      expect(launchActionOf('lukitas://due'), LaunchAction.due);
+      expect(launchActionOf('lukitas://progress'), LaunchAction.progress);
+      expect(launchActionOf('lukitas://home'), LaunchAction.home);
+      expect(launchActionOf('lukitas://settings'), isNull);
+    });
+
+    test('the links the app builds say wambito://', () {
+      for (final action in LaunchAction.values) {
+        final link = launchLinkOf(action);
+        expect(link.scheme, 'wambito');
+        expect(launchActionOf(link.toString()), action);
+      }
+      expect(launchLinkOf(LaunchAction.capture).toString(), 'wambito://capture');
     });
   });
 
@@ -87,7 +106,7 @@ void main() {
   ) async {
     final env = await pumpSettingsApp(
       tester,
-      overrides: [launchLinkSourceProvider.overrideWithValue(FakeLaunchLinks('lukitas://add'))],
+      overrides: [launchLinkSourceProvider.overrideWithValue(FakeLaunchLinks('wambito://add'))],
     );
     expect(find.byType(HomeScreen), findsOneWidget);
     expect(find.byType(AddSheet), findsOneWidget);
@@ -100,7 +119,7 @@ void main() {
       tester,
       settle: false,
       overrides: [
-        launchLinkSourceProvider.overrideWithValue(FakeLaunchLinks('lukitas://capture')),
+        launchLinkSourceProvider.overrideWithValue(FakeLaunchLinks('wambito://capture')),
         speechEngineProvider.overrideWithValue(engine),
       ],
     );
@@ -121,7 +140,7 @@ void main() {
     );
     expect(find.byType(AddSheet), findsNothing);
 
-    links.open('lukitas://add');
+    links.open('wambito://add');
     await tester.pumpAndSettle();
     expect(env.router.state.uri.path, '/');
     expect(find.byType(AddSheet), findsOneWidget);
@@ -136,7 +155,7 @@ void main() {
       location: '/settings',
       overrides: [launchLinkSourceProvider.overrideWithValue(links)],
     );
-    links.open('lukitas://due');
+    links.open('wambito://due');
     await tester.pumpAndSettle();
     expect(env.router.state.uri.path, '/');
     expect(find.byType(HomeScreen), findsOneWidget);
@@ -149,11 +168,11 @@ void main() {
   ) async {
     final links = FakeLaunchLinks();
     await pumpSettingsApp(tester, overrides: [launchLinkSourceProvider.overrideWithValue(links)]);
-    links.open('lukitas://add');
+    links.open('wambito://add');
     await tester.pumpAndSettle();
     expect(find.byType(AddSheet), findsOneWidget);
 
-    links.open('lukitas://due');
+    links.open('wambito://due');
     await tester.pumpAndSettle();
     expect(find.byType(AddSheet), findsNothing);
     expect(find.byType(HomeScreen), findsOneWidget);
@@ -167,12 +186,12 @@ void main() {
     );
     final repo = env.container.read(homeRepositoryProvider) as FakeHomeRepository;
     final before = repo.calls.where((c) => c.startsWith('summary')).length;
-    links.open('lukitas://due');
+    links.open('wambito://due');
     await tester.pumpAndSettle();
     expect(repo.calls.where((c) => c.startsWith('summary')).length, before + 1);
   });
 
-  for (final link in ['lukitas://due', 'lukitas://home']) {
+  for (final link in ['wambito://due', 'wambito://home']) {
     testWidgets('$link opens the current month, even from home left on an earlier one', (
       tester,
     ) async {
@@ -212,7 +231,7 @@ void main() {
       location: '/settings',
       overrides: [launchLinkSourceProvider.overrideWithValue(links)],
     );
-    links.open('lukitas://progress');
+    links.open('wambito://progress');
     await tester.pumpAndSettle();
     expect(env.router.state.uri.path, '/progress');
     expect(find.byType(ProgressScreen), findsOneWidget);
@@ -228,14 +247,14 @@ void main() {
       tester,
       overrides: [launchLinkSourceProvider.overrideWithValue(links)],
     );
-    links.open('lukitas://progress');
+    links.open('wambito://progress');
     await tester.pumpAndSettle();
     expect(env.router.state.uri.path, '/');
     expect(find.byType(HomeScreen), findsOneWidget);
   });
 
   testWidgets('signed out, the notice opens nothing', (tester) async {
-    final links = FakeLaunchLinks('lukitas://due');
+    final links = FakeLaunchLinks('wambito://due');
     await pumpSettingsApp(
       tester,
       signedIn: false,
@@ -245,7 +264,7 @@ void main() {
   });
 
   testWidgets('a second link replaces the sheet the first one opened', (tester) async {
-    final links = FakeLaunchLinks('lukitas://add');
+    final links = FakeLaunchLinks('wambito://add');
     final engine = FakeSpeechEngine()..hold = true;
     await pumpSettingsApp(
       tester,
@@ -256,7 +275,7 @@ void main() {
     );
     expect(find.byType(AddSheet), findsOneWidget);
 
-    links.open('lukitas://capture');
+    links.open('wambito://capture');
     for (var i = 0; i < 20; i++) {
       await tester.pump(const Duration(milliseconds: 100));
     }
@@ -268,7 +287,7 @@ void main() {
 
   group('an add sheet with the person\'s input in it is kept', () {
     Future<FakeLaunchLinks> typedInSheet(WidgetTester tester, FakeSpeechEngine engine) async {
-      final links = FakeLaunchLinks('lukitas://add');
+      final links = FakeLaunchLinks('wambito://add');
       await pumpSettingsApp(
         tester,
         overrides: [
@@ -284,10 +303,10 @@ void main() {
     }
 
     for (final link in [
-      'lukitas://capture',
-      'lukitas://add',
-      'lukitas://due',
-      'lukitas://progress',
+      'wambito://capture',
+      'wambito://add',
+      'wambito://due',
+      'wambito://progress',
     ]) {
       testWidgets('$link leaves it as it is', (tester) async {
         final engine = FakeSpeechEngine()..hold = true;
@@ -317,7 +336,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(AddSheet), findsNothing);
 
-      links.open('lukitas://capture');
+      links.open('wambito://capture');
       for (var i = 0; i < 20; i++) {
         await tester.pump(const Duration(milliseconds: 100));
       }
@@ -327,7 +346,7 @@ void main() {
   });
 
   testWidgets('signed out, a link lands on the entry screen and opens nothing', (tester) async {
-    final links = FakeLaunchLinks('lukitas://capture');
+    final links = FakeLaunchLinks('wambito://capture');
     final env = await pumpSettingsApp(
       tester,
       signedIn: false,
@@ -336,7 +355,7 @@ void main() {
     expect(find.byType(EntryScreen), findsOneWidget);
     expect(find.byType(CaptureSheet), findsNothing);
 
-    links.open('lukitas://add');
+    links.open('wambito://add');
     await tester.pumpAndSettle();
     expect(find.byType(EntryScreen), findsOneWidget);
     expect(find.byType(AddSheet), findsNothing);
@@ -344,7 +363,7 @@ void main() {
   });
 
   testWidgets('a link that is not one of the two does nothing', (tester) async {
-    final links = FakeLaunchLinks('lukitas://somewhere');
+    final links = FakeLaunchLinks('wambito://somewhere');
     await pumpSettingsApp(tester, overrides: [launchLinkSourceProvider.overrideWithValue(links)]);
     links.open('https://example.com/add');
     await tester.pumpAndSettle();
@@ -359,21 +378,21 @@ void main() {
     const glanceTap =
         'glance-action:/CALLBACK?appWidgetId=5&viewId=2131296449&viewSize=110.09524.dp%20x%2040.0.dp&extraData=0';
 
-    testWidgets('lukitas://home opens home from any screen, with no sheet over it', (tester) async {
+    testWidgets('wambito://home opens home from any screen, with no sheet over it', (tester) async {
       final links = FakeLaunchLinks();
       final env = await pumpSettingsApp(
         tester,
         location: '/settings',
         overrides: [launchLinkSourceProvider.overrideWithValue(links)],
       );
-      links.open('lukitas://home');
+      links.open('wambito://home');
       await tester.pumpAndSettle();
       expect(env.router.state.uri.path, '/');
       expect(find.byType(HomeScreen), findsOneWidget);
       expect(find.byType(AddSheet), findsNothing);
     });
 
-    testWidgets('lukitas://home brings a home that was already loaded up to date', (tester) async {
+    testWidgets('wambito://home brings a home that was already loaded up to date', (tester) async {
       final links = FakeLaunchLinks();
       final env = await pumpSettingsApp(
         tester,
@@ -381,7 +400,7 @@ void main() {
       );
       final repo = env.container.read(homeRepositoryProvider) as FakeHomeRepository;
       final before = repo.calls.where((c) => c.startsWith('summary')).length;
-      links.open('lukitas://home');
+      links.open('wambito://home');
       await tester.pumpAndSettle();
       expect(repo.calls.where((c) => c.startsWith('summary')).length, before + 1);
     });
@@ -427,7 +446,7 @@ void main() {
             sessionStoreProvider.overrideWithValue(
               _KeptSession(const StoredSession(token: 'email-token-0', guest: false)),
             ),
-            launchLinkSourceProvider.overrideWithValue(FakeLaunchLinks('lukitas://add')),
+            launchLinkSourceProvider.overrideWithValue(FakeLaunchLinks('wambito://add')),
           ],
         );
         // Two seconds of frames, less than the wait there would be: the sheet is already open.
@@ -450,7 +469,7 @@ void main() {
               const StoredSession(token: 'email-token-0', guest: false, onboardingKnown: false),
             ),
           ),
-          launchLinkSourceProvider.overrideWithValue(FakeLaunchLinks('lukitas://add')),
+          launchLinkSourceProvider.overrideWithValue(FakeLaunchLinks('wambito://add')),
         ],
       );
       // Still waiting after two seconds of frames...
@@ -475,7 +494,7 @@ void main() {
               const StoredSession(token: 'email-token-0', guest: false, onboardingKnown: false),
             ),
           ),
-          launchLinkSourceProvider.overrideWithValue(FakeLaunchLinks('lukitas://add')),
+          launchLinkSourceProvider.overrideWithValue(FakeLaunchLinks('wambito://add')),
         ],
       );
       expect(env.router.state.uri.path, '/welcome');
@@ -494,7 +513,7 @@ void main() {
               const StoredSession(token: 'email-token-0', guest: false, onboardingPending: true),
             ),
           ),
-          launchLinkSourceProvider.overrideWithValue(FakeLaunchLinks('lukitas://add')),
+          launchLinkSourceProvider.overrideWithValue(FakeLaunchLinks('wambito://add')),
         ],
       );
       expect(env.router.state.uri.path, '/welcome');

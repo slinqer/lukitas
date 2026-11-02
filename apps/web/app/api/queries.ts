@@ -1,4 +1,3 @@
-import { monthOf, type TransactionDto } from "@lukas/core";
 import {
   keepPreviousData,
   type QueryClient,
@@ -7,6 +6,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+import { monthOf, type TransactionDto } from "@wambito/core";
 import { useApi } from "./ApiProvider.tsx";
 import { ApiProblem } from "./errors.ts";
 import {

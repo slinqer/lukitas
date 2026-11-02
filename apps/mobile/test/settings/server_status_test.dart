@@ -2,8 +2,8 @@
 // and which version it runs, asking again every 30 seconds while Settings is open.
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/settings/server_status.dart';
-import 'package:lukitas/theme/tokens.g.dart';
+import 'package:wambito/settings/server_status.dart';
+import 'package:wambito/theme/tokens.g.dart';
 
 import 'harness.dart';
 
@@ -52,7 +52,7 @@ void main() {
   testWidgets('a server that answers: En línea, its version, and a green dot', (tester) async {
     final server = await _pump(tester);
     expect(find.text('En línea · Versión 0.0.0-dev.abc1234'), findsOneWidget);
-    expect(_dot(tester), LukitasColors.night.good);
+    expect(_dot(tester), WambitoColors.night.good);
     expect(server.asked, isNotEmpty);
   });
 
@@ -64,7 +64,7 @@ void main() {
   testWidgets('a server that does not answer: No responde, and a red dot', (tester) async {
     await _pump(tester, server: _FakeServer()..answer = const ServerHealth.offline());
     expect(find.text('No responde'), findsOneWidget);
-    expect(_dot(tester), LukitasColors.night.over);
+    expect(_dot(tester), WambitoColors.night.over);
   });
 
   testWidgets('it asks again every 30 seconds, and says when the server goes away', (tester) async {

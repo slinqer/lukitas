@@ -1,4 +1,4 @@
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../capture/parser/dates.dart';
 
 enum DayWhen { today, yesterday, upcoming, past }

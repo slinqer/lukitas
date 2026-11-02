@@ -1,4 +1,4 @@
-import type { Month } from "@lukas/core";
+import type { Month } from "@wambito/core";
 import { useCallback, useId, useState } from "react";
 import { useTranslations } from "use-intl";
 import { ApiProblem, problemMessage, type Translator } from "../../api/errors.ts";

@@ -4,11 +4,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/add/add_sheet.dart';
-import 'package:lukitas/capture/capture_sheet.dart';
-import 'package:lukitas/capture/engine/speech_engine.dart';
-import 'package:lukitas/home/home_screen.dart';
-import 'package:lukitas/launch/launch_links.dart';
+import 'package:wambito/add/add_sheet.dart';
+import 'package:wambito/capture/capture_sheet.dart';
+import 'package:wambito/capture/engine/speech_engine.dart';
+import 'package:wambito/home/home_screen.dart';
+import 'package:wambito/launch/launch_links.dart';
 
 import '../capture/fakes.dart';
 import '../settings/harness.dart';
@@ -46,14 +46,14 @@ State _sheet(WidgetTester tester) => tester.state(find.byType(CaptureSheet));
 void main() {
   testWidgets('with a sheet already listening, the link opens no second one', (tester) async {
     final env = await _home(tester);
-    env.links.open('lukitas://capture');
+    env.links.open('wambito://capture');
     await _settle(tester);
     env.engine.held!.add('');
     await tester.pump();
     final sheet = _sheet(tester);
     expect(find.byKey(const Key('capture.stop')), findsOneWidget);
 
-    env.links.open('lukitas://capture');
+    env.links.open('wambito://capture');
     await _settle(tester);
     expect(find.byType(CaptureSheet), findsOneWidget);
     expect(identical(_sheet(tester), sheet), isTrue, reason: 'the same sheet, not a new one');
@@ -70,7 +70,7 @@ void main() {
     final sheet = _sheet(tester);
     expect(env.engine.listens, 0);
 
-    env.links.open('lukitas://capture');
+    env.links.open('wambito://capture');
     await _settle(tester);
     expect(find.byType(CaptureSheet), findsOneWidget);
     expect(identical(_sheet(tester), sheet), isTrue);
@@ -89,7 +89,7 @@ void main() {
     await _openTyping(tester);
     await tester.enterText(find.byKey(const Key('capture.field')), 'gasté 4000 en café');
 
-    env.links.open('lukitas://capture');
+    env.links.open('wambito://capture');
     await _settle(tester);
     expect(env.engine.listens, 1);
     env.engine.held!.add('');
@@ -119,7 +119,7 @@ void main() {
     await _openTyping(tester);
     await tester.enterText(find.byKey(const Key('capture.field')), 'gasté 4000 en café');
 
-    env.links.open('lukitas://capture');
+    env.links.open('wambito://capture');
     await _settle(tester);
     env.engine.held!
       ..add('')
@@ -134,7 +134,7 @@ void main() {
     tester,
   ) async {
     final env = await _home(tester);
-    env.links.open('lukitas://capture');
+    env.links.open('wambito://capture');
     await _settle(tester);
     env.engine.held!
       ..add('')
@@ -145,7 +145,7 @@ void main() {
     expect(find.byKey(const Key('capture.save')), findsOneWidget);
     final sheet = _sheet(tester);
 
-    env.links.open('lukitas://capture');
+    env.links.open('wambito://capture');
     await _settle(tester);
     expect(identical(_sheet(tester), sheet), isTrue);
     expect(find.byKey(const Key('capture.save')), findsOneWidget);
@@ -154,7 +154,7 @@ void main() {
   });
 
   group('any other link leaves a capture sheet that holds something', () {
-    for (final link in ['lukitas://add', 'lukitas://home', 'lukitas://due', 'lukitas://progress']) {
+    for (final link in ['wambito://add', 'wambito://home', 'wambito://due', 'wambito://progress']) {
       testWidgets('$link: typed text', (tester) async {
         final env = await _home(tester);
         await _openTyping(tester);
@@ -168,7 +168,7 @@ void main() {
 
       testWidgets('$link: cards to save', (tester) async {
         final env = await _home(tester);
-        env.links.open('lukitas://capture');
+        env.links.open('wambito://capture');
         await _settle(tester);
         env.engine.held!
           ..add('')
@@ -187,7 +187,7 @@ void main() {
     testWidgets('an empty typing field gives way, as before', (tester) async {
       final env = await _home(tester);
       await _openTyping(tester);
-      env.links.open('lukitas://add');
+      env.links.open('wambito://add');
       await _settle(tester);
       expect(find.byType(CaptureSheet), findsNothing);
       expect(find.byType(AddSheet), findsOneWidget);

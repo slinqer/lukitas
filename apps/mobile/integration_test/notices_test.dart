@@ -2,7 +2,7 @@
 // the repo root), as docs/mobile/setup.md describes (spec section 7.2):
 //
 //   flutter test integration_test/notices_test.dart -d emulator-5554 \
-//     --dart-define=LUKITAS_SERVER=http://10.0.2.2:3000
+//     --dart-define=WAMBITO_SERVER=http://10.0.2.2:3000
 //
 // The permission question is asked on a phone that has not been asked, so the first test needs the
 // permission not yet given (a fresh install, or `adb shell pm revoke com.wambito.app
@@ -17,16 +17,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:lukitas/api/session.dart';
-import 'package:lukitas/capture/parser/dates.dart';
-import 'package:lukitas/home/home_screen.dart';
-import 'package:lukitas/main.dart' as app;
-import 'package:lukitas/notices/notice_platform.dart';
-import 'package:lukitas/settings/settings_screen.dart';
-import 'package:lukitas/settings/settings_store.dart';
+import 'package:wambito/api/session.dart';
+import 'package:wambito/capture/parser/dates.dart';
+import 'package:wambito/home/home_screen.dart';
+import 'package:wambito/main.dart' as app;
+import 'package:wambito/notices/notice_platform.dart';
+import 'package:wambito/settings/settings_screen.dart';
+import 'package:wambito/settings/settings_store.dart';
 
-const _server = String.fromEnvironment('LUKITAS_SERVER', defaultValue: 'http://10.0.2.2:3000');
-const _test = MethodChannel('lukitas/test');
+const _server = String.fromEnvironment('WAMBITO_SERVER', defaultValue: 'http://10.0.2.2:3000');
+const _test = MethodChannel('wambito/test');
 const _platform = ChannelNoticePlatform();
 
 /// For a person (or adb) to tap the real notification on the shade instead of the test sending its

@@ -45,18 +45,18 @@ class SettingsSection extends StatelessWidget {
       child: HeroCard(
         borderColor: danger ? Color.lerp(colors.stroke, colors.over, 0.55) : null,
         padding: const EdgeInsets.fromLTRB(
-          LukitasTokens.space4,
-          LukitasTokens.space3,
-          LukitasTokens.space4,
-          LukitasTokens.space4,
+          WambitoTokens.space4,
+          WambitoTokens.space3,
+          WambitoTokens.space4,
+          WambitoTokens.space4,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: LukitasTokens.space4,
+          spacing: WambitoTokens.space4,
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: LukitasTokens.space1,
+              spacing: WambitoTokens.space1,
               children: [
                 // Blink puts the baseline of a title in its line box a pixel higher than Flutter does.
                 Semantics(
@@ -92,7 +92,7 @@ class SettingLabel extends StatelessWidget {
     final hint = this.hint;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: LukitasTokens.space1,
+      spacing: WambitoTokens.space1,
       children: [
         CssParagraph(label, style: labelStyle),
         if (hint != null) CssParagraph(hint, style: hintStyle),
@@ -190,7 +190,7 @@ class _ChoicesState<T> extends State<Choices<T>> {
     }
     // A word may run into the option's padding, as on the web ([_WholeWords]); not past its border.
     final cell = longest + 4;
-    const gap = LukitasTokens.space2;
+    const gap = WambitoTokens.space2;
     final fit = ((width + gap) / (cell + gap)).floor().clamp(1, options.length);
     if (fit >= options.length) return options.length;
     final lines = (options.length / fit).ceil();
@@ -212,7 +212,7 @@ class _ChoicesState<T> extends State<Choices<T>> {
         onKeyEvent: _onKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: LukitasTokens.space2,
+          spacing: WambitoTokens.space2,
           children: [
             ExcludeSemantics(child: SettingLabel(label: widget.legend)),
             LayoutBuilder(
@@ -227,11 +227,11 @@ class _ChoicesState<T> extends State<Choices<T>> {
                   onPressed: () => _select(option.value),
                 );
                 return Column(
-                  spacing: LukitasTokens.space2,
+                  spacing: WambitoTokens.space2,
                   children: [
                     for (var start = 0; start < options.length; start += perRow)
                       Row(
-                        spacing: LukitasTokens.space2,
+                        spacing: WambitoTokens.space2,
                         children: [
                           for (var i = start; i < start + perRow; i++)
                             Expanded(
@@ -303,7 +303,7 @@ class _Option extends StatelessWidget {
               child: ConstrainedBox(
                 constraints: const BoxConstraints(minHeight: 44, minWidth: 44),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: LukitasTokens.space2),
+                  padding: const EdgeInsets.symmetric(horizontal: WambitoTokens.space2),
                   child: Center(
                     child: _WholeWords(
                       label,
@@ -360,12 +360,12 @@ class SettingSwitch extends StatelessWidget {
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 44),
           child: Row(
-            spacing: LukitasTokens.space3,
+            spacing: WambitoTokens.space3,
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: LukitasTokens.space1,
+                  spacing: WambitoTokens.space1,
                   children: [
                     CssParagraph(label, style: labelStyle),
                     if (hint != null) CssParagraph(hint, style: hintStyle),
@@ -393,7 +393,7 @@ class LkSwitch extends StatelessWidget {
     final colors = context.lkColors;
     final duration = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
-        : LukitasTokens.durationPress;
+        : WambitoTokens.durationPress;
     final border = value ? colors.brand : colors.inkMuted;
     return ExcludeSemantics(
       child: AnimatedContainer(
@@ -403,7 +403,7 @@ class LkSwitch extends StatelessWidget {
         height: 30,
         decoration: BoxDecoration(
           color: value ? colors.brand : colors.surfaceSunken,
-          borderRadius: BorderRadius.circular(LukitasTokens.radiusPill),
+          borderRadius: BorderRadius.circular(WambitoTokens.radiusPill),
           border: Border.all(color: border, width: 2),
         ),
         child: Stack(

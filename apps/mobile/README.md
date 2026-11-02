@@ -1,4 +1,4 @@
-# Lukitas for Android
+# Wambito for Android
 
 The Flutter app (spec: `docs/superpowers/specs/2026-10-22-stage-3-mobile-design.md`). Toolchain setup: `docs/mobile/setup.md`. The Flutter version is pinned in `.flutter-version`.
 

@@ -19,7 +19,7 @@
     },
     "spent_label": "Speso questo mese",
     "of_budget": "su {amount}",
-    "meta_title": "Home · Lukitas",
+    "meta_title": "Home · Wambito",
     "remaining_label": "Ti restano questo mese",
     "remaining_label_past": "Ti sono rimasti in {month}",
     "over_label": "Hai sforato questo mese",
@@ -37,12 +37,12 @@
     "no_categories_lead": "Ti servono per annotare le tue spese. Parti da quelle suggerite e cambiale quando vuoi.",
     "use_suggested": "Usa quelle suggerite",
     "no_expense_categories": "Non hai categorie di spesa attive.",
-    "lukas_empty": "Ciao! Annota la tua prima spesa con il ＋ e io tengo il conto.",
-    "lukas_no_budget": "Questo mese hai speso {spent}. Ogni voce conta.",
-    "lukas_over_total": "Questo mese sei {over} sopra i tuoi budget. Qui hai tutto sotto gli occhi.",
+    "wambi_empty": "Ciao! Annota la tua prima spesa con il ＋ e io tengo il conto.",
+    "wambi_no_budget": "Questo mese hai speso {spent}. Ogni voce conta.",
+    "wambi_over_total": "Questo mese sei {over} sopra i tuoi budget. Qui hai tutto sotto gli occhi.",
     "nudges_label": "Per iniziare",
     "nudge_budgets_title": "Dai un budget alle tue categorie",
-    "nudge_budgets_lead": "Così Lukitas ti avvisa prima che tu sfori. Tocca una categoria e metti un importo.",
+    "nudge_budgets_lead": "Così Wambito ti avvisa prima che tu sfori. Tocca una categoria e metti un importo.",
     "nudge_import_title": "Porta il tuo storico",
     "nudge_import_lead": "Importa quello che hai su Budge e parti con i tuoi numeri veri.",
     "nudge_dismiss": "Non ora: {title}",
@@ -86,7 +86,7 @@
     "no_categories_income": "Non hai ancora categorie di entrata.",
     "archived": "archiviata"
   },
-  "lukas": {
+  "wambi": {
     "first_of_day": {
       "1": "«{name}» è la tua prima voce di oggi! Così si comincia.",
       "2": "«{name}» è annotato. Buon inizio di giornata!",
@@ -186,7 +186,7 @@
     "invalid_or_expired_code": "Questo codice non vale più: è scaduto o già usato. Chiedine uno nuovo.",
     "too_many_attempts": "Troppi tentativi con questo codice. Chiedine uno nuovo.",
     "too_many_requests": "Hai chiesto troppi codici di fila. Aspetta qualche minuto e riprova.",
-    "sign_in_not_allowed": "Lukitas non è ancora aperta al pubblico. Se vuoi provarla, scrivi a chi ti ha invitato.",
+    "sign_in_not_allowed": "Wambito non è ancora aperta al pubblico. Se vuoi provarla, scrivi a chi ti ha invitato.",
     "guest_signup_disabled": "Per ora non si possono creare account ospite.",
     "email_taken": "Questa email ha già un account. Entra con quella.",
     "not_a_guest": "Il tuo account ha già un'email.",
@@ -197,9 +197,9 @@
     "insufficient_scope": "Questo assistente non ha il permesso di farlo."
   },
   "sign_in": {
-    "meta_title": "Accedi · Lukitas",
-    "home": "Lukitas, home",
-    "title": "Entra in Lukitas",
+    "meta_title": "Accedi · Wambito",
+    "home": "Wambito, home",
+    "title": "Entra in Wambito",
     "lead": "Niente password: ti mandiamo un codice via email.",
     "passkey": "Entra con l'impronta",
     "passkey_busy": "In attesa della tua impronta…",
@@ -222,12 +222,12 @@
     "wait": "Aspetta {seconds} s"
   },
   "verify": {
-    "meta_title": "Accesso · Lukitas",
+    "meta_title": "Accesso · Wambito",
     "confirm_title": "Continua come <strong>{email}</strong>",
-    "confirm_lead": "Tocca Continua per entrare in Lukitas con questa email.",
+    "confirm_lead": "Tocca Continua per entrare in Wambito con questa email.",
     "continue": "Continua",
-    "app_lead": "Apri Lukitas sul telefono per entrare con questa email, o continua qui sul web.",
-    "open_app": "Apri in Lukitas",
+    "app_lead": "Apri Wambito sul telefono per entrare con questa email, o continua qui sul web.",
+    "open_app": "Apri in Wambito",
     "stay_on_web": "Continua sul web",
     "not_me": "Non sono io",
     "failed_title": "Non siamo riusciti a farti entrare",
@@ -235,7 +235,7 @@
     "send_new_code": "Invia un nuovo codice"
   },
   "onboarding": {
-    "meta_title": "Inizia · Lukitas",
+    "meta_title": "Inizia · Wambito",
     "progress": "Passo {current} di {total}",
     "back": "Indietro",
     "skip": "Salta",
@@ -355,7 +355,7 @@
     "prefill_basis": "In base a quanto hai speso {months, plural, one {nell'ultimo mese} other {negli ultimi # mesi}}",
     "next": "Avanti",
     "welcome": {
-      "title": "Ti diamo il benvenuto in Lukitas",
+      "title": "Ti diamo il benvenuto in Wambito",
       "lead": "Imposta la tua valuta, le tue categorie e il tuo budget in un minuto, oppure entra subito e fallo dopo.",
       "setup": "Configura in 1 minuto",
       "direct": "Entra subito",
@@ -364,12 +364,12 @@
     "prefill_basis_activity": "In base {months, plural, one {all'ultimo mese} other {agli ultimi # mesi}} con movimenti"
   },
   "passkey_offer": {
-    "meta_title": "La tua impronta · Lukitas",
+    "meta_title": "La tua impronta · Wambito",
     "title": "Entrare con l'impronta la prossima volta?",
     "lead": "Così entri senza aspettare il codice.",
     "points": {
       "key": "Una passkey è una chiave salvata su questo telefono, in Google, Samsung Pass, iCloud o Proton Pass.",
-      "unlock": "La tua impronta o il tuo viso la sbloccano soltanto. Lukitas non li riceve mai.",
+      "unlock": "La tua impronta o il tuo viso la sbloccano soltanto. Wambito non li riceve mai.",
       "sync": "Si sincronizza con gli altri tuoi dispositivi che usano lo stesso account.",
       "backup": "La tua email continua a funzionare come riserva."
     },
@@ -404,7 +404,7 @@
     "restored": "{name} è tornata.",
     "archived_toast": "Hai archiviato {name}. I suoi movimenti restano.",
     "detail": {
-      "meta_title": "Categoria · Lukitas",
+      "meta_title": "Categoria · Wambito",
       "edit": "Modifica categoria",
       "edit_short": "Modifica",
       "kind_expense": "Categoria di spesa",
@@ -441,9 +441,9 @@
     }
   },
   "recurring": {
-    "meta_title": "Ricorrenti · Lukitas",
+    "meta_title": "Ricorrenti · Wambito",
     "title": "Ricorrenti",
-    "lead": "Quello che si ripete ogni mese o ogni anno. Lukitas lo annota come in sospeso così non ti sfugge.",
+    "lead": "Quello che si ripete ogni mese o ogni anno. Wambito lo annota come in sospeso così non ti sfugge.",
     "add": "Nuova ricorrenza",
     "empty": "Qui vanno i tuoi pagamenti fissi: affitto, Spotify, lo stipendio… Creali una volta e ogni mese ti aspettano come in sospeso.",
     "monthly_rule": "Ogni mese, il giorno {day}",
@@ -488,7 +488,7 @@
     }
   },
   "insights": {
-    "meta_title": "Analisi · Lukitas",
+    "meta_title": "Analisi · Wambito",
     "title": "Analisi",
     "period_label": "Periodo",
     "span_1": "1 mese",
@@ -497,8 +497,8 @@
     "span_12": "1 anno",
     "period_one": "in {month}",
     "period_range": "da {from} a {to}",
-    "lukas_top": "{name} è ciò che ti è costato di più {period}: {amount}.",
-    "lukas_empty": "Non vedo spese {period}. Quando le annoti, qui ti mostro dove vanno i tuoi soldi.",
+    "wambi_top": "{name} è ciò che ti è costato di più {period}: {amount}.",
+    "wambi_empty": "Non vedo spese {period}. Quando le annoti, qui ti mostro dove vanno i tuoi soldi.",
     "donut": {
       "title": "Per categoria",
       "kind_label": "Cosa mostrare",
@@ -555,7 +555,7 @@
     }
   },
   "settings": {
-    "meta_title": "Impostazioni · Lukitas",
+    "meta_title": "Impostazioni · Wambito",
     "title": "Impostazioni",
     "signed_in_as": "Hai effettuato l'accesso come {email}",
     "preferences": "Preferenze",
@@ -618,11 +618,11 @@
     },
     "feedback": {
       "title": "Commenti e idee",
-      "lead": "Qualcosa non funziona, o vuoi che Lukitas faccia qualcosa in più? Scrivici via email.",
+      "lead": "Qualcosa non funziona, o vuoi che Wambito faccia qualcosa in più? Scrivici via email.",
       "action": "Scrivici",
       "address": "Se non si apre la tua email, scrivi a {email}.",
-      "mail_subject": "Lukitas: feedback",
-      "mail_body": "Versione di Lukitas: {version}\nLingua: {language}"
+      "mail_subject": "Wambito: feedback",
+      "mail_body": "Versione di Wambito: {version}\nLingua: {language}"
     },
     "delete": {
       "title": "Elimina il tuo account",
@@ -640,16 +640,16 @@
     "demo_viewing": "Stai guardando la demo di Valentina.",
     "assistants": {
       "title": "Collega il tuo assistente",
-      "lead": "Parla con Lukitas da Claude o ChatGPT: segna le spese e chiedi come stai andando senza aprire l'app.",
-      "url_label": "L'indirizzo di Lukitas per gli assistenti",
+      "lead": "Parla con Wambito da Claude o ChatGPT: segna le spese e chiedi come stai andando senza aprire l'app.",
+      "url_label": "L'indirizzo di Wambito per gli assistenti",
       "copy": "Copia",
       "copy_label": "Copia l'indirizzo",
       "copied": "Fatto: abbiamo copiato l'indirizzo.",
       "copy_failed": "Non siamo riusciti a copiarlo. Selezionalo e copialo tu.",
       "claude_title": "In Claude",
-      "claude_steps": "Apri Settings → Connectors → Add custom connector, incolla l'indirizzo ed entra con il tuo account Lukitas.",
+      "claude_steps": "Apri Settings → Connectors → Add custom connector, incolla l'indirizzo ed entra con il tuo account Wambito.",
       "chatgpt_title": "In ChatGPT",
-      "chatgpt_steps": "Attiva Developer mode in Settings → Apps → Advanced settings, crea un'app con l'indirizzo ed entra con il tuo account Lukitas. Dipende dal tuo piano di ChatGPT.",
+      "chatgpt_steps": "Attiva Developer mode in Settings → Apps → Advanced settings, crea un'app con l'indirizzo ed entra con il tuo account Wambito. Dipende dal tuo piano di ChatGPT.",
       "examples_title": "Prova a chiedere",
       "example_add": "segna 18 per il pranzo",
       "example_month": "come sto andando questo mese?",
@@ -670,7 +670,7 @@
     }
   },
   "consent": {
-    "meta_title": "Collega un assistente · Lukitas",
+    "meta_title": "Collega un assistente · Wambito",
     "title": "{name} vuole accedere alle tue finanze",
     "logo_alt": "Logo di {name}",
     "from": "Da {domain}",
@@ -690,15 +690,15 @@
     "failed": "Non siamo riusciti a completare il collegamento. Riprova.",
     "guest": {
       "title": "Salva i tuoi progressi",
-      "body": "Per collegare un assistente, prima salva i tuoi progressi con la tua email: nell'app di Lukitas, tocca «Salva i tuoi progressi». Poi collegalo di nuovo dal tuo assistente."
+      "body": "Per collegare un assistente, prima salva i tuoi progressi con la tua email: nell'app di Wambito, tocca «Salva i tuoi progressi». Poi collegalo di nuovo dal tuo assistente."
     },
     "expired": {
       "title": "Questo link non funziona più",
-      "body": "È passato troppo tempo o il link è cambiato. Torna al tuo assistente e ricomincia a collegare Lukitas."
+      "body": "È passato troppo tempo o il link è cambiato. Torna al tuo assistente e ricomincia a collegare Wambito."
     }
   },
   "demo": {
-    "meta_title": "Demo · Lukitas",
+    "meta_title": "Demo · Wambito",
     "label": "Demo",
     "banner": "Sei nella demo: i dati sono inventati e si cancellano quando ricarichi.",
     "create_account": "Crea il mio account",

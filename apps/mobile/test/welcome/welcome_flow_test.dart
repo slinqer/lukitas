@@ -2,14 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/add/add_sheet.dart';
-import 'package:lukitas/capture/capture_sheet.dart';
-import 'package:lukitas/home/home_screen.dart';
-import 'package:lukitas/launch/launch_links.dart';
-import 'package:lukitas/ui/category_chip.dart';
-import 'package:lukitas/ui/press_button.dart';
-import 'package:lukitas/welcome/welcome_controller.dart';
-import 'package:lukitas/welcome/suggested_categories.dart';
+import 'package:wambito/add/add_sheet.dart';
+import 'package:wambito/capture/capture_sheet.dart';
+import 'package:wambito/home/home_screen.dart';
+import 'package:wambito/launch/launch_links.dart';
+import 'package:wambito/ui/category_chip.dart';
+import 'package:wambito/ui/press_button.dart';
+import 'package:wambito/welcome/welcome_controller.dart';
+import 'package:wambito/welcome/suggested_categories.dart';
 
 import '../entry/fakes.dart' show FakeAuthApi;
 import '../launch/launch_links_test.dart' show FakeLaunchLinks;
@@ -26,7 +26,7 @@ void main() {
       final env = await pumpWelcome(tester, WelcomeWorld(categories: StartCategories.none));
       expect(env.location, '/welcome');
       expect(onStep('welcome'), isTrue);
-      expect(find.text('Te damos la bienvenida a Lukitas'), findsOneWidget);
+      expect(find.text('Te damos la bienvenida a Wambito'), findsOneWidget);
     });
 
     testWidgets('and from every other screen, until it finishes', (tester) async {
@@ -82,10 +82,10 @@ void main() {
       );
       expect(onStep('welcome'), isTrue);
       for (final link in [
-        'lukitas://add',
-        'lukitas://capture',
-        'lukitas://due',
-        'lukitas://home',
+        'wambito://add',
+        'wambito://capture',
+        'wambito://due',
+        'wambito://home',
       ]) {
         links.open(link);
         await tester.pumpAndSettle();
@@ -100,7 +100,7 @@ void main() {
       final env = await pumpWelcome(
         tester,
         WelcomeWorld(categories: StartCategories.none),
-        extra: [launchLinkSourceProvider.overrideWithValue(FakeLaunchLinks('lukitas://add'))],
+        extra: [launchLinkSourceProvider.overrideWithValue(FakeLaunchLinks('wambito://add'))],
       );
       expect(env.location, '/welcome');
       expect(find.byType(AddSheet), findsNothing);

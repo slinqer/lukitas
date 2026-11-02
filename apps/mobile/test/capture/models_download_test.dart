@@ -7,7 +7,7 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/capture/models_download.dart';
+import 'package:wambito/capture/models_download.dart';
 
 /// A zip's bytes for the tests: what is in it does not matter, the unzip is faked.
 final _payload = Uint8List.fromList(List<int>.generate(300 * 1024, (i) => (i * 31 + 7) % 251));

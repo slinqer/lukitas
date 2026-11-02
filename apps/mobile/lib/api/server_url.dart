@@ -7,7 +7,7 @@ import 'session.dart';
 
 export 'server_address.dart';
 
-/// The server the app talks to (spec section 6.1): the Lukitas one until the person changes it in
+/// The server the app talks to (spec section 6.1): the Wambito one until the person changes it in
 /// Settings. Everything that calls the API watches this, so a change points every call at the new
 /// server at once.
 class ServerUrl extends Notifier<Uri> {

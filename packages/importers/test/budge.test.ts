@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { addMonths } from "@lukas/core";
+import { addMonths } from "@wambito/core";
 import { describe, expect, test } from "vitest";
 import {
   averageMonthlySpending,

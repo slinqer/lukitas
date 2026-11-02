@@ -56,8 +56,8 @@ if [ "$build_web" = 1 ]; then
     # Its own folder: apps/web/build/client holds the landing release and must stay as it is.
     rm -rf apps/web/build-personal
     # `/` redirects to the public landing (Caddyfile), so the app's own links to it leave too.
-    VITE_SITE_URL="https://$host" VITE_LANDING_ONLY=false LUKAS_BUILD_DIR=build-personal \
-      VITE_LANDING_URL="$landing_url" pnpm --filter @lukas/web build
+    VITE_SITE_URL="https://$host" VITE_LANDING_ONLY=false WAMBITO_BUILD_DIR=build-personal \
+      VITE_LANDING_URL="$landing_url" pnpm --filter @wambito/web build
   )
 fi
 [ -f "$REPO_DIR/apps/web/build-personal/client/index.html" ] ||
@@ -68,9 +68,9 @@ ensure_volume
 say "Building the images"
 # The API reports this as its version (Settings in the app shows it): the name the APK of the same
 # commit has, with -dirty when the build has changes that are not committed.
-LUKITAS_VERSION="0.0.0-dev.$(git -C "$REPO_DIR" rev-parse --short=7 HEAD)"
-[ -z "$(git -C "$REPO_DIR" status --porcelain --untracked-files=no)" ] || LUKITAS_VERSION="$LUKITAS_VERSION-dirty"
-export LUKITAS_VERSION
+WAMBITO_VERSION="0.0.0-dev.$(git -C "$REPO_DIR" rev-parse --short=7 HEAD)"
+[ -z "$(git -C "$REPO_DIR" status --porcelain --untracked-files=no)" ] || WAMBITO_VERSION="$WAMBITO_VERSION-dirty"
+export WAMBITO_VERSION
 compose build
 
 say "Starting the database"

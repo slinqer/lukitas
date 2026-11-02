@@ -11,7 +11,7 @@
     <string name="widget_remaining_past">Te quedaron en %1$s</string>
     <string name="widget_over_past">Te pasaste en %1$s</string>
     <string name="widget_spent_past">Gastado en %1$s</string>
-    <string name="widget_signed_out">Abre Lukitas para empezar</string>
+    <string name="widget_signed_out">Abre Wambito para empezar</string>
     <!-- Under the figure when it could not be refreshed for a while (offline). -->
     <string name="widget_stale">hace un rato</string>
     <!-- Settings' "Ocultar el monto en el widget". -->
@@ -19,10 +19,10 @@
     <!-- The buttons, read aloud: the same words as the ＋ and 🎤 on home. -->
     <string name="widget_add">Agregar gasto</string>
     <string name="widget_capture">Decir o escribir un gasto</string>
-    <string name="widget_lukitas">Lukitas</string>
+    <string name="widget_wambito">Wambito</string>
     <!-- The widget picker. -->
     <string name="widget_small_description">Lo que te queda este mes, y ＋ para anotar un gasto.</string>
-    <string name="widget_medium_description">Lukitas, lo que te queda este mes, ＋ y 🎤 para anotar.</string>
+    <string name="widget_medium_description">Wambito, lo que te queda este mes, ＋ y 🎤 para anotar.</string>
     <!-- The Quick Settings tile: opens quick capture, listening. -->
     <string name="tile_capture">Decir un gasto</string>
     <!-- With the amount hidden: a neutral label (nothing about how the month goes), and what
@@ -33,7 +33,7 @@
     <string name="widget_progress">%1$d %% del presupuesto gastado</string>
 
     <!-- The two local notices (spec section 7.2), posted by notices/. The title; the sentence is the text. -->
-    <string name="notice_title" translatable="false">Lukitas</string>
+    <string name="notice_title" translatable="false">Wambito</string>
     <!-- "Hoy vence Arriendo" / "Hoy vencen Arriendo y Spotify". %1$s is the names, joined. -->
     <string name="notice_due_one">Hoy vence %1$s</string>
     <string name="notice_due_many">Hoy vencen %1$s</string>
@@ -45,5 +45,5 @@
     <string name="notice_channel_due">Pagos que vencen hoy</string>
     <string name="notice_channel_due_description">A las 9:00, un aviso con los pagos recurrentes que vencen ese día.</string>
     <string name="notice_channel_guest">Aviso si no tienes correo</string>
-    <string name="notice_channel_guest_description">Un aviso si pasan 45 días sin abrir Lukitas y tu cuenta no tiene correo.</string>
+    <string name="notice_channel_guest_description">Un aviso si pasan 45 días sin abrir Wambito y tu cuenta no tiene correo.</string>
 </resources>

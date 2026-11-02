@@ -47,7 +47,7 @@ app.*.map.json
 # Widget Preview related
 .widget_preview/
 
-# Lukitas
+# Wambito
 # AppLocalizations, generated from lib/l10n/*.arb by `flutter pub get` (l10n.yaml).
 /lib/l10n/app_localizations*.dart
 # Release APKs (scripts/release.sh).

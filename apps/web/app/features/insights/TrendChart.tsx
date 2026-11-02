@@ -1,4 +1,4 @@
-import type { Month } from "@lukas/core";
+import type { Month } from "@wambito/core";
 import { lazy, Suspense, useState } from "react";
 import { useTranslations } from "use-intl";
 import type { TrendReport } from "../../api/queries.ts";

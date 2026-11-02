@@ -1,11 +1,11 @@
+import type { InfiniteData, QueryClient, QueryKey } from "@tanstack/react-query";
 import {
   type CategoryDto,
   type MonthSummary,
   monthOf,
   monthSummary,
   type TransactionDto,
-} from "@lukas/core";
-import type { InfiniteData, QueryClient, QueryKey } from "@tanstack/react-query";
+} from "@wambito/core";
 
 /** One page of `GET /v1/transactions`: newest first, and where the next page starts. */
 export interface TransactionList {

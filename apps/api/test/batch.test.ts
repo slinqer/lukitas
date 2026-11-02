@@ -1,5 +1,5 @@
-import { accounts, withUser } from "@lukas/db";
-import { eq } from "@lukas/db/orm";
+import { accounts, withUser } from "@wambito/db";
+import { eq } from "@wambito/db/orm";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { createTestApp, type TestApp } from "./harness.ts";
 
@@ -31,8 +31,8 @@ async function category(headers: typeof a, name: string) {
 
 beforeAll(async () => {
   t = await createTestApp();
-  a = (await t.signIn("a@lukas.test")).headers;
-  b = (await t.signIn("b@lukas.test")).headers;
+  a = (await t.signIn("a@wambito.test")).headers;
+  b = (await t.signIn("b@wambito.test")).headers;
   ocio = await category(a, "Ocio");
   casa = await category(a, "Casa");
   bOcio = await category(b, "Ocio");
@@ -194,7 +194,7 @@ describe("batch and the default-account lock", () => {
   const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
   test("batch takes the default-account lock like a single create", async () => {
-    const { userId, headers } = await t.signIn("batch-lock@lukas.test");
+    const { userId, headers } = await t.signIn("batch-lock@wambito.test");
     const cat = await category(headers, "Ocio");
     let pending: Promise<Response> | undefined;
     let settled = false;

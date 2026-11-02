@@ -68,7 +68,7 @@ export const PageDayEnglish: Story = {
 /**
  * Hero: no handwritten note any more, the headline with "lukas" on the gold marker (taking turns with
  * what money is called elsewhere, each with its flag), one primary action
- * on its edge with the perks (open source links to GitHub), Lukas waving.
+ * on its edge with the perks (open source links to GitHub), Wambi waving.
  */
 export const HeroSection: Story = {
   render: () => <Hero />,
@@ -92,9 +92,11 @@ export const HeroSection: Story = {
     await expectTarget(cta);
     await userEvent.tab();
     await expectFocusRing(cta);
-    const mascot = canvas.getByRole("img", { name: /Lukitas/ });
+    const mascot = canvas.getByRole("img", { name: /Wambi/ });
     await expect(mascot).toHaveAttribute("data-slot", "hero-mascot");
-    await expect(mascot.querySelector(".lk-lukas")).toHaveAttribute("aria-hidden", "true");
+    await expect(mascot.querySelector(".lk-wambi")).toHaveAttribute("aria-hidden", "true");
+    // He waves once and rests: the hero's sprite plays its sheet a single time.
+    await expect(mascot.querySelector(".lk-wambi-sprite")).toHaveClass("is-once");
   },
 };
 
@@ -147,13 +149,13 @@ export const HeadlineItalian: Story = {
   play: headlineTurns("soldi", "grana", "🇮🇹", "La tua grana🇮🇹, finalmente chiara."),
 };
 
-/** Hero under reduced motion: Lukas holds still. */
+/** Hero under reduced motion: Wambi holds still. */
 export const HeroReducedMotion: Story = {
   render: () => <Hero />,
   parameters: { reducedMotion: true },
   play: async ({ canvasElement }) => {
-    const lukas = canvasElement.querySelector(".lk-lukas") as HTMLElement;
-    await expect(lukas.getAnimations({ subtree: true })).toHaveLength(0);
+    const wambi = canvasElement.querySelector(".lk-wambi") as HTMLElement;
+    await expect(wambi.getAnimations({ subtree: true })).toHaveLength(0);
   },
 };
 
@@ -263,6 +265,6 @@ export const FooterSection: Story = {
     await expect(spanish).toHaveAttribute("hreflang", "es");
     await expect(canvas.getByRole("link", { name: "Privacy" })).toHaveAttribute("href", "#privacy");
     for (const link of canvas.getAllByRole("link")) await expectTarget(link);
-    await expect(canvasElement).toHaveTextContent("© 2026 Lukitas");
+    await expect(canvasElement).toHaveTextContent("© 2026 Wambito");
   },
 };

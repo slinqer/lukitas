@@ -10,7 +10,7 @@ import com.wambito.app.launch.LaunchLinks
 
 /**
  * The Quick Settings tile (spec section 7.1): a mic that does what the widget's 🎤 does, quick
- * capture listening (`lukitas://capture`). On a locked phone it asks to unlock first: the app
+ * capture listening (`wambito://capture`). On a locked phone it asks to unlock first: the app
  * holds the person's money.
  */
 class CaptureTileService : TileService() {

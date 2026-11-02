@@ -25,7 +25,7 @@ class HomeMenuLinks extends ConsumerWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: LukitasTokens.space1,
+      spacing: WambitoTokens.space1,
       children: [
         if (guest)
           HomeMenuLink(

@@ -176,7 +176,7 @@ export const DeleteOffersExportAndSurvivesFailure: Story = {
     await userEvent.click(sheet.getByRole("button", { name: "Descarga tus datos antes" }));
     await waitFor(() => expect(args.onSave).toHaveBeenCalledTimes(1));
     await expect((args.onSave as ReturnType<typeof fn>).mock.calls[0]?.[0]).toBe(
-      `lukas-export-${STORY_TODAY}.json`,
+      `wambito-export-${STORY_TODAY}.json`,
     );
 
     await userEvent.type(
@@ -235,7 +235,7 @@ export const Theme: Story = {
   },
 };
 
-/** Sound on and off: off stores `lukas.sound = "off"`, on removes it. */
+/** Sound on and off: off stores `wambito.sound = "off"`, on removes it. */
 export const Sound: Story = {
   render: (args) => stage(args),
   play: async ({ canvasElement }) => {
@@ -426,12 +426,12 @@ export const Export: Story = {
     await userEvent.click(data.getByRole("button", { name: "Descargar CSV" }));
     await waitFor(() => expect(args.onSave).toHaveBeenCalledTimes(1));
     const [filename, blob] = (args.onSave as ReturnType<typeof fn>).mock.calls[0] as [string, Blob];
-    await expect(filename).toBe(`lukas-export-${STORY_TODAY}.csv`);
+    await expect(filename).toBe(`wambito-export-${STORY_TODAY}.csv`);
     await expect(await blob.text()).toMatch(/^date,name,amount/);
     await userEvent.click(data.getByRole("button", { name: "Descargar JSON" }));
     await waitFor(() => expect(args.onSave).toHaveBeenCalledTimes(2));
     await expect((args.onSave as ReturnType<typeof fn>).mock.calls[1]?.[0]).toBe(
-      `lukas-export-${STORY_TODAY}.json`,
+      `wambito-export-${STORY_TODAY}.json`,
     );
   },
 };
@@ -767,7 +767,7 @@ export const Feedback: Story = {
     const link = card.getByRole("link", { name: "Escribirnos" });
     await expect(link).toHaveAttribute(
       "href",
-      `mailto:${FEEDBACK_EMAIL}?subject=Lukitas%3A%20comentarios&body=%0A%0AVersi%C3%B3n%20de%20Lukitas%3A%20${encodeURIComponent(APP_VERSION)}%0AIdioma%3A%20es`,
+      `mailto:${FEEDBACK_EMAIL}?subject=Wambito%3A%20comentarios&body=%0A%0AVersi%C3%B3n%20de%20Wambito%3A%20${encodeURIComponent(APP_VERSION)}%0AIdioma%3A%20es`,
     );
     await expectTarget(link);
     await expect(
@@ -786,7 +786,7 @@ export const FeedbackEnglish: Story = {
     const card = await region(canvas, "Feedback and ideas");
     await expect(card.getByRole("link", { name: "Write to us" })).toHaveAttribute(
       "href",
-      `mailto:${FEEDBACK_EMAIL}?subject=Lukitas%3A%20feedback&body=%0A%0ALukitas%20version%3A%20${encodeURIComponent(APP_VERSION)}%0ALanguage%3A%20en`,
+      `mailto:${FEEDBACK_EMAIL}?subject=Wambito%3A%20feedback&body=%0A%0AWambito%20version%3A%20${encodeURIComponent(APP_VERSION)}%0ALanguage%3A%20en`,
     );
   },
 };
@@ -836,7 +836,7 @@ export const Assistants: Story = {
     const card = await region(canvas, "Conecta tu asistente");
     const url = `${window.location.origin}/mcp`;
     await expect(
-      card.getByRole("textbox", { name: "La dirección de Lukitas para asistentes" }),
+      card.getByRole("textbox", { name: "La dirección de Wambito para asistentes" }),
     ).toHaveValue(url);
     const copy = card.getByRole("button", { name: "Copiar la dirección" });
     await expectTarget(copy);

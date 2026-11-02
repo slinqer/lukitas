@@ -3,10 +3,10 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/client.dart';
-import 'package:lukitas/capture/capture_repository.dart';
-import 'package:lukitas/capture/parser/parse.dart';
-import 'package:lukitas/home/home_repository.dart';
+import 'package:wambito/api/client.dart';
+import 'package:wambito/capture/capture_repository.dart';
+import 'package:wambito/capture/parser/parse.dart';
+import 'package:wambito/home/home_repository.dart';
 
 Map<String, Object?> _row(String id, Map<String, dynamic> item) => {
   'id': id,

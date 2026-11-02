@@ -73,10 +73,10 @@ class FileTransferTest {
 
     @Test
     fun `a name with nothing usable gets the app's own`() {
-        assertEquals("lukitas", FileTransfer.safeName(""))
-        assertEquals("lukitas", FileTransfer.safeName("   "))
-        assertEquals("lukitas", FileTransfer.safeName("../"))
-        assertEquals("lukitas", FileTransfer.safeName(".."))
+        assertEquals("wambito", FileTransfer.safeName(""))
+        assertEquals("wambito", FileTransfer.safeName("   "))
+        assertEquals("wambito", FileTransfer.safeName("../"))
+        assertEquals("wambito", FileTransfer.safeName(".."))
     }
 
     @Test

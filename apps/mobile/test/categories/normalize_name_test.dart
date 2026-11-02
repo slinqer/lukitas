@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/categories/normalize_name.dart';
+import 'package:wambito/categories/normalize_name.dart';
 
 /// `normalizeName` (apps/web/app/features/onboarding/suggested-categories.ts): lowercase and
 /// without accents, `ñ` included, as `normalize("NFD")` and dropping the marks does.

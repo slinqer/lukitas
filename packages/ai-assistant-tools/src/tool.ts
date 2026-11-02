@@ -1,9 +1,9 @@
 import type { z } from "zod";
-import type { Lukitas } from "./lukitas.ts";
+import type { Wambito } from "./wambito.ts";
 
-/** What a tool runs with: the person's Lukitas, who they are (for idempotency keys) and a clock. */
+/** What a tool runs with: the person's Wambito, who they are (for idempotency keys) and a clock. */
 export interface ToolContext {
-  lukitas: Lukitas;
+  wambito: Wambito;
   userId: string;
   now: () => Date;
 }

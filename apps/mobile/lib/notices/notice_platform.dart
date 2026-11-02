@@ -36,13 +36,13 @@ abstract interface class NoticePlatform {
   Future<bool> requestPermission();
 }
 
-/// [NoticePlatform] over the `lukitas/notices` channel (NoticesChannel.kt). Where that channel does
+/// [NoticePlatform] over the `wambito/notices` channel (NoticesChannel.kt). Where that channel does
 /// not exist the notices are [NoticePermission.unavailable] and nothing is scheduled; an error on
 /// the Android side never reaches the app.
 class ChannelNoticePlatform implements NoticePlatform {
   const ChannelNoticePlatform();
 
-  static const _channel = MethodChannel('lukitas/notices');
+  static const _channel = MethodChannel('wambito/notices');
 
   Future<T?> _call<T>(String method, [Map<String, Object?>? arguments]) async {
     try {

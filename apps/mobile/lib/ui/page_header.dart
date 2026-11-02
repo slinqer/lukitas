@@ -46,7 +46,7 @@ class PageHeader extends StatelessWidget {
       semanticLabel: backLabel,
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        spacing: LukitasTokens.space1,
+        spacing: WambitoTokens.space1,
         children: [
           const ExcludeSemantics(child: Text('‹', style: _plain)),
           Text(backShort.toUpperCase(), style: _plain),
@@ -56,8 +56,8 @@ class PageHeader extends StatelessWidget {
     return Wrap(
       alignment: WrapAlignment.spaceBetween,
       crossAxisAlignment: WrapCrossAlignment.center,
-      spacing: LukitasTokens.space2,
-      runSpacing: LukitasTokens.space1,
+      spacing: WambitoTokens.space2,
+      runSpacing: WambitoTokens.space1,
       children: [
         back,
         if (aside != null)

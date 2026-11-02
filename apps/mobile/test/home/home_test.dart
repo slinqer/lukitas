@@ -3,11 +3,11 @@ import 'dart:ui' show Tristate;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/home/home_screen.dart' show HomeView;
-import 'package:lukitas/home/home_widgets.dart' show HomeTabsStrip;
-import 'package:lukitas/ui/segmented_control.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/home/home_screen.dart' show HomeView;
+import 'package:wambito/home/home_widgets.dart' show HomeTabsStrip;
+import 'package:wambito/ui/segmented_control.dart';
 
 import '../support/page_gradient.dart';
 import 'fakes.dart';
@@ -384,7 +384,7 @@ void main() {
     });
   });
 
-  group('Lukitas', () {
+  group('Wambi', () {
     testWidgets('says the month\'s line: what is left and the days to go', (tester) async {
       await pumpHome(tester, monthWithBudgets());
       expect(find.textContaining('Vas muy bien: te quedan'), findsOneWidget);
@@ -435,10 +435,10 @@ void main() {
       ],
     );
 
-    testWidgets('the header shows the Lukitas wordmark and the face button', (tester) async {
+    testWidgets('the header shows the Wambito wordmark and the face button', (tester) async {
       final handle = tester.ensureSemantics();
       await pumpHome(tester, monthWithBudgets());
-      expect(find.text('Lukitas'), findsOneWidget, reason: 'the wordmark');
+      expect(find.text('Wambito'), findsOneWidget, reason: 'the wordmark');
       final face = find.byKey(const Key('home.account'));
       expect(face, findsOneWidget);
       expect(find.text('🙂'), findsOneWidget);
@@ -446,7 +446,7 @@ void main() {
       // 44px round button, as `.lk-avatar`.
       expect(tester.getSize(face), const Size(44, 44));
       // Under 400px the wordmark and the face share the first row, and the month has its own.
-      expect(tester.getCenter(find.text('Lukitas')).dy, closeTo(tester.getCenter(face).dy, 1));
+      expect(tester.getCenter(find.text('Wambito')).dy, closeTo(tester.getCenter(face).dy, 1));
       expect(tester.getCenter(find.text('Octubre')).dy, greaterThan(tester.getCenter(face).dy));
       handle.dispose();
     });
@@ -500,7 +500,7 @@ void main() {
       expect(find.text(r'Gastado $40.000'), findsOneWidget);
       // No day of September is "Hoy", and none is "Ayer".
       expect(find.textContaining('HOY'), findsNothing);
-      // Lukitas talks about the month that closed.
+      // Wambi talks about the month that closed.
       expect(find.textContaining('septiembre'), findsWidgets);
 
       await tester.tap(find.text('›'));
@@ -578,7 +578,7 @@ void main() {
       expect(
         find.textContaining('Vas muy bien'),
         findsNothing,
-        reason: 'nor Lukitas\' line about it',
+        reason: 'nor Wambi\' line about it',
       );
 
       // Back online, a retry brings the month.
@@ -800,7 +800,7 @@ void main() {
       await pumpHome(tester, repo, size: const Size(360, 640), textScale: 1.3);
       expect(tester.takeException(), isNull);
       // The header, the hero and the first row are all there.
-      expect(find.text('Lukitas'), findsOneWidget);
+      expect(find.text('Wambito'), findsOneWidget);
       expect(find.textContaining('Te pasaste'), findsOneWidget);
       expect(find.text('Café'), findsOneWidget);
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -2000));

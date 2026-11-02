@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/app.dart';
-import 'package:lukitas/api/server_url.dart';
-import 'package:lukitas/l10n/app_localizations.dart';
-import 'package:lukitas/settings/initial_settings.dart';
-import 'package:lukitas/theme/tokens.g.dart';
+import 'package:wambito/app.dart';
+import 'package:wambito/api/server_url.dart';
+import 'package:wambito/l10n/app_localizations.dart';
+import 'package:wambito/settings/initial_settings.dart';
+import 'package:wambito/theme/tokens.g.dart';
 
 import 'entry/fakes.dart';
 
@@ -15,16 +15,16 @@ void main() {
     mockStorage();
     tester.platformDispatcher.platformBrightnessTestValue = Brightness.light;
     addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
-    await tester.pumpWidget(const ProviderScope(child: LukitasApp()));
+    await tester.pumpWidget(const ProviderScope(child: WambitoApp()));
     await tester.pumpAndSettle();
 
     // The wordmark above, and the title of the first-run screen.
-    expect(find.text('Lukitas'), findsNWidgets(2));
+    expect(find.text('Wambito'), findsNWidgets(2));
 
     final theme = Theme.of(tester.element(find.byType(Scaffold)));
     expect(theme.brightness, Brightness.dark);
-    expect(theme.scaffoldBackgroundColor, LukitasTokens.night.bg);
-    expect(theme.colorScheme.primary, LukitasTokens.night.brand);
+    expect(theme.scaffoldBackgroundColor, WambitoTokens.night.bg);
+    expect(theme.colorScheme.primary, WambitoTokens.night.brand);
   });
 
   testWidgets('"System" follows the phone: a light phone gets day', (tester) async {
@@ -38,14 +38,14 @@ void main() {
             InitialSettings(serverUrl: defaultServerUrl, themeMode: ThemeMode.system),
           ),
         ],
-        child: const LukitasApp(),
+        child: const WambitoApp(),
       ),
     );
     await tester.pumpAndSettle();
 
     final theme = Theme.of(tester.element(find.byType(Scaffold)));
     expect(theme.brightness, Brightness.light);
-    expect(theme.scaffoldBackgroundColor, LukitasTokens.day.bg);
+    expect(theme.scaffoldBackgroundColor, WambitoTokens.day.bg);
   });
 
   testWidgets('the language follows the phone when it is Spanish or English, else Spanish', (
@@ -55,7 +55,7 @@ void main() {
     Future<String> wordsFor(Locale locale) async {
       tester.platformDispatcher.localesTestValue = [locale];
       addTearDown(tester.platformDispatcher.clearLocalesTestValue);
-      await tester.pumpWidget(const ProviderScope(child: LukitasApp()));
+      await tester.pumpWidget(const ProviderScope(child: WambitoApp()));
       await tester.pumpAndSettle();
       return AppLocalizations.of(tester.element(find.byType(Scaffold))).localeName;
     }

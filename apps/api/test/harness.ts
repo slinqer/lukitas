@@ -1,8 +1,8 @@
 import { createHash, randomBytes } from "node:crypto";
 import type { ClientMetadataResourceFetch } from "@better-auth/oauth-provider";
-import { categories, createDb, type Db, user } from "@lukas/db";
-import { eq } from "@lukas/db/orm";
-import { startTestDatabase } from "@lukas/db/testing";
+import { categories, createDb, type Db, user } from "@wambito/db";
+import { eq } from "@wambito/db/orm";
+import { startTestDatabase } from "@wambito/db/testing";
 import { createApp } from "../src/app.ts";
 import type { Config } from "../src/config.ts";
 import { MemoryMailer } from "../src/mailer.ts";
@@ -13,7 +13,7 @@ export const TEST_CONFIG = {
   BETTER_AUTH_SECRET: "test-secret-test-secret-test-secret-0000",
   API_URL: "http://localhost:3000",
   WEB_URL: "http://localhost:5173",
-  MAIL_FROM: "Lukitas <test@lukas.test>",
+  MAIL_FROM: "Wambito <test@wambito.test>",
   PORT: 3000,
   NODE_ENV: "test" as const,
   CLIENT_IP_HEADER: "x-forwarded-for",

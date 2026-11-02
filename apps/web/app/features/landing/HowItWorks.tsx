@@ -2,8 +2,8 @@ import type { CSSProperties, ReactNode } from "react";
 import { useTranslations } from "use-intl";
 import { formatMoney } from "../../i18n/format.ts";
 import { useLocale } from "../../i18n/IntlProvider.tsx";
-import { Lukas } from "../../lukas/Lukas.tsx";
-import { LukasSpot } from "./LukasSpot.tsx";
+import { Wambi } from "../../wambi/Wambi.tsx";
+import { WambiSpot } from "./WambiSpot.tsx";
 
 /** Sample figures for the illustrations (cents, euros). */
 const DEMO = {
@@ -27,7 +27,7 @@ function Step({ demo, title, body }: { demo: ReactNode; title: string; body: str
 }
 
 /**
- * How Lukas works, in four steps, each with a small illustration built from the app's own
+ * How Wambi works, in four steps, each with a small illustration built from the app's own
  * pieces: logging in seconds, where the money goes, budgets that warn you, importing your history
  * from other apps (Budge today).
  */
@@ -41,7 +41,7 @@ export function HowItWorks() {
     <section id="how" className="lk-landing-section" aria-labelledby="how-title">
       <div className="lk-landing-section-head">
         <h2 id="how-title">{t("title")}</h2>
-        <LukasSpot id="how" pose="carry" mood="worried" />
+        <WambiSpot id="how" pose="carry" mood="worried" />
       </div>
       <ul className="lk-landing-cards is-how">
         <Step
@@ -55,7 +55,7 @@ export function HowItWorks() {
                 <span className="lk-amount lk-landing-demo-expense">{money(DEMO.expense)}</span>
               </div>
               <span className="lk-landing-saved">
-                <Lukas mood="celebrating" size={40} decorative deferUntilNear />
+                <Wambi mood="celebrating" size={40} decorative deferUntilNear />
                 {t("log.demo_saved")}
               </span>
             </>

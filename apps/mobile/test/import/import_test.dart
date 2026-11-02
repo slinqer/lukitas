@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderContainer;
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/files/files_channel.dart';
-import 'package:lukitas/home/home_controller.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/import/import_flow.dart';
-import 'package:lukitas/import/import_repository.dart';
-import 'package:lukitas/import/import_state.dart';
+import 'package:wambito/files/files_channel.dart';
+import 'package:wambito/home/home_controller.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/import/import_flow.dart';
+import 'package:wambito/import/import_repository.dart';
+import 'package:wambito/import/import_state.dart';
 
 import '../budgets/budgets_test.dart' show Env, pumpBudgets;
 import '../budgets/fakes.dart';

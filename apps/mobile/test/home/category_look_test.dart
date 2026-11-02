@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/home/category_look.dart';
+import 'package:wambito/home/category_look.dart';
 
 void main() {
   test('a category made in the app: its emoji and its hex color', () {

@@ -5,14 +5,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/add/add_repository.dart';
-import 'package:lukitas/capture/capture_repository.dart';
-import 'package:lukitas/capture/engine/speech_engine.dart';
-import 'package:lukitas/capture/models_download.dart';
-import 'package:lukitas/feedback/feedback.dart';
-import 'package:lukitas/home/home_repository.dart' show HomeFailure;
-import 'package:lukitas/home/lukitas_face.dart';
-import 'package:lukitas/ui/press_button.dart';
+import 'package:wambito/add/add_repository.dart';
+import 'package:wambito/capture/capture_repository.dart';
+import 'package:wambito/capture/engine/speech_engine.dart';
+import 'package:wambito/capture/models_download.dart';
+import 'package:wambito/feedback/feedback.dart';
+import 'package:wambito/home/home_repository.dart' show HomeFailure;
+import 'package:wambito/home/wambi_face.dart';
+import 'package:wambito/ui/press_button.dart';
 
 import '../add/fakes.dart';
 import '../capture/fakes.dart';
@@ -83,7 +83,7 @@ Future<_Env> _pump(
       ],
     ],
   );
-  // The app builds feedback at its start (LukitasApp) and the setting is read back.
+  // The app builds feedback at its start (WambitoApp) and the setting is read back.
   harness.container.read(feedbackProvider);
   await tester.pump(Duration.zero);
   return _Env(repo, platform, harness);
@@ -117,7 +117,7 @@ Future<void> saveBatchOf(WidgetTester tester) async {
   }
 }
 
-LukitasMood _mood(WidgetTester tester) => tester.widget<LukitasFace>(find.byType(LukitasFace)).mood;
+WambiMood _mood(WidgetTester tester) => tester.widget<WambiFace>(find.byType(WambiFace)).mood;
 
 void main() {
   group('swipes', () {
@@ -328,20 +328,20 @@ void main() {
   });
 
   group('quick capture', () {
-    testWidgets('a batch save celebrates: the sound, the haptic and Lukitas', (tester) async {
+    testWidgets('a batch save celebrates: the sound, the haptic and Wambi', (tester) async {
       final env = await _pump(tester, withCapture: true);
-      expect(_mood(tester), isNot(LukitasMood.celebrating));
+      expect(_mood(tester), isNot(WambiMood.celebrating));
       await saveBatchOf(tester);
       expect(env.platform.sounds, [FeedbackSound.expenseSaved]);
       expect(env.outcomes, [
         [12, 40, 18],
       ]);
-      expect(_mood(tester), LukitasMood.celebrating);
+      expect(_mood(tester), WambiMood.celebrating);
 
       // He rests again after the celebration, like for any save.
       await tester.pump(const Duration(seconds: 3));
       await tester.pumpAndSettle();
-      expect(_mood(tester), isNot(LukitasMood.celebrating));
+      expect(_mood(tester), isNot(WambiMood.celebrating));
       await _endTimers(tester);
     });
 
@@ -444,7 +444,7 @@ void main() {
       expect(env.outcomes, [
         [40, 60, 40],
       ]);
-      expect(_mood(tester), isNot(LukitasMood.celebrating), reason: 'no party over the limit');
+      expect(_mood(tester), isNot(WambiMood.celebrating), reason: 'no party over the limit');
       await _endTimers(tester);
     });
 
@@ -452,7 +452,7 @@ void main() {
       final env = await _pump(tester, server: server('near'), withCapture: true);
       await saveBatchOf(tester);
       expect(env.platform.sounds, [FeedbackSound.nearLimit]);
-      expect(_mood(tester), isNot(LukitasMood.celebrating));
+      expect(_mood(tester), isNot(WambiMood.celebrating));
       await _endTimers(tester);
     });
   });

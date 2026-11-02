@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/app.dart' show withAppHosts;
-import 'package:lukitas/feedback/celebration.dart';
-import 'package:lukitas/feedback/feedback.dart';
-import 'package:lukitas/home/lukitas_face.dart';
-import 'package:lukitas/l10n/app_localizations.dart';
-import 'package:lukitas/theme/theme.dart';
-import 'package:lukitas/ui/toast.dart';
+import 'package:wambito/app.dart' show withAppHosts;
+import 'package:wambito/feedback/celebration.dart';
+import 'package:wambito/feedback/feedback.dart';
+import 'package:wambito/home/wambi_face.dart';
+import 'package:wambito/l10n/app_localizations.dart';
+import 'package:wambito/theme/theme.dart';
+import 'package:wambito/ui/toast.dart';
 
 import '../settings/fakes.dart' show FakeFlagStore;
 import '../settings/harness.dart' show pumpSettingsApp;
@@ -15,7 +15,7 @@ import '../support/fonts.dart';
 import 'fakes.dart';
 
 /// The celebration (the web's `Celebration`, apps/web/app/feedback/Celebration.tsx): confetti and a
-/// celebrating Lukitas for a save and a payment, landing above the ＋ and clear of the toasts. Its
+/// celebrating Wambi for a save and a payment, landing above the ＋ and clear of the toasts. Its
 /// look is the parity pairs' (`celebration-*`); these are what it does.
 
 const _spotSize = 64.0;
@@ -144,16 +144,16 @@ void main() {
       expect(end.opacity, closeTo(0, 1e-5));
     });
 
-    test('Lukitas grows up from his feet, bounces once and shrinks back; reduced, he fades', () {
-      expect(lukitasAt(0, reduced: false), (scale: 0.4, opacity: 0.0));
-      expect(lukitasAt(0.2, reduced: false).scale, closeTo(1.06, 1e-9));
-      expect(lukitasAt(0.5, reduced: false), (scale: 1.0, opacity: 1.0));
-      final end = lukitasAt(1, reduced: false);
+    test('Wambi grows up from his feet, bounces once and shrinks back; reduced, he fades', () {
+      expect(wambiAt(0, reduced: false), (scale: 0.4, opacity: 0.0));
+      expect(wambiAt(0.2, reduced: false).scale, closeTo(1.06, 1e-9));
+      expect(wambiAt(0.5, reduced: false), (scale: 1.0, opacity: 1.0));
+      final end = wambiAt(1, reduced: false);
       expect(end.scale, closeTo(0.85, 1e-5));
       expect(end.opacity, closeTo(0, 1e-5));
-      expect(lukitasAt(0.5, reduced: true), (scale: 1.0, opacity: 1.0));
-      expect(lukitasAt(0, reduced: true).opacity, 0);
-      expect(lukitasAt(1, reduced: true).opacity, closeTo(0, 1e-5));
+      expect(wambiAt(0.5, reduced: true), (scale: 1.0, opacity: 1.0));
+      expect(wambiAt(0, reduced: true).opacity, 0);
+      expect(wambiAt(1, reduced: true).opacity, closeTo(0, 1e-5));
     });
   });
 
@@ -164,7 +164,7 @@ void main() {
         expect(find.byKey(const Key('celebration')), findsNothing);
         await _give(t, event);
         expect(find.byKey(const Key('celebration')), findsOneWidget);
-        expect(find.byType(LukitasFace), findsOneWidget);
+        expect(find.byType(WambiFace), findsOneWidget);
         expect(find.byKey(const Key('celebration.confetti')), findsOneWidget);
         // One `--celebrate` and a little over.
         await t.pump(const Duration(milliseconds: 1300));
@@ -219,7 +219,7 @@ void main() {
       final spot = t.getRect(find.byKey(const Key('spot')));
       await _give(t, FeedbackEvent.paid);
       await t.pump(const Duration(milliseconds: 500));
-      final box = t.getRect(find.byType(LukitasFace));
+      final box = t.getRect(find.byType(WambiFace));
       expect(box.size, const Size(_spotSize, _spotSize));
       expect(box.bottom, closeTo(spot.top - 4, 1e-6));
       expect(box.center.dx, closeTo(spot.center.dx, 1e-6));
@@ -234,7 +234,7 @@ void main() {
       final toast = t.getRect(find.text('Deshacer'));
       await _give(t, FeedbackEvent.paid);
       await t.pump(const Duration(milliseconds: 500));
-      final box = t.getRect(find.byType(LukitasFace));
+      final box = t.getRect(find.byType(WambiFace));
       expect(box.bottom, lessThanOrEqualTo(toast.top + 1));
       expect(t.getRect(find.text('Deshacer')), toast);
     });
@@ -251,7 +251,7 @@ void main() {
       expect(find.byKey(const Key('celebration')), findsOneWidget);
       // Grown to his size by a third of the way through.
       await t.pump(const Duration(milliseconds: 500));
-      final box = t.getRect(find.byType(LukitasFace));
+      final box = t.getRect(find.byType(WambiFace));
       expect(box.top, 8);
       expect(box.size, const Size(72, 72));
       expect(box.center.dx, 412 / 2);
@@ -277,7 +277,7 @@ void main() {
       await _pump(t);
       await _give(t, FeedbackEvent.paid);
       await t.pump(const Duration(milliseconds: 500));
-      expect(find.bySemanticsLabel('Lukitas'), findsNothing);
+      expect(find.bySemanticsLabel('Wambi'), findsNothing);
       handle.dispose();
     });
 
@@ -289,7 +289,7 @@ void main() {
       await t.pump(const Duration(milliseconds: 500));
       expect(find.byKey(const Key('celebration')), findsOneWidget);
       expect(find.byKey(const Key('celebration.confetti')), findsNothing);
-      expect(find.byType(LukitasFace), findsOneWidget);
+      expect(find.byType(WambiFace), findsOneWidget);
     });
   });
 
@@ -306,7 +306,7 @@ void main() {
       final box = t.getRect(
         find.descendant(
           of: find.byKey(const Key('celebration')),
-          matching: find.byType(LukitasFace),
+          matching: find.byType(WambiFace),
         ),
       );
       expect(box.bottom, closeTo(plus.top - 4, 1.5));

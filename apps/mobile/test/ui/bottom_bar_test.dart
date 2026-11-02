@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/ui/bottom_bar.dart';
+import 'package:wambito/ui/bottom_bar.dart';
 
 import '../support/fonts.dart';
 import '../support/ui_app.dart';

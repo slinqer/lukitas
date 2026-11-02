@@ -207,13 +207,13 @@ importers:
       '@hono/zod-openapi':
         specifier: ^1.6.3
         version: 1.6.3(hono@4.13.13)(zod@4.6.7)
-      '@lukas/core':
+      '@wambito/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@lukas/db':
+      '@wambito/db':
         specifier: workspace:*
         version: link:../../packages/db
-      '@lukas/importers':
+      '@wambito/importers':
         specifier: workspace:*
         version: link:../../packages/importers
       better-auth:
@@ -244,15 +244,15 @@ importers:
       '@hono/node-server':
         specifier: ^2.1.5
         version: 2.1.5(hono@4.13.13)
-      '@lukas/ai-assistant-tools':
-        specifier: workspace:*
-        version: link:../../packages/ai-assistant-tools
-      '@lukas/core':
-        specifier: workspace:*
-        version: link:../../packages/core
       '@modelcontextprotocol/server':
         specifier: 2.3.1
         version: 2.3.1
+      '@wambito/ai-assistant-tools':
+        specifier: workspace:*
+        version: link:../../packages/ai-assistant-tools
+      '@wambito/core':
+        specifier: workspace:*
+        version: link:../../packages/core
       hono:
         specifier: ^4.13.13
         version: 4.13.13
@@ -284,9 +284,6 @@ importers:
       '@fontsource/nunito':
         specifier: ^5.3.0
         version: 5.3.0
-      '@lukas/core':
-        specifier: workspace:*
-        version: link:../../packages/core
       '@react-router/node':
         specifier: ^8.5.0
         version: 8.5.0(react-router@8.5.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(typescript@7.0.2)
@@ -299,6 +296,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.104.5
         version: 5.104.5(@types/react@19.3.0)(react@19.3.1)
+      '@wambito/core':
+        specifier: workspace:*
+        version: link:../../packages/core
       better-auth:
         specifier: ^1.7.11
         version: 1.7.11(drizzle-kit@0.31.11)(drizzle-orm@0.45.4(kysely@0.29.7)(postgres@3.4.9))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(vitest@5.0.5)
@@ -390,7 +390,7 @@ importers:
 
   packages/ai-assistant-tools:
     dependencies:
-      '@lukas/core':
+      '@wambito/core':
         specifier: workspace:*
         version: link:../core
       zod:
@@ -424,7 +424,7 @@ importers:
 
   packages/importers:
     dependencies:
-      '@lukas/core':
+      '@wambito/core':
         specifier: workspace:*
         version: link:../core
       csv-parse:

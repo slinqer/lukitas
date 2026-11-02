@@ -1,7 +1,7 @@
 /**
  * The shared schemas, named for the OpenAPI document: each becomes a component
  * (`#/components/schemas/<Name>`) that operations reference, so generated clients get these names
- * instead of ones derived from paths. The schemas themselves live in @lukas/core and are built
+ * instead of ones derived from paths. The schemas themselves live in @wambito/core and are built
  * with plain zod, possibly before @hono/zod-openapi has added `.openapi()` to zod, so they are
  * named with zod's own `.meta({ id })`, which the document generator reads the same way. It
  * returns a named copy and leaves the core schemas unchanged. Schemas declared in the routes, with
@@ -24,7 +24,7 @@ import {
   updateProfileSchema,
   updateRecurrenceSchema,
   updateTransactionSchema,
-} from "@lukas/core";
+} from "@wambito/core";
 
 export const Problem = problemDto.meta({ id: "Problem" });
 

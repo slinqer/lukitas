@@ -42,7 +42,7 @@ export function clientIp(): string {
 /** A new address per call, so each test is a new user with its own email throttle. */
 export function freshEmail(label = "e2e"): string {
   const nonce = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
-  return `${label}-${nonce}@lukas.test`;
+  return `${label}-${nonce}@wambito.test`;
 }
 
 interface MailSummary {
@@ -113,9 +113,9 @@ export async function requestCode(
   const response = await api.post("/api/auth/email-otp/send-verification-otp", {
     data: { email, type: "sign-in" },
     headers: {
-      ...(hints.locale ? { "x-lukas-locale": hints.locale } : {}),
-      ...(hints.next ? { "x-lukas-next": hints.next } : {}),
-      ...(hints.client ? { "x-lukas-client": hints.client } : {}),
+      ...(hints.locale ? { "x-wambito-locale": hints.locale } : {}),
+      ...(hints.next ? { "x-wambito-next": hints.next } : {}),
+      ...(hints.client ? { "x-wambito-client": hints.client } : {}),
     },
   });
   expect(response.status(), await response.text()).toBe(200);
@@ -168,7 +168,7 @@ const SIGN_IN_WORDS: Record<
 };
 
 /**
- * After an email sign-in Lukitas offers a passkey ("¿Entrar con tu huella la próxima vez?") once per
+ * After an email sign-in Wambito offers a passkey ("¿Entrar con tu huella la próxima vez?") once per
  * user per device. Tests that are about something else say "Ahora no" and carry on: this waits
  * for whichever comes first, the offer or the page sign-in was heading to, and dismisses the offer.
  */

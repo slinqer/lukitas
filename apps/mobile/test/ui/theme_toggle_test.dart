@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/settings/preferences.dart';
-import 'package:lukitas/theme/theme.dart';
-import 'package:lukitas/ui/theme_toggle.dart';
+import 'package:wambito/settings/preferences.dart';
+import 'package:wambito/theme/theme.dart';
+import 'package:wambito/ui/theme_toggle.dart';
 
 import '../support/ui_app.dart';
 

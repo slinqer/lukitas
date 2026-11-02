@@ -9,7 +9,7 @@ import {
   monthsBetween,
   type TransactionDto,
   todayIn,
-} from "@lukas/core";
+} from "@wambito/core";
 import { type ReactNode, useState } from "react";
 import { MemoryRouter, Route, Routes } from "react-router";
 import { OCTOBER_2026 } from "../../../../../packages/core/test/fixtures/october-2026.ts";
@@ -500,7 +500,7 @@ function homeFetch({
         {
           headers: {
             "content-type": csv ? "text/csv; charset=utf-8" : "application/json",
-            "content-disposition": `attachment; filename="lukas-export-${STORY_TODAY}.${csv ? "csv" : "json"}"`,
+            "content-disposition": `attachment; filename="wambito-export-${STORY_TODAY}.${csv ? "csv" : "json"}"`,
           },
         },
       );

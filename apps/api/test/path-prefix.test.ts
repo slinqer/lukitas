@@ -23,13 +23,13 @@ test("routes outside the API_URL path are not served", async () => {
 
 test("an email code sent and verified under /api/auth signs in", async () => {
   const sent = await t.request("POST", "/api/auth/email-otp/send-verification-otp", {
-    body: { email: "prefix@lukas.test", type: "sign-in" },
+    body: { email: "prefix@wambito.test", type: "sign-in" },
   });
   expect(sent.status).toBe(200);
-  const code = codeFrom(t.mailer.lastTo("prefix@lukas.test")?.subject ?? "");
+  const code = codeFrom(t.mailer.lastTo("prefix@wambito.test")?.subject ?? "");
 
   const res = await t.request("POST", "/api/auth/sign-in/email-otp", {
-    body: { email: "prefix@lukas.test", otp: code },
+    body: { email: "prefix@wambito.test", otp: code },
   });
   expect(res.status).toBe(200);
   const token = res.headers.get("set-auth-token");
@@ -39,7 +39,7 @@ test("an email code sent and verified under /api/auth signs in", async () => {
     headers: { authorization: `Bearer ${token}` },
   });
   expect(me.status).toBe(200);
-  expect(await me.json()).toMatchObject({ email: "prefix@lukas.test" });
+  expect(await me.json()).toMatchObject({ email: "prefix@wambito.test" });
 });
 
 test("Better Auth publishes its endpoints under API_URL/auth", async () => {

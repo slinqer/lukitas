@@ -1,9 +1,9 @@
 // The ported tests of apps/web/app/features/settings/settings-model.test.ts: the account deletion's
 // email, the export's file name and the zones.
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/capture/parser/dates.dart';
-import 'package:lukitas/profile/timezone.dart';
-import 'package:lukitas/settings/settings_model.dart';
+import 'package:wambito/capture/parser/dates.dart';
+import 'package:wambito/profile/timezone.dart';
+import 'package:wambito/settings/settings_model.dart';
 
 void main() {
   linkZonesTest();
@@ -31,18 +31,18 @@ void main() {
   group('filenameFrom', () {
     test('reads the quoted or bare filename of a content-disposition', () {
       expect(
-        filenameFrom('attachment; filename="lukas-export-2026-10-22.csv"', 'x'),
-        'lukas-export-2026-10-22.csv',
+        filenameFrom('attachment; filename="wambito-export-2026-10-22.csv"', 'x'),
+        'wambito-export-2026-10-22.csv',
       );
-      expect(filenameFrom('attachment; filename=lukas.json', 'x'), 'lukas.json');
+      expect(filenameFrom('attachment; filename=wambito.json', 'x'), 'wambito.json');
     });
 
     test('falls back when there is none, or it carries a path', () {
-      expect(filenameFrom(null, 'lukas-export.json'), 'lukas-export.json');
-      expect(filenameFrom('attachment', 'lukas-export.json'), 'lukas-export.json');
+      expect(filenameFrom(null, 'wambito-export.json'), 'wambito-export.json');
+      expect(filenameFrom('attachment', 'wambito-export.json'), 'wambito-export.json');
       expect(
-        filenameFrom('attachment; filename="../x.csv"', 'lukas-export.csv'),
-        'lukas-export.csv',
+        filenameFrom('attachment; filename="../x.csv"', 'wambito-export.csv'),
+        'wambito-export.csv',
       );
     });
 

@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/home/home_screen.dart';
-import 'package:lukitas/ui/app_shell.dart';
+import 'package:wambito/home/home_screen.dart';
+import 'package:wambito/ui/app_shell.dart';
 
 import '../support/parity.dart';
 import '../support/parity_home.dart';
@@ -34,7 +34,7 @@ List<Override> _overrides(ParityFixture fixture) =>
     parityHomeOverrides(FixtureHomeRepository(fixture), add: FixtureAddRepository(fixture));
 
 Future<void> _openAdd(WidgetTester t) async {
-  await precacheLukitas(t);
+  await precacheWambi(t);
   await t.tap(find.byKey(const Key('home.add')));
   await t.pumpAndSettle();
 }
@@ -126,7 +126,7 @@ void main() {
       theme: 'day',
       overrides: _overrides(fixture),
       act: (t) async {
-        await precacheLukitas(t);
+        await precacheWambi(t);
         await t.tap(find.text('Movimientos'));
         await t.pumpAndSettle();
         await t.tap(find.text('Spotify'));

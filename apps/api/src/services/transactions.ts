@@ -1,6 +1,6 @@
-import type { TransactionDto } from "@lukas/core";
-import { accounts, categories, type Tx, transactions } from "@lukas/db";
-import { and, eq, isNull } from "@lukas/db/orm";
+import type { TransactionDto } from "@wambito/core";
+import { accounts, categories, type Tx, transactions } from "@wambito/db";
+import { and, eq, isNull } from "@wambito/db/orm";
 import { ApiError } from "../http/problem.ts";
 
 export type TransactionRow = typeof transactions.$inferSelect;

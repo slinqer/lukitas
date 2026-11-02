@@ -4,9 +4,9 @@ import { useLocale } from "../../i18n/IntlProvider.tsx";
 import { COMING_SOON } from "../../site/config.ts";
 import { cx } from "../../ui/cx.ts";
 import { PressLink } from "../../ui/PressLink.tsx";
-import { LukasSpot } from "./LukasSpot.tsx";
 import { appLinkProps } from "./links.ts";
 import { NewTabHint } from "./NewTabHint.tsx";
+import { WambiSpot } from "./WambiSpot.tsx";
 
 function Icon({ tone, children }: { tone: "gold" | "candy" | "good"; children: ReactNode }) {
   return (
@@ -17,7 +17,7 @@ function Icon({ tone, children }: { tone: "gold" | "candy" | "good"; children: R
 }
 
 /**
- * Where Lukas lives: the web app today ("Empezar"), the Android and iOS app and your AI assistant
+ * Where Wambito lives: the web app today ("Empezar"), the Android and iOS app and your AI assistant
  * (Claude or ChatGPT, through MCP) marked as coming soon. In the landing-only release the web app
  * is marked as coming soon too, unless `VITE_APP_URL` says where it lives: then the card opens it.
  */
@@ -29,7 +29,7 @@ export function UseItYourWay() {
     <section id="ways" className="lk-landing-section" aria-labelledby="ways-title">
       <div className="lk-landing-section-head">
         <h2 id="ways-title">{t("title")}</h2>
-        <LukasSpot id="ways" pose="point" mood="happy" />
+        <WambiSpot id="ways" pose="point" mood="happy" />
       </div>
       <ul className="lk-landing-cards is-ways">
         <li className={cx("lk-landing-card", !COMING_SOON && "is-live")}>

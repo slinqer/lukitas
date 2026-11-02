@@ -1,0 +1,43 @@
+package com.wambito.app.widget
+
+import android.content.Context
+import android.content.Intent
+import androidx.glance.GlanceId
+import androidx.glance.appwidget.GlanceAppWidget
+import androidx.glance.appwidget.provideContent
+import com.wambito.app.Migration
+import es.antonborri.home_widget.HomeWidgetGlanceStateDefinition
+import es.antonborri.home_widget.HomeWidgetGlanceWidgetReceiver
+
+/**
+ * The small widget (2×1, spec section 7.1): "Te quedan" and ＋. It draws the snapshot the app and
+ * the refresh job keep in home_widget's SharedPreferences ([WidgetSnapshot]).
+ */
+class WambitoSmallWidget : GlanceAppWidget() {
+    override val stateDefinition = HomeWidgetGlanceStateDefinition()
+    override val sizeMode = widgetSizeMode
+
+    override suspend fun provideGlance(context: Context, id: GlanceId) {
+        provideContent { StoredWidgetContent() }
+    }
+}
+
+/** Android's entry for [WambitoSmallWidget]; the app asks it to redraw (lib/home/widget_snapshot.dart). */
+class WambitoSmallWidgetReceiver : HomeWidgetGlanceWidgetReceiver<WambitoSmallWidget>() {
+    override val glanceAppWidget = WambitoSmallWidget()
+
+    override fun onReceive(context: Context, intent: Intent) {
+        Migration.run(context) // 2b: remove
+        super.onReceive(context, intent)
+    }
+
+    override fun onEnabled(context: Context) {
+        super.onEnabled(context)
+        RefreshScheduler.schedule(context)
+    }
+
+    override fun onDisabled(context: Context) {
+        super.onDisabled(context)
+        RefreshScheduler.cancelIfNoWidgets(context)
+    }
+}

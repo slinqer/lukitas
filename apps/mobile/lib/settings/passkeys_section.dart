@@ -118,7 +118,7 @@ class _PasskeysSectionState extends ConsumerState<PasskeysSection> {
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: LukitasTokens.space2,
+          spacing: WambitoTokens.space2,
           children: [
             if (list.hasError && items == null)
               CssParagraph(l10n.settingsPasskeysListFailed, style: mutedSm),
@@ -130,7 +130,7 @@ class _PasskeysSectionState extends ConsumerState<PasskeysSection> {
             if (items != null && items.isNotEmpty)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                spacing: LukitasTokens.space2,
+                spacing: WambitoTokens.space2,
                 children: [
                   for (final item in items)
                     _PasskeyRow(
@@ -153,7 +153,7 @@ class _PasskeysSectionState extends ConsumerState<PasskeysSection> {
               onPressed: _adding || guest ? null : () => unawaited(_add()),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                spacing: LukitasTokens.space2,
+                spacing: WambitoTokens.space2,
                 children: [
                   const FingerprintIcon(),
                   Flexible(child: Text(LkText.upperCase(addLabel))),
@@ -199,7 +199,7 @@ class _PasskeyRow extends StatelessWidget {
           children: [
             Expanded(
               child: Row(
-                spacing: LukitasTokens.space3,
+                spacing: WambitoTokens.space3,
                 children: [
                   DefaultTextStyle.merge(
                     style: TextStyle(color: colors.brandGlow),
@@ -219,7 +219,7 @@ class _PasskeyRow extends StatelessWidget {
                           ),
                         ),
                         Wrap(
-                          spacing: LukitasTokens.space2,
+                          spacing: WambitoTokens.space2,
                           children: [
                             CssBlinkLines(
                               style: LkText.fieldLabel,

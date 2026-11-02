@@ -15,14 +15,14 @@ abstract interface class FeedbackPlatform {
   Future<void> warmUp();
 }
 
-/// [FeedbackPlatform] over `lukitas/haptics` (android/.../haptics/HapticsChannel.kt) and
-/// `lukitas/sounds` (SoundChannel.kt, a `SoundPool`: free, no Play Services). A phone with neither
+/// [FeedbackPlatform] over `wambito/haptics` (android/.../haptics/HapticsChannel.kt) and
+/// `wambito/sounds` (SoundChannel.kt, a `SoundPool`: free, no Play Services). A phone with neither
 /// (a test, a desktop) answers with a missing plugin, which is no error here.
 class ChannelFeedbackPlatform implements FeedbackPlatform {
   const ChannelFeedbackPlatform();
 
-  static const _haptics = MethodChannel('lukitas/haptics');
-  static const _sounds = MethodChannel('lukitas/sounds');
+  static const _haptics = MethodChannel('wambito/haptics');
+  static const _sounds = MethodChannel('wambito/sounds');
 
   @override
   Future<void> vibrate(HapticPattern pattern) => _call(_haptics, 'vibrate', pattern.toJson());

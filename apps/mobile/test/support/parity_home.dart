@@ -3,14 +3,14 @@ import 'package:flutter/material.dart' show Scaffold;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/add/add_repository.dart';
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/feedback/stored_flag.dart';
-import 'package:lukitas/home/home_cache.dart';
-import 'package:lukitas/home/home_controller.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/home/home_screen.dart';
-import 'package:lukitas/home/lukitas_face.dart';
+import 'package:wambito/add/add_repository.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/feedback/stored_flag.dart';
+import 'package:wambito/home/home_cache.dart';
+import 'package:wambito/home/home_controller.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/home/home_screen.dart';
+import 'package:wambito/home/wambi_face.dart';
 
 import '../settings/fakes.dart' show FakeFlagStore;
 import 'parity.dart';
@@ -111,17 +111,17 @@ List<Override> parityHomeOverrides(HomeRepository repo, {AddRepository? add}) =>
   widgetSnapshotWriterProvider.overrideWithValue(
     (summary, {required currency, required locale, required timezone}) async {},
   ),
-  // The web's shots pin `Math.random` to 0: Lukitas says the first phrasing of every line.
-  lukasVariantProvider.overrideWithValue(() => 1),
+  // The web's shots pin `Math.random` to 0: Wambi says the first phrasing of every line.
+  wambiVariantProvider.overrideWithValue(() => 1),
   flagStoreProvider.overrideWith((ref, key) => FakeFlagStore()),
 ];
 
-/// Lukitas' sprite sheets decode in real time, which `pumpAndSettle` does not wait for: decode them
+/// Wambi's sprite sheets decode in real time, which `pumpAndSettle` does not wait for: decode them
 /// first, so the picture is taken with him in it.
-Future<void> precacheLukitas(WidgetTester t) async {
+Future<void> precacheWambi(WidgetTester t) async {
   await t.runAsync(() async {
     final context = t.element(find.byType(Scaffold).first);
-    for (final mood in LukitasMood.values) {
+    for (final mood in WambiMood.values) {
       await precacheImage(AssetImage(mood.sheet), context);
     }
   });

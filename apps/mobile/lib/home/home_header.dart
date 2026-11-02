@@ -97,7 +97,7 @@ class _HomeHeaderState extends State<HomeHeader> {
             alignment: WrapAlignment.spaceBetween,
             crossAxisAlignment: WrapCrossAlignment.center,
             // `gap-x-(--space-2)`; the rows have no gap of their own.
-            spacing: LukitasTokens.space2,
+            spacing: WambitoTokens.space2,
             children: [
               const LkWordmark(),
               if (wide) picker,
@@ -116,7 +116,7 @@ class _HomeHeaderState extends State<HomeHeader> {
   }
 }
 
-/// The wordmark (`.lk-logo`): "Lukitas" in Fredoka, painted with a gold to candy gradient, in a
+/// The wordmark (`.lk-logo`): "Wambito" in Fredoka, painted with a gold to candy gradient, in a
 /// line at least 44px tall.
 class LkWordmark extends StatelessWidget {
   const LkWordmark({super.key});
@@ -215,7 +215,7 @@ class _MenuLayer extends StatelessWidget {
           link: link,
           targetAnchor: Alignment.bottomRight,
           followerAnchor: Alignment.topRight,
-          offset: const Offset(0, LukitasTokens.space2),
+          offset: const Offset(0, WambitoTokens.space2),
           child: Align(
             alignment: Alignment.topRight,
             child: SizedBox(
@@ -229,7 +229,7 @@ class _MenuLayer extends StatelessWidget {
                 ),
                 child: Padding(
                   // `padding: var(--space-3)` inside the 2px border.
-                  padding: const EdgeInsets.all(LukitasTokens.space3 + 2),
+                  padding: const EdgeInsets.all(WambitoTokens.space3 + 2),
                   child: Material(
                     type: MaterialType.transparency,
                     child: DefaultTextStyle.merge(

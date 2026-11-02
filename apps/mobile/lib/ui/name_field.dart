@@ -135,7 +135,7 @@ class _NameFieldState extends State<NameField> {
             // 12px by 9px inside the 2px border.
             padding: const EdgeInsets.symmetric(horizontal: 12 + 2, vertical: 9 + 2),
             child: Row(
-              spacing: LukitasTokens.space2,
+              spacing: WambitoTokens.space2,
               children: [
                 ExcludeSemantics(
                   child: CssText(
@@ -196,7 +196,7 @@ class _NameFieldState extends State<NameField> {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: LukitasTokens.space1,
+      spacing: WambitoTokens.space1,
       children: [
         field,
         if (widget.suggestions.isNotEmpty)
@@ -272,7 +272,7 @@ class _Shortcut extends StatelessWidget {
   Widget build(BuildContext context) {
     final lk = context.lk;
     final colors = lk.colors;
-    const radius = BorderRadius.all(Radius.circular(LukitasTokens.radiusPill));
+    const radius = BorderRadius.all(Radius.circular(WambitoTokens.radiusPill));
     return Pressable(
       onPressed: onPressed,
       selected: hit,

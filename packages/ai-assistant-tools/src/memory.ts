@@ -17,10 +17,10 @@ import {
   type UpdateCategory,
   type UpdateRecurrence,
   type UpdateTransaction,
-} from "@lukas/core";
+} from "@wambito/core";
 import { normalizeName } from "./categories.ts";
 import { ToolError } from "./errors.ts";
-import type { Lukitas, MonthSummaryDto, Profile, TransactionQuery } from "./lukitas.ts";
+import type { MonthSummaryDto, Profile, TransactionQuery, Wambito } from "./wambito.ts";
 
 /** The API's limit for one batch write. */
 const BATCH_LIMIT = 20;
@@ -44,17 +44,17 @@ const defined = <T extends object>(patch: T): Partial<T> =>
 function tooMany(count: number): ToolError {
   return new ToolError(
     "validation_failed",
-    `At most ${BATCH_LIMIT} items per call to Lukitas (got ${count})`,
+    `At most ${BATCH_LIMIT} items per call to Wambito (got ${count})`,
   );
 }
 
 /**
- * A Lukitas in memory, for tests and demos. It mirrors the API where the tools depend on it:
+ * A Wambito in memory, for tests and demos. It mirrors the API where the tools depend on it:
  * signed amounts, soft deletes, the batch limit of 20, active category names unique ignoring case,
  * and idempotent batches (the same key and body replay, the same key with another body is
  * refused). Recurrences are stored but not materialized into pending transactions.
  */
-export class MemoryLukitas implements Lukitas {
+export class MemoryWambito implements Wambito {
   private readonly person: Profile;
   private readonly now: () => Date;
   private readonly categories: CategoryDto[];

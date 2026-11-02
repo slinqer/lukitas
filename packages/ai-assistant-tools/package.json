@@ -1,5 +1,5 @@
 {
-  "name": "@lukas/ai-assistant-tools",
+  "name": "@wambito/ai-assistant-tools",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@lukas/core": "workspace:*",
+    "@wambito/core": "workspace:*",
     "zod": "^4.6.7"
   }
 }

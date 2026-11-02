@@ -1,4 +1,4 @@
-import type { CategoryDto } from "@lukas/core";
+import type { CategoryDto } from "@wambito/core";
 import { ToolError } from "./errors.ts";
 
 /** A name as people mean it: lowercase, without accents, trimmed, single spaces ("comida rapida"). */

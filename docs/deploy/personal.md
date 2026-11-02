@@ -1,6 +1,6 @@
 # Deploying a personal install
 
-Lukitas can run as a private, single-person install on one machine: its own Docker stack, reached
+Wambito can run as a private, single-person install on one machine: its own Docker stack, reached
 through a Cloudflare named tunnel at one hostname, with an email allowlist and a daily verified
 backup. It is meant for using the app with real data before (or instead of) a cloud deployment, and
 it moves to a server with its data later.
@@ -20,9 +20,9 @@ What the API gained for it (also useful for any deployment):
   `[::1]`, `host.docker.internal`).
 - **`DATABASE_ADMIN_URL` is optional outside development**, so a running production API never holds
   the owner credential. Migrations are a separate step: `apps/api/Dockerfile.prod` also builds
-  `dist/bootstrap.js`, which creates the `lukas_app` role (password from `APP_DB_PASSWORD`; the role
+  `dist/bootstrap.js`, which creates the `lukas_app` role (renamed in part 2b; password from `APP_DB_PASSWORD`; the role
   exists only in the development `docker/postgres/init.sql` otherwise) and applies the migrations.
-  It is idempotent. Locally: `DATABASE_ADMIN_URL=... APP_DB_PASSWORD=... pnpm --filter @lukas/db bootstrap`.
+  It is idempotent. Locally: `DATABASE_ADMIN_URL=... APP_DB_PASSWORD=... pnpm --filter @wambito/db bootstrap`.
 - **A production image**: `apps/api/Dockerfile.prod` (multi-stage, `node:22-alpine`, one esbuild
   bundle per entry point, runs with `node`, non-root, health check on `/api/health`).
 

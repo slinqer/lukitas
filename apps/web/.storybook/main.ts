@@ -14,7 +14,7 @@ const config: StorybookConfig = {
   stories: ["../app/**/*.stories.@(ts|tsx)"],
   addons: ["@storybook/addon-vitest", "@storybook/addon-a11y"],
   framework: "@storybook/react-vite",
-  // Same static files as the app (e.g. the Lukas sprite sheets under /lukas).
+  // Same static files as the app (e.g. the Wambi sprite sheets under /wambi).
   staticDirs: ["../public"],
   core: { disableTelemetry: true },
   viteFinal: (config) => ({ ...config, plugins: withoutReactRouter(config.plugins) }),

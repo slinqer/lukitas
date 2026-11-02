@@ -6,12 +6,12 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/insights/insights_controller.dart';
-import 'package:lukitas/insights/insights_repository.dart';
-import 'package:lukitas/insights/insights_screen.dart';
-import 'package:lukitas/ui/app_shell.dart';
-import 'package:lukitas/ui/segmented_control.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/insights/insights_controller.dart';
+import 'package:wambito/insights/insights_repository.dart';
+import 'package:wambito/insights/insights_screen.dart';
+import 'package:wambito/ui/app_shell.dart';
+import 'package:wambito/ui/segmented_control.dart';
 
 import '../support/parity.dart';
 import '../support/parity_home.dart';
@@ -110,7 +110,7 @@ Future<void> _pair(
       insightsRepositoryProvider.overrideWithValue(_FixtureInsights(fixture)),
     ],
     act: (t) async {
-      await precacheLukitas(t);
+      await precacheWambi(t);
       await act?.call(t);
       if (scrolled > 0) {
         _scrollTo(t, scrolled);

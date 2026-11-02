@@ -2,11 +2,11 @@
 // API, Postgres, Mailpit), as docs/mobile/setup.md describes:
 //
 //   flutter test integration_test/export_test.dart -d emulator-5554 \
-//     --dart-define=LUKITAS_SERVER=http://10.0.2.2:3000 \
+//     --dart-define=WAMBITO_SERVER=http://10.0.2.2:3000 \
 //     --dart-define=MAILPIT_URL=http://10.0.2.2:8025
 //
 // A new email user with one movement exports from Settings against the real API, and the file goes
-// through the real `lukitas/files` channel (android/.../files/FilesChannel.kt):
+// through the real `wambito/files` channel (android/.../files/FilesChannel.kt):
 //  * Save: the debug build lets the test stand in for the person at the system's "save as" picker
 //    (`injectSave` names the file the next save writes to); the bytes are then written by the same
 //    Kotlin code a saved document goes through, and read back here.
@@ -22,18 +22,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:lukitas/api/session.dart';
-import 'package:lukitas/home/home_screen.dart';
-import 'package:lukitas/main.dart' as app;
+import 'package:wambito/api/session.dart';
+import 'package:wambito/home/home_screen.dart';
+import 'package:wambito/main.dart' as app;
 
-const _server = String.fromEnvironment('LUKITAS_SERVER', defaultValue: 'http://10.0.2.2:3000');
+const _server = String.fromEnvironment('WAMBITO_SERVER', defaultValue: 'http://10.0.2.2:3000');
 const _mailpit = String.fromEnvironment('MAILPIT_URL', defaultValue: 'http://10.0.2.2:8025');
-const _files = MethodChannel('lukitas/files');
+const _files = MethodChannel('wambito/files');
 
 final _http = Dio(BaseOptions(validateStatus: (_) => true));
 
 String _freshEmail(String label) =>
-    '$label-${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}@lukas.test';
+    '$label-${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}@wambito.test';
 
 Future<void> _pumpUntil(
   WidgetTester tester,
@@ -162,7 +162,7 @@ void main() {
     expect((exported['transactions'] as List).map((t) => (t as Map)['name']), ['Cafe del export']);
     expect((exported['user'] as Map)['email'], isNotNull);
     // And the page said so, with the name the server gave.
-    await _pumpUntil(tester, find.textContaining('lukas-export-'));
+    await _pumpUntil(tester, find.textContaining('wambito-export-'));
 
     // The CSV, shared: the share sheet comes up with a copy in the app's cache.
     await _tap(tester, 'settings.export.csv');
@@ -181,7 +181,7 @@ void main() {
 
     // The sheet is closed, as a person would: the suites after this one (suites_test.dart) open
     // links in the app, which must land on this activity, not on top of the sheet.
-    await const MethodChannel('lukitas/test').invokeMethod<void>('returnToApp');
+    await const MethodChannel('wambito/test').invokeMethod<void>('returnToApp');
     await tester.pump(const Duration(seconds: 1));
   });
 }

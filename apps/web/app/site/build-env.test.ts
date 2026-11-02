@@ -7,7 +7,7 @@ import { readBuildEnv, resolveBuildMode } from "./build-env.ts";
 let root: string;
 
 beforeEach(() => {
-  root = mkdtempSync(join(tmpdir(), "lukas-build-env-"));
+  root = mkdtempSync(join(tmpdir(), "wambito-build-env-"));
   vi.stubEnv("VITE_SITE_URL", undefined);
   vi.stubEnv("VITE_LANDING_ONLY", undefined);
   vi.stubEnv("VITE_APP_URL", undefined);
@@ -35,10 +35,10 @@ describe("readBuildEnv", () => {
   it("reads the flags from a .env file, like Vite does for the app code", () => {
     write(
       ".env",
-      "VITE_SITE_URL=https://lukitas.example\nVITE_LANDING_ONLY=true\nVITE_APP_URL=https://app.example\n",
+      "VITE_SITE_URL=https://wambito.example\nVITE_LANDING_ONLY=true\nVITE_APP_URL=https://app.example\n",
     );
     expect(readBuildEnv({ root, mode: "production" })).toEqual({
-      siteUrl: "https://lukitas.example",
+      siteUrl: "https://wambito.example",
       landingOnly: "true",
       appUrl: "https://app.example",
     });

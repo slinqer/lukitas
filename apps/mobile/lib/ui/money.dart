@@ -44,7 +44,7 @@ class Money extends StatefulWidget {
 class _MoneyState extends State<Money> with SingleTickerProviderStateMixin {
   late final _controller = AnimationController(
     vsync: this,
-    duration: LukitasTokens.durationCountUp,
+    duration: WambitoTokens.durationCountUp,
   );
 
   /// motion's "easeOut", cubic-bezier(0, 0, 0.58, 1): Flutter's [Curves.easeOut].

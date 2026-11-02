@@ -2,12 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/add/add_repository.dart';
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/capture/capture_repository.dart';
-import 'package:lukitas/home/home_cache.dart' show sessionOwnerOf;
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/offline/pending_saves.dart';
+import 'package:wambito/add/add_repository.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/capture/capture_repository.dart';
+import 'package:wambito/home/home_cache.dart' show sessionOwnerOf;
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/offline/pending_saves.dart';
 
 import '../add/fakes.dart';
 import '../capture/fakes.dart';

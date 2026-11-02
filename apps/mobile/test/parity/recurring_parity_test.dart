@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/recurring/recurring_repository.dart';
-import 'package:lukitas/recurring/recurring_screen.dart';
-import 'package:lukitas/ui/app_shell.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/recurring/recurring_repository.dart';
+import 'package:wambito/recurring/recurring_screen.dart';
+import 'package:wambito/ui/app_shell.dart';
 
 import '../support/parity.dart';
 import '../support/parity_home.dart';
@@ -102,7 +102,7 @@ void main() {
     }
 
     pair('the list', 'recurring-list', 'manage-recurring--list', null);
-    pair('nothing yet', 'recurring-empty', 'manage-recurring--empty', precacheLukitas);
+    pair('nothing yet', 'recurring-empty', 'manage-recurring--empty', precacheWambi);
     pair(
       'a yearly payment saved',
       'recurring-yearly-saved',

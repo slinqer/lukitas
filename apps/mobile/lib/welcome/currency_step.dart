@@ -57,7 +57,7 @@ class CurrencyStep extends StatelessWidget {
           label: l10n.welcomeCurrencyLabel,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: LukitasTokens.space2,
+            spacing: WambitoTokens.space2,
             children: [
               for (final code in supportedCurrencies)
                 _CurrencyOption(
@@ -109,14 +109,14 @@ class _CurrencyOption extends StatelessWidget {
           boxShadow: LkSurface.edgeShadow(lk, LkEdge.sm),
         ),
         padding: const EdgeInsets.symmetric(
-          horizontal: LukitasTokens.space4,
-          vertical: LukitasTokens.space3,
+          horizontal: WambitoTokens.space4,
+          vertical: WambitoTokens.space3,
         ),
         ringRadius: state.focusVisible ? radius : null,
         ringColor: colors.focus,
         child: ExcludeSemantics(
           child: Row(
-            spacing: LukitasTokens.space3,
+            spacing: WambitoTokens.space3,
             children: [
               NativeRadio(checked: selected, accent: colors.brand),
               Expanded(

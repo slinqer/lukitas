@@ -55,7 +55,7 @@ build_in() {
     cd "$dir"
     flutter clean >/dev/null 2>&1
     flutter pub get --enforce-lockfile >/dev/null 2>&1
-    env -u SHELLOPTS LUKITAS_UNSIGNED_RELEASE=1 flutter build apk --release --split-per-abi \
+    env -u SHELLOPTS WAMBITO_UNSIGNED_RELEASE=1 flutter build apk --release --split-per-abi \
       --target-platform android-arm,android-arm64 --build-name "$version_name" --build-number "$base_code" >/dev/null 2>&1
   ) || { echo "build $name failed: run the flutter build command in release.sh by hand to see why" >&2; exit 2; }
   mkdir -p "$out/$name"

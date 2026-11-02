@@ -44,7 +44,7 @@ class CaptureBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) => switch (CaptureSession.of(context).stage) {
     CaptureStage.starting => const Padding(
-      padding: EdgeInsets.all(LukitasTokens.space5),
+      padding: EdgeInsets.all(WambitoTokens.space5),
       child: Center(child: QuietSpinner(size: 28)),
     ),
     CaptureStage.offer => const CaptureOfferBody(),

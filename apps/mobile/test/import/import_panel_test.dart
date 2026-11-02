@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/import/import_panel.dart';
-import 'package:lukitas/import/import_state.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/import/import_panel.dart';
+import 'package:wambito/import/import_state.dart';
 
 import '../support/ui_app.dart';
 import 'fakes.dart';

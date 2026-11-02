@@ -1,11 +1,11 @@
 import { useTranslations } from "use-intl";
 import { useLocale } from "../../i18n/IntlProvider.tsx";
-import { Lukas } from "../../lukas/Lukas.tsx";
-import { LiveLukasBoundary, useLiveLukasReady } from "../../lukas/live-support.tsx";
-import { TravelingLukas as TravelingLukas2D } from "../../lukas/TravelingLukas.tsx";
 import { APP_ORIGIN, COMING_SOON } from "../../site/config.ts";
 import { cx } from "../../ui/cx.ts";
 import { PressLink } from "../../ui/PressLink.tsx";
+import { LiveWambiBoundary, useLiveWambiReady } from "../../wambi/live-support.tsx";
+import { TravelingWambi as TravelingWambi2D } from "../../wambi/TravelingWambi.tsx";
+import { Wambi } from "../../wambi/Wambi.tsx";
 import { WhatsNext } from "../roadmap/WhatsNext.tsx";
 import { Faq } from "./Faq.tsx";
 import { Footer } from "./Footer.tsx";
@@ -19,23 +19,23 @@ import { UseItYourWay } from "./UseItYourWay.tsx";
 import "./landing.css";
 
 /**
- * The live, 2.5D Lukas (the founder's sprite sheets plus CSS depth), mounted once the page has
- * loaded and the browser is idle. He stands on the page's Lukas spots (hero → ways → how it works
+ * The live, 2.5D Wambi (the founder's sprite sheets plus CSS depth), mounted once the page has
+ * loaded and the browser is idle. He stands on the page's Wambi spots (hero → ways → how it works
  * → FAQ → closing) in each spot's mood. Until then, under reduced motion and without JavaScript,
- * the prerendered 2D Lukas in the hero and the closing stays. (The 3D Lukas is an experiment in
- * `app/lukas/experimental/` and never loads here.)
+ * the prerendered 2D Wambi in the hero and the closing stays. (The 3D Wambi is an experiment in
+ * `app/wambi/experimental/` and never loads here.)
  */
-function TravelingLukas() {
-  const ready = useLiveLukasReady();
+function TravelingWambi() {
+  const ready = useLiveWambiReady();
   if (!ready) return null;
   return (
-    <LiveLukasBoundary>
-      <TravelingLukas2D />
-    </LiveLukasBoundary>
+    <LiveWambiBoundary>
+      <TravelingWambi2D />
+    </LiveWambiBoundary>
   );
 }
 
-/** The last nudge, where Lukas lands to celebrate. */
+/** The last nudge, where Wambi lands to celebrate. */
 function Closing() {
   const t = useTranslations("landing");
   const { locale } = useLocale();
@@ -51,12 +51,12 @@ function Closing() {
       <div className="lk-landing-closing">
         <span
           className="lk-landing-spot is-closing"
-          data-lukas-spot="closing"
-          data-lukas-pose="celebrate"
-          data-lukas-mood="celebrating"
+          data-wambi-spot="closing"
+          data-wambi-pose="celebrate"
+          data-wambi-mood="celebrating"
           aria-hidden="true"
         >
-          <Lukas mood="celebrating" size="100%" decorative deferUntilNear />
+          <Wambi mood="celebrating" size="100%" decorative deferUntilNear />
         </span>
         <h2 id="closing-title">{t("closing.title")}</h2>
         <p>{t(closingBody)}</p>
@@ -87,7 +87,7 @@ export function Landing() {
         <Closing />
       </main>
       <Footer />
-      <TravelingLukas />
+      <TravelingWambi />
     </div>
   );
 }

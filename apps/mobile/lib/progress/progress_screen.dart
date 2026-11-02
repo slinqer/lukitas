@@ -103,7 +103,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
           width: double.infinity,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: LukitasTokens.space3,
+            spacing: WambitoTokens.space3,
             children: [
               FieldCaption(l10n.emailLabel),
               WebTextField(
@@ -149,7 +149,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
                 onPressed: _passkey == _Passkey.busy ? null : _addPasskey,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  spacing: LukitasTokens.space2,
+                  spacing: WambitoTokens.space2,
                   children: [
                     const FingerprintIcon(),
                     Flexible(

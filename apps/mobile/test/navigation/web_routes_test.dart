@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/server_url.dart';
-import 'package:lukitas/home/home_screen.dart';
-import 'package:lukitas/ui/bottom_bar.dart';
-import 'package:lukitas/ui/category_row.dart';
-import 'package:lukitas/ui/press_button.dart';
+import 'package:wambito/api/server_url.dart';
+import 'package:wambito/home/home_screen.dart';
+import 'package:wambito/ui/bottom_bar.dart';
+import 'package:wambito/ui/category_row.dart';
+import 'package:wambito/ui/press_button.dart';
 
 import '../budgets/budgets_test.dart' show pumpBudgets;
 import '../budgets/fakes.dart';
@@ -169,7 +169,7 @@ void main() {
       },
     );
 
-    testWidgets('/import shows the page\'s head: Lukitas and "Trae tu historial"', (tester) async {
+    testWidgets('/import shows the page\'s head: Wambito and "Trae tu historial"', (tester) async {
       final env = await pumpSettingsApp(tester, homeRepo: _withMovements());
       env.router.go('/import');
       await tester.pumpAndSettle();
@@ -279,7 +279,7 @@ void main() {
       final env = await pumpSettingsApp(tester, location: '/settings');
       await _scrollTo(tester, find.byKey(const Key('settings.web')));
       expect(find.bySemanticsLabel('Más en la web'), findsWidgets);
-      expect(find.bySemanticsLabel('La página de Lukitas y lo que viene.'), findsOneWidget);
+      expect(find.bySemanticsLabel('La página de Wambito y lo que viene.'), findsOneWidget);
       // The card names no page of the app (time and money, the passkeys and the import are cards of the
       // page itself now).
       expect(find.bySemanticsLabel(RegExp('recurrentes')), findsNothing);

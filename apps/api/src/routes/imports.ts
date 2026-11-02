@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { createRoute, z } from "@hono/zod-openapi";
-import { SUPPORTED_CURRENCIES } from "@lukas/core";
+import { SUPPORTED_CURRENCIES } from "@wambito/core";
 import {
   accounts,
   categories,
@@ -10,8 +10,8 @@ import {
   type Tx,
   transactions,
   withUser,
-} from "@lukas/db";
-import { and, asc, eq, inArray, ne } from "@lukas/db/orm";
+} from "@wambito/db";
+import { and, asc, eq, inArray, ne } from "@wambito/db/orm";
 import {
   averageMonthlySpending,
   averageWindow,
@@ -23,7 +23,7 @@ import {
   parseBudgeCsv,
   rowHashes,
   UnrecognizedFormatError,
-} from "@lukas/importers";
+} from "@wambito/importers";
 import type { AppDeps } from "../deps.ts";
 import { jsonResponse, problems } from "../http/openapi.ts";
 import { ApiError } from "../http/problem.ts";

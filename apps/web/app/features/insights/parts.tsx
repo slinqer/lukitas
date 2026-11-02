@@ -1,4 +1,4 @@
-import type { Month } from "@lukas/core";
+import type { Month } from "@wambito/core";
 import { motion } from "motion/react";
 import { type ReactNode, useId, useSyncExternalStore } from "react";
 import { useTranslations } from "use-intl";

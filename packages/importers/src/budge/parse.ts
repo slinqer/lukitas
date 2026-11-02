@@ -1,4 +1,4 @@
-import { InvalidAmountError, type IsoDate, isIsoDate, parseDecimalToMinor } from "@lukas/core";
+import { InvalidAmountError, type IsoDate, isIsoDate, parseDecimalToMinor } from "@wambito/core";
 import { parse } from "csv-parse/sync";
 
 export interface BudgeRow {

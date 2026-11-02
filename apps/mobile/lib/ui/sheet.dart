@@ -132,17 +132,17 @@ class StuckGaps {
 
   /// The recurring form, `gap-(--space-3)`: its footer sits flush on the sheet's padding
   /// (calibrated against its picture).
-  static const recurring = StuckGaps(form: LukitasTokens.space3, bottom: 0);
+  static const recurring = StuckGaps(form: WambitoTokens.space3, bottom: 0);
 }
 
 /// How far a stuck footer's bottom edge sits above the sheet's bottom, under the footer's own
 /// padding: the sheet's padding (`space-4`) less the form's gap that the web's toast slot adds under
 /// the footer (calibrated against the budget sheet's picture). Not more with a system inset: the
 /// footer's own padding already clears it.
-const _stuckBottomGap = LukitasTokens.space4 - LukitasTokens.space2;
+const _stuckBottomGap = WambitoTokens.space4 - WambitoTokens.space2;
 
 /// The gap the web's form (`gap-(--space-2)`) leaves between its last row and the stuck footer.
-const _formGap = LukitasTokens.space2;
+const _formGap = WambitoTokens.space2;
 
 /// What the scrolling part of a sheet with a stuck footer is clipped to: its own box, and 3px more
 /// below. The web's footer (`position: sticky`, `z-index: 1`) used to be pushed up by the sheet's
@@ -199,10 +199,10 @@ class _LkSheetRoute<T> extends PopupRoute<T> {
   final CapturedThemes themes;
 
   @override
-  Duration get transitionDuration => LukitasTokens.durationSheet;
+  Duration get transitionDuration => WambitoTokens.durationSheet;
 
   @override
-  Duration get reverseTransitionDuration => LukitasTokens.durationSheet;
+  Duration get reverseTransitionDuration => WambitoTokens.durationSheet;
 
   // The sheet draws its own backdrop: the web's fades with easeInOut, and a tap on it closes.
   @override
@@ -524,7 +524,7 @@ class _SheetPageState extends State<_SheetPage> with SingleTickerProviderStateMi
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
-          spacing: LukitasTokens.space2,
+          spacing: WambitoTokens.space2,
           children: [
             Flexible(
               // Under whatever the sheet is wrapped in: its title may follow its state.
@@ -547,13 +547,13 @@ class _SheetPageState extends State<_SheetPage> with SingleTickerProviderStateMi
                       final text = widget.titleOf?.call(context) ?? widget.title;
                       final fits =
                           _lineWidth(context, text, LkText.title) +
-                              LukitasTokens.space2 +
+                              WambitoTokens.space2 +
                               _TitleTag.widthOf(context, tag) <=
                           constraints.maxWidth;
                       if (!fits) return title;
                       return Row(
                         mainAxisSize: MainAxisSize.min,
-                        spacing: LukitasTokens.space2,
+                        spacing: WambitoTokens.space2,
                         children: [
                           Flexible(child: title),
                           _TitleTag(tag),
@@ -583,7 +583,7 @@ class _SheetPageState extends State<_SheetPage> with SingleTickerProviderStateMi
     final safe = MediaQuery.viewPaddingOf(context).bottom;
     final footer = widget.footer;
     final physics = _dragging ? const NeverScrollableScrollPhysics() : null;
-    const side = LukitasTokens.space3;
+    const side = WambitoTokens.space3;
     final toasts = const ToastSlot();
 
     final Widget content;
@@ -591,7 +591,7 @@ class _SheetPageState extends State<_SheetPage> with SingleTickerProviderStateMi
       // The whole sheet scrolls, `max-h-[90dvh] overflow-y-auto`. The toast's slot is the last
       // child of the flex column, so the gap above it counts even when it is empty.
       final stuck = widget.stuck;
-      final bottom = safe > LukitasTokens.space4 ? safe : LukitasTokens.space4;
+      final bottom = safe > WambitoTokens.space4 ? safe : WambitoTokens.space4;
       final scroll = SingleChildScrollView(
         controller: _scroll,
         physics: physics,
@@ -607,7 +607,7 @@ class _SheetPageState extends State<_SheetPage> with SingleTickerProviderStateMi
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: LukitasTokens.space2,
+          spacing: WambitoTokens.space2,
           children: [_header(context), ...widget.children, if (stuck == null) toasts],
         ),
       );
@@ -645,11 +645,11 @@ class _SheetPageState extends State<_SheetPage> with SingleTickerProviderStateMi
     } else {
       // The header, what is pinned under it, a scrolling middle, then the footer, always in view.
       content = ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: screen.height - LukitasTokens.space5),
+        constraints: BoxConstraints(maxHeight: screen.height - WambitoTokens.space5),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: LukitasTokens.space2,
+          spacing: WambitoTokens.space2,
           children: [
             Padding(padding: const EdgeInsets.fromLTRB(side, 10, side, 0), child: _header(context)),
             if (widget.pinned.isNotEmpty)
@@ -657,7 +657,7 @@ class _SheetPageState extends State<_SheetPage> with SingleTickerProviderStateMi
                 padding: const EdgeInsets.symmetric(horizontal: side),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  spacing: LukitasTokens.space2,
+                  spacing: WambitoTokens.space2,
                   children: widget.pinned,
                 ),
               ),
@@ -679,7 +679,7 @@ class _SheetPageState extends State<_SheetPage> with SingleTickerProviderStateMi
         key: _panelKey,
         decoration: BoxDecoration(
           color: colors.surface,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(LukitasTokens.radiusXl)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(WambitoTokens.radiusXl)),
         ),
         child: content,
       ),
@@ -690,14 +690,14 @@ class _SheetPageState extends State<_SheetPage> with SingleTickerProviderStateMi
   /// shows a divider and its content fades in under it.
   Widget _body(BuildContext context, ScrollPhysics? physics, Widget toasts) {
     final colors = context.lkColors;
-    const side = LukitasTokens.space3;
+    const side = WambitoTokens.space3;
     Widget scroll = SingleChildScrollView(
       // Kept by its key when the fade below wraps it: rebuilt instead, under the finger, it dropped
       // the drag that had just started the scroll, and the content never scrolled.
       key: _bodyKey,
       controller: _scroll,
       physics: physics,
-      padding: const EdgeInsets.fromLTRB(side, 0, side, LukitasTokens.space1),
+      padding: const EdgeInsets.fromLTRB(side, 0, side, WambitoTokens.space1),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -711,7 +711,7 @@ class _SheetPageState extends State<_SheetPage> with SingleTickerProviderStateMi
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [Color(0x00000000), Color(0xFF000000)],
-        ).createShader(Rect.fromLTWH(0, 0, bounds.width, LukitasTokens.space4)),
+        ).createShader(Rect.fromLTWH(0, 0, bounds.width, WambitoTokens.space4)),
         child: scroll,
       );
     }
@@ -902,10 +902,10 @@ class _SheetFooter extends StatelessWidget {
     final colors = context.lkColors;
     return Container(
       padding: EdgeInsets.fromLTRB(
-        LukitasTokens.space3,
-        compact ? LukitasTokens.space1 : LukitasTokens.space2,
-        LukitasTokens.space3,
-        (safeBottom > LukitasTokens.space3 ? safeBottom : LukitasTokens.space3) + bottomGap,
+        WambitoTokens.space3,
+        compact ? WambitoTokens.space1 : WambitoTokens.space2,
+        WambitoTokens.space3,
+        (safeBottom > WambitoTokens.space3 ? safeBottom : WambitoTokens.space3) + bottomGap,
       ),
       decoration: BoxDecoration(
         color: colors.surface,
@@ -914,7 +914,7 @@ class _SheetFooter extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: compact ? LukitasTokens.space1 : LukitasTokens.space2,
+        spacing: compact ? WambitoTokens.space1 : WambitoTokens.space2,
         children: children,
       ),
     );

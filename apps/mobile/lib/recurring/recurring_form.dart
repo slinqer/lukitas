@@ -11,7 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../add/keypad_input.dart';
 import '../add/more_options.dart' show ClearableDate, DateField, FieldLabel;
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../home/category_look.dart';
 import '../home/home_format.dart';
 import '../home/home_repository.dart';
@@ -375,10 +375,10 @@ class _FormBodyState extends State<_FormBody> {
       final yearly = form.frequency == RecurrenceFrequencyEnum.yearly;
       final choices = form.choices;
       return Padding(
-        padding: const EdgeInsets.only(top: LukitasTokens.space2),
+        padding: const EdgeInsets.only(top: WambitoTokens.space2),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: LukitasTokens.space3,
+          spacing: WambitoTokens.space3,
           children: [
             SegmentedControl<_Kind>(
               label: l10n.recurringFormKindLabel,
@@ -405,7 +405,7 @@ class _FormBodyState extends State<_FormBody> {
               tone: form.kind == _Kind.expense ? AmountTone.expense : AmountTone.income,
               invalid: field == RecurrenceField.amount,
               // `gap-(--space-3)` of the form sits between the figure and the keypad.
-              gap: LukitasTokens.space3,
+              gap: WambitoTokens.space3,
               // A phone up to 844 px tall: the tighter keys, as the budget sheet has.
               compact: MediaQuery.sizeOf(context).height < compactFooterBelow,
             ),
@@ -573,7 +573,7 @@ class _Grid2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(
     crossAxisAlignment: CrossAxisAlignment.start,
-    spacing: LukitasTokens.space2,
+    spacing: WambitoTokens.space2,
     children: [
       Expanded(child: first),
       Expanded(child: second ?? const SizedBox.shrink()),
@@ -705,7 +705,7 @@ class _ChoiceRow extends StatelessWidget {
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 44),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: LukitasTokens.space2),
+            padding: const EdgeInsets.symmetric(horizontal: WambitoTokens.space2),
             child: Row(
               children: [
                 Expanded(
@@ -744,13 +744,13 @@ class _FormFooter extends StatelessWidget {
       return IntrinsicHeight(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: LukitasTokens.space2,
+          spacing: WambitoTokens.space2,
           children: [
             if (form.editing != null)
               PressButton(
                 key: const Key('recurring.delete'),
                 tone: PressTone.secondary,
-                horizontalPadding: LukitasTokens.space4,
+                horizontalPadding: WambitoTokens.space4,
                 onPressed: form.saving ? null : () => form.askToDelete(context),
                 child: Text(
                   LkText.upperCase(l10n.recurringFormDelete),
@@ -763,7 +763,7 @@ class _FormFooter extends StatelessWidget {
                 child: PressButton.text(
                   l10n.recurringFormSave,
                   key: const Key('recurring.save'),
-                  horizontalPadding: LukitasTokens.space4,
+                  horizontalPadding: WambitoTokens.space4,
                   onPressed: form.saving ? null : () => unawaited(form.save(context)),
                 ),
               ),

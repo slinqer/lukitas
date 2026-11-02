@@ -2,7 +2,7 @@
 // API, Postgres, Mailpit), as docs/mobile/setup.md describes:
 //
 //   flutter test integration_test/welcome_test.dart -d emulator-5554 \
-//     --dart-define=LUKITAS_SERVER=http://10.0.2.2:3000 \
+//     --dart-define=WAMBITO_SERVER=http://10.0.2.2:3000 \
 //     --dart-define=MAILPIT_URL=http://10.0.2.2:8025
 //
 // A new email user (the code arrives in Mailpit) is sent to the welcome and goes through every step
@@ -13,17 +13,17 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:lukitas/api/session.dart';
-import 'package:lukitas/home/home_screen.dart';
-import 'package:lukitas/main.dart' as app;
+import 'package:wambito/api/session.dart';
+import 'package:wambito/home/home_screen.dart';
+import 'package:wambito/main.dart' as app;
 
-const _server = String.fromEnvironment('LUKITAS_SERVER', defaultValue: 'http://10.0.2.2:3000');
+const _server = String.fromEnvironment('WAMBITO_SERVER', defaultValue: 'http://10.0.2.2:3000');
 const _mailpit = String.fromEnvironment('MAILPIT_URL', defaultValue: 'http://10.0.2.2:8025');
 
 final _http = Dio(BaseOptions(validateStatus: (_) => true));
 
 String _freshEmail(String label) =>
-    '$label-${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}@lukas.test';
+    '$label-${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}@wambito.test';
 
 Future<void> _pumpUntil(
   WidgetTester tester,

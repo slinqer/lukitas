@@ -2,8 +2,8 @@
   "v": 3,
   "layout": "files",
   "createdOnFiles": { "v": 1, "at": "2026-10-21T10:21:25Z" },
-  "title": "Lukitas",
-  "namespace": "Lukas",
+  "title": "Wambito",
+  "namespace": "Wambito",
   "libraries": [],
   "sections": {},
   "groups": ["Mascot"],
@@ -11,10 +11,10 @@
     "Mascot": {
       "name": "Mascot",
       "tile": "l",
-      "order": ["lukas-mascot-concept.webp"],
+      "order": ["wambi-mascot-concept.webp"],
       "files": {
-        "lukas-mascot-concept.webp": {
-          "name": "lukas-mascot-concept.webp",
+        "wambi-mascot-concept.webp": {
+          "name": "wambi-mascot-concept.webp",
           "blob": "90bfc4b6a99531194e5e101de7522d7c",
           "size": 149166,
           "type": "image/webp"

@@ -9,7 +9,7 @@ COPY packages/core/package.json packages/core/
 COPY packages/db/package.json packages/db/
 COPY packages/importers/package.json packages/importers/
 COPY apps/api/package.json apps/api/
-RUN pnpm install --frozen-lockfile --filter "@lukas/api..."
+RUN pnpm install --frozen-lockfile --filter "@wambito/api..."
 
 COPY tsconfig.base.json ./
 COPY docker docker
@@ -17,4 +17,4 @@ COPY packages packages
 COPY apps/api apps/api
 
 EXPOSE 3000
-CMD ["pnpm", "--filter", "@lukas/api", "start"]
+CMD ["pnpm", "--filter", "@wambito/api", "start"]

@@ -1,16 +1,18 @@
-<p align="center"><img src="docs/brand/lukas-banner.png" alt="Lukitas, the gold coin mascot, waving next to the Lukitas wordmark: Tus lukas, por fin claras." width="100%"></p>
+<p align="center"><img src="docs/brand/wambi-banner.png" alt="Wambi, the gold coin mascot, waving next to the Wambito wordmark: Tus lukas, por fin claras." width="100%"></p>
 
-# Lukitas
+# Wambito
 
 **Your budget, and you'll actually enjoy looking after it.** Log an expense in seconds and see where your money goes: a monthly budget on the web, an Android and iOS app with widgets (soon), and an MCP server so your AI assistant (Claude, ChatGPT…) can help you with your money (soon).
 
-Lukitas is **free forever and open source** ([AGPL-3.0](LICENSE)): anyone can read the code and check what it does with your data.
+Wambito is **free forever and open source** ([AGPL-3.0](LICENSE)): anyone can read the code and check what it does with your data.
 
-## Why "Lukitas"?
+## Why "Wambito"?
 
-In Colombia we call money **lukas** (spelled *lucas* in Chile, Argentina and Peru). One *luka* is a thousand pesos, and from there it means money in general: "¿cuántas lukas te costó?" (how much did it cost you?), "estoy sin lukas" (I'm broke), "me faltan unas lukas para fin de mes" (I'm a few bucks short until the end of the month). It's a warm, everyday word, which is exactly how we want managing your finances to feel.
+**Wambito** comes from *guambito*, how people in Ibagué and Tolima call a kid. The W spelling is closer to the Quechua *wambra*.
 
-**Lukitas is the affectionate diminutive: little lukas.** It is also the project's mascot, a gold coin that keeps you company in the app: it cheers when you log an expense, warns you when a category is getting close to its limit, and celebrates when you close the month within budget. The goal is for looking after your money to feel good, not like homework.
+**Wambi is the project's mascot**, a gold coin that keeps you company in the app. It reacts to how your month is going, with short messages when a category is close to or over its limit and when you close the month within budget. The goal is for looking after your money to feel good, not like homework.
+
+The app still talks about money the Colombian way: in Colombia we call money **lukas** (spelled *lucas* in Chile, Argentina and Peru), and one *luka* is a thousand pesos. You will see "Tus lukas, por fin claras" on the Spanish landing page.
 
 ## What it does
 
@@ -44,23 +46,23 @@ Requirements: Node 22, pnpm 12 and Docker.
 pnpm install
 cp .env.example .env
 docker compose up -d          # Postgres, Mailpit and the API on http://localhost:3000/api
-pnpm --filter @lukas/api seed # creates dev@lukas.test with sample data
+pnpm --filter @wambito/api seed # creates dev@wambito.test with sample data
 ```
 
 Sign in without a password: request a code, then open Mailpit at http://localhost:8025 to read it.
 
 ```bash
 curl -X POST localhost:3000/api/auth/email-otp/send-verification-otp \
-  -H 'content-type: application/json' -d '{"email":"dev@lukas.test","type":"sign-in"}'
+  -H 'content-type: application/json' -d '{"email":"dev@wambito.test","type":"sign-in"}'
 curl -i -X POST localhost:3000/api/auth/sign-in/email-otp \
-  -H 'content-type: application/json' -d '{"email":"dev@lukas.test","otp":"<code>"}'
+  -H 'content-type: application/json' -d '{"email":"dev@wambito.test","otp":"<code>"}'
 # use the set-auth-token response header as a bearer token:
 curl localhost:3000/api/v1/summary -H 'authorization: Bearer <token>'
 ```
 
 The API is documented at http://localhost:3000/api/openapi.json. Its routes live under the path of `API_URL` (`/api` in `.env.example`, so the web app can proxy `/api` from its own origin).
 
-To run the API outside Docker, start only the services with `docker compose up -d postgres mailpit` and run `pnpm --filter @lukas/api dev`. On the host, Postgres listens on port 5433 and Mailpit SMTP on 1026, so they do not clash with a local Postgres or mail bridge.
+To run the API outside Docker, start only the services with `docker compose up -d postgres mailpit` and run `pnpm --filter @wambito/api dev`. On the host, Postgres listens on port 5433 and Mailpit SMTP on 1026, so they do not clash with a local Postgres or mail bridge.
 
 **When you stop developing, stop the dev containers** to save the machine's resources:
 
@@ -68,17 +70,17 @@ To run the API outside Docker, start only the services with `docker compose up -
 docker compose stop
 ```
 
-Run it from the repository root. It stops only this dev stack (`lukas-api`, `lukas-postgres`, `lukas-mailpit`) and keeps its data; `docker compose up -d` brings it back. The personal install (`lukitas-personal-*`, see [deploy/personal](deploy/personal/README.md)) is a separate stack and keeps running. Never use `docker compose down -v` here: `-v` deletes the dev database volume.
+Run it from the repository root. It stops only this dev stack (`lukas-api`, `lukas-postgres`, `lukas-mailpit`, named after the checkout folder; renamed in part 2b) and keeps its data; `docker compose up -d` brings it back. The personal install (`lukitas-personal-*`, see [deploy/personal](deploy/personal/README.md)) is a separate stack and keeps running. Never use `docker compose down -v` here: `-v` deletes the dev database volume.
 
 ### Web app
 
 With the stack up (`docker compose up -d`), start the web app:
 
 ```bash
-pnpm --filter @lukas/web dev   # http://localhost:5173
+pnpm --filter @wambito/web dev   # http://localhost:5173
 ```
 
-The landing is at `/`, the app at `/sign-in` and `/app`, and a demo without an account at `/demo`. Vite proxies `/api` to the API on port 3000, so the browser talks to one origin (`API_URL` and `WEB_URL` in `.env` point at it). Sign in with any email and read the code in Mailpit at http://localhost:8025. The components have stories: `pnpm --filter @lukas/web storybook` (http://localhost:6006).
+The landing is at `/`, the app at `/sign-in` and `/app`, and a demo without an account at `/demo`. Vite proxies `/api` to the API on port 3000, so the browser talks to one origin (`API_URL` and `WEB_URL` in `.env` point at it). Sign in with any email and read the code in Mailpit at http://localhost:8025. The components have stories: `pnpm --filter @wambito/web storybook` (http://localhost:6006).
 
 ### Tests
 
@@ -86,22 +88,22 @@ The landing is at `/`, the app at `/sign-in` and `/app`, and a demo without an a
 pnpm lint && pnpm typecheck && pnpm test
 ```
 
-`pnpm test` runs the unit tests, the API's integration tests and every Storybook story (rendered in Chromium, with its interactions and an accessibility check). The first time, install the browser: `pnpm --filter @lukas/web exec playwright install chromium`.
+`pnpm test` runs the unit tests, the API's integration tests and every Storybook story (rendered in Chromium, with its interactions and an accessibility check). The first time, install the browser: `pnpm --filter @wambito/web exec playwright install chromium`.
 
 Integration tests start a throwaway Postgres in Docker (testcontainers). Without Docker, use the Postgres binaries on your PATH instead:
 
 ```bash
-LUKAS_TEST_DB=local pnpm test
+WAMBITO_TEST_DB=local pnpm test
 ```
 
 End-to-end tests drive the web app in Chromium at phone and desktop sizes, against the dev stack. They read the sample data's months (September and October 2026) against a fixed date, so start the API with its clock pinned to it, then run them (Playwright starts `pnpm dev` unless it is already running):
 
 ```bash
 E2E_NOW=2026-10-21T15:00:00Z docker compose up -d --build
-pnpm --filter @lukas/web e2e
+pnpm --filter @wambito/web e2e
 ```
 
-A spec that reads a month pins its page the same way, with `pinClock(page)` from `apps/web/e2e/helpers.ts`. The landing is tested as it ships, built first: `pnpm --filter @lukas/web e2e:landing` (the full site), `e2e:landing-only` and `e2e:landing-only-app` (the landing-only release, without and with an app). CI runs all of these on every pull request.
+A spec that reads a month pins its page the same way, with `pinClock(page)` from `apps/web/e2e/helpers.ts`. The landing is tested as it ships, built first: `pnpm --filter @wambito/web e2e:landing` (the full site), `e2e:landing-only` and `e2e:landing-only-app` (the landing-only release, without and with an app). CI runs all of these on every pull request.
 
 ## Deploying
 
@@ -111,8 +113,8 @@ A spec that reads a month pins its page the same way, with `pinClock(page)` from
 
 ## Self-hosting
 
-For now Lukitas is offered as a hosted service, and there are no docs for running your own instance beyond the personal install above. If you're interested, open an issue and we'll take it into account.
+For now Wambito is offered as a hosted service, and there are no docs for running your own instance beyond the personal install above. If you're interested, open an issue and we'll take it into account.
 
 ## License
 
-[AGPL-3.0](LICENSE). If you offer a modified Lukitas as a service, you must publish your changes.
+[AGPL-3.0](LICENSE). If you offer a modified Wambito as a service, you must publish your changes.

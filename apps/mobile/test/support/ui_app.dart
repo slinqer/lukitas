@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:lukitas/l10n/app_localizations.dart';
-import 'package:lukitas/theme/theme.dart';
-import 'package:lukitas/ui/toast.dart';
+import 'package:wambito/l10n/app_localizations.dart';
+import 'package:wambito/theme/theme.dart';
+import 'package:wambito/ui/toast.dart';
 
 /// A component in the app's theme and copy, for the behaviour tests of `lib/ui` (how each looks is
 /// test/parity's job), with a host for the toasts it shows. [width] is the phone's width in logical

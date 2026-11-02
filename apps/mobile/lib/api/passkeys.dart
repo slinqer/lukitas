@@ -17,7 +17,7 @@ abstract interface class Passkeys {
 
   /// Like [get], but only for a passkey the phone can offer at once (Credential Manager's
   /// "prefer immediately available credentials"): when there is none, nothing is shown and it
-  /// throws `NO_CREDENTIAL` at once. A provider such as Proton Pass that holds a Lukitas passkey
+  /// throws `NO_CREDENTIAL` at once. A provider such as Proton Pass that holds a Wambito passkey
   /// (made on the web, say) has its sheet appear; closing it throws `AUTH_CANCELLED`.
   Future<String> getAvailable(String optionsJson);
 
@@ -26,11 +26,11 @@ abstract interface class Passkeys {
   Future<String> create(String optionsJson);
 }
 
-/// [Passkeys] over the `lukitas/passkeys` platform channel.
+/// [Passkeys] over the `wambito/passkeys` platform channel.
 class PlatformPasskeys implements Passkeys {
   const PlatformPasskeys();
 
-  static const _channel = MethodChannel('lukitas/passkeys');
+  static const _channel = MethodChannel('wambito/passkeys');
 
   static const _codes = {'cancelled': 'AUTH_CANCELLED', 'no_credential': 'NO_CREDENTIAL'};
 

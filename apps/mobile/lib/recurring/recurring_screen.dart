@@ -8,17 +8,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../add/add_sheet.dart';
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../capture/capture_sheet.dart';
 import '../home/home_controller.dart';
-import '../home/lukitas_face.dart';
+import '../home/wambi_face.dart';
 import '../home/screen_error.dart';
 import '../home/shell_navigation.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/text_styles.dart';
 import '../theme/tokens.g.dart';
 import '../ui/lk_theme.dart';
-import '../ui/lukas_bubble.dart';
+import '../ui/wambi_bubble.dart';
 import '../ui/manage_page.dart';
 import '../ui/page_header.dart';
 import '../ui/press_button.dart';
@@ -89,14 +89,14 @@ class RecurringScreen extends ConsumerWidget {
       onNavigate: (to) => navigateFromShell(context, ref, to, current: 'recurring'),
       header: header,
       // `<main className="flex flex-col gap-(--space-3)">`, with no room under it.
-      mainGap: LukitasTokens.space3,
+      mainGap: WambitoTokens.space3,
       mainBottom: 0,
       children: [
         Wrap(
           alignment: WrapAlignment.spaceBetween,
           crossAxisAlignment: WrapCrossAlignment.center,
-          spacing: LukitasTokens.space2,
-          runSpacing: LukitasTokens.space2,
+          spacing: WambitoTokens.space2,
+          runSpacing: WambitoTokens.space2,
           children: [
             Semantics(
               header: true,
@@ -108,7 +108,7 @@ class RecurringScreen extends ConsumerWidget {
               onPressed: data == null ? null : open,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                spacing: LukitasTokens.space2,
+                spacing: WambitoTokens.space2,
                 children: [
                   const ExcludeSemantics(child: Text('＋')),
                   Text(LkText.upperCase(l10n.recurringAdd)),
@@ -120,12 +120,12 @@ class RecurringScreen extends ConsumerWidget {
         ?error,
         if (error == null && data != null && rules != null)
           if (rules.isEmpty)
-            LukasBubble(message: l10n.recurringEmpty, mood: LukitasMood.happy)
+            WambiBubble(message: l10n.recurringEmpty, mood: WambiMood.happy)
           else ...[
             Text(l10n.recurringLead, style: LkText.bodySm.copyWith(color: colors.inkMuted)),
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: LukitasTokens.space2,
+              spacing: WambitoTokens.space2,
               children: [
                 for (final rule in rules)
                   RecurringRow(

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/auth_api.dart';
-import 'package:lukitas/api/session.dart';
-import 'package:lukitas/home/home_screen.dart';
-import 'package:lukitas/progress/progress_screen.dart';
-import 'package:lukitas/router.dart';
-import 'package:lukitas/ui/press_button.dart';
+import 'package:wambito/api/auth_api.dart';
+import 'package:wambito/api/session.dart';
+import 'package:wambito/home/home_screen.dart';
+import 'package:wambito/progress/progress_screen.dart';
+import 'package:wambito/router.dart';
+import 'package:wambito/ui/press_button.dart';
 
 import '../settings/harness.dart';
 
@@ -131,7 +131,7 @@ void main() {
 
       expect(
         find.text(
-          'Lukitas todavía no está abierto al público. Si quieres probarlo, escríbele a quien te invitó.',
+          'Wambito todavía no está abierto al público. Si quieres probarlo, escríbele a quien te invitó.',
         ),
         findsOneWidget,
       );

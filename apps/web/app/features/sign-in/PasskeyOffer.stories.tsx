@@ -52,7 +52,7 @@ export const Offer: Story = {
       ),
     ).toBeVisible();
     await expect(
-      points.getByText("Tu huella o tu cara solo la desbloquean. Lukitas nunca las recibe."),
+      points.getByText("Tu huella o tu cara solo la desbloquean. Wambito nunca las recibe."),
     ).toBeVisible();
     await expect(
       points.getByText("Se sincroniza con tus otros dispositivos que usan la misma cuenta."),

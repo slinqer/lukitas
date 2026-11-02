@@ -1,4 +1,4 @@
-import { addMonths, type Month } from "@lukas/core";
+import { addMonths, type Month } from "@wambito/core";
 import { formatMonth, intlTag, type Locale, monthInSentence } from "../../i18n/format.ts";
 
 /** How many months the insights look at, ending at the month on screen. */

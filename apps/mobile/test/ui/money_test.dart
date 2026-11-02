@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/theme/tokens.g.dart';
-import 'package:lukitas/ui/money.dart';
+import 'package:wambito/theme/tokens.g.dart';
+import 'package:wambito/ui/money.dart';
 
 /// `Money`'s behaviour, as apps/web/app/ui/Money.tsx and its stories define it. How it looks is
 /// test/parity/money_parity_test.dart's job.
@@ -55,14 +55,14 @@ void main() {
     expect(_shown(tester), '562,92\u00a0€');
 
     await tester.pumpWidget(money(55684));
-    await tester.pump(LukitasTokens.durationCountUp * 0.2);
+    await tester.pump(WambitoTokens.durationCountUp * 0.2);
     // Mid-count: the drawn figure is on its way, the spoken one is already final.
     expect(_shown(tester), isNot('556,84\u00a0€'));
     expect(_shown(tester), isNot('562,92\u00a0€'));
     expect(find.bySemanticsLabel('556,84\u00a0€'), findsOneWidget);
     expect(find.bySemanticsLabel(RegExp('562')), findsNothing);
 
-    await tester.pump(LukitasTokens.durationCountUp);
+    await tester.pump(WambitoTokens.durationCountUp);
     expect(_shown(tester), '556,84\u00a0€');
     handle.dispose();
   });
@@ -88,7 +88,7 @@ void main() {
       _app(const Money(cents: 56292, currency: 'EUR', animate: true, countFrom: 0)),
     );
     expect(_shown(tester), '0,00\u00a0€');
-    await tester.pump(LukitasTokens.durationCountUp * 0.5);
+    await tester.pump(WambitoTokens.durationCountUp * 0.5);
     expect(_shown(tester), isNot('0,00\u00a0€'));
     await tester.pumpAndSettle();
     expect(_shown(tester), '562,92\u00a0€');

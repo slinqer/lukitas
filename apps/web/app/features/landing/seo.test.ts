@@ -15,15 +15,15 @@ describe("roadmapMeta", () => {
   it("gives each language its own title, description and URL", () => {
     const es = roadmapMeta("es");
     const en = roadmapMeta("en");
-    expect(es).toContainEqual({ title: "Lukitas · Lo que viene" });
-    expect(en).toContainEqual({ title: "Lukitas · What's next" });
+    expect(es).toContainEqual({ title: "Wambito · Lo que viene" });
+    expect(en).toContainEqual({ title: "Wambito · What's next" });
     expect(metaContent(es, "name", "description")?.length).toBeGreaterThan(60);
     expect(metaContent(en, "name", "description")?.length).toBeGreaterThan(60);
     expect(metaContent(es, "property", "og:url")).toBe(`${SITE_ORIGIN}/roadmap`);
     expect(metaContent(en, "property", "og:url")).toBe(`${SITE_ORIGIN}/en/roadmap`);
-    expect(metaContent(es, "property", "og:title")).toBe("Lukitas · Lo que viene");
+    expect(metaContent(es, "property", "og:title")).toBe("Wambito · Lo que viene");
     expect(metaContent(es, "property", "og:image")).toBe(`${SITE_ORIGIN}/og-es.png`);
-    expect(metaContent(en, "property", "og:site_name")).toBe("Lukitas");
+    expect(metaContent(en, "property", "og:site_name")).toBe("Wambito");
   });
 
   it("does not repeat the landing's description", () => {
@@ -63,14 +63,14 @@ describe("Italian and Portuguese pages", () => {
   it("title and describe each page in its own language, at its own URL and share image", () => {
     const it = landingMeta("it");
     const pt = landingMeta("pt");
-    expect(it).toContainEqual({ title: "Lukitas · I tuoi soldi, finalmente chiari" });
-    expect(pt).toContainEqual({ title: "Lukitas · O teu dinheiro, finalmente claro" });
+    expect(it).toContainEqual({ title: "Wambito · I tuoi soldi, finalmente chiari" });
+    expect(pt).toContainEqual({ title: "Wambito · O teu dinheiro, finalmente claro" });
     expect(metaContent(it, "property", "og:url")).toBe(`${SITE_ORIGIN}/it`);
     expect(metaContent(pt, "property", "og:url")).toBe(`${SITE_ORIGIN}/pt`);
     expect(metaContent(it, "property", "og:image")).toBe(`${SITE_ORIGIN}/og-it.png`);
     expect(metaContent(pt, "property", "og:image")).toBe(`${SITE_ORIGIN}/og-pt.png`);
-    expect(roadmapMeta("it")).toContainEqual({ title: "Lukitas · In arrivo" });
-    expect(roadmapMeta("pt")).toContainEqual({ title: "Lukitas · O que vem aí" });
+    expect(roadmapMeta("it")).toContainEqual({ title: "Wambito · In arrivo" });
+    expect(roadmapMeta("pt")).toContainEqual({ title: "Wambito · O que vem aí" });
     expect(metaContent(roadmapMeta("it"), "property", "og:url")).toBe(`${SITE_ORIGIN}/it/roadmap`);
     expect(metaContent(roadmapMeta("pt"), "property", "og:url")).toBe(`${SITE_ORIGIN}/pt/roadmap`);
   });

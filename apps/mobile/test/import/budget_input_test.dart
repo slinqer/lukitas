@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/import/budget_input.dart';
+import 'package:wambito/import/budget_input.dart';
 
 /// The web's budget-input tests (apps/web/app/features/onboarding/onboarding.test.ts:
 /// `parseBudgetInput`, `formatBudgetTyping`), one for one, plus `draftFromCents`, which the import

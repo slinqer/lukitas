@@ -37,7 +37,7 @@ function pageMeta({ locale, path, title, description, imageAlt }: PageTags): Met
     { title },
     { name: "description", content: description },
     { property: "og:type", content: "website" },
-    { property: "og:site_name", content: "Lukitas" },
+    { property: "og:site_name", content: "Wambito" },
     { property: "og:title", content: title },
     { property: "og:description", content: description },
     { property: "og:url", content: url },
@@ -81,14 +81,14 @@ export function landingMeta(locale: Locale): MetaDescriptor[] {
 
 /**
  * Canonical and `hreflang` alternates (each page lists every language, itself included, plus
- * `x-default` → Spanish), and a preload for the hero's Lukas sprite so it isn't discovered late
+ * `x-default` → Spanish), and a preload for the hero's Wambi sprite so it isn't discovered late
  * through CSS.
  */
 export function landingLinks(locale: Locale): LinkDescriptor[] {
   return [
     ...pageLinks("landing", locale),
     ...landingFontPreloads(),
-    { rel: "preload", as: "image", href: "/lukas/wave.webp", type: "image/webp" },
+    { rel: "preload", as: "image", href: "/wambi/wave.webp", type: "image/webp" },
   ];
 }
 

@@ -5,11 +5,11 @@ import '../theme/tokens.g.dart';
 
 /// The design tokens of the current theme, for the web's components ported to `lib/ui`.
 extension LkThemeContext on BuildContext {
-  /// The theme's colours and edge shadows (`Theme.of(context).extension<LukitasTheme>()!`).
-  LukitasTheme get lk => Theme.of(this).extension<LukitasTheme>()!;
+  /// The theme's colours and edge shadows (`Theme.of(context).extension<WambitoTheme>()!`).
+  WambitoTheme get lk => Theme.of(this).extension<WambitoTheme>()!;
 
   /// The theme's colours.
-  LukitasColors get lkColors => lk.colors;
+  WambitoColors get lkColors => lk.colors;
 }
 
 /// Where Blink starts a text with a letter spacing of [spacing]: half the spacing in from the left

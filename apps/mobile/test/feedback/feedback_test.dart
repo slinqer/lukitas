@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/feedback/feedback.dart';
-import 'package:lukitas/theme/tokens.g.dart';
+import 'package:wambito/feedback/feedback.dart';
+import 'package:wambito/theme/tokens.g.dart';
 
 import 'fakes.dart';
 
@@ -122,7 +122,7 @@ void main() {
         }
         expect(starts, hasLength(13), reason: 'the start, 11 notches and the stop');
         const sweep = 520;
-        expect(LukitasTokens.durationHop.inMilliseconds, sweep);
+        expect(WambitoTokens.durationHop.inMilliseconds, sweep);
         for (var k = 1; k < 12; k++) {
           // Where the curve has covered k twelfths, found by bisection.
           var lo = 0.0, hi = 1.0;
@@ -394,7 +394,7 @@ void main() {
 
     setUp(() {
       calls.clear();
-      for (final name in ['lukitas/haptics', 'lukitas/sounds']) {
+      for (final name in ['wambito/haptics', 'wambito/sounds']) {
         messenger.setMockMethodCallHandler(MethodChannel(name), (call) async {
           calls.add(call);
           return null;
@@ -403,12 +403,12 @@ void main() {
     });
 
     tearDown(() {
-      for (final name in ['lukitas/haptics', 'lukitas/sounds']) {
+      for (final name in ['wambito/haptics', 'wambito/sounds']) {
         messenger.setMockMethodCallHandler(MethodChannel(name), null);
       }
     });
 
-    test('a pattern goes to lukitas/haptics as its timings and its primitives', () async {
+    test('a pattern goes to wambito/haptics as its timings and its primitives', () async {
       await const ChannelFeedbackPlatform().vibrate(hapticPatterns[FeedbackEvent.deleted]!);
       expect(calls.single.method, 'vibrate');
       final args = calls.single.arguments as Map<Object?, Object?>;
@@ -419,7 +419,7 @@ void main() {
       ]);
     });
 
-    test('a sound goes to lukitas/sounds as its asset', () async {
+    test('a sound goes to wambito/sounds as its asset', () async {
       await const ChannelFeedbackPlatform().play(FeedbackSound.paid);
       expect(calls.single.method, 'play');
       expect(calls.single.arguments, {'asset': 'assets/sounds/paid.mp3'});
@@ -434,7 +434,7 @@ void main() {
     });
 
     test('a phone with no such channel (a test, say) is not an error', () async {
-      messenger.setMockMethodCallHandler(const MethodChannel('lukitas/haptics'), null);
+      messenger.setMockMethodCallHandler(const MethodChannel('wambito/haptics'), null);
       await const ChannelFeedbackPlatform().vibrate(hapticPatterns[FeedbackEvent.undo]!);
     });
   });

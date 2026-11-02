@@ -26,7 +26,7 @@ describe("problemMessage", () => {
   it("explains that sign-in is closed to an address, in each language", () => {
     const closed = problem("sign_in_not_allowed", 403);
     expect(problemMessage(closed, tEs)).toBe(
-      "Lukitas todavía no está abierto al público. Si quieres probarlo, escríbele a quien te invitó.",
+      "Wambito todavía no está abierto al público. Si quieres probarlo, escríbele a quien te invitó.",
     );
     expect(problemMessage(closed, tEs)).toBe(es.errors.sign_in_not_allowed);
     expect(problemMessage(closed, tEn)).toBe(en.errors.sign_in_not_allowed);

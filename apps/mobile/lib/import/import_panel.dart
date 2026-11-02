@@ -3,7 +3,7 @@
 // and picker, reading, the preview and the result.
 import 'package:flutter/material.dart';
 
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../home/home_repository.dart' show HomeFailure;
 import '../l10n/app_localizations.dart';
 import '../recurring/recurring_row.dart' show formatRecurringDate;
@@ -75,7 +75,7 @@ class ImportPanel extends StatelessWidget {
     return switch (state) {
       ImportSources() => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: LukitasTokens.space4,
+        spacing: WambitoTokens.space4,
         children: [
           _Sources(onBudge: () => onSource(budge: true)),
           if (onFresh != null)
@@ -105,7 +105,7 @@ class ImportPanel extends StatelessWidget {
       ),
       ImportPreview() => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: LukitasTokens.space4,
+        spacing: WambitoTokens.space4,
         children: [
           _Preview(
             preview: state.preview,
@@ -183,7 +183,7 @@ class _Sources extends StatelessWidget {
         ),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
-          spacing: LukitasTokens.space3,
+          spacing: WambitoTokens.space3,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Flexible(
@@ -215,7 +215,7 @@ class _Sources extends StatelessWidget {
       explicitChildNodes: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: LukitasTokens.space2,
+        spacing: WambitoTokens.space2,
         children: [
           Semantics(
             header: true,
@@ -223,7 +223,7 @@ class _Sources extends StatelessWidget {
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: LukitasTokens.space2,
+            spacing: WambitoTokens.space2,
             children: [
               Pressable(
                 key: const Key('import.source.budge'),
@@ -248,7 +248,7 @@ class _Sources extends StatelessWidget {
                     child: SizedBox(
                       width: double.infinity,
                       child: Row(
-                        spacing: LukitasTokens.space3,
+                        spacing: WambitoTokens.space3,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(l10n.importSourceBudge, style: display.copyWith(fontSize: 18)),
@@ -289,7 +289,7 @@ class _BudgeHowTo extends StatelessWidget {
     final steps = [l10n.importBudgeStep1, l10n.importBudgeStep2, l10n.importBudgeStep3];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: LukitasTokens.space3,
+      spacing: WambitoTokens.space3,
       children: [
         Semantics(
           header: true,
@@ -300,7 +300,7 @@ class _BudgeHowTo extends StatelessWidget {
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: LukitasTokens.space2,
+          spacing: WambitoTokens.space2,
           children: [
             for (final (index, step) in steps.indexed)
               Row(
@@ -310,7 +310,7 @@ class _BudgeHowTo extends StatelessWidget {
                   // sits outside the text, with its space after it. The marker's font makes the
                   // first line 25px, so an item is 25px (49px for two lines).
                   SizedBox(
-                    width: LukitasTokens.space5,
+                    width: WambitoTokens.space5,
                     height: 25,
                     child: Padding(
                       padding: const EdgeInsets.only(right: 4),
@@ -346,7 +346,7 @@ class _BudgeHowTo extends StatelessWidget {
             onPressed: onChoose,
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              spacing: LukitasTokens.space2,
+              spacing: WambitoTokens.space2,
               children: [_Icon(_upload, strokeWidth: 2), Text(l10n.importChoose.toUpperCase())],
             ),
           ),
@@ -387,7 +387,7 @@ class _CurrencyLine extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: LukitasTokens.space1,
+        spacing: WambitoTokens.space1,
         children: [
           NoteText(switch (note.kind) {
             CurrencyNoteKind.switched => l10n.importCurrencySwitched(note.file),
@@ -443,10 +443,10 @@ class _PreviewState extends State<_Preview> {
           border: LkSurface.border(colors),
           boxShadow: LkSurface.edgeShadow(lk, LkEdge.md),
         ),
-        padding: const EdgeInsets.all(LukitasTokens.space4),
+        padding: const EdgeInsets.all(WambitoTokens.space4),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: LukitasTokens.space3,
+          spacing: WambitoTokens.space3,
           children: [
             Semantics(
               header: true,
@@ -473,7 +473,7 @@ class _PreviewState extends State<_Preview> {
             IntrinsicHeight(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                spacing: LukitasTokens.space2,
+                spacing: WambitoTokens.space2,
                 children: [
                   Expanded(
                     child: _Stat(
@@ -535,14 +535,14 @@ class _PreviewState extends State<_Preview> {
                     ),
                   ),
                   if (_open) ...[
-                    const SizedBox(height: LukitasTokens.space1),
+                    const SizedBox(height: WambitoTokens.space1),
                     Semantics(
                       container: true,
                       label: l10n.importRejected,
                       child: Column(
                         key: const Key('import.rejected.list'),
                         crossAxisAlignment: CrossAxisAlignment.stretch,
-                        spacing: LukitasTokens.space1,
+                        spacing: WambitoTokens.space1,
                         children: [
                           for (final row in rejected.take(rejectedShown))
                             NoteText(
@@ -554,7 +554,7 @@ class _PreviewState extends State<_Preview> {
                     ),
                     if (rejected.length > rejectedShown)
                       Padding(
-                        padding: const EdgeInsets.only(top: LukitasTokens.space1),
+                        padding: const EdgeInsets.only(top: WambitoTokens.space1),
                         child: NoteText(
                           l10n.importRejectedMore(rejected.length - rejectedShown),
                           muted,
@@ -590,10 +590,10 @@ class _Stat extends StatelessWidget {
           borderRadius: LkSurface.radius(LkRadius.md),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(LukitasTokens.space2),
+          padding: const EdgeInsets.all(WambitoTokens.space2),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
-            spacing: LukitasTokens.space1,
+            spacing: WambitoTokens.space1,
             children: [
               Text(
                 '$value',
@@ -640,7 +640,7 @@ class _Imported extends StatelessWidget {
       container: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: LukitasTokens.space3,
+        spacing: WambitoTokens.space3,
         children: [
           Semantics(
             header: true,

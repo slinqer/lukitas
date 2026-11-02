@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/home/home_cache.dart';
+import 'package:wambito/home/home_cache.dart';
 
 import 'fakes.dart';
 import 'fixtures.dart';

@@ -4,12 +4,12 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/budgets/budgets_repository.dart';
-import 'package:lukitas/budgets/category_detail_screen.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/home/home_screen.dart';
-import 'package:lukitas/ui/app_shell.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/budgets/budgets_repository.dart';
+import 'package:wambito/budgets/category_detail_screen.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/home/home_screen.dart';
+import 'package:wambito/ui/app_shell.dart';
 
 import '../support/parity.dart';
 import '../support/parity_home.dart';
@@ -82,7 +82,7 @@ void main() {
         theme: theme,
         overrides: parityHomeOverrides(FixtureHomeRepository(fixture)),
         act: (t) async {
-          await precacheLukitas(t);
+          await precacheWambi(t);
           await t.tap(find.text('Categorías'));
           await t.pumpAndSettle();
           await _keyboardMode(t);

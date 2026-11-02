@@ -22,9 +22,9 @@ class ManagePage extends StatelessWidget {
     required this.header,
     required this.children,
     this.controller,
-    this.mainGap = LukitasTokens.space4,
-    this.mainBottom = LukitasTokens.space4,
-    this.top = LukitasTokens.space3,
+    this.mainGap = WambitoTokens.space4,
+    this.mainBottom = WambitoTokens.space4,
+    this.top = WambitoTokens.space3,
   });
 
   /// The section the bottom bar marks (`home`, `insights`, or another one: none).
@@ -65,8 +65,8 @@ class ManagePage extends StatelessWidget {
         child: LayoutBuilder(
           builder: (context, constraints) {
             final inset = math.max(
-              LukitasTokens.space4,
-              (constraints.maxWidth - _maxWidth) / 2 + LukitasTokens.space4,
+              WambitoTokens.space4,
+              (constraints.maxWidth - _maxWidth) / 2 + WambitoTokens.space4,
             );
             final sides = ShellRoom.sides(context);
             return SizedBox(
@@ -90,7 +90,7 @@ class ManagePage extends StatelessWidget {
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
-                          spacing: LukitasTokens.space3,
+                          spacing: WambitoTokens.space3,
                           children: [
                             ?header,
                             // `<main className="flex flex-col gap-(--space-4) pb-(--space-4)">`

@@ -31,14 +31,14 @@ test("the emailed code signs a new user in, and the magic link signs them in els
 
   // Came from the English landing: the page speaks English, and so will the new profile.
   await page.goto("/sign-in?lang=en");
-  await expect(page.getByRole("heading", { level: 1, name: "Sign in to Lukitas" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Sign in to Wambito" })).toBeVisible();
   await page.getByRole("textbox", { name: "Your email" }).fill(email);
   await page.getByRole("button", { name: "Send code" }).click();
   await expect(page.getByRole("heading", { level: 1, name: "Check your email" })).toBeVisible();
 
   // The email is in the language of the page that asked for it, and so is its link.
   const first = await readSignInMail(email);
-  expect(first.subject).toMatch(/^Your Lukitas code: \d{6}$/);
+  expect(first.subject).toMatch(/^Your Wambito code: \d{6}$/);
   expect(new URL(first.link).searchParams.get("lang")).toBe("en");
   const firstBox = page.getByRole("textbox", { name: "Digit 1 of 6" });
   await expect(firstBox).toBeFocused();
@@ -73,7 +73,7 @@ test("the emailed code signs a new user in, and the magic link signs them in els
   // opened in another browser, which keeps the language and `next`.
   await requestCode(email, { next: "/app/insights" });
   const second = await readSignInMail(email, { skip: [first.id] });
-  expect(second.subject).toMatch(/^Your Lukitas code/);
+  expect(second.subject).toMatch(/^Your Wambito code/);
   const secondLink = new URL(second.link);
   expect(secondLink.pathname).toBe("/auth/verify");
   expect(secondLink.searchParams.get("lang")).toBe("en");
@@ -177,7 +177,7 @@ test("a link from a sign-in started in the Android app offers the app, and spend
   try {
     const page = await phone.newPage();
     await page.goto(mail.link);
-    const open = page.getByRole("link", { name: "Abrir en Lukitas" });
+    const open = page.getByRole("link", { name: "Abrir en Wambito" });
     await expect(open).toBeVisible();
     const href = (await open.getAttribute("href")) ?? "";
     const link = new URL(mail.link);
@@ -338,8 +338,8 @@ test("Ahora no is remembered: the offer does not come back on this device", asyn
 for (const language of [
   {
     lang: "it",
-    heading: "Entra in Lukitas",
-    subject: /^Il tuo codice Lukitas: \d{6}$/,
+    heading: "Entra in Wambito",
+    subject: /^Il tuo codice Wambito: \d{6}$/,
     email: "La tua email",
     send: "Invia codice",
     title: "Controlla la tua email",
@@ -348,8 +348,8 @@ for (const language of [
   },
   {
     lang: "pt",
-    heading: "Entra em Lukitas",
-    subject: /^O teu código Lukitas: \d{6}$/,
+    heading: "Entra em Wambito",
+    subject: /^O teu código Wambito: \d{6}$/,
     email: "O teu email",
     send: "Enviar código",
     title: "Verifica o teu email",

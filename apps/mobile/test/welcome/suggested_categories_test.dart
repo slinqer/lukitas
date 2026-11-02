@@ -1,6 +1,6 @@
 // The welcome's suggested categories in the four languages (the web's SUGGESTED_CATEGORIES).
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/welcome/suggested_categories.dart';
+import 'package:wambito/welcome/suggested_categories.dart';
 
 void main() {
   test('every suggestion has a name in each of the four languages', () {

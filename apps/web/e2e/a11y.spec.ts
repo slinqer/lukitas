@@ -102,7 +102,7 @@ test("each welcome step", async ({ page }) => {
   await signUpNewUser(page);
   const next = page.getByRole("button", { name: "Siguiente" });
 
-  await expect(h1(page, "Te damos la bienvenida a Lukitas")).toBeFocused();
+  await expect(h1(page, "Te damos la bienvenida a Wambito")).toBeFocused();
   await expectAccessible(page, "/welcome");
   await page.getByRole("button", { name: "Configurar en 1 minuto" }).click();
 

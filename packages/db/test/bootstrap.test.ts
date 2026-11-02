@@ -64,7 +64,7 @@ describe("prepareDatabase", () => {
 
   test("keeps the data it finds", async () => {
     const admin = postgres(adminUrl, { max: 1, onnotice: () => {} });
-    await admin`insert into "user" (id, name, email) values ('keep-me', 'K', 'k@lukas.test')`;
+    await admin`insert into "user" (id, name, email) values ('keep-me', 'K', 'k@wambito.test')`;
     await prepareDatabase(adminUrl, NEXT_PASSWORD);
     expect(await admin`select id from "user" where id = 'keep-me'`).toHaveLength(1);
     await admin.end();

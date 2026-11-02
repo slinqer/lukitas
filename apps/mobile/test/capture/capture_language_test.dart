@@ -3,11 +3,11 @@
 import 'dart:ui' show Locale;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/capture/capture_language.dart';
-import 'package:lukitas/capture/engine/grammar.dart';
-import 'package:lukitas/capture/models_download.dart';
-import 'package:lukitas/capture/prewarm.dart' show voiceLocale;
-import 'package:lukitas/capture/parser/parse.dart';
+import 'package:wambito/capture/capture_language.dart';
+import 'package:wambito/capture/engine/grammar.dart';
+import 'package:wambito/capture/models_download.dart';
+import 'package:wambito/capture/prewarm.dart' show voiceLocale;
+import 'package:wambito/capture/parser/parse.dart';
 
 void main() {
   test('capture speaks the app\'s four languages, and Spanish for any other', () {

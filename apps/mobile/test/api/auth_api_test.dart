@@ -3,8 +3,8 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/auth_api.dart';
-import 'package:lukitas/api/device.dart';
+import 'package:wambito/api/auth_api.dart';
+import 'package:wambito/api/device.dart';
 
 /// One canned answer: status, JSON body and headers.
 class _Reply {
@@ -59,7 +59,7 @@ void main() {
 
   setUp(() {
     adapter = _ScriptedAdapter();
-    api = HttpAuthApi(server: Uri.parse('https://lukas.example/'), hints: _hints);
+    api = HttpAuthApi(server: Uri.parse('https://wambito.example/'), hints: _hints);
     api.dio.httpClientAdapter = adapter;
   });
 
@@ -67,15 +67,15 @@ void main() {
 
   test('every request carries the device time zone and locale', () async {
     await api.sendCode('ana@correo.com');
-    expect(last().headers['x-lukas-timezone'], 'America/Bogota');
-    expect(last().headers['x-lukas-locale'], 'es-CO');
+    expect(last().headers['x-wambito-timezone'], 'America/Bogota');
+    expect(last().headers['x-wambito-locale'], 'es-CO');
   });
 
   test(
     'every request says it comes from the Android app, so the email link opens the app',
     () async {
       await api.sendCode('ana@correo.com');
-      expect(last().headers['x-lukas-client'], 'android');
+      expect(last().headers['x-wambito-client'], 'android');
     },
   );
 
@@ -91,7 +91,7 @@ void main() {
       },
     );
     expect(await api.signInAsGuest(), 'tok.sig');
-    expect(last().uri.toString(), 'https://lukas.example/api/auth/sign-in/anonymous');
+    expect(last().uri.toString(), 'https://wambito.example/api/auth/sign-in/anonymous');
     expect(adapter.bodies.last, <String, Object?>{});
   });
 
@@ -368,7 +368,7 @@ void main() {
         'and the server origin', () async {
       adapter.replies['GET /api/auth/passkey/generate-authenticate-options'] = const _Reply(
         200,
-        {'challenge': 'abc', 'rpId': 'lukas.example'},
+        {'challenge': 'abc', 'rpId': 'wambito.example'},
         {
           'set-cookie': [
             '__Secure-better-auth.better-auth-passkey=signed.value; Max-Age=300; Path=/; '
@@ -388,14 +388,14 @@ void main() {
       );
 
       final challenge = await api.passkeySignInOptions();
-      expect(jsonDecode(challenge.optionsJson), {'challenge': 'abc', 'rpId': 'lukas.example'});
+      expect(jsonDecode(challenge.optionsJson), {'challenge': 'abc', 'rpId': 'wambito.example'});
       expect(challenge.cookie, '__Secure-better-auth.better-auth-passkey=signed.value');
 
       final token = await api.passkeySignIn(challenge, '{"id":"cred","type":"public-key"}');
       expect(token, 'pk.tok');
       expect(last().uri.path, '/api/auth/passkey/verify-authentication');
       expect(last().headers['cookie'], '__Secure-better-auth.better-auth-passkey=signed.value');
-      expect(last().headers['origin'], 'https://lukas.example');
+      expect(last().headers['origin'], 'https://wambito.example');
       expect(adapter.bodies.last, {
         'response': {'id': 'cred', 'type': 'public-key'},
       });
@@ -416,7 +416,7 @@ void main() {
       expect(last().uri.path, '/api/auth/passkey/verify-registration');
       expect(last().headers['Authorization'], 'Bearer tok');
       expect(last().headers['cookie'], 'better-auth.better-auth-passkey=v2');
-      expect(last().headers['origin'], 'https://lukas.example');
+      expect(last().headers['origin'], 'https://wambito.example');
       expect(adapter.bodies.last, {
         'response': {'id': 'cred'},
       });

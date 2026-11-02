@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart' show ChangeNotifier;
 
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import 'add_repository.dart';
 import 'idempotency_key.dart';
 import 'keypad_input.dart';

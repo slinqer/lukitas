@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/notices/notice_backend.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/notices/notice_backend.dart';
 
 Recurrence _rule({String? endDate, String startDate = '2026-01-05'}) => Recurrence(
   (b) => b

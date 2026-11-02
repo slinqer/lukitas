@@ -2,8 +2,8 @@
 // with the font at 130% they do not fit one line: no label may spill out of its box onto the next.
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/settings/settings_parts.dart';
-import 'package:lukitas/ui/pressable.dart';
+import 'package:wambito/settings/settings_parts.dart';
+import 'package:wambito/ui/pressable.dart';
 
 import '../support/fonts.dart';
 import '../support/ui_app.dart';

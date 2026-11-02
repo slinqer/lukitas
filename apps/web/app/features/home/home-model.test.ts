@@ -1,9 +1,9 @@
-import type { MonthSummary, TransactionDto } from "@lukas/core";
+import type { MonthSummary, TransactionDto } from "@wambito/core";
 import { describe, expect, it } from "vitest";
 import {
   feedbackForSave,
   groupByDay,
-  homeLukasLine,
+  homeWambiLine,
   orderByUse,
   overallState,
 } from "./home-model.ts";
@@ -103,48 +103,48 @@ const base = {
   money: (cents: number) => `${(cents / 100).toFixed(2)} €`,
 };
 
-describe("homeLukasLine", () => {
+describe("homeWambiLine", () => {
   it("fills core's params with the category's name and formatted money", () => {
-    const line = homeLukasLine({
+    const line = homeWambiLine({
       ...base,
       summary: summary({
         categories: [category("cat-groceries", 50000, 45000, "near"), category("cat-fun", 0, 0)],
       }),
     });
     expect(line).toEqual({
-      key: "lukas.near_limit",
+      key: "wambi.near_limit",
       varied: true,
       params: { category: "Supermercado", remaining: "50.00 €" },
     });
   });
 
   it("formats the overspend as a positive amount", () => {
-    const line = homeLukasLine({
+    const line = homeWambiLine({
       ...base,
       summary: summary({ categories: [category("cat-groceries", 50000, 51408, "over")] }),
     });
-    expect(line.key).toBe("lukas.over_budget");
+    expect(line.key).toBe("wambi.over_budget");
     expect(line.params).toEqual({ category: "Supermercado", over: "14.08 €" });
   });
 
   it("keeps numbers that are not money (days left) as numbers", () => {
-    const line = homeLukasLine({ ...base, summary: summary() });
+    const line = homeWambiLine({ ...base, summary: summary() });
     expect(line).toEqual({
-      key: "lukas.on_track",
+      key: "wambi.on_track",
       varied: true,
       params: { remaining: "600.00 €", daysLeft: 11 },
     });
   });
 
   it("talks about an income event's amount and names it", () => {
-    const line = homeLukasLine({
+    const line = homeWambiLine({
       ...base,
       summary: summary(),
       todayCount: 2,
       event: { kind: "saved", categoryId: "cat-salary", amount: 250000, name: "Nómina" },
     });
     expect(line).toEqual({
-      key: "lukas.income_received",
+      key: "wambi.income_received",
       varied: true,
       params: { amount: "2500.00 €", name: "Nómina", category: "Salario" },
     });
@@ -152,14 +152,14 @@ describe("homeLukasLine", () => {
 
   it("names a paid movement, or says its category when it has no name", () => {
     const paid = (name: string) =>
-      homeLukasLine({
+      homeWambiLine({
         ...base,
         summary: summary(),
         todayCount: 2,
         event: { kind: "paid", categoryId: "cat-fun", amount: -3200, name },
       });
     expect(paid("gym")).toEqual({
-      key: "lukas.pending_paid",
+      key: "wambi.pending_paid",
       varied: true,
       params: { amount: "32.00 €", name: "gym", category: "Ocio" },
     });
@@ -167,7 +167,7 @@ describe("homeLukasLine", () => {
   });
 
   it("without budgets, never says what is left: it says what was spent", () => {
-    const line = homeLukasLine({
+    const line = homeWambiLine({
       ...base,
       summary: summary({
         budgetTotal: 0,
@@ -176,40 +176,40 @@ describe("homeLukasLine", () => {
       }),
     });
     expect(line).toEqual({
-      key: "home.lukas_no_budget",
+      key: "home.wambi_no_budget",
       varied: false,
       params: { spent: "400.00 €" },
     });
   });
 
   it("on an empty month without budgets, invites the first entry", () => {
-    const line = homeLukasLine({
+    const line = homeWambiLine({
       ...base,
       summary: summary({ budgetTotal: 0, spent: 0, remaining: 0, categories: [] }),
     });
-    expect(line).toEqual({ key: "home.lukas_empty", varied: false, params: {} });
+    expect(line).toEqual({ key: "home.wambi_empty", varied: false, params: {} });
   });
 
   it("never calls a negative total 'on track'", () => {
-    const line = homeLukasLine({
+    const line = homeWambiLine({
       ...base,
       summary: summary({ budgetTotal: 10000, spent: 15000, remaining: -5000 }),
     });
     expect(line).toEqual({
-      key: "home.lukas_over_total",
+      key: "home.wambi_over_total",
       varied: false,
       params: { over: "50.00 €" },
     });
   });
 
   it("keeps the save's own message (first of the day) even without budgets", () => {
-    const line = homeLukasLine({
+    const line = homeWambiLine({
       ...base,
       todayCount: 1,
       summary: summary({ budgetTotal: 0, categories: [category("cat-groceries", null, 608)] }),
       event: { kind: "saved", categoryId: "cat-groceries", amount: -608, name: "pan" },
     });
-    expect(line.key).toBe("lukas.first_of_day");
+    expect(line.key).toBe("wambi.first_of_day");
     expect(line.params).toEqual({ name: "pan", category: "Supermercado" });
   });
 });

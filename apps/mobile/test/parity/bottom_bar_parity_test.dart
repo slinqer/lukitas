@@ -4,10 +4,10 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/theme/surfaces.dart';
-import 'package:lukitas/theme/text_styles.dart';
-import 'package:lukitas/ui/bottom_bar.dart';
-import 'package:lukitas/ui/lk_theme.dart';
+import 'package:wambito/theme/surfaces.dart';
+import 'package:wambito/theme/text_styles.dart';
+import 'package:wambito/ui/bottom_bar.dart';
+import 'package:wambito/ui/lk_theme.dart';
 
 import '../support/parity.dart';
 

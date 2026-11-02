@@ -10,7 +10,7 @@ export const meta = () => {
     messages: CATALOGS.es,
     namespace: "onboarding.import",
   });
-  return [{ title: `${t("page_title")} · Lukitas` }, { name: "robots", content: "noindex" }];
+  return [{ title: `${t("page_title")} · Wambito` }, { name: "robots", content: "noindex" }];
 };
 
 /** Signed in and onboarded (the `/app` layout checks it too; this keeps the route safe alone). */

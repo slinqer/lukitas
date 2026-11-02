@@ -3,8 +3,8 @@
  * with headless Chromium (Playwright's). The copy comes from the message catalogs, so the images
  * say exactly what the landing page says.
  *
- *   pnpm --filter @lukas/web og          (all four)
- *   pnpm --filter @lukas/web og it pt    (only those)
+ *   pnpm --filter @wambito/web og          (all four)
+ *   pnpm --filter @wambito/web og it pt    (only those)
  */
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";

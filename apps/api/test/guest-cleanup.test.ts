@@ -1,5 +1,5 @@
-import { accounts, categories, session, transactions, user } from "@lukas/db";
-import { eq, inArray, sql } from "@lukas/db/orm";
+import { accounts, categories, session, transactions, user } from "@wambito/db";
+import { eq, inArray, sql } from "@wambito/db/orm";
 import { afterAll, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import {
   cleanupInactiveGuests,
@@ -124,7 +124,7 @@ describe("cleanupInactiveGuests", () => {
   });
 
   test("never deletes a user with an email, however old", async () => {
-    const member = await t.signIn("old-timer@lukas.test");
+    const member = await t.signIn("old-timer@wambito.test");
     await lastActive(member.userId, 5000);
     await t.admin
       .update(user)
@@ -134,7 +134,7 @@ describe("cleanupInactiveGuests", () => {
     const claimed = await newGuest();
     await t.admin
       .update(user)
-      .set({ email: "claimed@lukas.test", isAnonymous: false })
+      .set({ email: "claimed@wambito.test", isAnonymous: false })
       .where(eq(user.id, claimed.userId));
     await lastActive(claimed.userId, 400);
 
@@ -193,7 +193,7 @@ describe("batches", () => {
     const row = (i: number, guest: boolean) => ({
       id: `bulk-${String(i).padStart(4, "0")}`,
       name: `Bulk ${i}`,
-      email: guest ? `bulk-${i}@guest.lukitas.invalid` : "member-in-the-middle@lukas.test",
+      email: guest ? `bulk-${i}@guest.lukitas.invalid` : "member-in-the-middle@wambito.test",
       isAnonymous: guest,
       createdAt: old,
       updatedAt: old,
@@ -270,12 +270,12 @@ describe("guest session lifetime", () => {
     return { updatedAt, expiresAt };
   }
 
-  test("a background request (x-lukas-background: 1) reads the session without sliding it", async () => {
+  test("a background request (x-wambito-background: 1) reads the session without sliding it", async () => {
     const g = await newGuest();
     const aged = await ageSession(g.userId);
 
     const res = await t.request("GET", "/v1/me", {
-      headers: { ...g.headers, "x-lukas-background": "1" },
+      headers: { ...g.headers, "x-wambito-background": "1" },
     });
     expect(res.status).toBe(200);
 
@@ -286,12 +286,26 @@ describe("guest session lifetime", () => {
     expect(res.headers.get("set-cookie")).toBeNull();
   });
 
+  // 2b: remove. The installed APK's widget and notices still send x-lukas-background.
+  test("the old x-lukas-background: 1 does not slide the session either", async () => {
+    const g = await newGuest();
+    const aged = await ageSession(g.userId);
+    const res = await t.request("GET", "/v1/me", {
+      headers: { ...g.headers, "x-lukas-background": "1" },
+    });
+    expect(res.status).toBe(200);
+    const [row] = await t.admin.select().from(session).where(eq(session.userId, g.userId));
+    expect(row?.updatedAt).toEqual(aged.updatedAt);
+    expect(row?.expiresAt).toEqual(aged.expiresAt);
+    expect(res.headers.get("set-cookie")).toBeNull();
+  });
+
   test("only the value 1 marks a background request; a normal request still slides", async () => {
     const g = await newGuest();
     await ageSession(g.userId);
     // Not "1": an ordinary request.
     expect(
-      (await t.request("GET", "/v1/me", { headers: { ...g.headers, "x-lukas-background": "0" } }))
+      (await t.request("GET", "/v1/me", { headers: { ...g.headers, "x-wambito-background": "0" } }))
         .status,
     ).toBe(200);
     const [row] = await t.admin.select().from(session).where(eq(session.userId, g.userId));
@@ -305,7 +319,7 @@ describe("guest session lifetime", () => {
     const g = await newGuest();
     await ageSession(g.userId);
     for (let i = 0; i < 3; i++) {
-      await t.request("GET", "/v1/me", { headers: { ...g.headers, "x-lukas-background": "1" } });
+      await t.request("GET", "/v1/me", { headers: { ...g.headers, "x-wambito-background": "1" } });
     }
     // Two days later the guest is past 60 days idle, as if the phone had only run background jobs.
     expect(await cleanupInactiveGuests(t.db, new Date(Date.now() + 2 * DAY))).toBe(1);
@@ -324,7 +338,7 @@ describe("guest session lifetime", () => {
       .where(eq(session.userId, g.userId));
 
     const res = await t.request("GET", "/v1/me", {
-      headers: { ...g.headers, "x-lukas-background": "1" },
+      headers: { ...g.headers, "x-wambito-background": "1" },
     });
     expect(res.status).toBe(401);
   });
@@ -397,7 +411,7 @@ describe("a guest's last activity outlives its sessions", () => {
     const g = await newGuest();
     const at = await idle(g.userId, 59, 1);
     const res = await t.request("GET", "/v1/me", {
-      headers: { ...g.headers, "x-lukas-background": "1" },
+      headers: { ...g.headers, "x-wambito-background": "1" },
     });
     expect(res.status).toBe(200);
     expect(await lastActiveAt(g.userId)).toEqual(at);
@@ -407,7 +421,7 @@ describe("a guest's last activity outlives its sessions", () => {
     const g = await newGuest();
     const at = await idle(g.userId, 61, -1);
     const res = await t.request("GET", "/v1/me", {
-      headers: { ...g.headers, "x-lukas-background": "1" },
+      headers: { ...g.headers, "x-wambito-background": "1" },
     });
     expect(res.status).toBe(401);
     expect(await lastActiveAt(g.userId)).toEqual(at);
@@ -432,7 +446,7 @@ describe("a guest's last activity outlives its sessions", () => {
   });
 
   test("an email user is never stamped", async () => {
-    const member = await t.signIn("stamp@lukas.test");
+    const member = await t.signIn("stamp@wambito.test");
     expect(await lastActiveAt(member.userId)).toBeNull();
   });
 });

@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:lukitas/insights/insights_model.dart';
-import 'package:lukitas/recurring/recurring_row.dart';
+import 'package:wambito/insights/insights_model.dart';
+import 'package:wambito/recurring/recurring_row.dart';
 
 const nbsp = '\u00a0';
 

@@ -78,14 +78,14 @@ class _PasskeyOfferScreenState extends State<PasskeyOfferScreen> {
           width: double.infinity,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: LukitasTokens.space2,
+            spacing: WambitoTokens.space2,
             children: [
               PressButton(
                 key: const Key('offer.add'),
                 onPressed: _busy ? null : _create,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  spacing: LukitasTokens.space2,
+                  spacing: WambitoTokens.space2,
                   children: [
                     const FingerprintIcon(),
                     Flexible(
@@ -126,10 +126,10 @@ class _Points extends StatelessWidget {
       child: Semantics(
         container: true,
         child: Padding(
-          padding: const EdgeInsets.only(left: LukitasTokens.space5),
+          padding: const EdgeInsets.only(left: WambitoTokens.space5),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: LukitasTokens.space2,
+            spacing: WambitoTokens.space2,
             children: [
               for (final point in points)
                 CustomPaint(

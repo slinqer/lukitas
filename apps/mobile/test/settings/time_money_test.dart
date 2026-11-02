@@ -5,17 +5,17 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/device.dart';
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/home/home_controller.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/notices/notice_backend.dart';
-import 'package:lukitas/notices/notice_platform.dart';
-import 'package:lukitas/notices/notice_sync.dart';
-import 'package:lukitas/recurring/recurring_repository.dart';
-import 'package:lukitas/router.dart';
-import 'package:lukitas/settings/settings_model.dart';
-import 'package:lukitas/welcome/onboarding_repository.dart';
+import 'package:wambito/api/device.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/home/home_controller.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/notices/notice_backend.dart';
+import 'package:wambito/notices/notice_platform.dart';
+import 'package:wambito/notices/notice_sync.dart';
+import 'package:wambito/recurring/recurring_repository.dart';
+import 'package:wambito/router.dart';
+import 'package:wambito/settings/settings_model.dart';
+import 'package:wambito/welcome/onboarding_repository.dart';
 
 import '../home/fakes.dart';
 import '../home/fixtures.dart';

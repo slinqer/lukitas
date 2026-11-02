@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:lukitas/add/add_repository.dart';
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/home/home_repository.dart';
+import 'package:wambito/add/add_repository.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/home/home_repository.dart';
 
 import '../home/fakes.dart';
 

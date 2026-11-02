@@ -8,11 +8,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/session.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/settings/account_deletion.dart';
-import 'package:lukitas/settings/account_repository.dart';
-import 'package:lukitas/ui/press_button.dart';
+import 'package:wambito/api/session.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/settings/account_deletion.dart';
+import 'package:wambito/settings/account_repository.dart';
+import 'package:wambito/ui/press_button.dart';
 
 import '../home/fakes.dart';
 import 'account_harness.dart';
@@ -198,7 +198,7 @@ void main() {
       final after = await _held(env);
       expect(after.session, isFalse);
       expect(after.cache, isFalse);
-      // The widget says "Abre Lukitas para empezar", with no figure of anyone, and was told to redraw.
+      // The widget says "Abre Wambito para empezar", with no figure of anyone, and was told to redraw.
       expect(widgetSignedOut(env.widgets), isTrue);
       expect(env.widgets.updates, greaterThan(updates));
       expect(after.widgetFigures, isFalse);
@@ -510,7 +510,7 @@ void main() {
       expect(find.text('Tu archivo está listo'), findsOneWidget);
       await t.tap(find.byKey(const Key('settings.export.save')));
       await t.pumpAndSettle();
-      expect(env.files.saved.single.$1, 'lukas-export-2026-10-21.json');
+      expect(env.files.saved.single.$1, 'wambito-export-2026-10-21.json');
       // Back at the deletion's sheet, with the account untouched.
       expect(find.text('¿Eliminar tu cuenta?'), findsOneWidget);
       expect(env.accounts.deletes, 0);

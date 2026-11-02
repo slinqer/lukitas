@@ -1,4 +1,4 @@
-# Personal install of Lukitas: its own stack on one machine, reached through a Cloudflare tunnel.
+# Personal install of Wambito: its own stack on one machine, reached through a Cloudflare tunnel.
 # Not the development stack (../../docker-compose.yml): different project, volume, network and
 # database, nothing shared with it. Run it with the scripts here (up.sh, update.sh, ...), which pass
 # the right --env-file. See README.md.
@@ -44,7 +44,7 @@ services:
       dockerfile: apps/api/Dockerfile.prod
       # The version /health reports: up.sh sets it from the commit being built.
       args:
-        LUKITAS_VERSION: ${LUKITAS_VERSION:-}
+        WAMBITO_VERSION: ${WAMBITO_VERSION:-}
     image: lukitas-api:personal
     command: ["node", "dist/bootstrap.js"]
     restart: "no"
@@ -72,7 +72,7 @@ services:
       WEB_URL: https://${PUBLIC_HOSTNAME:-app.wambito.com}
       # The MCP's public URL: the audience of assistants' access tokens.
       MCP_URL: https://${PUBLIC_HOSTNAME:-app.wambito.com}/mcp
-      MAIL_FROM: ${MAIL_FROM:-Lukitas <hola@wambito.com>}
+      MAIL_FROM: ${MAIL_FROM:-Wambito <hola@wambito.com>}
       # Exactly one of these two (the API refuses to start otherwise): Proton Bridge on this Mac,
       # or Resend on a server.
       SMTP_URL: ${SMTP_URL:-}
@@ -111,7 +111,7 @@ services:
       context: ../..
       dockerfile: apps/mcp/Dockerfile.prod
       args:
-        LUKITAS_VERSION: ${LUKITAS_VERSION:-}
+        WAMBITO_VERSION: ${WAMBITO_VERSION:-}
     image: lukitas-mcp:personal
     restart: unless-stopped
     logging: *logging

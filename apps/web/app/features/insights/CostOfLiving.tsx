@@ -1,4 +1,4 @@
-import type { CategoryDto, Month } from "@lukas/core";
+import type { CategoryDto, Month } from "@wambito/core";
 import { motion } from "motion/react";
 import { useTranslations } from "use-intl";
 import { useCostOfLiving, useTrend } from "../../api/queries.ts";

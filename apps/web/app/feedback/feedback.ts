@@ -1,3 +1,4 @@
+import { readStored, removeStored, writeStored } from "../lib/stored.ts";
 import expenseSavedUrl from "./sounds/expense-saved.mp3?no-inline";
 import incomeSavedUrl from "./sounds/income-saved.mp3?no-inline";
 import nearLimitUrl from "./sounds/near-limit.mp3?no-inline";
@@ -23,14 +24,16 @@ export type FeedbackEvent =
   | "delete";
 
 /** The DOM event every `feedback()` call dispatches on `window`; `Celebration` listens to it. */
-export const FEEDBACK_DOM_EVENT = "lukas:feedback";
+export const FEEDBACK_DOM_EVENT = "wambito:feedback";
 
 export interface FeedbackDetail {
   event: FeedbackEvent;
 }
 
-/** `localStorage` key of the sound setting: the value `"off"` mutes sounds (vibration stays). */
-export const SOUND_STORAGE_KEY = "lukas.sound";
+/** `readStored` name of the sound setting: the value `"off"` mutes sounds (vibration stays). */
+export const SOUND_STORED = "sound";
+/** The `localStorage` key that `SOUND_STORED` is kept under. */
+export const SOUND_STORAGE_KEY = `wambito.${SOUND_STORED}`;
 
 const SAVED = [12, 40, 18];
 
@@ -83,11 +86,7 @@ function soundMuted(): boolean {
 
 /** Whether sounds play (the settings switch). Blocked or missing storage: sound stays on. */
 export function soundEnabled(): boolean {
-  try {
-    return localStorage.getItem(SOUND_STORAGE_KEY) !== "off";
-  } catch {
-    return true;
-  }
+  return readStored(SOUND_STORED) !== "off";
 }
 
 /**
@@ -95,12 +94,8 @@ export function soundEnabled(): boolean {
  * choice is not kept, and sound stays on.
  */
 export function setSoundEnabled(on: boolean): void {
-  try {
-    if (on) localStorage.removeItem(SOUND_STORAGE_KEY);
-    else localStorage.setItem(SOUND_STORAGE_KEY, "off");
-  } catch {
-    // Not kept; see above.
-  }
+  if (on) removeStored(SOUND_STORED);
+  else writeStored(SOUND_STORED, "off");
 }
 
 /** The event's audio element, created (and so fetched) the first time it is needed. */
@@ -187,7 +182,7 @@ function announce(event: FeedbackEvent): void {
 
 /**
  * Gives feedback for something that happened: plays its sound (unless muted), vibrates where the
- * platform allows, and tells `Celebration` through a `lukas:feedback` DOM event. Call it from a
+ * platform allows, and tells `Celebration` through a `wambito:feedback` DOM event. Call it from a
  * user gesture. It never throws: a missing `Audio`, `navigator.vibrate` or storage, a blocked
  * `play()`, or no `window` (prerender) just skips that part.
  */

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/feedback/stored_flag.dart';
-import 'package:lukitas/settings/initial_settings.dart';
-import 'package:lukitas/settings/preferences.dart';
-import 'package:lukitas/settings/settings_store.dart';
+import 'package:wambito/feedback/stored_flag.dart';
+import 'package:wambito/settings/initial_settings.dart';
+import 'package:wambito/settings/preferences.dart';
+import 'package:wambito/settings/settings_store.dart';
 
 import 'fakes.dart';
 

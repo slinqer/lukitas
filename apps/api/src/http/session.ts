@@ -1,8 +1,9 @@
 import { verifyJwsAccessToken } from "better-auth/oauth2";
 import { createMiddleware } from "hono/factory";
-import { type Auth, BACKGROUND_HEADER } from "../auth.ts";
+import type { Auth } from "../auth.ts";
 import type { Config } from "../config.ts";
 import type { AppEnv, Grant, SessionUser } from "../env.ts";
+import { clientHeader } from "./client-headers.ts";
 import { ApiError } from "./problem.ts";
 
 type AuthUser = {
@@ -30,12 +31,12 @@ export const authIssuer = (config: Pick<Config, "API_URL">) =>
  * issued by us, for the MCP (`aud` = MCP_URL, RFC 8707). A token for any other audience is
  * refused, so a token minted for something else cannot open the API.
  *
- * A request with `x-lukas-background: 1` reads the session without refreshing it (Better Auth's
+ * A request with `x-wambito-background: 1` (or the old `x-lukas-background`) reads the session without refreshing it (Better Auth's
  * `disableRefresh`), so background jobs never count as activity for the guest cleanup.
  */
 export function requireUser(auth: Auth, config: Pick<Config, "API_URL" | "MCP_URL">) {
   return createMiddleware<AppEnv>(async (c, next) => {
-    const background = c.req.header(BACKGROUND_HEADER) === "1";
+    const background = clientHeader(c.req.raw.headers, "background") === "1";
     const result = await auth.api.getSession({
       headers: c.req.raw.headers,
       ...(background ? { query: { disableRefresh: true } } : {}),

@@ -120,9 +120,9 @@ Stream<LicenseEntry> extraLicenseEntries(AssetBundle bundle, AppLocalizations l1
 
   final agpl = await load(_agpl);
   yield LicenseEntryWithLineBreaks([
-    'Lukitas feedback sounds',
+    'Wambito feedback sounds',
   ], '${l10n.licenseNoticeSounds}\n\n$agpl');
-  yield LicenseEntryWithLineBreaks(['Lukitas'], '${l10n.licenseNoticeApp}\n\n$agpl');
+  yield LicenseEntryWithLineBreaks(['Wambito'], '${l10n.licenseNoticeApp}\n\n$agpl');
 }
 
 var _registered = false;

@@ -1,4 +1,4 @@
-import { addMonths, type Month } from "@lukas/core";
+import { addMonths, type Month } from "@wambito/core";
 import { useTranslations } from "use-intl";
 import { formatMonth } from "../i18n/format.ts";
 import { useLocale } from "../i18n/IntlProvider.tsx";

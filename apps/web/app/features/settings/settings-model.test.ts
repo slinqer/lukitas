@@ -26,17 +26,17 @@ describe("emailMatches", () => {
 
 describe("filenameFrom", () => {
   it("reads the quoted or bare filename of a content-disposition", () => {
-    expect(filenameFrom('attachment; filename="lukas-export-2026-10-22.csv"', "x")).toBe(
-      "lukas-export-2026-10-22.csv",
+    expect(filenameFrom('attachment; filename="wambito-export-2026-10-22.csv"', "x")).toBe(
+      "wambito-export-2026-10-22.csv",
     );
-    expect(filenameFrom("attachment; filename=lukas.json", "x")).toBe("lukas.json");
+    expect(filenameFrom("attachment; filename=wambito.json", "x")).toBe("wambito.json");
   });
 
   it("falls back when there is none, or it carries a path", () => {
-    expect(filenameFrom(null, "lukas-export.json")).toBe("lukas-export.json");
-    expect(filenameFrom("attachment", "lukas-export.json")).toBe("lukas-export.json");
-    expect(filenameFrom('attachment; filename="../x.csv"', "lukas-export.csv")).toBe(
-      "lukas-export.csv",
+    expect(filenameFrom(null, "wambito-export.json")).toBe("wambito-export.json");
+    expect(filenameFrom("attachment", "wambito-export.json")).toBe("wambito-export.json");
+    expect(filenameFrom('attachment; filename="../x.csv"', "wambito-export.csv")).toBe(
+      "wambito-export.csv",
     );
   });
 });

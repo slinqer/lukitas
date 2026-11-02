@@ -2,11 +2,11 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/capture/parser/amounts.dart';
-import 'package:lukitas/capture/parser/dates.dart';
-import 'package:lukitas/capture/parser/parse.dart';
-import 'package:lukitas/capture/parser/split.dart';
-import 'package:lukitas/capture/parser/words.dart';
+import 'package:wambito/capture/parser/amounts.dart';
+import 'package:wambito/capture/parser/dates.dart';
+import 'package:wambito/capture/parser/parse.dart';
+import 'package:wambito/capture/parser/split.dart';
+import 'package:wambito/capture/parser/words.dart';
 
 /// The amount of [text] in cents, when all of it is one amount.
 int? cents(String text, [String locale = 'es']) => readAmountText(text, locale)?.cents;

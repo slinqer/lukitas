@@ -15,7 +15,7 @@ export function CodeLink({ className, children }: { className?: string; children
 }
 
 /**
- * Lukitas is open source: anyone can read the code (AGPL-3.0). One short paragraph and a link to
+ * Wambito is open source: anyone can read the code (AGPL-3.0). One short paragraph and a link to
  * the repository, right before the FAQ.
  */
 export function OpenSource() {

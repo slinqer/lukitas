@@ -4,8 +4,8 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/l10n/app_localizations.dart';
-import 'package:lukitas/ui/month_picker.dart';
+import 'package:wambito/l10n/app_localizations.dart';
+import 'package:wambito/ui/month_picker.dart';
 
 import '../support/parity.dart';
 

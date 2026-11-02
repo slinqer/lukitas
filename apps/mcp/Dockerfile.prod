@@ -9,19 +9,19 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .pnpmfile.cjs ./
 COPY packages/core/package.json packages/core/
 COPY packages/ai-assistant-tools/package.json packages/ai-assistant-tools/
 COPY apps/mcp/package.json apps/mcp/
-RUN pnpm install --frozen-lockfile --filter "@lukas/mcp..."
+RUN pnpm install --frozen-lockfile --filter "@wambito/mcp..."
 
 COPY tsconfig.base.json ./
 COPY packages/core packages/core
 COPY packages/ai-assistant-tools packages/ai-assistant-tools
 COPY apps/mcp apps/mcp
 # One bundle with every dependency inside: no node_modules in the final image.
-RUN pnpm --filter @lukas/mcp build
+RUN pnpm --filter @wambito/mcp build
 
 
 FROM node:22-alpine AS runtime
-ARG LUKITAS_VERSION=
-ENV NODE_ENV=production LUKITAS_VERSION=$LUKITAS_VERSION
+ARG WAMBITO_VERSION=
+ENV NODE_ENV=production WAMBITO_VERSION=$WAMBITO_VERSION
 WORKDIR /app
 COPY --from=build /repo/apps/mcp/dist ./dist
 USER node

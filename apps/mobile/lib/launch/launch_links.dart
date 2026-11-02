@@ -10,18 +10,29 @@ import '../capture/capture_sheet.dart';
 import '../home/home_controller.dart';
 import '../router.dart';
 
-/// What a `lukitas://` link asks for (spec section 7.1): the widget's ＋ (`lukitas://add`, the add
-/// sheet with the keypad ready) and its 🎤, also the Quick Settings tile's (`lukitas://capture`,
-/// quick capture listening). `lukitas://due` is the "Hoy vence…" notice's (spec section 7.2): home,
-/// where the payments due today are listed first. `lukitas://progress` is the guest warning's:
-/// "Guarda tu progreso", over home. `lukitas://home` is a tap on the widget itself (its figures, its
+/// What a `wambito://` link asks for (spec section 7.1): the widget's ＋ (`wambito://add`, the add
+/// sheet with the keypad ready) and its 🎤, also the Quick Settings tile's (`wambito://capture`,
+/// quick capture listening). `wambito://due` is the "Hoy vence…" notice's (spec section 7.2): home,
+/// where the payments due today are listed first. `wambito://progress` is the guest warning's:
+/// "Guarda tu progreso", over home. `wambito://home` is a tap on the widget itself (its figures, its
 /// face, any area but the buttons): home.
 enum LaunchAction { add, capture, due, progress, home }
 
-/// The action [link] asks for, or null for any other link.
+/// The scheme of the links the app builds.
+const launchScheme = 'wambito';
+
+/// The scheme of links pinned before the rename (a widget, the tile, a shortcut), still read.
+/// 2b: remove.
+const _oldLaunchScheme = 'lukitas';
+
+/// The link that asks for [action]: `wambito://<action>`.
+Uri launchLinkOf(LaunchAction action) => Uri(scheme: launchScheme, host: action.name);
+
+/// The action [link] asks for, or null for any other link. Both `wambito://` and the old
+/// `lukitas://` are read (2b: remove the old one).
 LaunchAction? launchActionOf(String? link) {
   final uri = Uri.tryParse(link ?? '');
-  if (uri == null || uri.scheme != 'lukitas') return null;
+  if (uri == null || (uri.scheme != launchScheme && uri.scheme != _oldLaunchScheme)) return null;
   if (uri.path.isNotEmpty && uri.path != '/') return null;
   return switch (uri.host) {
     'add' => LaunchAction.add,
@@ -33,7 +44,7 @@ LaunchAction? launchActionOf(String? link) {
   };
 }
 
-/// Where `lukitas://` links come from: Android (MainActivity.kt) keeps them away from the router
+/// Where `wambito://` links come from: Android (MainActivity.kt) keeps them away from the router
 /// and hands them over here. Tests replace it.
 abstract interface class LaunchLinkSource {
   /// The link the app was started with (a cold start from the widget or the tile), once; null when
@@ -44,7 +55,7 @@ abstract interface class LaunchLinkSource {
   Stream<String> get links;
 }
 
-/// [LaunchLinkSource] over the `lukitas/launch` channel. Android keeps the latest link until it is
+/// [LaunchLinkSource] over the `wambito/launch` channel. Android keeps the latest link until it is
 /// taken; it says `linkArrived` when one comes in while the app runs, and the link is then taken.
 /// A link that comes before Dart listens is taken at the start instead, so none is lost.
 class ChannelLaunchLinkSource implements LaunchLinkSource {
@@ -56,7 +67,7 @@ class ChannelLaunchLinkSource implements LaunchLinkSource {
     });
   }
 
-  static const _channel = MethodChannel('lukitas/launch');
+  static const _channel = MethodChannel('wambito/launch');
   final _links = StreamController<String>.broadcast();
 
   Future<String?> _take() async {
@@ -78,7 +89,7 @@ class ChannelLaunchLinkSource implements LaunchLinkSource {
 
 final launchLinkSourceProvider = Provider<LaunchLinkSource>((ref) => ChannelLaunchLinkSource());
 
-/// Opens what a `lukitas://` link asks for, at a cold start too: it waits for the stored session to
+/// Opens what a `wambito://` link asks for, at a cold start too: it waits for the stored session to
 /// be read, then, signed in (and past the welcome), goes to home (closing whatever sheet or screen was open) and opens
 /// the add sheet or quick capture listening there. Signed out it does nothing: the router already
 /// shows the entry screen. Nor does it while a sheet holds the person's input (an add or edit sheet,

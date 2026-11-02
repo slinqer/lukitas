@@ -1,8 +1,8 @@
 // What Settings does with passkeys, as the web's `livePasskeys` and `addPasskey` do
 // (apps/web/app/features/settings/passkeys.ts, apps/web/app/auth/passkey.ts): list, add, delete.
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/auth_api.dart';
-import 'package:lukitas/settings/passkeys_settings.dart';
+import 'package:wambito/api/auth_api.dart';
+import 'package:wambito/settings/passkeys_settings.dart';
 
 import '../entry/fakes.dart';
 import 'harness.dart';

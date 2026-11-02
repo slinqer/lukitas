@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/home/home_repository.dart';
+import 'package:wambito/home/home_repository.dart';
 
 /// A Dio error with the answer [status] and [data], as a call to `/api/...` gets it.
 DioException answered(int status, Object? data) {

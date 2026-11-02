@@ -126,7 +126,7 @@ class PageGradientPainter extends CustomPainter {
   PageGradientPainter({required this.colors, required this.frame, required this.metrics})
     : super(repaint: metrics);
 
-  final LukitasColors colors;
+  final WambitoColors colors;
   final EdgeInsets frame;
   final ValueListenable<PageMetrics> metrics;
 

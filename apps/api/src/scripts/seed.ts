@@ -1,14 +1,14 @@
-// Development seed: signs in dev@lukas.test, imports the sample Budge CSV and sets budgets at each
+// Development seed: signs in dev@wambito.test, imports the sample Budge CSV and sets budgets at each
 // expense category's average monthly spending. Goes through the real routes, so it exercises the
-// same code paths as the apps. Run: pnpm --filter @lukas/api seed
+// same code paths as the apps. Run: pnpm --filter @wambito/api seed
 import { readFile } from "node:fs/promises";
-import { monthOf, todayIn } from "@lukas/core";
-import { createDb } from "@lukas/db";
+import { monthOf, todayIn } from "@wambito/core";
+import { createDb } from "@wambito/db";
 import { createApp } from "../app.ts";
 import { apiPathPrefix, loadConfig } from "../config.ts";
 import { MemoryMailer } from "../mailer.ts";
 
-const EMAIL = "dev@lukas.test";
+const EMAIL = "dev@wambito.test";
 const FIXTURE = new URL(
   "../../../../packages/importers/test/fixtures/budge-sample.csv",
   import.meta.url,

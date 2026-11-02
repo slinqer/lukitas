@@ -20,6 +20,8 @@ Pre-release suffixes (`-rc1`) are refused: tags are `mobile-vX.Y.Z` and nothing 
 
 ## The signing key (once)
 
+The key, its folder and its alias keep the name `lukitas` (`~/.lukitas-signing`, `lukitas-release.p12`, alias `lukitas`): they are labels on your disk and inside the key, and the key itself is what identifies the app, so they stay as they are (part 2b may move the folder).
+
 Use JDK 17's `keytool` (setup.md puts it in `~/development/jdk`). The keystore goes outside every repository; keytool asks for the password, so it never touches a shell history. 
 **Back it up before you hand out a single APK.** If the keystore or its password is lost, every installed copy of the app can never be updated: Android refuses an update signed with a different key, so people would have to uninstall (losing a guest's data on the phone's side) and install again, and `ANDROID_CERT_SHA256` and the passkeys tied to it would have to change. Nobody, including F-Droid, can recover it.
 
@@ -33,7 +35,7 @@ mkdir -p ~/.lukitas-signing && chmod 700 ~/.lukitas-signing
 "$JAVA_HOME/bin/keytool" -genkeypair \
   -keystore ~/.lukitas-signing/lukitas-release.p12 -storetype PKCS12 \
   -alias lukitas -keyalg RSA -keysize 4096 -validity 10000 \
-  -dname "CN=Lukitas, O=Anderson Laverde"
+  -dname "CN=Wambito, O=Anderson Laverde"
 chmod 600 ~/.lukitas-signing/lukitas-release.p12
 ```
 
@@ -43,20 +45,20 @@ chmod 600 ~/.lukitas-signing/lukitas-release.p12
 
 | Variable | |
 |---|---|
-| `LUKITAS_KEYSTORE` | path of the keystore |
-| `LUKITAS_KEY_ALIAS` | the key's alias (`lukitas` above) |
-| `LUKITAS_KEYSTORE_PASSWORD` | the keystore's password |
-| `LUKITAS_KEY_PASSWORD` | the key's password; leave it unset for a PKCS12 keystore like the one above (same as the keystore's) |
+| `WAMBITO_KEYSTORE` | path of the keystore |
+| `WAMBITO_KEY_ALIAS` | the key's alias (`lukitas` above) |
+| `WAMBITO_KEYSTORE_PASSWORD` | the keystore's password |
+| `WAMBITO_KEY_PASSWORD` | the key's password; leave it unset for a PKCS12 keystore like the one above (same as the keystore's) |
 
 ```sh
-cd ~/projects/lukas
+cd ~/projects/lukas                  # the folder is renamed in part 2b
 git checkout main && git pull
 git tag mobile-v1.0.0                  # the release; the script builds the commit the tag points at
                                        # (push the tag once the APK is checked: F-Droid reads tags)
 export PATH="$HOME/development/flutter/bin:$PATH"
-export LUKITAS_KEYSTORE=~/.lukitas-signing/lukitas-release.p12
-export LUKITAS_KEY_ALIAS=lukitas
-printf 'Keystore password: '; read -rs LUKITAS_KEYSTORE_PASSWORD; echo; export LUKITAS_KEYSTORE_PASSWORD
+export WAMBITO_KEYSTORE=~/.lukitas-signing/lukitas-release.p12
+export WAMBITO_KEY_ALIAS=lukitas
+printf 'Keystore password: '; read -rs WAMBITO_KEYSTORE_PASSWORD; echo; export WAMBITO_KEYSTORE_PASSWORD
 apps/mobile/scripts/release.sh
 ```
 
@@ -65,7 +67,7 @@ apps/mobile/scripts/release.sh
 What it does: `flutter clean`, an unsigned `flutter build apk --release --split-per-abi --target-platform android-arm,android-arm64` with `--build-name` and `--build-number` from the tag, then for each ABI: checks the alignment (4 bytes, and 16 KB for the native libraries), signs with `apksigner`, verifies the signature (v2 at least, not the debug key, the same certificate for both APKs), compares the manifest's version with the scheme, and runs `check-permissions.sh` on the signed APK. It compares the certificate with the one `keytool` reads from the keystore, and writes everything to `apps/mobile/dist/<versionName>/` (git-ignored):
 
 ```
-lukitas-1.0.0-arm64-v8a.apk   lukitas-1.0.0-armeabi-v7a.apk   SHA256SUMS   ANDROID_CERT_SHA256.txt
+wambito-1.0.0-arm64-v8a.apk   wambito-1.0.0-armeabi-v7a.apk   SHA256SUMS   ANDROID_CERT_SHA256.txt
 ```
 
 A tagged build needs a clean working tree (`--allow-dirty` overrides); `--tag` names the tag to build and must point at HEAD; `--no-clean` skips `flutter clean` while iterating; `--out` changes `dist`.
@@ -78,7 +80,7 @@ ANDROID_CERT_SHA256=AB:CD:...:EF
 
 Put it in `deploy/personal/.env`, run `deploy/personal/up.sh`, then `deploy/personal/smoke.sh` (see `deploy/personal/README.md`, "The Android app"). The web container writes `/.well-known/assetlinks.json` from it, which is what lets the app open magic links and use passkeys; the API derives the passkey origin (`android:apk-key-hash:...`) from the same value. When F-Droid signs its own build later, list both fingerprints, comma-separated.
 
-Install on a phone: `adb install apps/mobile/dist/1.0.0/lukitas-1.0.0-arm64-v8a.apk` (nearly every phone since 2017; `armeabi-v7a` is for 32-bit ARM phones). Each APK is about 30 MB; the universal APK would be about 60 MB, about 19 MB of it Vosk's native library for ABIs no phone needs here.
+Install on a phone: `adb install apps/mobile/dist/1.0.0/wambito-1.0.0-arm64-v8a.apk` (nearly every phone since 2017; `armeabi-v7a` is for 32-bit ARM phones). Each APK is about 30 MB; the universal APK would be about 60 MB, about 19 MB of it Vosk's native library for ABIs no phone needs here.
 
 ## Reproducible builds
 

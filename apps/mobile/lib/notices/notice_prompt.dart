@@ -69,11 +69,11 @@ class _NoticeQuestion extends StatelessWidget {
     final colors = context.lkColors;
     return Padding(
       key: const Key('notices.ask'),
-      padding: const EdgeInsets.only(top: LukitasTokens.space3),
+      padding: const EdgeInsets.only(top: WambitoTokens.space3),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: LukitasTokens.space4,
+        spacing: WambitoTokens.space4,
         children: [
           Text(
             why,
@@ -82,7 +82,7 @@ class _NoticeQuestion extends StatelessWidget {
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: LukitasTokens.space2,
+            spacing: WambitoTokens.space2,
             children: [
               PressButton.text(
                 allowLabel,

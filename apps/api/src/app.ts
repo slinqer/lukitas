@@ -49,7 +49,7 @@ export function createApp(deps: AppDeps) {
   app.get("/health", (c) =>
     c.json({
       status: "ok",
-      ...(deps.config.LUKITAS_VERSION ? { version: deps.config.LUKITAS_VERSION } : {}),
+      ...(deps.config.WAMBITO_VERSION ? { version: deps.config.WAMBITO_VERSION } : {}),
       ...(deps.now ? { now: deps.now().toISOString() } : {}),
     }),
   );
@@ -73,7 +73,7 @@ export function createApp(deps: AppDeps) {
 
   app.doc31("/openapi.json", {
     openapi: "3.1.0",
-    info: { title: "Lukitas API", version: "1.0.0" },
+    info: { title: "Wambito API", version: "1.0.0" },
     servers: [{ url: deps.config.API_URL }],
   });
 

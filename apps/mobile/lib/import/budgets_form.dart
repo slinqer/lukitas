@@ -148,7 +148,7 @@ class BudgetsTotal extends StatelessWidget {
       liveRegion: true,
       container: true,
       child: Container(
-        padding: const EdgeInsets.only(top: LukitasTokens.space3),
+        padding: const EdgeInsets.only(top: WambitoTokens.space3),
         decoration: BoxDecoration(
           border: Border(top: BorderSide(color: colors.stroke, width: 2)),
         ),
@@ -169,7 +169,7 @@ class BudgetsTotal extends StatelessWidget {
 
             final fits =
                 width(TextSpan(text: l10n.budgetsTotalLabel, style: labelStyle)) +
-                    LukitasTokens.space3 +
+                    WambitoTokens.space3 +
                     width(
                       AmountWithHint.span(
                         context,
@@ -184,7 +184,7 @@ class BudgetsTotal extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.baseline,
                     textBaseline: TextBaseline.alphabetic,
-                    spacing: LukitasTokens.space3,
+                    spacing: WambitoTokens.space3,
                     children: [
                       Flexible(child: label),
                       amount,
@@ -219,13 +219,13 @@ class BudgetsList extends StatelessWidget {
     final colors = context.lkColors;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: LukitasTokens.space4,
+      spacing: WambitoTokens.space4,
       children: [
         if (categories.isEmpty)
           Text(l10n.budgetsEmpty, style: LkText.copy.copyWith(color: colors.inkMuted)),
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: LukitasTokens.space2,
+          spacing: WambitoTokens.space2,
           children: [
             for (final category in categories)
               BudgetRow(
@@ -318,7 +318,7 @@ class _BudgetRowState extends State<BudgetRow> {
         spacing: 10,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: LukitasTokens.space1),
+            padding: const EdgeInsets.only(top: WambitoTokens.space1),
             child: ExcludeSemantics(
               child: Container(
                 width: 34,
@@ -335,7 +335,7 @@ class _BudgetRowState extends State<BudgetRow> {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: LukitasTokens.space1,
+              spacing: WambitoTokens.space1,
               children: [
                 CssLines(
                   style: nameStyle,

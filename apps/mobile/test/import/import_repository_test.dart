@@ -3,9 +3,9 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/client.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/import/import_repository.dart';
+import 'package:wambito/api/client.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/import/import_repository.dart';
 
 import 'fakes.dart';
 

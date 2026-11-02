@@ -3,7 +3,7 @@ import { cimd } from "@better-auth/cimd";
 import { fetchClientMetadataResource } from "@better-auth/cimd/node";
 import { oauthProvider } from "@better-auth/oauth-provider";
 import { passkey } from "@better-auth/passkey";
-import { defaultCurrencyFor, isValidTimeZone, SUGGESTED_CATEGORIES } from "@lukas/core";
+import { defaultCurrencyFor, isValidTimeZone, SUGGESTED_CATEGORIES } from "@wambito/core";
 import {
   accounts,
   categories,
@@ -12,8 +12,8 @@ import {
   user as userTable,
   verification,
   withUser,
-} from "@lukas/db";
-import { eq, sql } from "@lukas/db/orm";
+} from "@wambito/db";
+import { eq, sql } from "@wambito/db/orm";
 import { APIError, betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { createAuthMiddleware } from "better-auth/api";
@@ -21,6 +21,7 @@ import { anonymous, bearer, emailOTP, jwt } from "better-auth/plugins";
 import { apiPathPrefix, type Config } from "./config.ts";
 import type { AppDeps } from "./deps.ts";
 import { assistantEmail, claimEmail, signInEmail } from "./emails/sign-in.ts";
+import { clientHeader } from "./http/client-headers.ts";
 import { stampGuestActivity } from "./services/guest-cleanup.ts";
 
 export const OAUTH_SCOPES = ["finance:read", "finance:write", "offline_access"] as const;
@@ -188,26 +189,23 @@ export async function sendClaimCode(
 
 type Locale = "es" | "en" | "it" | "pt";
 
-/** Headers the web app sends with a code request: the page's language and where to go after. */
-export const LOCALE_HINT_HEADER = "x-lukas-locale";
-export const NEXT_HINT_HEADER = "x-lukas-next";
-/** The device's IANA time zone, which the app sends with guest sign-up (and every request). */
-export const TIMEZONE_HINT_HEADER = "x-lukas-timezone";
-/**
- * `x-lukas-client: android`: the request is made by the Android app, from a screen the person is
- * using. A sign-in started this way marks its magic link `from=app`, so the web page the link opens
- * offers to open the app. (The timezone header does not say it: the widget's and the notices'
- * requests send it too.)
+/*
+ * The client headers (read through `clientHeader`, `http/client-headers.ts`):
+ * - `x-wambito-locale` and `x-wambito-next`: the web sends them with a code request, the page's
+ *   language and where to go after.
+ * - `x-wambito-timezone`: the device's IANA time zone, which the app sends with guest sign-up (and
+ *   every request).
+ * - `x-wambito-client: android`: the request is made by the Android app, from a screen the person
+ *   is using. A sign-in started this way marks its magic link `from=app`, so the web page the link
+ *   opens offers to open the app. (The timezone header does not say it: the widget's and the
+ *   notices' requests send it too.)
+ * - `x-wambito-background: 1`: the request is made by a job the person did not start (the Android
+ *   widget's refresh, the local notices). The session is read as usual but never refreshed, so
+ *   such a request does not count as activity: `session.updatedAt` and `expiresAt` stay as they
+ *   were, and the guest cleanup (spec §4.4, 60 days idle) is not postponed by a phone that only
+ *   runs jobs.
  */
-export const CLIENT_HEADER = "x-lukas-client";
 export const CLIENT_ANDROID = "android";
-/**
- * `x-lukas-background: 1`: the request is made by a job the person did not start (the Android
- * widget's refresh, the local notices). The session is read as usual but never refreshed, so such
- * a request does not count as activity: `session.updatedAt` and `expiresAt` stay as they were, and
- * the guest cleanup (spec §4.4, 60 days idle) is not postponed by a phone that only runs jobs.
- */
-export const BACKGROUND_HEADER = "x-lukas-background";
 
 const asLocale = (value: string | null | undefined): Locale | null =>
   value === "es" || value === "en" || value === "it" || value === "pt" ? value : null;
@@ -250,8 +248,8 @@ const canonicalTimeZone = (zone: string) =>
   new Intl.DateTimeFormat(undefined, { timeZone: zone }).resolvedOptions().timeZone;
 
 /**
- * A new guest's profile defaults, from the device's headers: the time zone from `x-lukas-timezone`
- * (a named IANA zone in its canonical spelling, else UTC); the language from `x-lukas-locale` (es,
+ * A new guest's profile defaults, from the device's headers: the time zone from `x-wambito-timezone`
+ * (a named IANA zone in its canonical spelling, else UTC); the language from `x-wambito-locale` (es,
  * en, it or pt, as a bare language or a tag like `es-CO`; `pt-BR` is `pt`), else Accept-Language,
  * else Spanish; and the region that tag names, which the currency rule reads as the web reads the
  * browser's languages. An Italian or Portuguese tag with no region reads as Italy or Portugal, so
@@ -262,8 +260,8 @@ export function guestDefaults(headers: Headers | undefined): {
   locale: Locale;
   region: string | undefined;
 } {
-  const zone = headers?.get(TIMEZONE_HINT_HEADER)?.trim() ?? "";
-  const { language, region } = parseLanguageTag(headers?.get(LOCALE_HINT_HEADER));
+  const zone = clientHeader(headers, "timezone")?.trim() ?? "";
+  const { language, region } = parseLanguageTag(clientHeader(headers, "locale"));
   const locale =
     asLocale(language) ?? localeFromAcceptLanguage(headers?.get("accept-language")) ?? "es";
   return {
@@ -273,12 +271,13 @@ export function guestDefaults(headers: Headers | undefined): {
   };
 }
 
-/** Whether a request comes from the app: only the app sends `x-lukas-timezone`. */
-const fromDevice = (headers: Headers | undefined) => headers?.has(TIMEZONE_HINT_HEADER) ?? false;
+/** Whether a request comes from the app: only the app sends `x-wambito-timezone`. */
+const fromDevice = (headers: Headers | undefined) =>
+  clientHeader(headers, "timezone") !== undefined;
 
 /**
  * The language of a sign-in email: the profile's for an existing user; for a new address, the
- * language of `x-lukas-locale` (the web sends `es`, `en`, `it` or `pt`, the app the phone's tag, such as
+ * language of `x-wambito-locale` (the web sends `es`, `en`, `it` or `pt`, the app the phone's tag, such as
  * `en-US`), else the browser's Accept-Language, else Spanish.
  */
 async function localeFor(deps: AppDeps, email: string, headers: Headers | undefined) {
@@ -288,7 +287,7 @@ async function localeFor(deps: AppDeps, email: string, headers: Headers | undefi
     .where(eq(userTable.email, email));
   if (row) return asLocale(row.locale) ?? "es";
   return (
-    asLocale(parseLanguageTag(headers?.get(LOCALE_HINT_HEADER)).language) ??
+    asLocale(parseLanguageTag(clientHeader(headers, "locale")).language) ??
     localeFromAcceptLanguage(headers?.get("accept-language")) ??
     "es"
   );
@@ -331,7 +330,7 @@ export function passkeyOrigins(config: Pick<Config, "WEB_URL" | "ANDROID_CERT_SH
 export function createAuth(deps: AppDeps) {
   const { config } = deps;
   return betterAuth({
-    appName: "Lukitas",
+    appName: "Wambito",
     // Better Auth ignores basePath when baseURL has a path, so it gets the origin and the full
     // path separately; its endpoints then resolve to `${API_URL}/auth/...`.
     basePath: `${apiPathPrefix(config)}/auth`,
@@ -438,7 +437,7 @@ export function createAuth(deps: AppDeps) {
       user: {
         create: {
           // A guest's time zone and language come from the device, and so do an app user's: the
-          // app sends `x-lukas-timezone` on every request and has no onboarding. A user created
+          // app sends `x-wambito-timezone` on every request and has no onboarding. A user created
           // from the web (no such header) stays at the defaults until the web's onboarding.
           before: async (data, ctx) => {
             const headers = ctx?.headers ?? ctx?.request?.headers;
@@ -458,7 +457,7 @@ export function createAuth(deps: AppDeps) {
                   )
                 : "EUR";
             // Every account starts with the suggested categories, named in the sign-up's language
-            // (`x-lukas-locale`, else the browser's), so a person who leaves the welcome halfway
+            // (`x-wambito-locale`, else the browser's), so a person who leaves the welcome halfway
             // still has them. The welcome then shows them as the person's own.
             const { locale } = guestDefaults(headers);
             await withUser(deps.db, created.id, async (tx) => {
@@ -498,9 +497,9 @@ export function createAuth(deps: AppDeps) {
           const locale = await localeFor(deps, email, headers);
           // The link opens the web in the email's language and goes on to `next` after sign-in.
           const params = new URLSearchParams({ email, code: otp, lang: locale });
-          const next = linkNext(headers?.get(NEXT_HINT_HEADER));
+          const next = linkNext(clientHeader(headers, "next"));
           if (next) params.set("next", next);
-          if (headers?.get(CLIENT_HEADER)?.trim().toLowerCase() === CLIENT_ANDROID) {
+          if (clientHeader(headers, "client")?.trim().toLowerCase() === CLIENT_ANDROID) {
             params.set("from", "app");
           }
           // Signing in for an assistant: a path the Android app does not claim (its App Link is
@@ -519,7 +518,7 @@ export function createAuth(deps: AppDeps) {
       }),
       passkey({
         rpID: new URL(config.WEB_URL).hostname,
-        rpName: "Lukitas",
+        rpName: "Wambito",
         origin: passkeyOrigins(config),
       }),
       anonymous({
@@ -548,7 +547,7 @@ export function createAuth(deps: AppDeps) {
         refreshTokenExpiresIn: 10 * 365 * 24 * 60 * 60,
         ...(config.MCP_URL
           ? {
-              resources: [{ identifier: config.MCP_URL, name: "Lukitas MCP" }],
+              resources: [{ identifier: config.MCP_URL, name: "Wambito MCP" }],
               clientRegistrationDefaultResources: [config.MCP_URL],
             }
           : {}),

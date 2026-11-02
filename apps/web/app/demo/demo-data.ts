@@ -1,4 +1,4 @@
-import type { CategoryKind } from "@lukas/core";
+import type { CategoryKind } from "@wambito/core";
 import type { Locale } from "../i18n/format.ts";
 
 /**
@@ -115,7 +115,7 @@ const PAST_MONTHS: Record<string, number>[] = [
 const ES: DemoSeed = {
   profile: {
     name: "Valentina (demo)",
-    email: "valentina@demo.lukas.app",
+    email: "valentina@demo.wambito.test",
     locale: "es",
     timezone: "America/Bogota",
     currency: "COP",
@@ -185,7 +185,7 @@ const ES: DemoSeed = {
 const EN: DemoSeed = {
   profile: {
     name: "Valentina (demo)",
-    email: "valentina@demo.lukas.app",
+    email: "valentina@demo.wambito.test",
     locale: "en",
     timezone: "Europe/Lisbon",
     currency: "EUR",

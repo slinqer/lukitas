@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/capture/capture_repository.dart';
-import 'package:lukitas/capture/engine/speech_engine.dart';
-import 'package:lukitas/capture/models_download.dart';
-import 'package:lukitas/capture/parser/parse.dart' show Draft;
-import 'package:lukitas/home/home_repository.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/capture/capture_repository.dart';
+import 'package:wambito/capture/engine/speech_engine.dart';
+import 'package:wambito/capture/models_download.dart';
+import 'package:wambito/capture/parser/parse.dart' show Draft;
+import 'package:wambito/home/home_repository.dart';
 
 import '../home/fakes.dart';
 

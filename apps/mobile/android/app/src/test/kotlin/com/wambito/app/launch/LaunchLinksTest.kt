@@ -22,35 +22,52 @@ class LaunchLinksTest {
     fun `the widget's buttons and the tile start this app on their link`() {
         val add = LaunchLinks.intent(context, LaunchLinks.ADD)
         assertEquals(Intent.ACTION_VIEW, add.action)
-        assertEquals("lukitas://add", add.dataString)
+        assertEquals("wambito://add", add.dataString)
         // The app's own, not-exported entry for its links: no other app can start it.
         assertEquals("com.wambito.app.LaunchLinkAlias", add.component?.className)
-        assertEquals("lukitas://capture", LaunchLinks.intent(context, LaunchLinks.CAPTURE).dataString)
+        assertEquals("wambito://capture", LaunchLinks.intent(context, LaunchLinks.CAPTURE).dataString)
     }
 
     private fun viaAlias(link: String) =
         Intent(Intent.ACTION_VIEW, Uri.parse(link)).setClassName(context, "com.wambito.app.LaunchLinkAlias")
 
     @Test
-    fun `only lukitas add, capture and due links are taken, and only through the app's own entry`() {
-        assertEquals("lukitas://add", LaunchLinks.linkOf(LaunchLinks.intent(context, LaunchLinks.ADD)))
-        assertEquals("lukitas://capture", LaunchLinks.linkOf(viaAlias("lukitas://capture")))
+    fun `only wambito add, capture and due links are taken, and only through the app's own entry`() {
+        assertEquals("wambito://add", LaunchLinks.linkOf(LaunchLinks.intent(context, LaunchLinks.ADD)))
+        assertEquals("wambito://capture", LaunchLinks.linkOf(viaAlias("wambito://capture")))
         // The "Hoy vence…" notice opens home through the same entry.
-        assertEquals("lukitas://due", LaunchLinks.linkOf(LaunchLinks.intent(context, LaunchLinks.DUE)))
+        assertEquals("wambito://due", LaunchLinks.linkOf(LaunchLinks.intent(context, LaunchLinks.DUE)))
         // And the guest warning opens "Guarda tu progreso".
-        assertEquals("lukitas://progress", LaunchLinks.linkOf(LaunchLinks.intent(context, LaunchLinks.PROGRESS)))
-        assertNull(LaunchLinks.linkOf(viaAlias("lukitas://settings")))
+        assertEquals("wambito://progress", LaunchLinks.linkOf(LaunchLinks.intent(context, LaunchLinks.PROGRESS)))
+        assertNull(LaunchLinks.linkOf(viaAlias("wambito://settings")))
         assertNull(LaunchLinks.linkOf(viaAlias("https://app.wambito.com/auth/verify")))
         assertNull(LaunchLinks.linkOf(Intent(Intent.ACTION_MAIN)))
         assertNull(LaunchLinks.linkOf(null))
     }
 
     @Test
+    fun `links pinned before the rename (lukitas) are still taken, and the app builds only wambito`() {
+        // 2b: remove the lukitas half: a notice already on the shade, or a shortcut, carries it.
+        assertEquals("wambito", LaunchLinks.SCHEME)
+        for (host in listOf("add", "capture", "due", "progress", "home")) {
+            assertEquals("lukitas://$host", LaunchLinks.linkOf(viaAlias("lukitas://$host")))
+            assertEquals("wambito://$host", LaunchLinks.linkOf(viaAlias("wambito://$host")))
+        }
+        for (link in listOf(LaunchLinks.ADD, LaunchLinks.CAPTURE, LaunchLinks.DUE, LaunchLinks.PROGRESS, LaunchLinks.HOME)) {
+            assertEquals("wambito", link.scheme)
+        }
+        assertNull(LaunchLinks.linkOf(viaAlias("lukas://add")))
+        // Neither is a web link for the router.
+        assertFalse(LaunchLinks.isWebLink(viaAlias("lukitas://capture")))
+        assertFalse(LaunchLinks.isWebLink(viaAlias("wambito://capture")))
+    }
+
+    @Test
     fun `another app starting the exported launcher activity with the link does not open capture`() {
-        val explicit = Intent(Intent.ACTION_VIEW, Uri.parse("lukitas://capture"))
+        val explicit = Intent(Intent.ACTION_VIEW, Uri.parse("wambito://capture"))
             .setClass(context, MainActivity::class.java)
         assertNull(LaunchLinks.linkOf(explicit))
-        assertNull(LaunchLinks.linkOf(Intent(Intent.ACTION_VIEW, Uri.parse("lukitas://capture"))))
+        assertNull(LaunchLinks.linkOf(Intent(Intent.ACTION_VIEW, Uri.parse("wambito://capture"))))
     }
 
     @Test
@@ -78,7 +95,7 @@ class LaunchLinksTest {
     @Test
     fun `a web link to any other host is dropped, so no app can sign the person into its account`() {
         assertTrue(LaunchLinks.isForeignWebLink(view("https://evil.example/auth/verify?email=x%40y.z&code=1"), "app.wambito.com"))
-        assertTrue(LaunchLinks.isForeignWebLink(view(verify), "lukitas.example.org"))
+        assertTrue(LaunchLinks.isForeignWebLink(view(verify), "wambito.example.org"))
         // A server setting that cannot be read is no host at all: nothing goes on.
         assertTrue(LaunchLinks.isForeignWebLink(view(verify), null))
         assertTrue(LaunchLinks.isForeignWebLink(view("https:///auth/verify"), "app.wambito.com"))
@@ -95,7 +112,7 @@ class LaunchLinksTest {
     fun `the configured server is the one chosen in Settings, else the build's default`() {
         val default = "https://app.wambito.com"
         assertEquals("app.wambito.com", LaunchLinks.serverHost(ServerSetting.Default, default))
-        assertEquals("lukitas.example.org", LaunchLinks.serverHost(ServerSetting.Chosen("https://lukitas.example.org/"), default))
+        assertEquals("wambito.example.org", LaunchLinks.serverHost(ServerSetting.Chosen("https://wambito.example.org/"), default))
         assertNull(LaunchLinks.serverHost(ServerSetting.Unreadable, default))
     }
 
@@ -109,8 +126,8 @@ class LaunchLinksTest {
 
     @Test
     fun `the widget's body tap is a link home, through the app's own entry`() {
-        assertEquals("lukitas://home", LaunchLinks.intent(context, LaunchLinks.HOME).dataString)
-        assertEquals("lukitas://home", LaunchLinks.linkOf(LaunchLinks.intent(context, LaunchLinks.HOME)))
+        assertEquals("wambito://home", LaunchLinks.intent(context, LaunchLinks.HOME).dataString)
+        assertEquals("wambito://home", LaunchLinks.linkOf(LaunchLinks.intent(context, LaunchLinks.HOME)))
     }
 
     @Test
@@ -124,7 +141,7 @@ class LaunchLinksTest {
     fun `the router reads only the magic link of the configured server`() {
         val host = "app.wambito.com"
         assertTrue(LaunchLinks.routerMayRead(view(verify), host))
-        assertFalse(LaunchLinks.routerMayRead(view(verify), "lukitas.example.org"))
+        assertFalse(LaunchLinks.routerMayRead(view(verify), "wambito.example.org"))
         assertFalse(LaunchLinks.routerMayRead(view(verify), null))
         // Data on an intent that is not a view of a link is nobody's route.
         assertFalse(LaunchLinks.routerMayRead(Intent(Intent.ACTION_MAIN, Uri.parse(verify)), host))
@@ -135,7 +152,7 @@ class LaunchLinksTest {
         assertFalse(LaunchLinks.routerMayRead(null, host))
     }
 
-    // --- The page's "Abrir en Lukitas" (apps/web/app/features/sign-in/open-in-app.ts) ----------------
+    // --- The page's "Abrir en Wambito" (apps/web/app/features/sign-in/open-in-app.ts) ----------------
 
     /** What the web page's button links to, character for character (open-in-app.test.ts). */
     private val intentLink =
@@ -170,12 +187,12 @@ class LaunchLinksTest {
     }
 
     @Test
-    fun `MainActivity keeps that intent's link for the router, and takes no lukitas link from it`() {
+    fun `MainActivity keeps that intent's link for the router, and takes no wambito link from it`() {
         val intent = fromBrowser()
         assertTrue(LaunchLinks.routerMayRead(intent, "app.wambito.com"))
         assertNull(LaunchLinks.linkOf(intent))
         // On another server the same link is dropped, as any web link is.
-        assertFalse(LaunchLinks.routerMayRead(intent, "lukitas.example.org"))
+        assertFalse(LaunchLinks.routerMayRead(intent, "wambito.example.org"))
     }
 
     @Test

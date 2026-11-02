@@ -75,7 +75,7 @@ describe("roadmap items", () => {
     }
   });
 
-  it("never calls Lukitas a game", () => {
+  it("never calls Wambito a game", () => {
     for (const locale of ["es", "en", "it", "pt"] as const) {
       for (const [key, value] of Object.entries(catalogs[locale])) {
         if (!key.startsWith("roadmap.")) continue;

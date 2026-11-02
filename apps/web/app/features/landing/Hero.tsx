@@ -11,8 +11,8 @@ import { CodeLink } from "./OpenSource.tsx";
 
 /**
  * The headline with "lukas" ("money", "dinheiro", "soldi") on a gold marker, taking turns with what
- * money is called elsewhere, what Lukas is, one primary action and "Pruébalo sin cuenta" (the demo)
- * beside it, with the perks under them, and Lukas waving. Without an app to open (landing-only, coming soon) there
+ * money is called elsewhere, what Wambito is, one primary action and "Pruébalo sin cuenta" (the demo)
+ * beside it, with the perks under them, and Wambi waving. Without an app to open (landing-only, coming soon) there
  * is no demo either, so only the primary action shows.
  */
 export function Hero() {

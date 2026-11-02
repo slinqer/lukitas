@@ -1,13 +1,4 @@
 import {
-  type AssistantTool,
-  type Lukitas,
-  PROMPTS,
-  type Profile,
-  serverInstructions,
-  TOOLS,
-  ToolError,
-} from "@lukas/ai-assistant-tools";
-import {
   type AuthInfo,
   type CallToolResult,
   createMcpHandler,
@@ -16,6 +7,15 @@ import {
   type OAuthTokenVerifier,
   requireBearerAuth,
 } from "@modelcontextprotocol/server";
+import {
+  type AssistantTool,
+  PROMPTS,
+  type Profile,
+  serverInstructions,
+  TOOLS,
+  ToolError,
+  type Wambito,
+} from "@wambito/ai-assistant-tools";
 import { Hono } from "hono";
 import { z } from "zod";
 import type { Config } from "./config.ts";
@@ -28,10 +28,10 @@ interface Caller {
 }
 
 export interface McpDeps {
-  config: Pick<Config, "MCP_URL" | "AUTH_ISSUER" | "RATE_LIMIT_PER_MINUTE" | "LUKITAS_VERSION">;
+  config: Pick<Config, "MCP_URL" | "AUTH_ISSUER" | "RATE_LIMIT_PER_MINUTE" | "WAMBITO_VERSION">;
   verifier: OAuthTokenVerifier;
-  /** The person's Lukitas, acting with their assistant's token. */
-  lukitasFor(token: string): Lukitas;
+  /** The person's Wambito, acting with their assistant's token. */
+  wambitoFor(token: string): Wambito;
   now?: () => Date;
 }
 
@@ -46,12 +46,12 @@ const messagesOf = (body: unknown): { method?: unknown }[] =>
 function toolResult(tool: AssistantTool<z.ZodObject, z.ZodObject>) {
   return async (
     input: Record<string, unknown>,
-    lukitas: Lukitas,
+    wambito: Wambito,
     caller: Caller,
     now: () => Date,
   ): Promise<CallToolResult> => {
     try {
-      const result = await tool.handler(input, { lukitas, userId: caller.userId, now });
+      const result = await tool.handler(input, { wambito, userId: caller.userId, now });
       return {
         content: [{ type: "text", text: result.text }],
         structuredContent: result.structured as Record<string, unknown>,
@@ -90,7 +90,7 @@ export function createMcpApp(deps: McpDeps) {
   const handler = createMcpHandler(
     ({ authInfo }) => {
       const server = new McpServer(
-        { name: "lukitas", title: "Lukitas", version: config.LUKITAS_VERSION ?? "0.0.0" },
+        { name: "wambito", title: "Wambito", version: config.WAMBITO_VERSION ?? "0.0.0" },
         {
           instructions,
           // The catalog only changes with a deploy.
@@ -103,10 +103,10 @@ export function createMcpApp(deps: McpDeps) {
       );
       const caller = (authInfo?.extra ?? {}) as unknown as Caller;
       const token = authInfo?.token ?? "";
-      let lukitas: Lukitas | undefined;
-      const lukitasNow = () => {
-        lukitas ??= deps.lukitasFor(token);
-        return lukitas;
+      let wambito: Wambito | undefined;
+      const wambitoNow = () => {
+        wambito ??= deps.wambitoFor(token);
+        return wambito;
       };
       for (const tool of TOOLS as AssistantTool<z.ZodObject, z.ZodObject>[]) {
         const run = toolResult(tool);
@@ -131,7 +131,7 @@ export function createMcpApp(deps: McpDeps) {
                     errorDescription: `This needs ${tool.scope}`,
                   },
           },
-          (input: Record<string, unknown>) => run(input, lukitasNow(), caller, now),
+          (input: Record<string, unknown>) => run(input, wambitoNow(), caller, now),
         );
       }
       const locale = caller.locale ?? "es";
@@ -161,7 +161,7 @@ export function createMcpApp(deps: McpDeps) {
   app.get("/health", (c) =>
     c.json({
       status: "ok",
-      ...(config.LUKITAS_VERSION ? { version: config.LUKITAS_VERSION } : {}),
+      ...(config.WAMBITO_VERSION ? { version: config.WAMBITO_VERSION } : {}),
     }),
   );
 
@@ -171,7 +171,7 @@ export function createMcpApp(deps: McpDeps) {
     authorization_servers: [config.AUTH_ISSUER],
     scopes_supported: SCOPES,
     bearer_methods_supported: ["header"],
-    resource_name: "Lukitas",
+    resource_name: "Wambito",
   });
   app.get("/.well-known/oauth-protected-resource", (c) => c.json(metadata()));
   app.get(`/.well-known/oauth-protected-resource${resource.pathname}`, (c) => c.json(metadata()));
@@ -192,7 +192,7 @@ export function createMcpApp(deps: McpDeps) {
     );
     const caller: Caller = {
       ...(auth.extra as unknown as Caller),
-      ...(wantsLocale ? { locale: (await deps.lukitasFor(auth.token).profile()).locale } : {}),
+      ...(wantsLocale ? { locale: (await deps.wambitoFor(auth.token).profile()).locale } : {}),
     };
     return handler.fetch(c.req.raw, {
       authInfo: { ...auth, extra: caller as unknown as Record<string, unknown> },

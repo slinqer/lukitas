@@ -1,6 +1,6 @@
 // The web's test vectors (apps/web/app/ui/keypad-input.test.ts), ported one for one.
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/add/keypad_input.dart';
+import 'package:wambito/add/keypad_input.dart';
 
 /// Types [keys] (as physical key names) from an empty amount; ignored keys change nothing.
 String type(String keys, AmountFormat format) {

@@ -5,9 +5,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/auth_api.dart';
-import 'package:lukitas/home/home_controller.dart';
-import 'package:lukitas/router.dart';
+import 'package:wambito/api/auth_api.dart';
+import 'package:wambito/home/home_controller.dart';
+import 'package:wambito/router.dart';
 
 import '../entry/fakes.dart';
 import '../home/fakes.dart';

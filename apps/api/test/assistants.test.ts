@@ -23,9 +23,9 @@ const list = async (headers: { authorization: string }) => {
 
 describe("connected assistants", () => {
   test("lists the assistants the person let in, with their domain and scopes", async () => {
-    const { headers } = await t.signIn("list@lukas.test");
+    const { headers } = await t.signIn("list@wambito.test");
     expect(await list(headers)).toEqual([]);
-    const { clientId } = await t.authorize("list@lukas.test", { headers });
+    const { clientId } = await t.authorize("list@wambito.test", { headers });
     const [assistant, ...rest] = await list(headers);
     expect(rest).toEqual([]);
     expect(assistant).toMatchObject({
@@ -38,14 +38,14 @@ describe("connected assistants", () => {
   });
 
   test("someone else's assistants are not listed", async () => {
-    await t.authorize("owner@lukas.test");
-    const { headers } = await t.signIn("stranger@lukas.test");
+    await t.authorize("owner@wambito.test");
+    const { headers } = await t.signIn("stranger@wambito.test");
     expect(await list(headers)).toEqual([]);
   });
 
   test("revoking deletes the consent and its refresh tokens", async () => {
-    const { headers } = await t.signIn("revoke@lukas.test");
-    const tokens = await t.authorize("revoke@lukas.test", { headers });
+    const { headers } = await t.signIn("revoke@wambito.test");
+    const tokens = await t.authorize("revoke@wambito.test", { headers });
     const res = await t.request("DELETE", `/v1/me/assistants/${tokens.clientId}`, { headers });
     expect(res.status).toBe(204);
     expect(await list(headers)).toEqual([]);
@@ -59,8 +59,8 @@ describe("connected assistants", () => {
   });
 
   test("revoking someone else's assistant is a 404 and leaves it", async () => {
-    const theirs = await t.authorize("victim@lukas.test");
-    const { headers } = await t.signIn("attacker@lukas.test");
+    const theirs = await t.authorize("victim@wambito.test");
+    const { headers } = await t.signIn("attacker@wambito.test");
     const res = await t.request("DELETE", `/v1/me/assistants/${theirs.clientId}`, { headers });
     expect(res.status).toBe(404);
     const refresh = await t.tokenRequest({
@@ -72,7 +72,7 @@ describe("connected assistants", () => {
   });
 
   test("a client_id that is a URL (CIMD) reaches the route, encoded", async () => {
-    const { headers } = await t.signIn("cimd-revoke@lukas.test");
+    const { headers } = await t.signIn("cimd-revoke@wambito.test");
     const id = encodeURIComponent("https://claude.ai/oauth/mcp-oauth-client-metadata");
     const res = await t.request("DELETE", `/v1/me/assistants/${id}`, { headers });
     expect(res.status).toBe(404);

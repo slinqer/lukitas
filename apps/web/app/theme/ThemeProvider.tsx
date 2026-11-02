@@ -7,11 +7,12 @@ import {
   useMemo,
   useState,
 } from "react";
+import { readStored, writeStored } from "../lib/stored.ts";
 import {
   DEFAULT_THEME_PREF,
   isThemePref,
   resolveTheme,
-  THEME_STORAGE_KEY,
+  THEME_STORED,
   type Theme,
   type ThemePref,
 } from "./theme-bootstrap.ts";
@@ -38,12 +39,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(THEME_STORAGE_KEY);
-      if (isThemePref(stored)) setPrefState(stored);
-    } catch {
-      // Storage can be blocked; the default (night) is fine.
-    }
+    // Blocked storage reads as nothing stored: the default (night) is fine.
+    const stored = readStored(THEME_STORED);
+    if (isThemePref(stored)) setPrefState(stored);
     const query = typeof matchMedia === "function" ? matchMedia(DARK_QUERY) : null;
     if (query) {
       setPrefersDark(query.matches);
@@ -64,11 +62,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const setPref = useCallback((next: ThemePref) => {
     setPrefState(next);
-    try {
-      localStorage.setItem(THEME_STORAGE_KEY, next);
-    } catch {
-      // Not persisted, but the choice still applies for this session.
-    }
+    // Blocked storage: not persisted, but the choice still applies for this session.
+    writeStored(THEME_STORED, next);
   }, []);
 
   const value = useMemo(() => ({ pref, theme, setPref }), [pref, theme, setPref]);

@@ -10,7 +10,7 @@ import 'auth_api.dart';
 import 'passkeys.dart';
 
 /// The ids of the accounts that answered the offer ("Crear mi huella" or "Ahora no") on this phone,
-/// kept as the web keeps them in `localStorage` (`lukas.passkey.offered`): the offer is made once per
+/// kept as the web keeps them in `localStorage` (`wambito.passkey.offered`): the offer is made once per
 /// account per device.
 const passkeyOfferedKey = 'passkey.offered';
 

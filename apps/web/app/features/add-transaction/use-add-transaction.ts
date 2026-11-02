@@ -1,11 +1,11 @@
+import { useQueryClient } from "@tanstack/react-query";
 import {
   type CategoryDto,
   type MonthSummary,
   monthOf,
   type TransactionDto,
   todayIn,
-} from "@lukas/core";
-import { useQueryClient } from "@tanstack/react-query";
+} from "@wambito/core";
 import { createElement, Fragment, useMemo, useState } from "react";
 import { useTranslations } from "use-intl";
 import { ApiProblem, problemMessage, type Translator } from "../../api/errors.ts";
@@ -33,7 +33,7 @@ import { feedbackForSave, orderByUse } from "../home/home-model.ts";
 export type Kind = "expense" | "income";
 export type Frequency = "monthly" | "yearly";
 
-/** Something that just happened on a transaction, for Lukitas's line and mood on home. */
+/** Something that just happened on a transaction, for Wambi's line and mood on home. */
 export interface TransactionEvent {
   /** Grows with each event, so the same kind of event twice still counts as new. */
   id: number;
@@ -41,7 +41,7 @@ export interface TransactionEvent {
   categoryId: string;
   /** Signed cents, as stored. */
   amount: number;
-  /** The movement's name, so Lukitas can say which one it was. */
+  /** The movement's name, so Wambi can say which one it was. */
   name: string;
   month: string;
 }
@@ -81,7 +81,7 @@ function moneyWithHint(cents: number, currency: string, locale: Locale) {
 /**
  * The writes behind the sheet and home, with what follows each one (spec §2.6, §3.3, §4.1): the
  * change shows at once (optimistic), then the feedback event, a toast (with Deshacer, and
- * "Ponerle nombre" after an unnamed save), and Lukitas's event. A failure rolls the change back
+ * "Ponerle nombre" after an unnamed save), and Wambi's event. A failure rolls the change back
  * (the mutations do) and shows the error in an `alert` toast. Kept in the always-mounted provider,
  * so an undo works after the sheet is gone.
  */

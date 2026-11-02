@@ -1,11 +1,11 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/settings/url_opener.dart';
+import 'package:wambito/settings/url_opener.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
-  const channel = MethodChannel('lukitas/device');
+  const channel = MethodChannel('wambito/device');
   final calls = <MethodCall>[];
 
   tearDown(() {
@@ -14,7 +14,7 @@ void main() {
   });
 
   test(
-    'the address goes to lukitas/device as an openUrl call, and the answer comes back',
+    'the address goes to wambito/device as an openUrl call, and the answer comes back',
     () async {
       messenger.setMockMethodCallHandler(channel, (call) async {
         calls.add(call);
@@ -49,7 +49,7 @@ void main() {
 
     test('mailto: goes to the channel exactly as it is, encoded subject and body included', () async {
       const mailto =
-          'mailto:hola@wambito.com?subject=Lukitas%3A%20comentarios&body=%0A%0AVersi%C3%B3n%3A%201.2.3';
+          'mailto:hola@wambito.com?subject=Wambito%3A%20comentarios&body=%0A%0AVersi%C3%B3n%3A%201.2.3';
       expect(await open(mailto), isTrue);
       expect(calls.single.method, 'openUrl');
       expect(calls.single.arguments, mailto);

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/ui/month_picker.dart';
+import 'package:wambito/ui/month_picker.dart';
 
 import '../insights/insights_test.dart' show pumpInsights, testInsights;
 

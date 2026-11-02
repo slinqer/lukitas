@@ -11,7 +11,7 @@ import 'settings_store.dart';
 class InitialSettings {
   const InitialSettings({required this.serverUrl, required this.themeMode, this.locale});
 
-  /// The defaults: the Lukitas server, night (spec section 6.2), and the phone's own language
+  /// The defaults: the Wambito server, night (spec section 6.2), and the phone's own language
   /// (Spanish, English, Italian or Portuguese; Spanish for any other).
   static final defaults = InitialSettings(serverUrl: defaultServerUrl, themeMode: ThemeMode.dark);
 

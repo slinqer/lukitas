@@ -13,7 +13,7 @@ import '../theme/tokens.g.dart';
 /// Under the system's "remove animations" it is a plain static indicator instead: one bar as wide
 /// as the current level, which only changes, never moves in between.
 ///
-/// A widget of its own, with colours and radii from the design tokens (`LukitasColors`: the
+/// A widget of its own, with colours and radii from the design tokens (`WambitoColors`: the
 /// stroke for quiet, the brand for loud, and the candy at the peaks; pill bars), so the capture
 /// sheet can place it anywhere. The sheet sets it in a sunken box (capture_listening.dart).
 class MicLevel extends StatefulWidget {
@@ -75,7 +75,7 @@ class _MicLevelState extends State<MicLevel> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<LukitasTheme>()!.colors;
+    final colors = Theme.of(context).extension<WambitoTheme>()!.colors;
     final plain = MediaQuery.disableAnimationsOf(context);
     return ExcludeSemantics(
       child: SizedBox(height: widget.height, child: plain ? _static(colors) : _bars(colors)),
@@ -83,10 +83,10 @@ class _MicLevelState extends State<MicLevel> {
   }
 
   /// Quiet is the stroke and a loud moment the brand; a little speech already reads as brand.
-  static Color? _tint(LukitasColors colors, double level) =>
+  static Color? _tint(WambitoColors colors, double level) =>
       Color.lerp(colors.stroke, colors.brand, (level * 1.3).clamp(0.0, 1.0));
 
-  Widget _bars(LukitasColors colors) => Center(
+  Widget _bars(WambitoColors colors) => Center(
     child: Row(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -101,14 +101,14 @@ class _MicLevelState extends State<MicLevel> {
             height: _smallest + _history[i] * (widget.height - _smallest),
             decoration: BoxDecoration(
               color: _tint(colors, _history[i]),
-              borderRadius: BorderRadius.circular(LukitasTokens.radiusPill),
+              borderRadius: BorderRadius.circular(WambitoTokens.radiusPill),
             ),
           ),
       ],
     ),
   );
 
-  Widget _static(LukitasColors colors) => Center(
+  Widget _static(WambitoColors colors) => Center(
     child: Container(
       key: const Key('mic.track'),
       // The same width as the bars take.
@@ -116,7 +116,7 @@ class _MicLevelState extends State<MicLevel> {
       height: 10,
       decoration: BoxDecoration(
         color: colors.stroke,
-        borderRadius: BorderRadius.circular(LukitasTokens.radiusPill),
+        borderRadius: BorderRadius.circular(WambitoTokens.radiusPill),
       ),
       clipBehavior: Clip.antiAlias,
       alignment: Alignment.centerLeft,
@@ -126,7 +126,7 @@ class _MicLevelState extends State<MicLevel> {
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: colors.brand,
-            borderRadius: BorderRadius.circular(LukitasTokens.radiusPill),
+            borderRadius: BorderRadius.circular(WambitoTokens.radiusPill),
           ),
           child: const SizedBox.expand(),
         ),

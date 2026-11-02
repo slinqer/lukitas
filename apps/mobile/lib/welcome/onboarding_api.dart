@@ -3,7 +3,7 @@
 // test can stand in for the server.
 import 'dart:async';
 
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../home/home_repository.dart';
 import '../import/budget_input.dart';
 import 'category_chips.dart';

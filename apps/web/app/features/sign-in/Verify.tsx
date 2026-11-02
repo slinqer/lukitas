@@ -57,7 +57,7 @@ interface MagicLink {
  * address bar as soon as it is read, and the route sends no referrer.
  *
  * A sign-in started in the Android app marks its link `from=app`. Opened in an Android browser (a
- * mail app's own browser never asks Android for the app), the page then offers "Abrir en Lukitas",
+ * mail app's own browser never asks Android for the app), the page then offers "Abrir en Wambito",
  * an `intent://` link to this same address, or "Seguir en la web". Still nothing is spent until
  * the person picks the web.
  */

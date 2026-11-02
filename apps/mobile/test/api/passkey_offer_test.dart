@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/auth_api.dart';
-import 'package:lukitas/api/passkey_offer.dart';
-import 'package:lukitas/api/session.dart';
-import 'package:lukitas/router.dart';
+import 'package:wambito/api/auth_api.dart';
+import 'package:wambito/api/passkey_offer.dart';
+import 'package:wambito/api/session.dart';
+import 'package:wambito/router.dart';
 
 import '../entry/fakes.dart';
 import '../settings/fakes.dart';

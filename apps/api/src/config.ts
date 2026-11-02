@@ -133,7 +133,7 @@ const configSchema = z
      * The version this build is, as /health reports it (the personal install's up.sh passes
      * `0.0.0-dev.<commit>`, the name the APK of that commit has). Blank or unset: none is reported.
      */
-    LUKITAS_VERSION: z
+    WAMBITO_VERSION: z
       .preprocess(
         (v) => (typeof v === "string" && v.trim() === "" ? undefined : v),
         z.string().trim().optional(),

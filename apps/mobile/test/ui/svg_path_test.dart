@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/ui/svg_path.dart';
+import 'package:wambito/ui/svg_path.dart';
 
 void main() {
   group('SVG path data', () {

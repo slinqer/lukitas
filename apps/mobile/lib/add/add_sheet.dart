@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../l10n/app_localizations.dart';
 import '../ui/sheet.dart';
 import 'add_body.dart';

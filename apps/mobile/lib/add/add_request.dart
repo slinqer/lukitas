@@ -1,4 +1,4 @@
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import 'add_form.dart';
 
 /// What opens the add sheet: a new movement of [kind] (starting in [categoryId] when it is one of

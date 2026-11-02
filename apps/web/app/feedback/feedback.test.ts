@@ -167,14 +167,14 @@ describe("feedback: sound", () => {
 });
 
 describe("feedback: DOM event", () => {
-  it("dispatches lukas:feedback with the event name", () => {
+  it("dispatches wambito:feedback with the event name", () => {
     const received: FeedbackDetail[] = [];
     window.addEventListener(FEEDBACK_DOM_EVENT, (event) => {
       received.push((event as CustomEvent<FeedbackDetail>).detail);
     });
     const events: FeedbackEvent[] = ["expenseSaved", "undo"];
     for (const event of events) feedback(event);
-    expect(FEEDBACK_DOM_EVENT).toBe("lukas:feedback");
+    expect(FEEDBACK_DOM_EVENT).toBe("wambito:feedback");
     expect(received).toEqual([{ event: "expenseSaved" }, { event: "undo" }]);
   });
 

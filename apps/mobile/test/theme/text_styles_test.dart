@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/theme/text_styles.dart';
-import 'package:lukitas/theme/theme.dart';
-import 'package:lukitas/theme/tokens.g.dart';
+import 'package:wambito/theme/text_styles.dart';
+import 'package:wambito/theme/theme.dart';
+import 'package:wambito/theme/tokens.g.dart';
 
 import '../support/fonts.dart';
 
@@ -349,8 +349,8 @@ void main() {
   group('default text takes the ink of its own theme', () {
     // tokens.css --ink: #f3f0ff at night, #221a47 by day; app.css:50-56 body { color: var(--ink) }.
     for (final (name, theme, ink) in [
-      ('night', nightTheme, LukitasTokens.night.ink),
-      ('day', dayTheme, LukitasTokens.day.ink),
+      ('night', nightTheme, WambitoTokens.night.ink),
+      ('day', dayTheme, WambitoTokens.day.ink),
     ]) {
       testWidgets('a plain Text and a dialog\'s title and content are the $name ink', (
         tester,
@@ -392,8 +392,8 @@ void main() {
 
     test('every Material text style carries the ink, never Material\'s black or white', () {
       for (final (theme, ink) in [
-        (nightTheme, LukitasTokens.night.ink),
-        (dayTheme, LukitasTokens.day.ink),
+        (nightTheme, WambitoTokens.night.ink),
+        (dayTheme, WambitoTokens.day.ink),
       ]) {
         final t = theme.textTheme;
         for (final style in [

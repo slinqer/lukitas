@@ -45,11 +45,11 @@ android {
 
         // The server the widget's refresh job (widget/RefreshWorker.kt) asks when the person chose
         // none in Settings: the app's own default (lib/api/server_address.dart), which a build can
-        // point elsewhere with --dart-define=LUKITAS_SERVER=... (the dev stack, from the emulator).
+        // point elsewhere with --dart-define=WAMBITO_SERVER=... (the dev stack, from the emulator).
         resValue(
             "string",
             "default_server",
-            dartDefines["LUKITAS_SERVER"] ?: "https://app.wambito.com",
+            dartDefines["WAMBITO_SERVER"] ?: "https://app.wambito.com",
         )
 
         // Phones only: 64- and 32-bit ARM. A split build (--split-per-abi, which release.sh gives
@@ -86,11 +86,11 @@ android {
         }
         release {
             // The release signing key lives only on the founder's Mac and never reaches Gradle:
-            // scripts/release.sh builds with LUKITAS_UNSIGNED_RELEASE=1 (no signature at all, the
+            // scripts/release.sh builds with WAMBITO_UNSIGNED_RELEASE=1 (no signature at all, the
             // bytes F-Droid compares) and signs the result with apksigner. Any other local release
             // build is signed with the debug key, so it still installs.
             signingConfig =
-                if (System.getenv("LUKITAS_UNSIGNED_RELEASE") == "1") null
+                if (System.getenv("WAMBITO_UNSIGNED_RELEASE") == "1") null
                 else signingConfigs.getByName("debug")
             // Vosk reaches its native library through JNA, by reflection: R8 must keep both.
             proguardFiles("proguard-rules.pro")

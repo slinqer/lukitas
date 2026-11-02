@@ -4,9 +4,9 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/l10n/app_localizations.dart';
-import 'package:lukitas/settings/android_libraries.dart';
-import 'package:lukitas/settings/licenses.dart';
+import 'package:wambito/l10n/app_localizations.dart';
+import 'package:wambito/settings/android_libraries.dart';
+import 'package:wambito/settings/licenses.dart';
 
 Future<List<LicenseEntry>> _extras([String language = 'es']) async =>
     extraLicenseEntries(rootBundle, lookupAppLocalizations(Locale(language))).toList();
@@ -36,7 +36,7 @@ void main() {
 
     test('the sounds say they are original work under the app\'s own licence, AGPL-3.0', () async {
       final entries = await _extras('en');
-      final sounds = entries.singleWhere((e) => e.packages.contains('Lukitas feedback sounds'));
+      final sounds = entries.singleWhere((e) => e.packages.contains('Wambito feedback sounds'));
       expect(_text(sounds), contains('original work'));
       expect(_text(sounds), contains('GNU AFFERO GENERAL PUBLIC LICENSE'));
     });
@@ -200,8 +200,8 @@ void main() {
         'libffi 3.4.4',
         'Fredoka',
         'Nunito',
-        'Lukitas feedback sounds',
-        'Lukitas',
+        'Wambito feedback sounds',
+        'Wambito',
       ]) {
         expect(packages, contains(name));
       }

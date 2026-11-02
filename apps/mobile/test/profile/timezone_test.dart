@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/profile/timezone.dart';
+import 'package:wambito/profile/timezone.dart';
 
 /// The web's `timeZoneToSave` tests (apps/web/app/features/onboarding/onboarding.test.ts), one for
 /// one.

@@ -101,12 +101,12 @@ abstract interface class VoicePlatform implements ModelFiles {
   Future<void> stop();
 }
 
-/// [VoicePlatform] over the `lukitas/voice` channels (VoiceChannel.kt).
+/// [VoicePlatform] over the `wambito/voice` channels (VoiceChannel.kt).
 class VoiceChannel implements VoicePlatform {
   const VoiceChannel();
 
-  static const _methods = MethodChannel('lukitas/voice');
-  static const _events = EventChannel('lukitas/voice/events');
+  static const _methods = MethodChannel('wambito/voice');
+  static const _events = EventChannel('wambito/voice/events');
 
   @override
   Future<bool> supported() async {

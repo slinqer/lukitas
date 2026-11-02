@@ -22,7 +22,7 @@ object VoiceModels {
             Model(path)
         },
         loader = Executors.newSingleThreadExecutor { runnable ->
-            Thread(runnable, "lukitas-voice-model").apply {
+            Thread(runnable, "wambito-voice-model").apply {
                 isDaemon = true
                 priority = Thread.NORM_PRIORITY - 1
             }
@@ -75,7 +75,7 @@ object VoiceModels {
  * download writes last) is not returned.
  */
 object WarmHint {
-    private const val FILE = "lukitas_voice"
+    internal const val FILE = "wambito_voice"
     private const val KEY = "warm_model_path"
 
     private fun prefs(context: Context) = context.getSharedPreferences(FILE, Context.MODE_PRIVATE)

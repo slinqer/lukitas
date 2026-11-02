@@ -3,8 +3,8 @@
 // the free pass hears whole words, the grammar pass the amount, kind, date and separator words,
 // and `[unk]` for the rest.
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/capture/engine/merge.dart';
-import 'package:lukitas/capture/parser/parse.dart';
+import 'package:wambito/capture/engine/merge.dart';
+import 'package:wambito/capture/parser/parse.dart';
 
 /// Words laid end to end from [from] seconds, each [each] long, as a pass would time them.
 List<HeardWord> _words(String text, {double from = 0, double each = 0.4}) {

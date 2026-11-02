@@ -11,7 +11,7 @@ const NOW = new Date("2026-03-10T12:00:00Z");
 
 beforeAll(async () => {
   t = await createTestApp({}, { now: () => NOW });
-  a = (await t.signIn("clock@lukas.test")).headers;
+  a = (await t.signIn("clock@wambito.test")).headers;
 });
 afterAll(() => t?.stop());
 

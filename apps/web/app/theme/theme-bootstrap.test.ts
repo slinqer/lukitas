@@ -3,19 +3,32 @@ import { resolveTheme, THEME_BOOTSTRAP_SCRIPT } from "./theme-bootstrap.ts";
 
 interface Env {
   stored?: string | null;
+  /** What is kept under the old key (`lukas.theme`), from before the rename. */
+  oldStored?: string;
   prefersDark?: boolean;
   storageThrows?: boolean;
   noMatchMedia?: boolean;
 }
 
 /** Runs the inline script against a fake document, localStorage and matchMedia. */
-function run(env: Env): { theme: string | undefined } {
+function run(env: Env): { theme: string | undefined; data: Map<string, string> } {
   const dataset: Record<string, string> = {};
   const document = { documentElement: { dataset } };
+  const data = new Map<string, string>();
+  if (env.stored != null) data.set("wambito.theme", env.stored);
+  if (env.oldStored != null) data.set("lukas.theme", env.oldStored);
   const localStorage = {
     getItem(key: string) {
       if (env.storageThrows) throw new Error("storage blocked");
-      return key === "lukas.theme" ? (env.stored ?? null) : null;
+      return data.get(key) ?? null;
+    },
+    setItem(key: string, value: string) {
+      if (env.storageThrows) throw new Error("storage blocked");
+      data.set(key, value);
+    },
+    removeItem(key: string) {
+      if (env.storageThrows) throw new Error("storage blocked");
+      data.delete(key);
     },
   };
   const matchMedia = (query: string) => ({
@@ -23,7 +36,7 @@ function run(env: Env): { theme: string | undefined } {
   });
   const args: unknown[] = [document, localStorage, env.noMatchMedia ? undefined : matchMedia];
   new Function("document", "localStorage", "matchMedia", THEME_BOOTSTRAP_SCRIPT)(...args);
-  return { theme: dataset.theme };
+  return { theme: dataset.theme, data };
 }
 
 describe("THEME_BOOTSTRAP_SCRIPT (theme flash)", () => {
@@ -57,6 +70,20 @@ describe("THEME_BOOTSTRAP_SCRIPT (theme flash)", () => {
   it("falls back to night when localStorage throws, even on a light OS", () => {
     expect(run({ storageThrows: true, prefersDark: false }).theme).toBe("night");
     expect(run({ storageThrows: true, prefersDark: true }).theme).toBe("night");
+  });
+
+  // 2b: remove, with the lukas.* migration.
+  it("applies a theme kept under the old lukas.theme, and moves it to wambito.theme", () => {
+    const { theme, data } = run({ oldStored: "day", prefersDark: true });
+    expect(theme).toBe("day");
+    expect(data.get("wambito.theme")).toBe("day");
+    expect(data.has("lukas.theme")).toBe(false);
+  });
+
+  it("prefers wambito.theme over the old key, and drops the old one", () => {
+    const { theme, data } = run({ stored: "night", oldStored: "day", prefersDark: false });
+    expect(theme).toBe("night");
+    expect(data.has("lukas.theme")).toBe(false);
   });
 
   it("defaults to night without matchMedia", () => {

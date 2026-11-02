@@ -243,8 +243,8 @@ describe("list_categories", () => {
 
 describe("list_recurring", () => {
   it("names the category of each recurring movement", async () => {
-    const { ctx, lukitas, cats } = setup();
-    await lukitas.createRecurrence({
+    const { ctx, wambito, cats } = setup();
+    await wambito.createRecurrence({
       name: "Netflix",
       amount: -4500000,
       categoryId: cats.comida.id,

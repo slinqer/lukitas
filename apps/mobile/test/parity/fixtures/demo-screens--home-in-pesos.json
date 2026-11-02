@@ -198,7 +198,7 @@
       "status": 200,
       "body": {
         "id": "demo-valentina",
-        "email": "valentina@demo.lukas.app",
+        "email": "valentina@demo.wambito.test",
         "timezone": "America/Bogota",
         "locale": "es",
         "onboardingCompletedAt": "2026-08-01T12:00:00.000Z",

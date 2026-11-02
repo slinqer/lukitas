@@ -4,11 +4,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/capture/engine/speech_engine.dart';
-import 'package:lukitas/capture/models_download.dart';
-import 'package:lukitas/capture/prewarm.dart';
-import 'package:lukitas/feedback/stored_flag.dart';
-import 'package:lukitas/settings/preferences.dart';
+import 'package:wambito/capture/engine/speech_engine.dart';
+import 'package:wambito/capture/models_download.dart';
+import 'package:wambito/capture/prewarm.dart';
+import 'package:wambito/feedback/stored_flag.dart';
+import 'package:wambito/settings/preferences.dart';
 
 import '../settings/fakes.dart';
 import 'fakes.dart';

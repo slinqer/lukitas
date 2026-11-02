@@ -1,6 +1,6 @@
 # Personal install
 
-Run your own Lukitas on one machine, reach it from your phone at `https://app.wambito.com`, and keep
+Run your own Wambito on one machine, reach it from your phone at `https://app.wambito.com`, and keep
 your real data safe with a daily backup. Two ways to be reached, chosen in `.env`:
 
 - **Tunnel** (the default): a machine with no public address, such as a Mac at home, reached
@@ -10,7 +10,7 @@ your real data safe with a daily backup. Two ways to be reached, chosen in `.env
   [Moving to a server](#moving-to-a-server)).
 
 It is a separate stack from the development one in the repository root: its own Docker project
-(`lukitas-personal`), database volume (`lukitas-personal-db`) and private network. Nothing is shared
+(`lukitas-personal`), database volume (`lukitas-personal-db`) and private network. These infrastructure names, like the `lukas_app` role, the backup files and the systemd units below, keep the old name until part 2b renames them. Nothing is shared
 with `docker compose up` in the root (ports 5433, 3000, 5173, 8025, 1026), so both can run together.
 
 ```
@@ -32,7 +32,7 @@ The direct way (`COMPOSE_FILE` in `.env`, see [Moving to a server](#moving-to-a-
 - **One origin.** The app and the API share `app.wambito.com` (the API is under
   `/api`), so the session cookie is first-party and secure. No CORS.
 - **Allowlist.** Only the emails in `SIGN_IN_ALLOWLIST` can ask for a sign-in code. Anyone else
-  gets "Lukitas todavía no está abierto al público" and no email is sent.
+  gets "Wambito todavía no está abierto al público" and no email is sent.
 - **The landing lives elsewhere.** `/`, `/en`, `/it`, `/pt` and the roadmaps redirect (302, same path and query)
   to the public landing at `LANDING_URL` (default `https://wambito.com`), whose
   buttons come back here to `/sign-in` and `/demo`. Until the landing is deployed at `wambito.com`
@@ -94,7 +94,7 @@ Fill it in (every variable is explained in the file; `.env` is ignored by git an
 | `BETTER_AUTH_SECRET` | `openssl rand -hex 32` |
 | `SIGN_IN_ALLOWLIST` | your email(s), comma-separated |
 | `SMTP_URL` | `smtp://you%40example.com:BRIDGE_PASSWORD@host.docker.internal:1025`, with Bridge's username (the `@` is written `%40`) |
-| `MAIL_FROM` | `Lukitas <you@example.com>`, an address of that Proton account |
+| `MAIL_FROM` | `Wambito <you@example.com>`, an address of that Proton account |
 | `TUNNEL_ID` | from step 3 |
 
 `up.sh` sets the file's mode to 600 each time it runs. Keep a copy of `.env` in your password manager: `BETTER_AUTH_SECRET` and the database passwords are

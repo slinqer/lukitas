@@ -4,7 +4,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../home/category_look.dart';
 import '../l10n/app_localizations.dart';
 import '../money/format.dart';
@@ -87,7 +87,7 @@ class CategoryDonut extends StatelessWidget {
       busy: stale,
       controls: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: LukitasTokens.space2,
+        spacing: WambitoTokens.space2,
         children: [
           SegmentedControl<InsightsKind>(
             label: l10n.insightsDonutKindLabel,
@@ -115,7 +115,7 @@ class CategoryDonut extends StatelessWidget {
           const InsightLoading(height: donutSize)
         else if (items.isEmpty)
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: LukitasTokens.space4),
+            padding: const EdgeInsets.symmetric(vertical: WambitoTokens.space4),
             child: CssLines(
               style: LkText.body,
               child: Text(
@@ -133,7 +133,7 @@ class CategoryDonut extends StatelessWidget {
             child: ExcludeSemantics(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                spacing: LukitasTokens.space3,
+                spacing: WambitoTokens.space3,
                 children: [
                   Center(
                     child: SizedBox.square(
@@ -155,7 +155,7 @@ class CategoryDonut extends StatelessWidget {
                                 ),
                             ],
                             animate: !reduce,
-                            duration: LukitasTokens.durationHop,
+                            duration: WambitoTokens.durationHop,
                             onSweep: onSpin,
                           ),
                           _Centre(
@@ -171,7 +171,7 @@ class CategoryDonut extends StatelessWidget {
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    spacing: LukitasTokens.space3,
+                    spacing: WambitoTokens.space3,
                     children: [
                       for (var i = 0; i < items.length; i++)
                         _LegendRow(
@@ -317,14 +317,14 @@ class _LegendRow extends StatelessWidget {
     final look = categoryLook(icon: item.icon, color: item.color);
     final delay = Duration(milliseconds: math.min(index, 8) * 40);
     return Entrance(
-      duration: LukitasTokens.durationSheet,
+      duration: WambitoTokens.durationSheet,
       delay: delay,
       builder: (context, t) => Opacity(
         opacity: t,
         child: Transform.translate(
           offset: Offset(-10 * (1 - t), 0),
           child: Row(
-            spacing: LukitasTokens.space3,
+            spacing: WambitoTokens.space3,
             children: [
               CategoryTile(glyph: look.glyph, tint: look.tint),
               Expanded(
@@ -336,7 +336,7 @@ class _LegendRow extends StatelessWidget {
                     // which puts the name 1px under the amount's top and makes the row 22px.
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: LukitasTokens.space2,
+                      spacing: WambitoTokens.space2,
                       children: [
                         Expanded(
                           child: Padding(
@@ -367,7 +367,7 @@ class _LegendRow extends StatelessWidget {
                       ],
                     ),
                     Row(
-                      spacing: LukitasTokens.space2,
+                      spacing: WambitoTokens.space2,
                       children: [
                         Expanded(
                           child: _ShareBar(
@@ -420,7 +420,7 @@ class CategoryTile extends StatelessWidget {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: tileGround(colors, tint),
-          borderRadius: BorderRadius.circular(LukitasTokens.radiusSm),
+          borderRadius: BorderRadius.circular(WambitoTokens.radiusSm),
         ),
         child: Text(glyph, style: LkText.tileGlyph.copyWith(color: colors.ink)),
       ),
@@ -440,7 +440,7 @@ class _ShareBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.lkColors;
-    final pill = BorderRadius.circular(LukitasTokens.radiusPill);
+    final pill = BorderRadius.circular(WambitoTokens.radiusPill);
     return SizedBox(
       height: 7,
       child: DecoratedBox(
@@ -453,7 +453,7 @@ class _ShareBar extends StatelessWidget {
               widthFactor: fraction,
               heightFactor: 1,
               child: Entrance(
-                duration: LukitasTokens.durationHop,
+                duration: WambitoTokens.durationHop,
                 delay: delay,
                 builder: (context, t) => Transform.scale(
                   scaleX: t,

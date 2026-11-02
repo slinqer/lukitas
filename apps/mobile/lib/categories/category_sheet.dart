@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../home/category_look.dart';
 import '../home/home_repository.dart';
 import '../l10n/app_localizations.dart';
@@ -253,10 +253,10 @@ class CategoryFormBody extends StatelessWidget {
       final values = form.values;
       final nameInvalid = form.error != null && values.name.trim().isEmpty;
       return Padding(
-        padding: const EdgeInsets.only(top: LukitasTokens.space3),
+        padding: const EdgeInsets.only(top: WambitoTokens.space3),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: LukitasTokens.space4,
+          spacing: WambitoTokens.space4,
           children: [
             CategoryFormGroup(
               label: l10n.categoryFormNameLabel,
@@ -277,7 +277,7 @@ class CategoryFormBody extends StatelessWidget {
               disabled: form.locked,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                spacing: LukitasTokens.space2,
+                spacing: WambitoTokens.space2,
                 children: [
                   CategoryOptionGrid(
                     columns: 2,
@@ -300,7 +300,7 @@ class CategoryFormBody extends StatelessWidget {
                           selected: values.kind == kind,
                           enabled: !form.locked,
                           onSelect: () => form.set(values.copyWith(kind: kind)),
-                          horizontalPadding: LukitasTokens.space3,
+                          horizontalPadding: WambitoTokens.space3,
                           child: Text(label, style: LkText.copy.copyWith(color: colors.ink)),
                         ),
                     ],
@@ -437,7 +437,7 @@ class CategoryFormGroup extends StatelessWidget {
       enabled: !disabled,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: LukitasTokens.space1,
+        spacing: WambitoTokens.space1,
         children: [
           ExcludeSemantics(
             child: CssLines(
@@ -459,7 +459,7 @@ class CategoryOptionGrid extends StatelessWidget {
   final int columns;
   final List<Widget> children;
 
-  static const _gap = LukitasTokens.space2;
+  static const _gap = WambitoTokens.space2;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(

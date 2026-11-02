@@ -40,7 +40,7 @@ export const AsksFirst: Story = {
     await expect(
       canvas.getByRole("heading", { level: 1, name: "Continuar como ana@example.com" }),
     ).toBeVisible();
-    await expect(canvas.getByRole("img", { name: "Lukitas, contento" })).toBeVisible();
+    await expect(canvas.getByRole("img", { name: "Wambi, contento" })).toBeVisible();
     const button = canvas.getByRole("button", { name: "Continuar" });
     await expectTarget(button);
     const notMe = canvas.getByRole("link", { name: "No soy yo" });
@@ -75,7 +75,7 @@ export const OffersTheApp: Story = {
     await expect(
       canvas.getByRole("heading", { level: 1, name: "Continuar como ana@example.com" }),
     ).toBeVisible();
-    const open = canvas.getByRole("link", { name: "Abrir en Lukitas" });
+    const open = canvas.getByRole("link", { name: "Abrir en Wambito" });
     await expectTarget(open);
     const { origin, host } = window.location;
     await expect(open).toHaveAttribute(
@@ -119,7 +119,7 @@ export const OffersTheAppInEnglish: Story = {
   globals: { locale: "en" },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
-    await expect(await canvas.findByRole("link", { name: "Open in Lukitas" })).toBeVisible();
+    await expect(await canvas.findByRole("link", { name: "Open in Wambito" })).toBeVisible();
     await expect(canvas.getByRole("button", { name: "Stay on the web" })).toBeVisible();
     await expect(args.auth.verifyCode).not.toHaveBeenCalled();
   },
@@ -136,7 +136,7 @@ export const FromAppOffAndroid: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(await canvas.findByRole("button", { name: "Continuar" })).toBeVisible();
-    await expect(canvas.queryByRole("link", { name: "Abrir en Lukitas" })).toBeNull();
+    await expect(canvas.queryByRole("link", { name: "Abrir en Wambito" })).toBeNull();
     await expect(canvas.queryByRole("button", { name: "Seguir en la web" })).toBeNull();
   },
 };
@@ -147,7 +147,7 @@ export const AndroidWithoutMarker: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(await canvas.findByRole("button", { name: "Continuar" })).toBeVisible();
-    await expect(canvas.queryByRole("link", { name: "Abrir en Lukitas" })).toBeNull();
+    await expect(canvas.queryByRole("link", { name: "Abrir en Wambito" })).toBeNull();
   },
 };
 
@@ -232,7 +232,7 @@ export const Expired: Story = {
   },
 };
 
-/** A rejected code leaves the failed screen up: Lukitas worried, the message and "send a new code". */
+/** A rejected code leaves the failed screen up: Wambi worried, the message and "send a new code". */
 export const RejectedCode: Story = {
   args: { auth: expired() },
   play: async ({ canvasElement }) => {
@@ -241,7 +241,7 @@ export const RejectedCode: Story = {
     await expect(await canvas.findByRole("alert")).toHaveTextContent(
       "Este código ya no sirve: venció o ya se usó. Pide uno nuevo.",
     );
-    await expect(canvas.getByRole("img", { name: "Lukitas, preocupado" })).toBeVisible();
+    await expect(canvas.getByRole("img", { name: "Wambi, preocupado" })).toBeVisible();
     await expect(canvas.queryByRole("button", { name: "Reintentar" })).toBeNull();
     await expectTarget(canvas.getByRole("button", { name: "Enviar un código nuevo" }));
   },

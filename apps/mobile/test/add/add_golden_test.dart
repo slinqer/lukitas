@@ -5,8 +5,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/add/add_sheet.dart';
-import 'package:lukitas/home/home_screen.dart';
+import 'package:wambito/add/add_sheet.dart';
+import 'package:wambito/home/home_screen.dart';
 
 import '../home/fakes.dart';
 import '../home/fixtures.dart';

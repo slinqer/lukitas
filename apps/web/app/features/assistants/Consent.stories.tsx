@@ -208,7 +208,7 @@ export const ExpiredOnAnswer: Story = {
     await title(canvas, "Este enlace ya no sirve");
     await expect(
       canvas.getByText(
-        "Pasó mucho tiempo o el enlace cambió. Vuelve a tu asistente y empieza a conectar Lukitas otra vez.",
+        "Pasó mucho tiempo o el enlace cambió. Vuelve a tu asistente y empieza a conectar Wambito otra vez.",
       ),
     ).toBeVisible();
     await expect(args.go).not.toHaveBeenCalled();

@@ -5,14 +5,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/auth_api.dart';
-import 'package:lukitas/api/passkeys.dart';
-import 'package:lukitas/api/session.dart';
-import 'package:lukitas/app.dart';
-import 'package:lukitas/home/home_controller.dart';
-import 'package:lukitas/home/home_cache.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/home/widget_snapshot.dart';
+import 'package:wambito/api/auth_api.dart';
+import 'package:wambito/api/passkeys.dart';
+import 'package:wambito/api/session.dart';
+import 'package:wambito/app.dart';
+import 'package:wambito/home/home_controller.dart';
+import 'package:wambito/home/home_cache.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/home/widget_snapshot.dart';
 
 import '../home/fakes.dart';
 
@@ -305,7 +305,7 @@ Future<ProviderContainer> pumpApp(
   );
   addTearDown(container.dispose);
   await tester.pumpWidget(
-    UncontrolledProviderScope(container: container, child: const LukitasApp()),
+    UncontrolledProviderScope(container: container, child: const WambitoApp()),
   );
   await tester.pumpAndSettle();
   return container;

@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:lukitas/insights/chart_geometry.dart';
-import 'package:lukitas/insights/insights_model.dart';
+import 'package:wambito/insights/chart_geometry.dart';
+import 'package:wambito/insights/insights_model.dart';
 
 import '../support/parity.dart' show ParityFixtures;
 
@@ -13,7 +13,7 @@ import '../support/parity.dart' show ParityFixtures;
 /// Part one is `apps/web/app/features/insights/insights-model.test.ts` ported: the same inputs give
 /// the same periods, labels and shares. Part two checks the charts' geometry against what the web's
 /// Recharts draws for the same data: `recharts_geometry.json` is that picture as numbers, read from
-/// the SVG of the insights stories (`pnpm --filter @lukas/web parity:insights-geometry`), and the
+/// the SVG of the insights stories (`pnpm --filter @wambito/web parity:insights-geometry`), and the
 /// data is the stories' own (test/parity/fixtures).
 const nbsp = ' ';
 

@@ -34,10 +34,10 @@ class CapturePreviewBody extends StatelessWidget {
     ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: LukitasTokens.space2,
+      spacing: WambitoTokens.space2,
       children: [
         Row(
-          spacing: LukitasTokens.space2,
+          spacing: WambitoTokens.space2,
           children: [
             Expanded(
               child: Text(
@@ -106,11 +106,11 @@ class _Unloaded extends StatelessWidget {
     final colors = context.lkColors;
     final HomeFailure? failure = session.home.failure;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: LukitasTokens.space4),
+      padding: const EdgeInsets.symmetric(vertical: WambitoTokens.space4),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
-        spacing: LukitasTokens.space3,
+        spacing: WambitoTokens.space3,
         children: [
           if (failure == null) const QuietSpinner(size: 28),
           Text(

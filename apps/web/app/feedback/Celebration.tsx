@@ -1,6 +1,6 @@
 import { type CSSProperties, useEffect, useState } from "react";
-import { Lukas } from "../lukas/Lukas.tsx";
 import { durationToken, useReducedMotionPreference } from "../ui/motion-tokens.ts";
+import { Wambi } from "../wambi/Wambi.tsx";
 import { FEEDBACK_DOM_EVENT, type FeedbackDetail, type FeedbackEvent } from "./feedback.ts";
 import "./Celebration.css";
 
@@ -15,22 +15,22 @@ const FALLBACK_MS = 1200;
 const FIND_SPOT_MS = 800;
 
 /**
- * Marks where Lukitas may land: free space that never holds text or figures (an empty spot in the
+ * Marks where Wambi may land: free space that never holds text or figures (an empty spot in the
  * sidebar), or, with `data-celebration-place="above"`, the element he stands just above (the ＋ of
  * the bottom bar, which stays in view and tappable). Its value is his size in px. The first one on
  * screen wins.
  */
 export const CELEBRATION_ANCHOR = "data-celebration-anchor";
-/** px between Lukitas's feet and the element he stands above. */
+/** px between Wambi's feet and the element he stands above. */
 const ABOVE_GAP = 4;
 
 /**
- * Marks what Lukitas must never cover besides his spot: the toasts (with their Deshacer), which a
+ * Marks what Wambi must never cover besides his spot: the toasts (with their Deshacer), which a
  * save shows at the same moment. Its box is its layout box (an entering toast's slide is ignored).
  */
 export const CELEBRATION_AVOID = "data-celebration-avoid";
 
-/** Lukitas's box at `spot`, in viewport px. */
+/** Wambi's box at `spot`, in viewport px. */
 const boxAt = (spot: Spot) => ({
   left: spot.x - spot.size / 2,
   right: spot.x + spot.size / 2,
@@ -38,7 +38,7 @@ const boxAt = (spot: Spot) => ({
   bottom: spot.top + spot.size,
 });
 
-/** Moves `spot` up until Lukitas's box clears every `CELEBRATION_AVOID` box on screen. */
+/** Moves `spot` up until Wambi's box clears every `CELEBRATION_AVOID` box on screen. */
 function clearOfObstacles(spot: Spot): Spot {
   const obstacles = [...document.querySelectorAll<HTMLElement>(`[${CELEBRATION_AVOID}]`)]
     .map((element) => element.getBoundingClientRect())
@@ -114,13 +114,13 @@ const BURST: readonly Piece[] = Array.from({ length: PIECES }, (_, index) => {
 });
 
 /**
- * Confetti and a celebrating Lukitas, shown when `feedback()` reports something worth
- * celebrating. Lukitas lands in free space, never over text or figures: just above the ＋ of the
+ * Confetti and a celebrating Wambi, shown when `feedback()` reports something worth
+ * celebrating. Wambi lands in free space, never over text or figures: just above the ＋ of the
  * bottom bar on phones (never on it: it stays visible and tappable), and above the undo toast while
  * one is up (`CELEBRATION_AVOID`), in the sidebar's empty spot on wide screens (`CELEBRATION_ANCHOR`), and the confetti
  * bursts from there. Purely decorative (hidden from assistive technology: the toast or screen
  * already says what happened) and it never takes a tap. Under reduced motion there is no confetti:
- * Lukitas shows as his still celebrating frame and only fades in and out. Mounted once, in the app
+ * Wambi shows as his still celebrating frame and only fades in and out. Mounted once, in the app
  * layout.
  */
 export function Celebration() {
@@ -199,8 +199,8 @@ export function Celebration() {
               }
             />
           ))}
-        <span className="lk-celebration-lukas" style={{ width: shown.size, height: shown.size }}>
-          <Lukas mood="celebrating" size={shown.size} decorative />
+        <span className="lk-celebration-wambi" style={{ width: shown.size, height: shown.size }}>
+          <Wambi mood="celebrating" size={shown.size} decorative />
         </span>
       </div>
     </div>

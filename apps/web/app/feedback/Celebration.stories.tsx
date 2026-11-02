@@ -52,16 +52,16 @@ type Story = StoryObj<typeof meta>;
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-/** Lukitas lands just above the spot (the ＋ in the app), which stays clear and tappable. */
+/** Wambi lands just above the spot (the ＋ in the app), which stays clear and tappable. */
 export const LandsOnTheSpot: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByRole("button", { name: "paid" }));
     const overlay = await canvas.findByTestId("celebration");
-    const lukas = overlay.querySelector<HTMLElement>(".lk-celebration-lukas") as HTMLElement;
+    const wambi = overlay.querySelector<HTMLElement>(".lk-celebration-wambi") as HTMLElement;
     const spot = canvas.getByTestId("spot").getBoundingClientRect();
     await sleep(500);
-    const box = lukas.getBoundingClientRect();
+    const box = wambi.getBoundingClientRect();
     // Standing just above the spot (the ＋), centered on it, never over it.
     await expect(box.bottom).toBeLessThanOrEqual(spot.top + 1);
     await expect(Math.abs((box.left + box.right) / 2 - (spot.left + spot.right) / 2)).toBeLessThan(
@@ -77,10 +77,10 @@ export const ClearOfTheToast: Story = {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByRole("button", { name: "paid" }));
     const overlay = await canvas.findByTestId("celebration");
-    const lukas = overlay.querySelector<HTMLElement>(".lk-celebration-lukas") as HTMLElement;
+    const wambi = overlay.querySelector<HTMLElement>(".lk-celebration-wambi") as HTMLElement;
     const toast = canvas.getByTestId("toast").getBoundingClientRect();
     await sleep(500);
-    await expect(lukas.getBoundingClientRect().bottom).toBeLessThanOrEqual(toast.top + 1);
+    await expect(wambi.getBoundingClientRect().bottom).toBeLessThanOrEqual(toast.top + 1);
   },
 };
 
@@ -91,12 +91,12 @@ export const NoSpot: Story = {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByRole("button", { name: "paid" }));
     const overlay = await canvas.findByTestId("celebration");
-    const lukas = overlay.querySelector<HTMLElement>(".lk-celebration-lukas") as HTMLElement;
-    await waitFor(() => expect(lukas.getBoundingClientRect().top).toBeLessThan(40));
+    const wambi = overlay.querySelector<HTMLElement>(".lk-celebration-wambi") as HTMLElement;
+    await waitFor(() => expect(wambi.getBoundingClientRect().top).toBeLessThan(40));
   },
 };
 
-/** `paid` fires the confetti and a celebrating Lukitas, decorative and untouchable, then leaves. */
+/** `paid` fires the confetti and a celebrating Wambi, decorative and untouchable, then leaves. */
 export const Paid: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -121,8 +121,8 @@ export const Paid: Story = {
       ]),
     );
 
-    // Lukitas celebrates, on his own sheet, and both animations run.
-    const sheet = overlay.querySelector(".lk-lukas.is-celebrating .lk-lukas-sprite");
+    // Wambi celebrates, on his own sheet, and both animations run.
+    const sheet = overlay.querySelector(".lk-wambi.is-celebrating .lk-wambi-sprite");
     await expect(sheet).not.toBeNull();
     await expect(getComputedStyle(sheet as Element).backgroundImage).toContain("celebrate.webp");
     const running = overlay
@@ -146,7 +146,7 @@ export const NearLimit: Story = {
   },
 };
 
-/** Under reduced motion there is no confetti: Lukitas shows as a still frame and only fades. */
+/** Under reduced motion there is no confetti: Wambi shows as a still frame and only fades. */
 export const ReducedMotion: Story = {
   parameters: { reducedMotion: true },
   play: async ({ canvasElement }) => {
@@ -159,7 +159,7 @@ export const ReducedMotion: Story = {
     await expect(overlay.querySelectorAll(".lk-confetti")).toHaveLength(0);
 
     // His still celebrating frame (frame 4 of the 4x2 sheet), not the playing loop.
-    const sheet = overlay.querySelector(".lk-lukas.is-celebrating .lk-lukas-sprite") as HTMLElement;
+    const sheet = overlay.querySelector(".lk-wambi.is-celebrating .lk-wambi-sprite") as HTMLElement;
     await expect(sheet).not.toBeNull();
     await expect(sheet).not.toHaveClass("is-playing");
     await expect(sheet.style.backgroundPosition).toBe("0% 100%");
@@ -215,7 +215,7 @@ const longStay = () => {
 
 /**
  * Stops every animation of the celebration where it would be `fraction` of the way through one
- * `--celebrate` (the confetti and Lukitas' pop last one; his sprite loops on its own clock), and
+ * `--celebrate` (the confetti and Wambi's pop last one; his sprite loops on its own clock), and
  * keeps what each piece looks like then as plain styles: the animations are cancelled, so the
  * pictures that take them "at rest" see the celebration as it was.
  */
@@ -243,13 +243,13 @@ function freezeAt(overlay: HTMLElement, fraction: number) {
   for (const look of looks) {
     look.target.style.transform = look.transform;
     look.target.style.opacity = look.opacity;
-    if (look.target.classList.contains("lk-lukas-sprite")) {
+    if (look.target.classList.contains("lk-wambi-sprite")) {
       look.target.style.backgroundPosition = look.backgroundPosition;
     }
   }
 }
 
-/** Half a second in: the confetti is out and falling, and Lukitas stands above the spot. */
+/** Half a second in: the confetti is out and falling, and Wambi stands above the spot. */
 export const MidFlight: Story = {
   beforeEach: longStay,
   play: async ({ canvasElement }) => {
@@ -283,7 +283,7 @@ export const MidFlightNoSpot: Story = {
   },
 };
 
-/** A tenth in: Lukitas is still growing to his size, and the confetti is just leaving. */
+/** A tenth in: Wambi is still growing to his size, and the confetti is just leaving. */
 export const MidFlightEarly: Story = {
   beforeEach: longStay,
   play: async ({ canvasElement }) => {

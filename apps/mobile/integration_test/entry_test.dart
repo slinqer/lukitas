@@ -2,7 +2,7 @@
 // Postgres, Mailpit), as docs/mobile/setup.md describes:
 //
 //   flutter test integration_test -d emulator-5554 \
-//     --dart-define=LUKITAS_SERVER=http://10.0.2.2:3000 \
+//     --dart-define=WAMBITO_SERVER=http://10.0.2.2:3000 \
 //     --dart-define=MAILPIT_URL=http://10.0.2.2:8025
 //
 // A new email account has not been through the welcome (no onboardingCompletedAt), so signing in with
@@ -16,11 +16,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:lukitas/api/session.dart';
-import 'package:lukitas/home/home_screen.dart';
-import 'package:lukitas/main.dart' as app;
+import 'package:wambito/api/session.dart';
+import 'package:wambito/home/home_screen.dart';
+import 'package:wambito/main.dart' as app;
 
-const _server = String.fromEnvironment('LUKITAS_SERVER', defaultValue: 'http://10.0.2.2:3000');
+const _server = String.fromEnvironment('WAMBITO_SERVER', defaultValue: 'http://10.0.2.2:3000');
 const _mailpit = String.fromEnvironment('MAILPIT_URL', defaultValue: 'http://10.0.2.2:8025');
 
 /// The host App Links are declared for in the manifest: a link there is dropped while the app talks
@@ -31,7 +31,7 @@ final _http = Dio(BaseOptions(validateStatus: (_) => true));
 
 /// A new address per call, so each test is a new user with its own email throttle.
 String _freshEmail(String label) =>
-    '$label-${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}@lukas.test';
+    '$label-${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}@wambito.test';
 
 /// Pumps until [finder] finds something (network calls run in real time here).
 Future<void> _pumpUntil(
@@ -149,9 +149,9 @@ void main() {
     expect((await SessionStore().read())?.guest, isTrue);
     final me = await _me();
     expect(me['isAnonymous'], isTrue);
-    // The guest's profile starts from the phone's time zone (x-lukas-timezone).
+    // The guest's profile starts from the phone's time zone (x-wambito-timezone).
     // The server stores the canonical name, so an emulator's "Etc/UTC" comes back as "UTC".
-    final zone = await const MethodChannel('lukitas/device').invokeMethod<String>('timeZone');
+    final zone = await const MethodChannel('wambito/device').invokeMethod<String>('timeZone');
     const utcAliases = {
       'Etc/UTC',
       'Etc/UCT',
@@ -202,7 +202,7 @@ void main() {
       path: '/auth/verify',
       query: link.query,
     );
-    await const MethodChannel('lukitas/test').invokeMethod<void>('openLink', foreign.toString());
+    await const MethodChannel('wambito/test').invokeMethod<void>('openLink', foreign.toString());
     for (var i = 0; i < 30; i++) {
       await tester.pump(const Duration(milliseconds: 100));
     }
@@ -217,7 +217,7 @@ void main() {
       path: '/auth/verify',
       query: link.query,
     );
-    await const MethodChannel('lukitas/test').invokeMethod<void>('openLink', appLink.toString());
+    await const MethodChannel('wambito/test').invokeMethod<void>('openLink', appLink.toString());
     await _pumpUntil(tester, find.byKey(const Key('welcome.page')));
 
     final me = await _me();
@@ -235,7 +235,7 @@ void main() {
     final link = Uri.parse(
       RegExp(r'https?://\S+/auth/verify\?\S+').firstMatch(mail.text)!.group(0)!,
     );
-    // The app sent x-lukas-client: android, so the API wrote from=app.
+    // The app sent x-wambito-client: android, so the API wrote from=app.
     expect(link.queryParameters['from'], 'app');
 
     // What apps/web/app/features/sign-in/open-in-app.ts builds for this page (the dev stack is
@@ -257,7 +257,7 @@ void main() {
         'intent://${server.host}:${server.port}/auth/verify?$query'
         '#Intent;scheme=${server.scheme};package=com.wambito.app;'
         'S.browser_fallback_url=${Uri.encodeComponent(fallback.toString())};end';
-    await const MethodChannel('lukitas/test').invokeMethod<void>('openIntentUri', intentUri);
+    await const MethodChannel('wambito/test').invokeMethod<void>('openIntentUri', intentUri);
     await _pumpUntil(tester, find.byKey(const Key('welcome.page')));
 
     final me = await _me();

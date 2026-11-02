@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/welcome/category_chips.dart';
-import 'package:lukitas/welcome/onboarding_api.dart';
-import 'package:lukitas/welcome/steps.dart';
-import 'package:lukitas/welcome/suggested_categories.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/welcome/category_chips.dart';
+import 'package:wambito/welcome/onboarding_api.dart';
+import 'package:wambito/welcome/steps.dart';
+import 'package:wambito/welcome/suggested_categories.dart';
 
 import '../home/fixtures.dart';
 import 'fakes.dart';

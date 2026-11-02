@@ -7,7 +7,7 @@ import { expect, type Page, test } from "@playwright/test";
  * a crawler needs must already be in the HTML.
  */
 
-const ORIGIN = "https://lukas.app";
+const ORIGIN = "https://wambito.test";
 const GITHUB = "https://github.com/slinqer/lukitas";
 
 const LOCALES = [
@@ -17,7 +17,7 @@ const LOCALES = [
     headline: "Tus lukas, por fin claras.",
     highlight: "lukas🇨🇴",
     annotation: "¡Gratis, y siempre lo será!",
-    lead: "Lukitas es tu presupuesto, y te va a dar gusto cuidarlo.",
+    lead: "Wambito es tu presupuesto, y te va a dar gusto cuidarlo.",
     description: "Anota un gasto en segundos y mira en qué se va cada luka.",
     newTab: "(se abre en una pestaña nueva)",
     perks: "Gratis para siempre · Código abierto · Sin contraseñas",
@@ -35,7 +35,7 @@ const LOCALES = [
     openSource: { title: "Código abierto", cta: "Ver el código en GitHub" },
     metaDescription: [/Gratis para siempre/, /código abierto/],
     banned: [/mejor amigo/i, /\bjueg(o|a)\b/i, /Empieza gratis/i],
-    // Privacy copy claims only what Lukitas does today: no "can't leak", no end-to-end encryption,
+    // Privacy copy claims only what Wambito does today: no "can't leak", no end-to-end encryption,
     // no encryption at rest.
     overclaims: [/se pueda filtrar/i, /extremo a extremo/i, /no podemos ver/i, /en reposo/i],
     privacyAnswer:
@@ -57,7 +57,7 @@ const LOCALES = [
     headline: "Your money, finally clear.",
     highlight: "money",
     annotation: "Free, and it always will be!",
-    lead: "Lukitas is your budget, and you'll actually enjoy looking after it.",
+    lead: "Wambito is your budget, and you'll actually enjoy looking after it.",
     description: "Log an expense in seconds and see where every buck goes.",
     newTab: "(opens in a new tab)",
     perks: "Free forever · Open source · No passwords",
@@ -95,7 +95,7 @@ const LOCALES = [
     headline: "I tuoi soldi, finalmente chiari.",
     highlight: "soldi",
     annotation: "Gratis, e lo sarà sempre!",
-    lead: "Lukitas è il tuo budget, e ti farà piacere prendertene cura.",
+    lead: "Wambito è il tuo budget, e ti farà piacere prendertene cura.",
     description: "Annota una spesa in pochi secondi e guarda dove va ogni centesimo.",
     newTab: "(si apre in una nuova scheda)",
     perks: "Gratis per sempre · Open source · Senza password",
@@ -138,7 +138,7 @@ const LOCALES = [
     headline: "O teu dinheiro, finalmente claro.",
     highlight: "dinheiro",
     annotation: "Grátis, e vai ser sempre!",
-    lead: "Lukitas é o teu orçamento, e vais gostar de cuidar dele.",
+    lead: "Wambito é o teu orçamento, e vais gostar de cuidar dele.",
     description: "Regista uma despesa em segundos e vê para onde vai cada cêntimo.",
     newTab: "(abre num novo separador)",
     perks: "Grátis para sempre · Código aberto · Sem palavras-passe",
@@ -204,8 +204,8 @@ const ROADMAP = {
     landingItems: ["Funciona sin conexión", "App para iPhone", "Conecta tu IA"],
     cta: "Ver el roadmap",
     navLink: "Lo que viene",
-    description: /Lo que tenemos planeado para Lukitas/,
-    logo: "Lukitas, inicio",
+    description: /Lo que tenemos planeado para Wambito/,
+    logo: "Wambito, inicio",
   },
   en: {
     path: "/en/roadmap",
@@ -237,8 +237,8 @@ const ROADMAP = {
     landingItems: ["Works offline", "iPhone app", "Connect your AI"],
     cta: "See the roadmap",
     navLink: "What's next",
-    description: /What we have planned for Lukitas/,
-    logo: "Lukitas, home",
+    description: /What we have planned for Wambito/,
+    logo: "Wambito, home",
   },
   it: {
     path: "/it/roadmap",
@@ -270,8 +270,8 @@ const ROADMAP = {
     landingItems: ["Funziona offline", "App per iPhone", "Collega la tua IA"],
     cta: "Vedi la roadmap",
     navLink: "In arrivo",
-    description: /Cosa abbiamo in programma per Lukitas/,
-    logo: "Lukitas, home",
+    description: /Cosa abbiamo in programma per Wambito/,
+    logo: "Wambito, home",
   },
   pt: {
     path: "/pt/roadmap",
@@ -303,8 +303,8 @@ const ROADMAP = {
     landingItems: ["Funciona sem ligação", "App para iPhone", "Liga a tua IA"],
     cta: "Ver o roadmap",
     navLink: "O que vem aí",
-    description: /O que temos planeado para Lukitas/,
-    logo: "Lukitas, início",
+    description: /O que temos planeado para Wambito/,
+    logo: "Wambito, início",
   },
 } as const;
 
@@ -501,7 +501,7 @@ async function expectHeaderFits(
   cta: string,
 ) {
   await page.setViewportSize({ width, height: 800 });
-  await page.addInitScript((value) => localStorage.setItem("lukas.theme", value), theme);
+  await page.addInitScript((value) => localStorage.setItem("wambito.theme", value), theme);
   await page.goto(path);
   await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
   const header = page.getByRole("banner");
@@ -616,12 +616,13 @@ for (const l of LOCALES) {
       }
     });
 
-    test("names the product Lukitas everywhere a person or a crawler reads it", async ({
+    test("names the product Wambito everywhere a person or a crawler reads it", async ({
       page,
       request,
     }) => {
-      // The product is Lukitas; "Lukas" alone is another app. The slang word "lukas" (money, in
-      // lowercase) stays in the Spanish copy, so only the capitalized name is banned.
+      // The product is Wambito, the mascot Wambi; the old names are gone. The
+      // slang word "lukas" (money, in lowercase) stays in the Spanish copy, so only the
+      // capitalized old names are banned.
       await page.goto(l.path);
       const seen = await page.evaluate(() => {
         const attributes = [...document.querySelectorAll("[aria-label], [alt], [title]")].flatMap(
@@ -640,19 +641,21 @@ for (const l of LOCALES) {
           meta,
         };
       });
-      expect(seen.body).toContain("Lukitas");
-      expect(seen.title).toContain("Lukitas");
+      expect(seen.body).toContain("Wambito");
+      expect(seen.title).toContain("Wambito");
       const everything = [seen.body, seen.title, ...seen.attributes, ...seen.meta].join("\n");
-      expect(everything).not.toMatch(/\bLukas\b/);
+      expect(everything).not.toMatch(/Luk(?:itas)|\bLuk(?:as)\b/);
       const html = await (await request.get(l.path)).text();
-      expect(html.replace(/<script[\s\S]*?<\/script>/g, "")).not.toMatch(/\bLukas\b/);
+      expect(html.replace(/<script[\s\S]*?<\/script>/g, "")).not.toMatch(
+        /Luk(?:itas)|\bLuk(?:as)\b/,
+      );
       await expect(page.locator('meta[property="og:site_name"]')).toHaveAttribute(
         "content",
-        "Lukitas",
+        "Wambito",
       );
     });
 
-    test("privacy copy promises only what Lukitas does today", async ({ page, request }) => {
+    test("privacy copy promises only what Wambito does today", async ({ page, request }) => {
       // React escapes apostrophes in text ("can't" → "can&#x27;t"): decode before matching.
       const html = (await (await request.get(l.path)).text()).replaceAll("&#x27;", "'");
       const withoutScripts = html.replace(/<script[\s\S]*?<\/script>/g, "");
@@ -861,7 +864,7 @@ for (const l of LOCALES) {
       await expect(page.locator("#privacy")).toBeHidden();
       await privacy.click();
       await expect(page.locator("#privacy")).toBeVisible();
-      await expect(footer).toContainText("© 2026 Lukitas");
+      await expect(footer).toContainText("© 2026 Wambito");
 
       await switchLink.click();
       await expect(page).toHaveURL(new RegExp(`${l.other.path}$`));
@@ -897,7 +900,7 @@ for (const l of LOCALES) {
 
       test("follows the OS when the stored preference is auto", async ({ page }) => {
         await page.route("**/assets/*.js", (route) => route.abort());
-        await page.addInitScript(() => localStorage.setItem("lukas.theme", "auto"));
+        await page.addInitScript(() => localStorage.setItem("wambito.theme", "auto"));
         await page.goto(l.path);
         await expect(page.locator("html")).toHaveAttribute("data-theme", "day");
       });
@@ -935,14 +938,23 @@ for (const l of LOCALES) {
       await expectFitsTheViewport(page);
     });
 
-    test("shows Lukas waving, and still under reduced motion", async ({ page }) => {
+    test("shows Wambi waving, and still under reduced motion", async ({ page }) => {
       await page.goto(l.path);
       const mascot = page.locator("#hero [data-slot='hero-mascot']");
       await expect(mascot).toHaveAttribute("role", "img");
-      await expect(mascot).toHaveAttribute("aria-label", /Lukitas/);
-      const sprite = mascot.locator(".lk-lukas-sprite");
-      await expect(sprite).toHaveCSS("background-image", /\/lukas\/wave\.webp/);
+      await expect(mascot).toHaveAttribute("aria-label", /Wambi/);
+      const sprite = mascot.locator(".lk-wambi-sprite");
+      await expect(sprite).toHaveCSS("background-image", /\/wambi\/wave\.webp/);
       expect(await sprite.evaluate((el) => el.getAnimations().length)).toBeGreaterThan(0);
+      // He waves once, then rests on his first frame: one pass of the sheet, not a loop.
+      await expect(sprite).toHaveClass(/is-once/);
+      expect(await sprite.evaluate((el) => getComputedStyle(el).animationIterationCount)).toBe(
+        "2, 1",
+      );
+      await expect
+        .poll(() => sprite.evaluate((el) => el.getAnimations().length), { timeout: 5000 })
+        .toBe(0);
+      await expect(sprite).toHaveCSS("background-position", "0% 0%");
 
       await page.emulateMedia({ reducedMotion: "reduce" });
       expect(await sprite.evaluate((el) => el.getAnimations().length)).toBe(0);
@@ -1132,7 +1144,7 @@ test.describe("landing with JavaScript", () => {
   for (const l of LOCALES) {
     test(`is accessible in the day theme (${l.locale})`, async ({ page }) => {
       // Night is the default: day comes from the stored choice (what the switch saves).
-      await page.addInitScript(() => localStorage.setItem("lukas.theme", "day"));
+      await page.addInitScript(() => localStorage.setItem("wambito.theme", "day"));
       await page.goto(l.path);
       await expect(page.locator("html")).toHaveAttribute("data-theme", "day");
       await expect(
@@ -1154,7 +1166,7 @@ test.describe("landing with JavaScript", () => {
       const header = page.getByRole("banner");
       await header.getByRole("button", { name: l.toggleToDay }).click();
       await expect(html).toHaveAttribute("data-theme", "day");
-      expect(await page.evaluate(() => localStorage.getItem("lukas.theme"))).toBe("day");
+      expect(await page.evaluate(() => localStorage.getItem("wambito.theme"))).toBe("day");
 
       // The bootstrap script applies it before paint; the switch then offers the way back.
       await page.reload();
@@ -1162,9 +1174,32 @@ test.describe("landing with JavaScript", () => {
       await page.waitForLoadState("networkidle");
       await header.getByRole("button", { name: l.toggleToNight }).click();
       await expect(html).toHaveAttribute("data-theme", "night");
-      expect(await page.evaluate(() => localStorage.getItem("lukas.theme"))).toBe("night");
+      expect(await page.evaluate(() => localStorage.getItem("wambito.theme"))).toBe("night");
     });
   }
+
+  // 2b: remove, with the lukas.* migration in lib/stored.ts and the theme bootstrap.
+  test("a theme kept under the old lukas.theme still applies, and moves to wambito.theme", async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      if (!sessionStorage.getItem("planted")) {
+        localStorage.setItem("lukas.theme", "day");
+        sessionStorage.setItem("planted", "1");
+      }
+    });
+    await page.goto("/");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "day");
+    await page.waitForLoadState("networkidle");
+    expect(
+      await page.evaluate(() => [
+        localStorage.getItem("wambito.theme"),
+        localStorage.getItem("lukas.theme"),
+      ]),
+    ).toEqual(["day", null]);
+    await page.reload();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "day");
+  });
 });
 
 for (const l of LOCALES) {
@@ -1269,7 +1304,7 @@ for (const l of LOCALES) {
       ).toEqual([]);
     });
 
-    test("names the product Lukitas in the text, the title and the share tags", async ({
+    test("names the product Wambito in the text, the title and the share tags", async ({
       page,
       request,
     }) => {
@@ -1286,15 +1321,17 @@ for (const l of LOCALES) {
         for (const script of body.querySelectorAll("script, style")) script.remove();
         return { body: body.textContent ?? "", title: document.title, attributes, meta };
       });
-      expect(seen.body).toContain("Lukitas");
-      expect(seen.title).toContain("Lukitas");
+      expect(seen.body).toContain("Wambito");
+      expect(seen.title).toContain("Wambito");
       const everything = [seen.body, seen.title, ...seen.attributes, ...seen.meta].join("\n");
-      expect(everything).not.toMatch(/\bLukas\b/);
+      expect(everything).not.toMatch(/Luk(?:itas)|\bLuk(?:as)\b/);
       const html = await (await request.get(r.path)).text();
-      expect(html.replace(/<script[\s\S]*?<\/script>/g, "")).not.toMatch(/\bLukas\b/);
+      expect(html.replace(/<script[\s\S]*?<\/script>/g, "")).not.toMatch(
+        /Luk(?:itas)|\bLuk(?:as)\b/,
+      );
       await expect(page.locator('meta[property="og:site_name"]')).toHaveAttribute(
         "content",
-        "Lukitas",
+        "Wambito",
       );
     });
 
@@ -1382,7 +1419,7 @@ for (const l of LOCALES) {
         "href",
         `${l.path}#privacy`,
       );
-      await expect(footer).toContainText("© 2026 Lukitas");
+      await expect(footer).toContainText("© 2026 Wambito");
 
       // The language switch keeps the page.
       const switchLink = footer.getByRole("link", { name: l.other.name });
@@ -1431,7 +1468,7 @@ for (const l of LOCALES) {
           if (message.type() === "error") errors.push(message.text());
         });
         page.on("pageerror", (error) => errors.push(error.message));
-        await page.addInitScript(() => localStorage.setItem("lukas.theme", "day"));
+        await page.addInitScript(() => localStorage.setItem("wambito.theme", "day"));
         await page.goto(r.path);
         await page.waitForLoadState("networkidle");
         await expect(page.locator("html")).toHaveAttribute("data-theme", "day");
@@ -1459,17 +1496,17 @@ for (const l of LOCALES) {
 test.describe("static files", () => {
   test("robots.txt, sitemap.xml and the Open Graph images are served", async ({ request }) => {
     const robots = await (await request.get("/robots.txt")).text();
-    expect(robots).toContain("Sitemap: https://lukas.app/sitemap.xml");
+    expect(robots).toContain("Sitemap: https://wambito.test/sitemap.xml");
     expect(robots).toContain("Disallow: /app");
 
     const sitemap = await (await request.get("/sitemap.xml")).text();
-    expect(sitemap).toContain("<loc>https://lukas.app/</loc>");
-    expect(sitemap).toContain("<loc>https://lukas.app/en</loc>");
+    expect(sitemap).toContain("<loc>https://wambito.test/</loc>");
+    expect(sitemap).toContain("<loc>https://wambito.test/en</loc>");
     expect(sitemap).toContain('hreflang="x-default"');
-    expect(sitemap).toContain("<loc>https://lukas.app/roadmap</loc>");
-    expect(sitemap).toContain("<loc>https://lukas.app/en/roadmap</loc>");
+    expect(sitemap).toContain("<loc>https://wambito.test/roadmap</loc>");
+    expect(sitemap).toContain("<loc>https://wambito.test/en/roadmap</loc>");
     for (const path of ["/it", "/pt", "/it/roadmap", "/pt/roadmap"]) {
-      expect(sitemap).toContain(`<loc>https://lukas.app${path}</loc>`);
+      expect(sitemap).toContain(`<loc>https://wambito.test${path}</loc>`);
     }
 
     for (const locale of ["es", "en", "it", "pt"]) {

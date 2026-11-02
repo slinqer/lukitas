@@ -1,4 +1,4 @@
-import { InvalidAmountError } from "@lukas/core";
+import { InvalidAmountError } from "@wambito/core";
 import { describe, expect, it } from "vitest";
 import { createApiClient } from "../../api/client.ts";
 import {

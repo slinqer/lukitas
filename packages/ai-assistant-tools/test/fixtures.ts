@@ -1,4 +1,4 @@
-import type { CategoryDto, TransactionDto } from "@lukas/core";
+import type { CategoryDto, TransactionDto } from "@wambito/core";
 
 let counter = 0;
 /** A deterministic, valid v4-shaped uuid, so tests can name ids. */

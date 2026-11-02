@@ -2,7 +2,7 @@
 /// prints, a POM's licences, and the file About reads (assets/licenses/android-libraries.json).
 library;
 
-export 'package:lukitas/settings/android_libraries.dart';
+export 'package:wambito/settings/android_libraries.dart';
 
 /// A resolved artifact before its licence is known.
 class ResolvedLibrary {

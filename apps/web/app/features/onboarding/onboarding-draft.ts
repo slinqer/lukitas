@@ -1,5 +1,6 @@
-import type { SupportedCurrency } from "@lukas/core";
+import type { SupportedCurrency } from "@wambito/core";
 import { useCallback, useState } from "react";
+import { readStored, removeStored, sessionArea, writeStored } from "../../lib/stored.ts";
 
 /**
  * What the person chose during onboarding that isn't on the server yet (or can't be told from it),
@@ -17,11 +18,12 @@ export interface OnboardingDraft {
   hiddenSuggestions?: string[];
 }
 
-const storageKey = (userId: string) => `lukas.onboarding.${userId}`;
+/** The `readStored` name, in sessionStorage: `wambito.onboarding.<userId>`. */
+const storageKey = (userId: string) => `onboarding.${userId}`;
 
 export function loadOnboardingDraft(userId: string): OnboardingDraft {
   try {
-    const raw = sessionStorage.getItem(storageKey(userId));
+    const raw = readStored(storageKey(userId), sessionArea());
     const parsed: unknown = raw ? JSON.parse(raw) : {};
     return typeof parsed === "object" && parsed !== null ? (parsed as OnboardingDraft) : {};
   } catch {
@@ -31,19 +33,12 @@ export function loadOnboardingDraft(userId: string): OnboardingDraft {
 }
 
 export function saveOnboardingDraft(userId: string, draft: OnboardingDraft): void {
-  try {
-    sessionStorage.setItem(storageKey(userId), JSON.stringify(draft));
-  } catch {
-    // See loadOnboardingDraft.
-  }
+  // No storage: see loadOnboardingDraft.
+  writeStored(storageKey(userId), JSON.stringify(draft), sessionArea());
 }
 
 export function clearOnboardingDraft(userId: string): void {
-  try {
-    sessionStorage.removeItem(storageKey(userId));
-  } catch {
-    // See loadOnboardingDraft.
-  }
+  removeStored(storageKey(userId), sessionArea());
 }
 
 /** The draft of the signed-in user (null until their id is known) and a merge-and-save update. */

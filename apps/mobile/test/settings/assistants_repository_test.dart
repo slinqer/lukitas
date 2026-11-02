@@ -5,9 +5,9 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/client.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/settings/assistants_repository.dart';
+import 'package:wambito/api/client.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/settings/assistants_repository.dart';
 
 const _claude = 'https://claude.ai/oauth/mcp-oauth-client-metadata';
 
@@ -153,8 +153,8 @@ void main() {
 
     test('keeps a port and a sub-path, and drops a query or fragment', () {
       expect(
-        mcpUrl(Uri.parse('http://10.0.2.2:8080/lukas/?x=1#y')).toString(),
-        'http://10.0.2.2:8080/lukas/mcp',
+        mcpUrl(Uri.parse('http://10.0.2.2:8080/wambito/?x=1#y')).toString(),
+        'http://10.0.2.2:8080/wambito/mcp',
       );
     });
   });

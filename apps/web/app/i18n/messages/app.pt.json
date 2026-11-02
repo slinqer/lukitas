@@ -19,7 +19,7 @@
     },
     "spent_label": "Gasto este mês",
     "of_budget": "de {amount}",
-    "meta_title": "Início · Lukitas",
+    "meta_title": "Início · Wambito",
     "remaining_label": "Restam-te este mês",
     "remaining_label_past": "Sobraram-te em {month}",
     "over_label": "Passaste do limite este mês",
@@ -37,12 +37,12 @@
     "no_categories_lead": "Precisas delas para registar as tuas despesas. Começa pelas sugeridas e muda-as quando quiseres.",
     "use_suggested": "Usar as sugeridas",
     "no_expense_categories": "Não tens categorias de despesa ativas.",
-    "lukas_empty": "Olá! Regista a tua primeira despesa com o ＋ e eu faço as contas.",
-    "lukas_no_budget": "Este mês gastaste {spent}. Cada registo conta.",
-    "lukas_over_total": "Este mês estás {over} acima dos teus orçamentos. Aqui tens tudo à vista.",
+    "wambi_empty": "Olá! Regista a tua primeira despesa com o ＋ e eu faço as contas.",
+    "wambi_no_budget": "Este mês gastaste {spent}. Cada registo conta.",
+    "wambi_over_total": "Este mês estás {over} acima dos teus orçamentos. Aqui tens tudo à vista.",
     "nudges_label": "Para começar",
     "nudge_budgets_title": "Define um orçamento para as tuas categorias",
-    "nudge_budgets_lead": "Assim Lukitas avisa-te antes de te excederes. Toca numa categoria e define um valor.",
+    "nudge_budgets_lead": "Assim Wambito avisa-te antes de te excederes. Toca numa categoria e define um valor.",
     "nudge_import_title": "Traz o teu histórico",
     "nudge_import_lead": "Importa o que tens no Budge e começa com os teus números verdadeiros.",
     "nudge_dismiss": "Agora não: {title}",
@@ -86,7 +86,7 @@
     "no_categories_income": "Ainda não tens categorias de receita.",
     "archived": "arquivada"
   },
-  "lukas": {
+  "wambi": {
     "first_of_day": {
       "1": "«{name}» é o teu primeiro registo do dia! É assim que se começa.",
       "2": "«{name}» ficou registado. Bom começo de dia!",
@@ -186,7 +186,7 @@
     "invalid_or_expired_code": "Este código já não serve: expirou ou já foi usado. Pede um novo.",
     "too_many_attempts": "Demasiadas tentativas com este código. Pede um novo.",
     "too_many_requests": "Pediste muitos códigos seguidos. Espera uns minutos e tenta outra vez.",
-    "sign_in_not_allowed": "Lukitas ainda não está aberta ao público. Se a quiseres experimentar, escreve a quem te convidou.",
+    "sign_in_not_allowed": "Wambito ainda não está aberta ao público. Se a quiseres experimentar, escreve a quem te convidou.",
     "guest_signup_disabled": "Por agora não é possível criar contas de convidado.",
     "email_taken": "Esse email já tem uma conta. Entra com ele.",
     "not_a_guest": "A tua conta já tem email.",
@@ -197,9 +197,9 @@
     "insufficient_scope": "Este assistente não tem permissão para fazer isso."
   },
   "sign_in": {
-    "meta_title": "Entrar · Lukitas",
-    "home": "Lukitas, início",
-    "title": "Entra em Lukitas",
+    "meta_title": "Entrar · Wambito",
+    "home": "Wambito, início",
+    "title": "Entra em Wambito",
     "lead": "Sem palavras-passe: enviamos-te um código por email.",
     "passkey": "Entrar com impressão digital",
     "passkey_busy": "À espera da tua impressão digital…",
@@ -222,12 +222,12 @@
     "wait": "Espera {seconds} s"
   },
   "verify": {
-    "meta_title": "A entrar · Lukitas",
+    "meta_title": "A entrar · Wambito",
     "confirm_title": "Continuar como <strong>{email}</strong>",
-    "confirm_lead": "Toca em Continuar para entrares em Lukitas com este email.",
+    "confirm_lead": "Toca em Continuar para entrares em Wambito com este email.",
     "continue": "Continuar",
-    "app_lead": "Abre Lukitas no teu telemóvel para entrares com este email, ou continua aqui na web.",
-    "open_app": "Abrir em Lukitas",
+    "app_lead": "Abre Wambito no teu telemóvel para entrares com este email, ou continua aqui na web.",
+    "open_app": "Abrir em Wambito",
     "stay_on_web": "Continuar na web",
     "not_me": "Não sou eu",
     "failed_title": "Não conseguimos fazer-te entrar",
@@ -235,7 +235,7 @@
     "send_new_code": "Enviar um código novo"
   },
   "onboarding": {
-    "meta_title": "Boas-vindas · Lukitas",
+    "meta_title": "Boas-vindas · Wambito",
     "progress": "Passo {current} de {total}",
     "back": "Voltar",
     "skip": "Saltar",
@@ -355,7 +355,7 @@
     "prefill_basis": "Com base no que gastaste {months, plural, one {no teu último mês} other {nos teus últimos # meses}}",
     "next": "Seguinte",
     "welcome": {
-      "title": "Damos-te as boas-vindas a Lukitas",
+      "title": "Damos-te as boas-vindas a Wambito",
       "lead": "Configura a tua moeda, as tuas categorias e o teu orçamento num minuto, ou entra já e faz isso depois.",
       "setup": "Configurar em 1 minuto",
       "direct": "Entrar já",
@@ -364,12 +364,12 @@
     "prefill_basis_activity": "Com base {months, plural, one {no teu último mês} other {nos teus últimos # meses}} com movimentos"
   },
   "passkey_offer": {
-    "meta_title": "A tua impressão digital · Lukitas",
+    "meta_title": "A tua impressão digital · Wambito",
     "title": "Entrar com a impressão digital da próxima vez?",
     "lead": "Assim entras sem esperar pelo código.",
     "points": {
       "key": "Uma passkey é uma chave guardada neste telemóvel, no Google, no Samsung Pass, no iCloud ou no Proton Pass.",
-      "unlock": "A tua impressão digital ou a tua cara apenas a desbloqueiam. Lukitas nunca as recebe.",
+      "unlock": "A tua impressão digital ou a tua cara apenas a desbloqueiam. Wambito nunca as recebe.",
       "sync": "Sincroniza com os teus outros dispositivos que usam a mesma conta.",
       "backup": "O teu email continua a funcionar como alternativa."
     },
@@ -404,7 +404,7 @@
     "restored": "{name} está de volta.",
     "archived_toast": "Arquivaste {name}. Os movimentos ficam.",
     "detail": {
-      "meta_title": "Categoria · Lukitas",
+      "meta_title": "Categoria · Wambito",
       "edit": "Editar categoria",
       "edit_short": "Editar",
       "kind_expense": "Categoria de despesa",
@@ -441,9 +441,9 @@
     }
   },
   "recurring": {
-    "meta_title": "Recorrentes · Lukitas",
+    "meta_title": "Recorrentes · Wambito",
     "title": "Recorrentes",
-    "lead": "O que se repete todos os meses ou todos os anos. Lukitas regista-o como pendente para não se te escapar.",
+    "lead": "O que se repete todos os meses ou todos os anos. Wambito regista-o como pendente para não se te escapar.",
     "add": "Novo recorrente",
     "empty": "Aqui ficam os teus pagamentos fixos: renda, Spotify, o ordenado… Cria-os uma vez e todos os meses ficam à tua espera como pendentes.",
     "monthly_rule": "Todos os meses, no dia {day}",
@@ -488,7 +488,7 @@
     }
   },
   "insights": {
-    "meta_title": "Análise · Lukitas",
+    "meta_title": "Análise · Wambito",
     "title": "Análise",
     "period_label": "Período",
     "span_1": "1 mês",
@@ -497,8 +497,8 @@
     "span_12": "1 ano",
     "period_one": "em {month}",
     "period_range": "de {from} a {to}",
-    "lukas_top": "{name} foi o que mais te custou {period}: {amount}.",
-    "lukas_empty": "Não vejo despesas {period}. Quando as registares, aqui mostro-te para onde vai o teu dinheiro.",
+    "wambi_top": "{name} foi o que mais te custou {period}: {amount}.",
+    "wambi_empty": "Não vejo despesas {period}. Quando as registares, aqui mostro-te para onde vai o teu dinheiro.",
     "donut": {
       "title": "Por categoria",
       "kind_label": "O que mostrar",
@@ -555,7 +555,7 @@
     }
   },
   "settings": {
-    "meta_title": "Definições · Lukitas",
+    "meta_title": "Definições · Wambito",
     "title": "Definições",
     "signed_in_as": "Entraste como {email}",
     "preferences": "Preferências",
@@ -618,11 +618,11 @@
     },
     "feedback": {
       "title": "Comentários e ideias",
-      "lead": "Algo não funciona, ou queres que Lukitas faça mais alguma coisa? Conta-nos por email.",
+      "lead": "Algo não funciona, ou queres que Wambito faça mais alguma coisa? Conta-nos por email.",
       "action": "Escreve-nos",
       "address": "Se o teu email não abrir, escreve para {email}.",
-      "mail_subject": "Lukitas: comentários",
-      "mail_body": "Versão de Lukitas: {version}\nIdioma: {language}"
+      "mail_subject": "Wambito: comentários",
+      "mail_body": "Versão de Wambito: {version}\nIdioma: {language}"
     },
     "delete": {
       "title": "Eliminar a tua conta",
@@ -640,16 +640,16 @@
     "demo_viewing": "Estás a ver a demo da Valentina.",
     "assistants": {
       "title": "Liga o teu assistente",
-      "lead": "Fala com o Lukitas a partir do Claude ou do ChatGPT: anota despesas e pergunta como vais sem abrir a app.",
-      "url_label": "O endereço do Lukitas para assistentes",
+      "lead": "Fala com o Wambito a partir do Claude ou do ChatGPT: anota despesas e pergunta como vais sem abrir a app.",
+      "url_label": "O endereço do Wambito para assistentes",
       "copy": "Copiar",
       "copy_label": "Copiar o endereço",
       "copied": "Feito: copiámos o endereço.",
       "copy_failed": "Não conseguimos copiá-lo. Seleciona-o e copia-o tu.",
       "claude_title": "No Claude",
-      "claude_steps": "Abre Settings → Connectors → Add custom connector, cola o endereço e entra com a tua conta Lukitas.",
+      "claude_steps": "Abre Settings → Connectors → Add custom connector, cola o endereço e entra com a tua conta Wambito.",
       "chatgpt_title": "No ChatGPT",
-      "chatgpt_steps": "Ativa o Developer mode em Settings → Apps → Advanced settings, cria uma app com o endereço e entra com a tua conta Lukitas. Depende do teu plano do ChatGPT.",
+      "chatgpt_steps": "Ativa o Developer mode em Settings → Apps → Advanced settings, cria uma app com o endereço e entra com a tua conta Wambito. Depende do teu plano do ChatGPT.",
       "examples_title": "Experimenta pedir",
       "example_add": "anota 18 no almoço",
       "example_month": "como vou este mês?",
@@ -670,7 +670,7 @@
     }
   },
   "consent": {
-    "meta_title": "Ligar um assistente · Lukitas",
+    "meta_title": "Ligar um assistente · Wambito",
     "title": "{name} quer aceder às tuas finanças",
     "logo_alt": "Logótipo de {name}",
     "from": "De {domain}",
@@ -690,15 +690,15 @@
     "failed": "Não conseguimos concluir a ligação. Tenta de novo.",
     "guest": {
       "title": "Guarda o teu progresso",
-      "body": "Para ligar um assistente, guarda primeiro o teu progresso com o teu email: na app do Lukitas, toca em «Guarda o teu progresso». Depois volta a ligá-lo a partir do teu assistente."
+      "body": "Para ligar um assistente, guarda primeiro o teu progresso com o teu email: na app do Wambito, toca em «Guarda o teu progresso». Depois volta a ligá-lo a partir do teu assistente."
     },
     "expired": {
       "title": "Esta ligação já não funciona",
-      "body": "Passou demasiado tempo ou a ligação mudou. Volta ao teu assistente e começa a ligar o Lukitas outra vez."
+      "body": "Passou demasiado tempo ou a ligação mudou. Volta ao teu assistente e começa a ligar o Wambito outra vez."
     }
   },
   "demo": {
-    "meta_title": "Demo · Lukitas",
+    "meta_title": "Demo · Wambito",
     "label": "Demo",
     "banner": "Estás na demo: os dados são inventados e apagam-se quando recarregas a página.",
     "create_account": "Criar a minha conta",

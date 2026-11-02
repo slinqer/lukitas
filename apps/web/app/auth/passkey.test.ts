@@ -16,6 +16,7 @@ function memoryStorage(initial: Record<string, string> = {}) {
   return {
     getItem: (key: string) => data.get(key) ?? null,
     setItem: (key: string, value: string) => void data.set(key, value),
+    removeItem: (key: string) => void data.delete(key),
     data,
   };
 }
@@ -25,6 +26,9 @@ const blockedStorage = {
     throw new Error("blocked");
   },
   setItem: () => {
+    throw new Error("blocked");
+  },
+  removeItem: () => {
     throw new Error("blocked");
   },
 };
@@ -45,7 +49,7 @@ describe("the passkey flag of this browser", () => {
   });
 
   it("is off again once the last passkey is deleted", () => {
-    const storage = memoryStorage({ "lukas.passkey.used": "1" });
+    const storage = memoryStorage({ "wambito.passkey.used": "1" });
     forgetPasskeyUsed(storage);
     expect(hasUsedPasskey(storage)).toBe(false);
     expect(() => forgetPasskeyUsed(blockedStorage)).not.toThrow();
@@ -62,17 +66,17 @@ describe("the offer's memory", () => {
     rememberOfferDecided("u2", storage);
     rememberOfferDecided("u2", storage);
     expect(offerDecided("u1", storage)).toBe(true);
-    expect(JSON.parse(storage.data.get("lukas.passkey.offered") ?? "[]")).toEqual(["u1", "u2"]);
+    expect(JSON.parse(storage.data.get("wambito.passkey.offered") ?? "[]")).toEqual(["u1", "u2"]);
   });
 
   it("treats damaged or blocked storage as nothing decided", () => {
-    expect(offerDecided("u1", memoryStorage({ "lukas.passkey.offered": "{oops" }))).toBe(false);
-    expect(offerDecided("u1", memoryStorage({ "lukas.passkey.offered": '{"a":1}' }))).toBe(false);
+    expect(offerDecided("u1", memoryStorage({ "wambito.passkey.offered": "{oops" }))).toBe(false);
+    expect(offerDecided("u1", memoryStorage({ "wambito.passkey.offered": '{"a":1}' }))).toBe(false);
     expect(offerDecided("u1", null)).toBe(false);
     expect(offerDecided("u1", blockedStorage)).toBe(false);
     expect(() => rememberOfferDecided("u1", blockedStorage)).not.toThrow();
     // Damaged data is replaced, not appended to.
-    const storage = memoryStorage({ "lukas.passkey.offered": "{oops" });
+    const storage = memoryStorage({ "wambito.passkey.offered": "{oops" });
     rememberOfferDecided("u1", storage);
     expect(offerDecided("u1", storage)).toBe(true);
   });

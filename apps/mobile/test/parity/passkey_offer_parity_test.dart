@@ -6,11 +6,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/entry/passkey_offer_screen.dart';
-import 'package:lukitas/ui/app_shell.dart';
+import 'package:wambito/entry/passkey_offer_screen.dart';
+import 'package:wambito/ui/app_shell.dart';
 
 import '../support/parity.dart';
-import '../support/parity_home.dart' show precacheLukitas;
+import '../support/parity_home.dart' show precacheWambi;
 
 /// The passkey offer against `sign-in-passkeyoffer--*`
 /// (apps/web/app/features/sign-in/PasskeyOffer.stories.tsx), each story as Storybook shows it after
@@ -46,7 +46,7 @@ void main() {
         'passkey-offer',
         _screen(() async => PasskeyOfferOutcome.added),
         theme: theme,
-        act: precacheLukitas,
+        act: precacheWambi,
       );
     });
 
@@ -57,7 +57,7 @@ void main() {
         _screen(_never),
         theme: theme,
         act: (t) async {
-          await precacheLukitas(t);
+          await precacheWambi(t);
           await t.tap(find.byKey(const Key('offer.add')));
           await t.pump();
         },
@@ -71,7 +71,7 @@ void main() {
         _screen(() async => PasskeyOfferOutcome.failed),
         theme: theme,
         act: (t) async {
-          await precacheLukitas(t);
+          await precacheWambi(t);
           await t.tap(find.byKey(const Key('offer.add')));
           await t.pumpAndSettle();
           await _focusAdd(t);
@@ -87,7 +87,7 @@ void main() {
       _screen(() async => PasskeyOfferOutcome.added),
       theme: 'day',
       locale: const Locale('en'),
-      act: precacheLukitas,
+      act: precacheWambi,
     );
   });
 }

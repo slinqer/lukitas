@@ -4,8 +4,9 @@ import { configure } from "storybook/test";
 import { AppMessages } from "../app/i18n/AppMessages.tsx";
 import { isLocale, type Locale } from "../app/i18n/format.ts";
 import { IntlProvider } from "../app/i18n/IntlProvider.tsx";
+import { writeStored } from "../app/lib/stored.ts";
 import { ThemeProvider } from "../app/theme/ThemeProvider.tsx";
-import { THEME_STORAGE_KEY, type Theme } from "../app/theme/theme-bootstrap.ts";
+import { THEME_STORED, type Theme } from "../app/theme/theme-bootstrap.ts";
 import "../app/styles/fonts.ts";
 import "../app/styles/app.css";
 
@@ -26,11 +27,8 @@ const withThemeAndLocale: Decorator = (Story, context) => {
   document.documentElement.dataset.theme = theme;
   // The app's ThemeProvider (which components such as ThemeToggle read) starts from the stored
   // preference, so the toolbar's theme is stored first; the key remounts it when the toolbar changes.
-  try {
-    localStorage.setItem(THEME_STORAGE_KEY, theme);
-  } catch {
-    // Blocked storage: the provider falls back to night.
-  }
+  // Blocked storage: the provider falls back to night.
+  writeStored(THEME_STORED, theme);
   const story = (
     <IntlProvider locale={locale}>
       <AppMessages>

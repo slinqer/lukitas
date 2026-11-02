@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/capture/parser/parse.dart';
+import 'package:wambito/capture/parser/parse.dart';
 
 /// From apps/mobile, where `flutter test` runs.
 const casesPath = '../../packages/core/quick-capture/cases.json';

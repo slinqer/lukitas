@@ -1,5 +1,5 @@
 import type { ClientMetadataResourceFetch } from "@better-auth/oauth-provider";
-import type { Db } from "@lukas/db";
+import type { Db } from "@wambito/db";
 import type { Config } from "./config.ts";
 import type { Mailer } from "./mailer.ts";
 

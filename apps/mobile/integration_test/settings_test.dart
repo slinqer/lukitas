@@ -10,8 +10,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:lukitas/main.dart' as app;
-import 'package:lukitas/settings/url_opener.dart';
+import 'package:wambito/main.dart' as app;
+import 'package:wambito/settings/url_opener.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -31,7 +31,7 @@ void main() {
       'vosk-model-small-pt-0.3',
       'vosk-android 0.3.75',
       'JNA 5.18.1',
-      'Lukitas feedback sounds',
+      'Wambito feedback sounds',
     ]) {
       expect(packages, contains(extra));
     }
@@ -63,7 +63,7 @@ void main() {
     (tester) async {
       await app.bootstrap();
       // The channel asked directly, as a compromised Dart side would: the Android side checks too.
-      const channel = MethodChannel('lukitas/device');
+      const channel = MethodChannel('wambito/device');
       for (final address in [
         'javascript:alert(1)',
         'intent:#Intent;action=android.intent.action.CALL;end',

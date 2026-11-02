@@ -13,13 +13,13 @@ abstract interface class UrlOpener {
   Future<bool> open(Uri url);
 }
 
-/// [UrlOpener] over the `lukitas/device` channel (MainActivity.kt): an `ACTION_VIEW` intent for a
+/// [UrlOpener] over the `wambito/device` channel (MainActivity.kt): an `ACTION_VIEW` intent for a
 /// page, an `ACTION_SENDTO` one for mail; the same a link in any other app sends. No package for it,
 /// so nothing new in the dependency tree.
 class ChannelUrlOpener implements UrlOpener {
   const ChannelUrlOpener();
 
-  static const _channel = MethodChannel('lukitas/device');
+  static const _channel = MethodChannel('wambito/device');
 
   @override
   Future<bool> open(Uri url) async {

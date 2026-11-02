@@ -6,11 +6,11 @@ import android.net.Uri
 import com.wambito.app.widget.ServerSetting
 
 /**
- * The app's own links (spec sections 7.1 and 7.2): `lukitas://add` opens the add sheet with the
- * keypad ready (the widget's ＋), `lukitas://capture` opens quick capture listening (the widget's 🎤
- * and the Quick Settings tile), `lukitas://due` opens home with the payments due today (the "Hoy
- * vence…" notice), `lukitas://progress` opens "Guarda tu progreso" (the guest warning),
- * `lukitas://home` opens home (a tap on the widget itself). MainActivity keeps them from Flutter's router and hands them to Dart
+ * The app's own links (spec sections 7.1 and 7.2): `wambito://add` opens the add sheet with the
+ * keypad ready (the widget's ＋), `wambito://capture` opens quick capture listening (the widget's 🎤
+ * and the Quick Settings tile), `wambito://due` opens home with the payments due today (the "Hoy
+ * vence…" notice), `wambito://progress` opens "Guarda tu progreso" (the guest warning),
+ * `wambito://home` opens home (a tap on the widget itself). MainActivity keeps them from Flutter's router and hands them to Dart
  * (lib/launch/launch_links.dart), which opens them once the session has loaded.
  *
  * They reach the app only through [ALIAS], an activity-alias of `MainActivity` that is not exported
@@ -18,18 +18,27 @@ import com.wambito.app.widget.ServerSetting
  * so none can open the microphone. A link sent to the exported launcher activity is ignored.
  */
 object LaunchLinks {
-    const val SCHEME = "lukitas"
-    val ADD: Uri = Uri.parse("lukitas://add")
-    val CAPTURE: Uri = Uri.parse("lukitas://capture")
+    /** The scheme of the links the app builds. */
+    const val SCHEME = "wambito"
+
+    /**
+     * The scheme before the rename, still taken: a notice already on the shade, or anything else
+     * pinned by an older build, carries it. 2b: remove (and its entries in AndroidManifest.xml).
+     */
+    private const val OLD_SCHEME = "lukitas"
+    private val SCHEMES = setOf(SCHEME, OLD_SCHEME)
+
+    val ADD: Uri = Uri.parse("wambito://add")
+    val CAPTURE: Uri = Uri.parse("wambito://capture")
 
     /** The "Hoy vence…" notice (spec section 7.2): home, with the payments due today in view. */
-    val DUE: Uri = Uri.parse("lukitas://due")
+    val DUE: Uri = Uri.parse("wambito://due")
 
     /** The guest warning (spec section 7.2): "Guarda tu progreso". */
-    val PROGRESS: Uri = Uri.parse("lukitas://progress")
+    val PROGRESS: Uri = Uri.parse("wambito://progress")
 
     /** A tap on the widget itself (not its ＋ or 🎤): home, whatever the widget's area. */
-    val HOME: Uri = Uri.parse("lukitas://home")
+    val HOME: Uri = Uri.parse("wambito://home")
     private val HOSTS = setOf("add", "capture", "due", "progress", "home")
 
     /** The not-exported entry the links come through (an alias of `MainActivity`). */
@@ -42,15 +51,16 @@ object LaunchLinks {
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
 
     /**
-     * The `lukitas://add`, `capture`, `due` or `progress` link [intent] carries, or null. An activity
-     * reopened from recents gets its first intent again: that one is not acted on twice.
+     * The `wambito://add`, `capture`, `due`, `progress` or `home` link [intent] carries (or its
+     * `lukitas://` twin, 2b: remove), or null. An activity reopened from recents gets its first
+     * intent again: that one is not acted on twice.
      */
     fun linkOf(intent: Intent?): String? {
         if (intent == null || intent.action != Intent.ACTION_VIEW) return null
         if (intent.component?.className != ALIAS) return null
         if (intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY != 0) return null
         val data = intent.data ?: return null
-        if (data.scheme != SCHEME || data.host !in HOSTS) return null
+        if (data.scheme !in SCHEMES || data.host !in HOSTS) return null
         val path = data.path.orEmpty()
         if (path.isNotEmpty() && path != "/") return null
         return data.toString()
@@ -84,11 +94,11 @@ object LaunchLinks {
         return !isForeignWebLink(intent, serverHost)
     }
 
-    /** Whether [intent] opens a link that is not one of the app's own `lukitas://` ones. */
+    /** Whether [intent] opens a link that is not one of the app's own (`wambito://`, `lukitas://` until 2b). */
     fun isWebLink(intent: Intent?): Boolean {
         if (intent == null || intent.action != Intent.ACTION_VIEW) return false
         val data = intent.data ?: return false
-        return data.scheme != SCHEME
+        return data.scheme !in SCHEMES
     }
 
     /** The host of the server the app talks to: the one chosen in Settings, else [defaultServer]. */

@@ -3,9 +3,9 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/theme/text_styles.dart';
-import 'package:lukitas/theme/theme.dart';
-import 'package:lukitas/ui/money.dart';
+import 'package:wambito/theme/text_styles.dart';
+import 'package:wambito/theme/theme.dart';
+import 'package:wambito/ui/money.dart';
 
 import '../support/parity.dart';
 
@@ -17,7 +17,7 @@ import '../support/parity.dart';
 
 /// The stories' `className`: `lk-hero-amount` (the default args) or `lk-amount` (Negative).
 TextStyle _heroAmount(BuildContext context) =>
-    LkText.amountXl.copyWith(color: Theme.of(context).extension<LukitasTheme>()!.colors.good);
+    LkText.amountXl.copyWith(color: Theme.of(context).extension<WambitoTheme>()!.colors.good);
 
 Widget _story(int cents, TextStyle Function(BuildContext) style) => _storyIn(cents, 'EUR', style);
 

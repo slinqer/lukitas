@@ -4,8 +4,8 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/ui/budget_bar.dart';
-import 'package:lukitas/ui/category_row.dart';
+import 'package:wambito/ui/budget_bar.dart';
+import 'package:wambito/ui/category_row.dart';
 
 import '../support/parity.dart';
 

@@ -5,7 +5,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../home/home_header.dart' show LkWordmark;
-import '../home/lukitas_face.dart';
+import '../home/wambi_face.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/text_styles.dart';
 import '../theme/tokens.g.dart';
@@ -27,14 +27,14 @@ class StepAction {
   final Key? key;
 }
 
-/// Lukitas' size beside a step's title: friendly, never crowding it (`MASCOT_PX`).
+/// Wambi's size beside a step's title: friendly, never crowding it (`MASCOT_PX`).
 const _mascotSize = 72.0;
 
 /// `max-w-[480px]` of the header and the main column.
 const _maxWidth = 480.0;
 
 /// The frame of an onboarding step: the wordmark and the day/night switch, the progress ("Paso 2 de
-/// 4", not on the welcome), Lukitas beside the title, the content, and Back / SALTAR / SIGUIENTE at
+/// 4", not on the welcome), Wambi beside the title, the content, and Back / SALTAR / SIGUIENTE at
 /// the bottom (they stay in reach while the content scrolls).
 class StepFrame extends StatelessWidget {
   const StepFrame({
@@ -42,7 +42,7 @@ class StepFrame extends StatelessWidget {
     required this.step,
     required this.title,
     this.lead,
-    this.mood = LukitasMood.happy,
+    this.mood = WambiMood.happy,
     this.onBack,
     this.backDisabled = false,
     this.skip,
@@ -55,7 +55,7 @@ class StepFrame extends StatelessWidget {
   final StepId step;
   final String title;
   final String? lead;
-  final LukitasMood mood;
+  final WambiMood mood;
 
   /// Back: none on the first step.
   final VoidCallback? onBack;
@@ -103,17 +103,17 @@ class StepFrame extends StatelessWidget {
             // tall, so the bars start on a half pixel; Chrome draws a box on the pixel grid, rounding
             // that up (the web's picture has them at 115px, not 114.5), and the title under them does
             // not move. The half pixel is added here and taken from the gap below.
-            const SizedBox(height: LukitasTokens.space2 + 0.5),
+            const SizedBox(height: WambitoTokens.space2 + 0.5),
             ExcludeSemantics(
               child: Row(
-                spacing: LukitasTokens.space1,
+                spacing: WambitoTokens.space1,
                 children: [
                   for (var i = 0; i < setupSteps.length; i++)
                     Expanded(
                       child: DecoratedBox(
                         decoration: BoxDecoration(
                           color: i < current ? colors.brandGlow : colors.stroke,
-                          borderRadius: BorderRadius.circular(LukitasTokens.radiusPill),
+                          borderRadius: BorderRadius.circular(WambitoTokens.radiusPill),
                         ),
                         child: const SizedBox(height: 6),
                       ),
@@ -141,8 +141,8 @@ class StepFrame extends StatelessWidget {
                       child: const Padding(
                         // `px-(--space-4) py-(--space-3)`.
                         padding: EdgeInsets.symmetric(
-                          horizontal: LukitasTokens.space4,
-                          vertical: LukitasTokens.space3,
+                          horizontal: WambitoTokens.space4,
+                          vertical: WambitoTokens.space3,
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -152,18 +152,18 @@ class StepFrame extends StatelessWidget {
                     ),
                     _Centered(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: LukitasTokens.space4),
+                        padding: const EdgeInsets.symmetric(horizontal: WambitoTokens.space4),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             ...progress,
                             SizedBox(
-                              height: counted ? LukitasTokens.space4 - 0.5 : LukitasTokens.space4,
+                              height: counted ? WambitoTokens.space4 - 0.5 : WambitoTokens.space4,
                             ),
                             _TitleRow(title: title, mood: mood),
                             if (lead != null) ...[
                               // 0.5px more than `mt-3`: where Chrome's rounding puts the lead.
-                              const SizedBox(height: LukitasTokens.space3 + 0.5),
+                              const SizedBox(height: WambitoTokens.space3 + 0.5),
                               Text(
                                 lead!,
                                 key: const Key('welcome.lead'),
@@ -172,15 +172,15 @@ class StepFrame extends StatelessWidget {
                             ],
                             SizedBox(
                               height: lead != null
-                                  ? LukitasTokens.space4 - 0.5 + (counted ? 0 : 0)
-                                  : LukitasTokens.space4,
+                                  ? WambitoTokens.space4 - 0.5 + (counted ? 0 : 0)
+                                  : WambitoTokens.space4,
                             ),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
-                              spacing: LukitasTokens.space4,
+                              spacing: WambitoTokens.space4,
                               children: children,
                             ),
-                            const SizedBox(height: LukitasTokens.space4),
+                            const SizedBox(height: WambitoTokens.space4),
                           ],
                         ),
                       ),
@@ -198,18 +198,18 @@ class StepFrame extends StatelessWidget {
                     child: Padding(
                       // `px-(--space-4) pt-(--space-3) pb-[max(var(--space-4), env(safe-area-inset-bottom))]`.
                       padding: EdgeInsets.fromLTRB(
-                        LukitasTokens.space4,
-                        LukitasTokens.space3,
-                        LukitasTokens.space4,
-                        math.max(LukitasTokens.space4, inset.bottom),
+                        WambitoTokens.space4,
+                        WambitoTokens.space3,
+                        WambitoTokens.space4,
+                        math.max(WambitoTokens.space4, inset.bottom),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
-                        spacing: LukitasTokens.space3,
+                        spacing: WambitoTokens.space3,
                         children: [
                           ?summary,
                           Row(
-                            spacing: LukitasTokens.space2,
+                            spacing: WambitoTokens.space2,
                             children: [
                               if (onBack != null)
                                 PressButton(
@@ -265,19 +265,19 @@ class _Centered extends StatelessWidget {
   );
 }
 
-/// `<div className="mt-4 flex items-center gap-3">`: Lukitas and the title (a heading).
+/// `<div className="mt-4 flex items-center gap-3">`: Wambi and the title (a heading).
 class _TitleRow extends StatelessWidget {
   const _TitleRow({required this.title, required this.mood});
 
   final String title;
-  final LukitasMood mood;
+  final WambiMood mood;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final colors = context.lkColors;
     return Row(
-      spacing: LukitasTokens.space3,
+      spacing: WambitoTokens.space3,
       children: [
         // The web's `<span className="shrink-0">` holds the face as an inline box: 7px of line (the
         // baseline's descent) under it make the row 79px tall.
@@ -286,10 +286,10 @@ class _TitleRow extends StatelessWidget {
           height: 79,
           child: Align(
             alignment: Alignment.topLeft,
-            child: LukitasFace(
+            child: WambiFace(
               mood: mood,
               size: _mascotSize,
-              label: mood == LukitasMood.worried ? l10n.mascotWorried : l10n.mascotHappy,
+              label: mood == WambiMood.worried ? l10n.mascotWorried : l10n.mascotHappy,
             ),
           ),
         ),

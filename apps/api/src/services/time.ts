@@ -1,4 +1,4 @@
-import { type Month, monthOf, todayIn } from "@lukas/core";
+import { type Month, monthOf, todayIn } from "@wambito/core";
 import type { AppDeps } from "../deps.ts";
 import type { SessionUser } from "../env.ts";
 

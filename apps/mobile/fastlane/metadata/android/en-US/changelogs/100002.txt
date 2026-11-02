@@ -5,3 +5,4 @@ First release.
 - Home-screen widget and Quick Settings tile.
 - Try it without an email and add one later.
 - In Spanish and English, night or day.
+- Renamed to Wambito: add the home-screen widget again, once.

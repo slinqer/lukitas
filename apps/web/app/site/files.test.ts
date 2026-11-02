@@ -58,7 +58,7 @@ describe("sitemapXml", () => {
   });
 
   it("mentions no other origin", () => {
-    expect(xml).not.toContain("lukas.app");
+    expect(xml).not.toContain("wambito.test");
   });
 });
 

@@ -4,7 +4,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/ui/name_field.dart';
+import 'package:wambito/ui/name_field.dart';
 
 import '../support/parity.dart';
 

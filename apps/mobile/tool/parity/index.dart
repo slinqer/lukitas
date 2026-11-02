@@ -19,7 +19,7 @@ void main() {
   final b = StringBuffer()
     ..writeln('<!doctype html><html lang="en"><meta charset="utf-8">')
     ..writeln('<meta name="viewport" content="width=device-width, initial-scale=1">')
-    ..writeln('<title>Lukitas parity index</title>')
+    ..writeln('<title>Wambito parity index</title>')
     ..writeln('<style>')
     ..writeln('body{font:14px/1.4 system-ui,sans-serif;margin:16px;background:#fafafa;color:#222}')
     ..writeln('.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}')

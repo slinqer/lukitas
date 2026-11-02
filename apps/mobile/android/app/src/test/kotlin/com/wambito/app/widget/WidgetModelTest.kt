@@ -72,7 +72,7 @@ class WidgetModelTest {
     }
 
     @Test
-    fun `a category near its limit makes Lukitas worried`() {
+    fun `a category near its limit makes Wambi worried`() {
         val model = figures(snapshot(mood = "worried"))
         assertEquals(Mood.WORRIED, model.mood)
         assertEquals(Tone.NEAR, model.tone)
@@ -88,12 +88,12 @@ class WidgetModelTest {
 
     @Test
     @Config(qualifiers = "es") // a Spanish phone: with no snapshot, the phone's language
-    fun `signed out, or nothing written yet, or an older snapshot, it asks to open Lukitas`() {
+    fun `signed out, or nothing written yet, or an older snapshot, it asks to open Wambito`() {
         val signedOut = WidgetSnapshot(signedIn = false, locale = "es")
         for (snapshot in listOf(signedOut, null, WidgetSnapshot.parse("""{"v":1,"amount":"$1"}"""))) {
             val model = widgetModel(context, snapshot, now, zone)
             assertTrue("$snapshot", model is WidgetModel.SignedOut)
-            assertEquals("Abre Lukitas para empezar", (model as WidgetModel.SignedOut).message)
+            assertEquals("Abre Wambito para empezar", (model as WidgetModel.SignedOut).message)
         }
     }
 
@@ -147,7 +147,7 @@ class WidgetModelTest {
         assertEquals("COP 1,500,000", model.amount)
         assertEquals("October", model.month)
         val signedOut = widgetModel(context, WidgetSnapshot(signedIn = false, locale = "en"), now, zone)
-        assertEquals("Open Lukitas to get started", (signedOut as WidgetModel.SignedOut).message)
+        assertEquals("Open Wambito to get started", (signedOut as WidgetModel.SignedOut).message)
     }
 
     @Test
@@ -163,7 +163,7 @@ class WidgetModelTest {
         assertEquals("25% del budget speso", figures(snapshot(locale = "it")).progressDescription)
         assertEquals("25% do orçamento gasto", figures(snapshot(locale = "pt")).progressDescription)
         val signedOut = widgetModel(context, WidgetSnapshot(signedIn = false, locale = "pt"), now, zone)
-        assertEquals("Abre Lukitas para começar", (signedOut as WidgetModel.SignedOut).message)
+        assertEquals("Abre Wambito para começar", (signedOut as WidgetModel.SignedOut).message)
         assertEquals("Hai sforato in settembre", figures(snapshot(locale = "it", month = "2026-09", remaining = -1)).label)
     }
 

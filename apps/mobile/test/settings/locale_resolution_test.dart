@@ -1,8 +1,8 @@
 import 'dart:ui' show Locale;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/home/home_controller.dart' show languageOfTag;
-import 'package:lukitas/settings/locale_resolution.dart';
+import 'package:wambito/home/home_controller.dart' show languageOfTag;
+import 'package:wambito/settings/locale_resolution.dart';
 
 void main() {
   group('webPagePath', () {

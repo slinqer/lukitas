@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/notices/notice_backend.dart';
-import 'package:lukitas/recurring/recurring_model.dart';
-import 'package:lukitas/recurring/recurring_repository.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/notices/notice_backend.dart';
+import 'package:wambito/recurring/recurring_model.dart';
+import 'package:wambito/recurring/recurring_repository.dart';
 
 import '../budgets/fakes.dart';
 import '../home/fakes.dart';

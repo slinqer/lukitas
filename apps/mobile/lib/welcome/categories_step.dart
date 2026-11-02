@@ -8,7 +8,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../categories/category_model.dart';
 import '../home/category_look.dart';
 import '../import/note_text.dart';
@@ -112,7 +112,7 @@ class _CategoriesStepState extends State<CategoriesStep> {
       label: label,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: LukitasTokens.space2,
+        spacing: WambitoTokens.space2,
         children: [
           Semantics(
             header: true,
@@ -173,7 +173,7 @@ class _CategoriesStepState extends State<CategoriesStep> {
         // `flex items-center justify-between gap-2`; the hint is only read out unless editing.
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          spacing: LukitasTokens.space2,
+          spacing: WambitoTokens.space2,
           children: [
             if (_editing)
               Expanded(
@@ -233,7 +233,7 @@ class _CategoriesStepState extends State<CategoriesStep> {
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              spacing: LukitasTokens.space2,
+              spacing: WambitoTokens.space2,
               children: [
                 const ExcludeSemantics(child: Text('＋')),
                 Text(LkText.upperCase(l10n.welcomeCategoriesAdd)),

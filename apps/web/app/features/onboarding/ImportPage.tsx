@@ -5,9 +5,9 @@ import { useApi } from "../../api/ApiProvider.tsx";
 import { ApiProblem, problemMessage, type Translator } from "../../api/errors.ts";
 import { queryKeys, useCategories, useMe } from "../../api/queries.ts";
 import { useLocale } from "../../i18n/IntlProvider.tsx";
-import { Lukas } from "../../lukas/Lukas.tsx";
 import { PressButton } from "../../ui/PressButton.tsx";
 import { PressLink } from "../../ui/PressLink.tsx";
+import { Wambi } from "../../wambi/Wambi.tsx";
 import { BudgetsList, BudgetsTotal, draftsTotal, readDraft } from "./BudgetsStep.tsx";
 import { draftFromCents } from "./budget-input.ts";
 import { ImportPanel } from "./ImportStep.tsx";
@@ -105,7 +105,7 @@ export function ImportPage() {
       <main className="flex flex-col gap-(--space-4)">
         <div className="flex items-center gap-(--space-3)">
           <span className="shrink-0">
-            <Lukas mood="happy" size={72} />
+            <Wambi mood="happy" size={72} />
           </span>
           <h1
             ref={heading}

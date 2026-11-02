@@ -22,8 +22,8 @@ beforeAll(async () => {
   admin = createDb(database.adminUrl);
   app = createDb(database.appUrl);
   await admin.db.insert(user).values([
-    { id: "user-a", name: "A", email: "a@lukas.test" },
-    { id: "user-b", name: "B", email: "b@lukas.test" },
+    { id: "user-a", name: "A", email: "a@wambito.test" },
+    { id: "user-b", name: "B", email: "b@wambito.test" },
   ]);
   await withUser(app.db, "user-a", (tx) => tx.insert(categories).values(category("user-a")));
   const [b] = await withUser(app.db, "user-b", (tx) =>

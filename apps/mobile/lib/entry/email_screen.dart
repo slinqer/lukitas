@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../api/auth_api.dart';
 import '../api/session.dart';
 import '../home/home_controller.dart' show clockProvider;
-import '../home/lukitas_face.dart';
+import '../home/wambi_face.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/text_styles.dart';
 import '../theme/tokens.g.dart';
@@ -345,7 +345,7 @@ class _EmailScreenState extends ConsumerState<EmailScreen> {
         if (!didPop && _stage == _Stage.code) _changeEmail();
       },
       child: SignInFrame(
-        mood: LukitasMood.happy,
+        mood: WambiMood.happy,
         children: _stage == _Stage.email ? _emailStage(l10n) : _codeStage(l10n),
       ),
     );
@@ -368,7 +368,7 @@ class _EmailScreenState extends ConsumerState<EmailScreen> {
             onPressed: _busy || _passkeyActive ? null : _passkey,
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              spacing: LukitasTokens.space2,
+              spacing: WambitoTokens.space2,
               children: [
                 const FingerprintIcon(),
                 Flexible(
@@ -389,7 +389,7 @@ class _EmailScreenState extends ConsumerState<EmailScreen> {
       _full(
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: LukitasTokens.space3,
+          spacing: WambitoTokens.space3,
           children: [
             FieldCaption(l10n.emailLabel),
             WebTextField(
@@ -438,7 +438,7 @@ class _EmailScreenState extends ConsumerState<EmailScreen> {
       _full(
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: LukitasTokens.space3,
+          spacing: WambitoTokens.space3,
           children: [
             CodeInput(
               fieldKey: const Key('entry.code'),

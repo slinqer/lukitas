@@ -1,5 +1,5 @@
-import 'package:lukitas/notices/notice_backend.dart';
-import 'package:lukitas/notices/notice_platform.dart';
+import 'package:wambito/notices/notice_backend.dart';
+import 'package:wambito/notices/notice_platform.dart';
 
 /// Android's side of the notices in memory: what was scheduled or cancelled, and the permission.
 class FakeNoticePlatform implements NoticePlatform {

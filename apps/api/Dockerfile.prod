@@ -16,19 +16,19 @@ COPY packages/core/package.json packages/core/
 COPY packages/db/package.json packages/db/
 COPY packages/importers/package.json packages/importers/
 COPY apps/api/package.json apps/api/
-RUN pnpm install --frozen-lockfile --filter "@lukas/api..."
+RUN pnpm install --frozen-lockfile --filter "@wambito/api..."
 
 COPY tsconfig.base.json ./
 COPY packages packages
 COPY apps/api apps/api
 # One bundle per entry point, with every dependency inside: no node_modules in the final image.
-RUN pnpm --filter @lukas/api build
+RUN pnpm --filter @wambito/api build
 
 
 FROM node:22-alpine AS runtime
 # What /health reports as the version (deploy/personal/up.sh passes 0.0.0-dev.<commit>). Empty: none.
-ARG LUKITAS_VERSION=
-ENV NODE_ENV=production LUKITAS_VERSION=$LUKITAS_VERSION
+ARG WAMBITO_VERSION=
+ENV NODE_ENV=production WAMBITO_VERSION=$WAMBITO_VERSION
 WORKDIR /app
 COPY --from=build /repo/apps/api/dist ./dist
 # bootstrap.js reads the migrations from ../drizzle, next to dist.

@@ -7,7 +7,7 @@ const baseURL = "http://localhost:5173";
  * playwright.built.config.ts (`pnpm e2e:landing`, `e2e:landing-only`, `e2e:landing-only-app`). */
 export default defineConfig({
   testDir: "./e2e",
-  testIgnore: /landing(-lukas|-only|-only-app)?\.spec\.ts$/,
+  testIgnore: /landing(-wambi|-only|-only-app)?\.spec\.ts$/,
   globalSetup: "./e2e/global-setup.ts",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,

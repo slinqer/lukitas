@@ -1,6 +1,6 @@
-import { firstDay, type IsoDate, type Month } from "@lukas/core";
-import { recurrences, type Tx, transactions } from "@lukas/db";
-import { and, eq, gte, inArray, isNull, or, sql } from "@lukas/db/orm";
+import { firstDay, type IsoDate, type Month } from "@wambito/core";
+import { recurrences, type Tx, transactions } from "@wambito/db";
+import { and, eq, gte, inArray, isNull, or, sql } from "@wambito/db/orm";
 
 /**
  * Hard-deletes the unpaid pending rows these rules generated: those from `fromMonth` on (by the

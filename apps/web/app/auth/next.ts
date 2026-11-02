@@ -2,7 +2,7 @@
 export const DEFAULT_NEXT = "/app";
 
 /** The page `next` stands for, resolved against a placeholder origin to see where it really goes. */
-const PLACEHOLDER_ORIGIN = "http://lukas.invalid";
+const PLACEHOLDER_ORIGIN = "http://wambito.invalid";
 
 /** A path that starts with exactly one `/`: not `//host`, not `/\host`. */
 const SINGLE_SLASH_PATH = /^\/(?![/\\])/;
