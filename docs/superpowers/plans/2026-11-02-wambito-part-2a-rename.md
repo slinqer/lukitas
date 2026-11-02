@@ -380,6 +380,68 @@ Playwright, Flutter test, Gradle unit tests.
 - [ ] **Step 5: Commit.**
   `git commit -m "ci: no Lukitas or Lukas outside the allowlist"`
 
+### Task 7: Agent maps (AGENTS.md + CLAUDE.md)
+
+Added at the founder's request (2026-11-02). The goal: an agent working in any area learns what it
+is, where to start and how to test it without reading the code. That keeps tokens low.
+
+**Files:**
+- Create `AGENTS.md` and `CLAUDE.md` in:
+  - the repo root;
+  - `apps/api`, `apps/web`, `apps/mcp`, `apps/mobile`;
+  - each `packages/*`;
+  - `deploy/personal`, `deploy/landing`;
+  - `docs`.
+- Each `CLAUDE.md` holds exactly one line: `@AGENTS.md`.
+- Modify `CONTRIBUTING.md`: one line saying that whoever changes an area's structure, commands or
+  conventions updates its `AGENTS.md`.
+
+**What each `AGENTS.md` contains:**
+- Root: at most ~120 lines. Others: at most ~60 lines.
+- Pointers, not code: exact paths, no prose about what the code obviously does.
+- **Root:**
+  - the monorepo map (one line per folder: what it is and the path of its AGENTS.md);
+  - the toolchain and the commands CI runs;
+  - the cross-cutting rules:
+    - money slang («lukas/luka/palo», `lukasHint`) is never renamed;
+    - the 2b infrastructure names stay until part 2b;
+    - `docs/superpowers/**` is history;
+    - never read `deploy/personal/.env` or any secret;
+    - Gradle needs JDK 17 (`JAVA_HOME` path);
+    - lint is `biome check .`;
+    - web e2e needs the dev stack;
+    - generated files (`tokens.css`, `schema.d.ts`, `lib/api/gen`, `tokens.g.dart`, l10n) are
+      regenerated, not hand-edited, with the command;
+    - commit style, and no `Co-Authored-By`;
+  - which spec/plan docs explain what, read only when needed.
+- **Per area:**
+  - its purpose;
+  - entry points (files);
+  - how it talks to the other areas (API routes and auth, headers, MCP → API, app → API, Caddy
+    routes);
+  - how to run and test it (exact commands);
+  - conventions;
+  - known traps, e.g.:
+    - the Caddy `vars` ordering (`route {}` runs after the handles);
+    - `COMPOSE_FILE` selects tunnel or direct;
+    - WorkManager unique names;
+    - migrations are drizzle and run as admin;
+    - RLS with `lukas_app`;
+    - the parity snapshots.
+
+**Source:** the Task 1–6 reports in the plan's SDD workspace (each implementer already walked its
+area), plus targeted reads to confirm. Do not crawl whole trees. Every path named must exist.
+
+- [ ] **Step 1: Write the files** from the reports, checking each path and command.
+- [ ] **Step 2: Verify.**
+  - A script checks that every backticked repo path in every `AGENTS.md` exists
+    (`git ls-files` / `test -e`), and that each `CLAUDE.md` is exactly `@AGENTS.md`.
+  - Line counts are within the limits.
+  - `scripts/check-old-name.sh` (Task 6) still passes. Mentions of money slang or 2b names are
+    rules, and the files get an allowlist entry with reason `docs-rule` if needed.
+- [ ] **Step 3: Commit.**
+  `git commit -m "docs: AGENTS.md maps for every area, so agents start from the right file"`
+
 ---
 
 After merge, the rollout is spec §5. Run it together with the founder:
