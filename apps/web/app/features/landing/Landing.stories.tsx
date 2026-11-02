@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { MemoryRouter } from "react-router";
-import { expect, userEvent, within } from "storybook/test";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 import { expectEdge, expectFocusRing, expectTarget } from "../../../.storybook/story-utils.ts";
 import { Faq } from "./Faq.tsx";
 import { Footer } from "./Footer.tsx";
@@ -55,7 +55,7 @@ export const PageDayEnglish: Story = {
   globals: { theme: "day", locale: "en" },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole("heading", { level: 1 })).toHaveTextContent(
+    await expect(canvas.getByRole("heading", { level: 1 })).toHaveAccessibleName(
       "Your money, finally clear.",
     );
     await expect(canvas.getAllByRole("link", { name: "Get started" })[0]).toHaveAttribute(
@@ -109,6 +109,42 @@ export const HeroWithDemoDayEnglish: Story = {
     await expect(demo).toHaveClass("lk-btn-secondary");
     await expectTarget(demo);
   },
+};
+
+/**
+ * The headline in English, Portuguese and Italian: the plain word first, with no flag, then what
+ * money is called elsewhere, with its flag, and the words around it agreeing with it.
+ */
+function headlineTurns(first: string, next: string, flag: string, shown: string) {
+  return async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    const headline = within(canvasElement).getByRole("heading", { level: 1 });
+    const marker = headline.querySelector(".lk-landing-marker") as HTMLElement;
+    await expect(marker).toHaveTextContent(first);
+    await expect(headline.querySelector(".lk-landing-flag")).toHaveTextContent("");
+    await waitFor(() => expect(marker).toHaveTextContent(next), { timeout: 5000 });
+    await expect(headline.querySelector(".lk-landing-flag")).toHaveTextContent(flag);
+    await waitFor(() =>
+      expect(headline.querySelector("[aria-hidden='true']")).toHaveTextContent(shown),
+    );
+  };
+}
+
+export const HeadlineEnglish: Story = {
+  render: () => <Hero />,
+  globals: { locale: "en" },
+  play: headlineTurns("money", "bucks", "🇺🇸", "Your bucks🇺🇸, finally clear."),
+};
+
+export const HeadlinePortuguese: Story = {
+  render: () => <Hero />,
+  globals: { locale: "pt" },
+  play: headlineTurns("dinheiro", "grana", "🇧🇷", "A tua grana🇧🇷, finalmente clara."),
+};
+
+export const HeadlineItalian: Story = {
+  render: () => <Hero />,
+  globals: { locale: "it" },
+  play: headlineTurns("soldi", "grana", "🇮🇹", "La tua grana🇮🇹, finalmente chiara."),
 };
 
 /** Hero under reduced motion: Lukas holds still. */

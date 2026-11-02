@@ -549,11 +549,10 @@ for (const l of LOCALES) {
       expect(html).toContain(`<html lang="${l.locale}"`);
 
       await page.goto(l.path);
-      // In Spanish the words on show take turns; the message itself is the screen-reader text.
+      // The words on show take turns; the message itself is the screen-reader text.
       const headline = page.getByRole("heading", { level: 1 });
-      await expect(l.locale === "es" ? headline.locator(".sr-only") : headline).toHaveText(
-        l.headline,
-      );
+      await expect(headline.locator(".sr-only")).toHaveText(l.headline);
+      await expect(headline).toHaveAccessibleName(l.headline);
       await expect(page).toHaveTitle(new RegExp(l.titlePart));
     });
 
@@ -581,7 +580,9 @@ for (const l of LOCALES) {
       await page.goto(l.path);
       const hero = page.locator("#hero");
       const headline = hero.getByRole("heading", { level: 1 });
-      await expect(headline.locator(".lk-landing-marker")).toHaveText(l.highlight);
+      await expect(headline.locator("[aria-hidden='true'] .lk-landing-marker")).toHaveText(
+        l.highlight,
+      );
 
       const description = hero.locator(".lk-landing-description");
       await expect(description).toHaveText(`${l.lead} ${l.description}`);
@@ -982,25 +983,81 @@ test.describe("landing with JavaScript", () => {
     await expect(english).toHaveAttribute("aria-expanded", "false");
   });
 
-  test("the Spanish marker takes turns with what money is called elsewhere", async ({ page }) => {
-    await page.goto("/");
-    const headline = page.getByRole("heading", { level: 1 });
-    const marker = headline.locator(".lk-landing-marker");
-    await expect(marker).toHaveText("lukas🇨🇴");
-    await expect(headline.locator(".lk-landing-flag")).toHaveText("🇨🇴");
+  for (const turn of [
+    {
+      path: "/",
+      first: "lukas🇨🇴",
+      next: "lana🇲🇽",
+      flag: "🇲🇽",
+      shown: "Tu lana🇲🇽, por fin clara.",
+      message: "Tus lukas, por fin claras.",
+    },
+    {
+      path: "/en",
+      first: "money",
+      next: "bucks🇺🇸",
+      flag: "🇺🇸",
+      shown: "Your bucks🇺🇸, finally clear.",
+      message: "Your money, finally clear.",
+    },
+    {
+      path: "/pt",
+      first: "dinheiro",
+      next: "grana🇧🇷",
+      flag: "🇧🇷",
+      shown: "A tua grana🇧🇷, finalmente clara.",
+      message: "O teu dinheiro, finalmente claro.",
+    },
+    {
+      path: "/it",
+      first: "soldi",
+      next: "grana🇮🇹",
+      flag: "🇮🇹",
+      shown: "La tua grana🇮🇹, finalmente chiara.",
+      message: "I tuoi soldi, finalmente chiari.",
+    },
+  ]) {
+    test(`the marker takes turns with what money is called elsewhere (${turn.path})`, async ({
+      page,
+    }) => {
+      await page.goto(turn.path);
+      const headline = page.getByRole("heading", { level: 1 });
+      const shown = headline.locator("[aria-hidden='true']");
+      const marker = shown.locator(".lk-landing-marker");
+      await expect(marker).toHaveText(turn.first);
 
-    await expect(marker).toHaveText("lana🇲🇽", { timeout: 5000 });
-    await expect(headline.locator(".lk-landing-flag")).toHaveText("🇲🇽");
-    await expect(headline.locator("[aria-hidden='true']")).toHaveText("Tu lana🇲🇽, por fin clara.");
-    // Assistive technology and search engines keep the message as it is.
-    await expect(headline).toHaveAccessibleName("Tus lukas, por fin claras.");
-  });
+      await expect(marker).toHaveText(turn.next, { timeout: 5000 });
+      await expect(shown.locator(".lk-landing-flag")).toHaveText(turn.flag);
+      await expect(shown).toHaveText(turn.shown);
+      // Assistive technology and search engines keep the message as it is.
+      await expect(headline).toHaveAccessibleName(turn.message);
+    });
 
-  test("the Spanish marker holds still under reduced motion", async ({ page }) => {
-    await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/");
-    await page.waitForTimeout(3500);
-    await expect(page.locator("h1 .lk-landing-marker")).toHaveText("lukas🇨🇴");
+    test(`the marker holds still under reduced motion (${turn.path})`, async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await page.goto(turn.path);
+      await page.waitForTimeout(3500);
+      await expect(page.locator("h1 [aria-hidden='true'] .lk-landing-marker")).toHaveText(
+        turn.first,
+      );
+    });
+  }
+
+  test.describe("at 320px", () => {
+    test.use({ viewport: { width: 320, height: 700 } });
+
+    test("a longer word never moves the page: the headline keeps its height", async ({ page }) => {
+      // "Le tue palanche🇮🇹, finalmente chiare." takes two lines more than the soldi one here.
+      await page.goto("/it");
+      const headline = page.getByRole("heading", { level: 1 });
+      const height = async () => (await headline.boundingBox())?.height;
+      const first = await height();
+      await expect(headline.locator("[aria-hidden='true'] .lk-landing-marker")).toHaveText(
+        "palanche🇮🇹",
+        { timeout: 12_000 },
+      );
+      expect(await height()).toBe(first);
+    });
   });
 
   test("hydrates cleanly and keeps the page when switching language", async ({ page }) => {
@@ -1018,7 +1075,9 @@ test.describe("landing with JavaScript", () => {
 
     await page.getByRole("contentinfo").getByRole("link", { name: "English" }).click();
     await expect(page).toHaveURL(/\/en$/);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Your money, finally clear.");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
+      "Your money, finally clear.",
+    );
     await expect(page).toHaveTitle(/Your money, finally clear/);
     await expect(page.locator("html")).toHaveAttribute("lang", "en");
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `${ORIGIN}/en`);
@@ -1051,13 +1110,13 @@ test.describe("landing with JavaScript", () => {
     ] as const) {
       await expect(footer.getByRole("link", { name })).toHaveAttribute("hreflang", code);
     }
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
       "I tuoi soldi, finalmente chiari.",
     );
 
     await footer.getByRole("link", { name: "Português" }).click();
     await expect(page).toHaveURL(/\/pt$/);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
       "O teu dinheiro, finalmente claro.",
     );
     await expect(page.locator("html")).toHaveAttribute("lang", "pt");
