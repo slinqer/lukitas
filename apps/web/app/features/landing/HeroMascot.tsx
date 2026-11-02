@@ -18,7 +18,6 @@ export function HeroMascot() {
       data-slot="hero-mascot"
       data-wambi-spot="hero"
       data-wambi-pose="wave"
-      data-wambi-mood="happy"
       // Opposite the headline on desktop, and from the right on phones: he never rolls over text.
       data-wambi-enter-from="right"
       role="img"

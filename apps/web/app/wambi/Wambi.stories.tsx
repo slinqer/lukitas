@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, waitFor, within } from "storybook/test";
-import { WAMBI_ART, Wambi } from "./Wambi.tsx";
+import { LANDING_ART, WAMBI_ART, Wambi } from "./Wambi.tsx";
 
 const meta = {
   title: "Wambi/Wambi",
@@ -173,6 +173,79 @@ export const ReducedMotion: Story = {
     await expect(still(worried)).toEqual(["/wambi/worried.webp", "100% 0%"]);
     // Frame 4: first column, second row.
     await expect(still(celebrating)).toEqual(["/wambi/celebrate.webp", "0% 100%"]);
+  },
+};
+
+/**
+ * The landing's pointing pose: one still image (500px, transparent) and a single short nudge
+ * toward where he points (about 400ms), then he holds still. Nothing loops.
+ */
+export const LandingPoint: Story = {
+  args: { art: LANDING_ART.point, playOnce: true },
+  play: async ({ canvasElement }) => {
+    const wambi = within(canvasElement).getByRole("img", { name: "Wambi, contento" });
+    const sheet = sprite(wambi);
+    await expect(getComputedStyle(sheet).backgroundImage).toContain("/wambi/pointing.webp");
+    await expect(getComputedStyle(sheet).backgroundSize).toBe("100% 100%");
+    await expect(getComputedStyle(sheet).backgroundPosition).toBe("0% 0%");
+    await expect(await loads("/wambi/pointing.webp")).toEqual({ width: 500, height: 500 });
+    await expect(wambi).toHaveClass("is-nudge");
+    await expect(sheet.getAnimations()).toHaveLength(0);
+    const [nudge] = wambi.getAnimations({ subtree: true }) as CSSAnimation[];
+    await expect(nudge?.animationName).toBe("lk-wambi-nudge");
+    await expect(nudge?.effect?.getComputedTiming().duration).toBe(400);
+    await expect(nudge?.effect?.getComputedTiming().iterations).toBe(1);
+    await waitFor(() => expect(wambi.getAnimations({ subtree: true })).toHaveLength(0), {
+      timeout: 3000,
+    });
+  },
+};
+
+/**
+ * The landing's thinking pose: the 4×2 dots sheet plays once (1.8s), then he rests on frame 5,
+ * three dots.
+ */
+export const LandingThink: Story = {
+  args: { art: LANDING_ART.think, playOnce: true },
+  play: async ({ canvasElement }) => {
+    const wambi = within(canvasElement).getByRole("img", { name: "Wambi, contento" });
+    const sheet = sprite(wambi);
+    await expectPlaying(wambi, "/wambi/thinking.webp", 1800);
+    await expect(sheet).toHaveClass("is-once");
+    await expect(getComputedStyle(sheet).animationIterationCount).toBe("2, 1");
+    await waitFor(() => expect(sheet.getAnimations()).toHaveLength(0), { timeout: 5000 });
+    // Frame 5: second column, second row.
+    await expect(getComputedStyle(sheet).backgroundPosition).toBe("33.333% 100%");
+  },
+};
+
+/**
+ * The landing's poses under reduced motion: still frames only. Pointing is the still image,
+ * thinking frame 5 (three dots), celebrating frame 4.
+ */
+export const LandingReducedMotion: Story = {
+  parameters: { reducedMotion: true },
+  render: (args) => (
+    <div className="lk-row-flex">
+      <Wambi {...args} art={LANDING_ART.point} playOnce />
+      <Wambi {...args} art={LANDING_ART.think} playOnce />
+      <Wambi {...args} mood="celebrating" art={LANDING_ART.celebrate} playOnce />
+    </div>
+  ),
+  args: { size: 120 },
+  play: async ({ canvasElement }) => {
+    const [point, think, celebrate] = within(canvasElement).getAllByRole("img") as HTMLElement[];
+    for (const wambi of [point, think, celebrate] as HTMLElement[]) {
+      await expect(wambi.getAnimations({ subtree: true })).toHaveLength(0);
+      await expect(wambi).not.toHaveClass("is-nudge");
+    }
+    const still = (wambi: HTMLElement | undefined) => {
+      const style = getComputedStyle(sprite(wambi as HTMLElement));
+      return [style.backgroundImage.match(/\/wambi\/\w+\.webp/)?.[0], style.backgroundPosition];
+    };
+    await expect(still(point)).toEqual(["/wambi/pointing.webp", "0% 0%"]);
+    await expect(still(think)).toEqual(["/wambi/thinking.webp", "33.333% 100%"]);
+    await expect(still(celebrate)).toEqual(["/wambi/celebrate.webp", "0% 100%"]);
   },
 };
 

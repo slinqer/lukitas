@@ -3,10 +3,14 @@ import { useTranslations } from "use-intl";
 import { cx } from "../ui/cx.ts";
 import { useReducedMotionPreference } from "../ui/motion-tokens.ts";
 import type { WambiMood } from "./mood.ts";
+import type { WambiPose } from "./use-scroll-pose.ts";
 
 export type { WambiMood } from "./mood.ts";
 
-/** A sprite sheet: a full grid of square frames in reading order, played as a seamless loop. */
+/**
+ * A sprite sheet: a full grid of square frames in reading order, played as a seamless loop. A
+ * single still image is a 1×1 sheet.
+ */
 export interface WambiSprite {
   /** Public URL of the transparent sheet. */
   src: string;
@@ -27,9 +31,10 @@ export interface WambiMoodArt {
   stillFrame: number;
   /**
    * CSS treatment for moods without their own sheet: `shiver` adds a small side-to-side shake and
-   * a sweat drop, `hop` a jump with squash and stretch plus sparkles.
+   * a sweat drop, `hop` a jump with squash and stretch plus sparkles. `nudge` is one short pop
+   * toward the right (where the pointing still points) when he mounts, then he holds still.
    */
-  treatment: "none" | "shiver" | "hop";
+  treatment: "none" | "shiver" | "hop" | "nudge";
 }
 
 /** The founder's sheets: 4×2 frames each, 500px cells. Each loop is timed by eye for its mood. */
@@ -38,6 +43,13 @@ const WAVE: WambiSprite = { src: "/wambi/wave.webp", columns: 4, rows: 2, loopMs
 const WORRIED: WambiSprite = { src: "/wambi/worried.webp", columns: 4, rows: 2, loopMs: 2000 };
 /** Celebrating jumps with fists up among sparkles: quicker and bouncier. */
 const CELEBRATE: WambiSprite = { src: "/wambi/celebrate.webp", columns: 4, rows: 2, loopMs: 1000 };
+/** Thinking: a hand at his chin while thought dots rise one by one; one calm pass. */
+const THINKING: WambiSprite = { src: "/wambi/thinking.webp", columns: 4, rows: 2, loopMs: 1800 };
+/**
+ * Pointing to the right: a single still (500px, scaled from the founder's 1254px drawing so he
+ * stands as big as in the sheets, soles at the same height).
+ */
+const POINTING: WambiSprite = { src: "/wambi/pointing.webp", columns: 1, rows: 1, loopMs: 0 };
 
 /**
  * The art per mood: every mood plays its own sheet. Under reduced motion each shows one still
@@ -50,6 +62,25 @@ export const WAMBI_ART: Record<WambiMood, WambiMoodArt> = {
   worried: { sprite: WORRIED, play: true, frame: 0, stillFrame: 3, treatment: "none" },
   celebrating: { sprite: CELEBRATE, play: true, frame: 0, stillFrame: 4, treatment: "none" },
 };
+
+/**
+ * The landing's journey, one art per pose: he waves (hero), points (ways, FAQ), thinks (how it
+ * works) and celebrates (closing). Each gesture plays once when he arrives (`playOnce`), then he
+ * rests on `frame`, which is also his still under reduced motion and without JavaScript: thinking
+ * rests on frame 5 (three dots), celebrating on frame 4 (fists up). Pointing is a still with a
+ * `nudge` toward where he points.
+ */
+export const LANDING_ART: Record<WambiPose, WambiMoodArt> = {
+  wave: WAMBI_ART.happy,
+  point: { sprite: POINTING, play: false, frame: 0, stillFrame: 0, treatment: "nudge" },
+  think: { sprite: THINKING, play: true, frame: 5, stillFrame: 5, treatment: "none" },
+  celebrate: { ...WAMBI_ART.celebrating, frame: 4 },
+};
+
+/** The same art held still: what a landing spot shows before (or without) the live Wambi. */
+export function stillArt(art: WambiMoodArt): WambiMoodArt {
+  return { ...art, play: false, frame: art.stillFrame, treatment: "none" };
+}
 
 export interface WambiProps {
   mood: WambiMood;
@@ -66,8 +97,9 @@ export interface WambiProps {
    */
   deferUntilNear?: boolean;
   /**
-   * Play the sheet once (one `loopMs`), then rest on its first frame, instead of looping. Only for
-   * a playing mood; the landing hero uses it so he waves once and stays still.
+   * Play the sheet once (one `loopMs`), then rest on the art's `frame` (the first one for the
+   * moods), instead of looping. Only for a playing mood; the landing uses it so each gesture
+   * plays once and he stays still.
    */
   playOnce?: boolean;
 }
@@ -173,6 +205,7 @@ export function Wambi({
         `is-${mood}`,
         moving && treatment === "shiver" && "is-shiver",
         moving && treatment === "hop" && "is-hop",
+        moving && treatment === "nudge" && "is-nudge",
       )}
       style={{ width: size, height: size }}
       ref={ref}

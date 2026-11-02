@@ -265,7 +265,6 @@ for (const l of LOCALES) {
       expect(html).not.toMatch(l.oldClosing);
 
       const spot = closing.locator("[data-wambi-spot='closing']");
-      await expect(spot).toHaveAttribute("data-wambi-mood", "celebrating");
       await expect(spot).toHaveAttribute("data-wambi-pose", "celebrate");
       await expect(spot.locator(".lk-wambi")).toHaveCount(1);
     });

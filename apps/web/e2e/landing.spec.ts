@@ -959,6 +959,39 @@ for (const l of LOCALES) {
       await page.emulateMedia({ reducedMotion: "reduce" });
       expect(await sprite.evaluate((el) => el.getAnimations().length)).toBe(0);
     });
+
+    test("shows Wambi's still pose on every other stop, and celebrates once", async ({ page }) => {
+      await page.goto(l.path);
+      // Without JavaScript nobody travels: each spot keeps its prerendered still.
+      const stills = [
+        ["ways", "point", "/wambi/pointing.webp", "0% 0%"],
+        ["how", "think", "/wambi/thinking.webp", "33.333% 100%"],
+        ["faq", "point", "/wambi/pointing.webp", "0% 0%"],
+      ] as const;
+      for (const [id, pose, sheet, frame] of stills) {
+        const spot = page.locator(`[data-wambi-spot='${id}']`);
+        await expect(spot).toHaveAttribute("data-wambi-pose", pose);
+        await expect(spot).toHaveAttribute("aria-hidden", "true");
+        const sprite = spot.locator(".lk-wambi-sprite");
+        await expect(sprite).toHaveCSS(
+          "background-image",
+          new RegExp(sheet.replaceAll(".", "\\.")),
+        );
+        await expect(sprite).toHaveCSS("background-position", frame);
+        expect(
+          await spot
+            .locator(".lk-wambi")
+            .evaluate((el) => el.getAnimations({ subtree: true }).length),
+        ).toBe(0);
+      }
+      // The closing celebrates in one pass, then rests on frame 4 (fists up): nothing loops.
+      const closing = page.locator("[data-wambi-spot='closing'] .lk-wambi-sprite");
+      await expect(closing).toHaveClass(/is-once/);
+      await expect
+        .poll(() => closing.evaluate((el) => el.getAnimations().length), { timeout: 5000 })
+        .toBe(0);
+      await expect(closing).toHaveCSS("background-position", "0% 100%");
+    });
   });
 }
 

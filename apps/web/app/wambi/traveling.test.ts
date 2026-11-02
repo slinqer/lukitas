@@ -4,45 +4,44 @@ import {
   COIN,
   entranceFrame,
   MAX_TILT_DEG,
-  spotMood,
+  poseMood,
+  spotPose,
   TRAVEL_FROM,
   tiltToward,
   travelFrame,
 } from "./traveling.ts";
 
-describe("spotMood", () => {
-  it("maps the landing's spots to their moods", () => {
+describe("spotPose", () => {
+  it("reads the landing's spots: waves, points, thinks, points, celebrates", () => {
     const spots = [
-      { id: "hero", pose: "wave", mood: "happy" },
-      { id: "ways", pose: "point", mood: "happy" },
-      { id: "how", pose: "carry", mood: "worried" },
-      { id: "faq", pose: "point", mood: "happy" },
-      { id: "closing", pose: "celebrate", mood: "celebrating" },
+      { id: "hero", pose: "wave" },
+      { id: "ways", pose: "point" },
+      { id: "how", pose: "think" },
+      { id: "faq", pose: "point" },
+      { id: "closing", pose: "celebrate" },
     ];
-    expect(spots.map((spot) => [spot.id, spotMood(spot.pose, spot.mood)])).toEqual([
-      ["hero", "happy"],
-      ["ways", "happy"],
-      ["how", "worried"],
-      ["faq", "happy"],
-      ["closing", "celebrating"],
+    expect(spots.map((spot) => [spot.id, spotPose(spot.pose)])).toEqual([
+      ["hero", "wave"],
+      ["ways", "point"],
+      ["how", "think"],
+      ["faq", "point"],
+      ["closing", "celebrate"],
     ]);
   });
 
-  it("falls back to the pose's mood without a (valid) data-wambi-mood", () => {
-    expect(spotMood("wave", undefined)).toBe("happy");
-    expect(spotMood("point", undefined)).toBe("happy");
-    expect(spotMood("carry", undefined)).toBe("happy");
-    expect(spotMood("celebrate", undefined)).toBe("celebrating");
-    expect(spotMood("celebrate", "grumpy")).toBe("celebrating");
+  it("waves for a missing or unknown pose (the old carry included)", () => {
+    expect(spotPose(undefined)).toBe("wave");
+    expect(spotPose("dance")).toBe("wave");
+    expect(spotPose("carry")).toBe("wave");
   });
+});
 
-  it("lets data-wambi-mood win over the pose", () => {
-    expect(spotMood("wave", "worried")).toBe("worried");
-  });
-
-  it("is happy for an unknown pose", () => {
-    expect(spotMood(undefined, undefined)).toBe("happy");
-    expect(spotMood("dance", undefined)).toBe("happy");
+describe("poseMood", () => {
+  it("celebrates on the celebrate pose and is happy on every other", () => {
+    expect(poseMood("wave")).toBe("happy");
+    expect(poseMood("point")).toBe("happy");
+    expect(poseMood("think")).toBe("happy");
+    expect(poseMood("celebrate")).toBe("celebrating");
   });
 });
 

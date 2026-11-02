@@ -5,7 +5,7 @@ import { type ScrollSection, scrollPose, sectionIndexAt } from "./use-scroll-pos
 const SECTIONS: ScrollSection[] = [
   { id: "hero", start: 0, pose: "wave" },
   { id: "ways", start: 0.2, pose: "point" },
-  { id: "how", start: 0.4, pose: "carry" },
+  { id: "how", start: 0.4, pose: "think" },
   { id: "faq", start: 0.7, pose: "point" },
   { id: "closing", start: 0.9, pose: "celebrate" },
 ];
@@ -18,7 +18,7 @@ describe("scrollPose", () => {
   it("takes the pose of the section the progress is in", () => {
     expect(scrollPose(0.3, SECTIONS).pose).toBe("point");
     expect(scrollPose(0.2, SECTIONS).pose).toBe("point");
-    expect(scrollPose(0.45, SECTIONS).pose).toBe("carry");
+    expect(scrollPose(0.45, SECTIONS).pose).toBe("think");
   });
 
   it("celebrates at the end of the page", () => {
@@ -40,7 +40,7 @@ describe("scrollPose", () => {
     const shuffled = [SECTIONS[3], SECTIONS[0], SECTIONS[4], SECTIONS[2], SECTIONS[1]].filter(
       (s): s is ScrollSection => s !== undefined,
     );
-    expect(scrollPose(0.45, shuffled).pose).toBe("carry");
+    expect(scrollPose(0.45, shuffled).pose).toBe("think");
     expect(scrollPose(1, shuffled).pose).toBe("celebrate");
   });
 

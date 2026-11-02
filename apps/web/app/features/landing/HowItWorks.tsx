@@ -27,8 +27,8 @@ function Step({ demo, title, body }: { demo: ReactNode; title: string; body: str
 }
 
 /**
- * How Wambi works, in four steps, each with a small illustration built from the app's own
- * pieces: logging in seconds, where the money goes, budgets that warn you, importing your history
+ * How Wambito, the app, works, in four steps, each with a small illustration built from the
+ * app's own pieces: logging in seconds, where the money goes, budgets that warn you, importing your history
  * from other apps (Budge today).
  */
 export function HowItWorks() {
@@ -41,7 +41,7 @@ export function HowItWorks() {
     <section id="how" className="lk-landing-section" aria-labelledby="how-title">
       <div className="lk-landing-section-head">
         <h2 id="how-title">{t("title")}</h2>
-        <WambiSpot id="how" pose="carry" mood="worried" />
+        <WambiSpot id="how" pose="think" />
       </div>
       <ul className="lk-landing-cards is-how">
         <Step
@@ -55,7 +55,7 @@ export function HowItWorks() {
                 <span className="lk-amount lk-landing-demo-expense">{money(DEMO.expense)}</span>
               </div>
               <span className="lk-landing-saved">
-                <Wambi mood="celebrating" size={40} decorative deferUntilNear />
+                <Wambi mood="celebrating" size={40} decorative deferUntilNear playOnce />
                 {t("log.demo_saved")}
               </span>
             </>

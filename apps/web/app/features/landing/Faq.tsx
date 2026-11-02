@@ -16,7 +16,7 @@ export function Faq() {
     <section id="faq" className="lk-landing-section" aria-labelledby="faq-title">
       <div className="lk-landing-section-head">
         <h2 id="faq-title">{t("title")}</h2>
-        <WambiSpot id="faq" pose="point" mood="happy" />
+        <WambiSpot id="faq" pose="point" />
       </div>
       <ul className="lk-landing-faq">
         {QUESTIONS.map((key) => (

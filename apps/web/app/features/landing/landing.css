@@ -38,9 +38,9 @@
   }
 
   /*
-   * Wambi spots: where the traveling Wambi stands per section (empty boxes without him). Section
-   * spots sit at the end of the heading row, his feet on the content's top edge; the heading keeps
-   * clear of them. Once he is live, the prerendered Wambi in a spot (hero, closing) steps aside.
+   * Wambi spots: where the traveling Wambi stands per section (a prerendered still without him).
+   * Section spots sit at the end of the heading row, his feet on the content's top edge; the
+   * heading keeps clear of them. Once he is live, the prerendered Wambi in every spot steps aside.
    */
   .lk-landing-section-head {
     --lk-spot: 92px;

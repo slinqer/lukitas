@@ -11,7 +11,7 @@
  *         .lk-traveler-tilt     the turn toward the pointer, in perspective (script)
  *           .lk-traveler-bob    idle bob
  *             .lk-traveler-hop  hover/tap hop, squash and stretch
- *               .lk-traveler-body   the entrance's spin, drop and tuck (script), the mood layers
+ *               .lk-traveler-body   the entrance's spin, drop and tuck (script), the pose layers
  */
 @layer components {
   .lk-traveler {
@@ -66,8 +66,9 @@
   .lk-traveler-mood.is-active {
     opacity: 1;
   }
-  /* Sheets that aren't showing hold still. */
-  .lk-traveler-mood:not(.is-active) .lk-wambi-sprite {
+  /* Poses that aren't showing hold still (their sheet and their nudge). */
+  .lk-traveler-mood:not(.is-active) .lk-wambi-sprite,
+  .lk-traveler-mood:not(.is-active) .lk-wambi-body {
     animation-play-state: paused;
   }
 
