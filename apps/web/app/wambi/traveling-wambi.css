@@ -10,7 +10,7 @@
  *         .lk-traveler-shadow   the ground shadow: bobs and hops with him
  *         .lk-traveler-tilt     the turn toward the pointer, in perspective (script)
  *           .lk-traveler-bob    idle bob
- *             .lk-traveler-hop  hover/tap hop, squash and stretch
+ *             .lk-traveler-hop  tap/click hop, squash and stretch
  *               .lk-traveler-body   the entrance's spin, drop and tuck (script), the pose layers
  */
 @layer components {

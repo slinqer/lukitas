@@ -102,13 +102,17 @@ test.describe("2.5D Wambi", () => {
       .poll(() => centerDistance(page, "#hero [data-slot='hero-mascot']", "[data-wambi-traveler]"))
       .toBeLessThan(8);
 
-    // Only his body takes the pointer: a hover (or tap) makes him hop, and nothing navigates.
+    // Only his body takes the pointer: a mouse passing over him does not make him hop, a tap or
+    // click does, and nothing navigates.
     const body = layer.locator(".lk-traveler-hit");
+    const hopping = layer.locator(".lk-traveler-hop.is-hopping");
     await expect(layer).toHaveCSS("pointer-events", "none");
     await expect(body).toHaveCSS("pointer-events", "auto");
     await body.hover();
+    await page.waitForTimeout(300);
+    await expect(hopping).toHaveCount(0);
     await body.click();
-    await expect(layer.locator(".lk-traveler-hop.is-hopping")).toHaveCount(1);
+    await expect(hopping).toHaveCount(1);
     await expect(page).toHaveURL(/\/$/);
     expect(await getsThePointer(page, "#hero a.lk-btn-primary")).toBe(true);
     expect(await getsThePointer(page, "#hero a.lk-btn-secondary")).toBe(true);

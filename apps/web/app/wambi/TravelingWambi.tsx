@@ -49,7 +49,8 @@ function tuckClip(reveal: number): string {
  * crosses the page, so he never covers text (`travelFrame`).
  *
  * Depth: a soft ground shadow that shrinks as he rises, an idle bob, a hop with squash and
- * stretch on hover or tap (only his body takes the pointer), and, with a fine pointer, a tilt of
+ * stretch on a tap or click (only his body takes the pointer; a mouse passing over him does not
+ * make him hop), and, with a fine pointer, a tilt of
  * up to ±12° toward it. Once per session, with the hero in view, he rolls in from the side away
  * from the text, settles, unfolds and waves (`entranceFrame`). On every arrival at a spot its
  * gesture plays once (the pose's layer remounts) and then he rests: he waves in the hero and
@@ -310,13 +311,7 @@ export function TravelingWambi() {
               </div>
             </div>
           </div>
-          <div
-            className="lk-traveler-hit"
-            onPointerEnter={(event) => {
-              if (event.pointerType === "mouse") hop();
-            }}
-            onPointerDown={hop}
-          />
+          <div className="lk-traveler-hit" onPointerDown={hop} />
         </div>
       </div>
     </div>

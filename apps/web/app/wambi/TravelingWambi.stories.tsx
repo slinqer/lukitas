@@ -6,7 +6,7 @@ import { TravelingWambi } from "./TravelingWambi.tsx";
 
 /**
  * The landing's traveling Wambi on a small page with its two spots (the hero and the closing): he rolls in once per session, stands on the spot in view in its pose, turns
- * edge-on between spots, and hops on hover or tap. On the landing the page mounts him only once it
+ * edge-on between spots, and hops on a tap or click (never on hover). On the landing the page mounts him only once it
  * has loaded and is idle, and never under reduced motion.
  */
 /** Like the landing, he mounts once the page (and its spots) is on screen. */
