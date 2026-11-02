@@ -148,6 +148,52 @@ test.describe("2.5D Wambi", () => {
     await expect(layer.locator(".lk-traveler-roller")).toHaveCSS("transform", "none");
   });
 
+  test("waves once on arriving at every happy stop, again on each return", async ({ page }) => {
+    await page.addInitScript(() => sessionStorage.setItem("wambito.entrance", "seen"));
+    await page.goto("/");
+    const layer = page.locator("[data-wambi-traveler]");
+    await expect(layer).toBeVisible({ timeout: 30_000 });
+    const sprite = layer.locator(".lk-traveler-mood[data-mood='happy'] .lk-wambi-sprite");
+    const rests = async () => {
+      await expect
+        .poll(() => sprite.evaluate((el) => el.getAnimations().length), { timeout: 5000 })
+        .toBe(0);
+      await expect(sprite).toHaveCSS("background-position", "0% 0%");
+    };
+
+    await rests();
+    // Every start of his happy wave (the x track of the sheet), counted from here on.
+    await page.evaluate(() => {
+      const w = window as unknown as { __waves: number };
+      w.__waves = 0;
+      document.addEventListener("animationstart", (event) => {
+        const el = event.target as HTMLElement;
+        if (event.animationName.includes("sprite-x") && el.closest("[data-mood='happy']")) {
+          w.__waves += 1;
+        }
+      });
+    });
+    const waves = () => page.evaluate(() => (window as unknown as { __waves: number }).__waves);
+    let started = 0;
+    for (const stop of ["ways", "faq", "how", "faq", "hero"]) {
+      if (stop !== "how") started = await waves();
+      await scrollToSpot(page, stop);
+      await expect(layer).toHaveAttribute("data-spot", stop);
+      if (stop === "how") continue;
+      await expect(layer).toHaveAttribute("data-mood", "happy");
+      await expect.poll(waves, { timeout: 5000 }).toBe(started + 1);
+      await expect
+        .poll(() => centerDistance(page, `[data-wambi-spot='${stop}']`, "[data-wambi-traveler]"))
+        .toBeLessThan(8);
+      // He arrived: one pass of the wave (never an endless loop), then he rests on frame 0.
+      await expect(sprite).toHaveClass(/is-once/);
+      expect(await sprite.evaluate((el) => getComputedStyle(el).animationIterationCount)).toBe(
+        "2, 1",
+      );
+      await rests();
+    }
+  });
+
   test("skips the entrance when the page is already past the hero", async ({ page }) => {
     // The fragment scrolls the page down while it loads, before he mounts.
     await page.goto("/#closing");

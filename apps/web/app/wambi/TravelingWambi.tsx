@@ -71,6 +71,9 @@ export function TravelingWambi() {
   const [entrance, setEntrance] = useState<EntranceState>(initialEntrance);
   const [tucked, setTucked] = useState(entrance === "playing");
   const [hopping, setHopping] = useState(false);
+  // Counts his arrivals at happy spots; it keys the happy layer, so each arrival waves once anew.
+  const [arrivals, setArrivals] = useState(0);
+  const lastSpot = useRef(firstSpot()?.dataset.wambiSpot ?? "");
   const moving = useRef(false);
   const size = useRef(0);
   // The mood his spot asks for. He switches to it only once its sheet has loaded, and keeps the
@@ -151,6 +154,10 @@ export function TravelingWambi() {
       }
       setSpotId(spot.id);
       const target = moodOf(spot.element);
+      if (lastSpot.current !== spot.id) {
+        lastSpot.current = spot.id;
+        if (target === "happy") setArrivals((n) => n + 1);
+      }
       // Arriving at a spot (a new target) retries its sheet if it failed before.
       const arriving = wanted.current !== target;
       wanted.current = target;
@@ -290,6 +297,7 @@ export function TravelingWambi() {
                       data-mood={m}
                     >
                       <Wambi
+                        key={m === "happy" ? arrivals : undefined}
                         mood={m}
                         size="100%"
                         decorative
