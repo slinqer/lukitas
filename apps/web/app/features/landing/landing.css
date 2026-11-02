@@ -277,7 +277,7 @@
     transform: rotate(-2deg);
   }
   /*
-   * The Spanish headline's turning words (`MoneyHeadline`): each piece that changes rolls the old
+   * The headline's turning words (`MoneyHeadline`): each piece that changes rolls the old
    * text up and out while the new one rises in, and eases its width so the words around it slide
    * along. On the marker the roll stays inside the gold.
    */
@@ -290,6 +290,25 @@
   }
   .lk-swap > * {
     display: inline-block;
+  }
+  /*
+   * The headline and, unseen in the same grid cell, every headline it turns to: the tallest sets
+   * the height, so a longer word wrapping to another line never pushes the page down. Under
+   * reduced motion it holds on the first word, so only that one counts.
+   */
+  .lk-landing-headline {
+    display: grid;
+  }
+  .lk-landing-headline > * {
+    grid-area: 1 / 1;
+  }
+  .lk-landing-headline-size {
+    visibility: hidden;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lk-landing-headline-size {
+      display: none;
+    }
   }
   /* A word and its turning ending ("clar" + "as") never break apart. */
   .lk-swap-word {
@@ -319,11 +338,17 @@
       transform: translateY(-0.7em);
     }
   }
-  /* On the marker after the word, small: the flag of where the word is said. */
+  /*
+   * On the marker after the word, small: the flag of where the word is said. The gap is on the
+   * flag's own text, so a word without a flag (the plain "money") leaves none, and the width eases
+   * along with it.
+   */
   .lk-landing-flag {
-    margin-inline-start: 0.16em;
     font-size: 0.65em;
     vertical-align: 0.12em;
+  }
+  .lk-landing-flag .lk-swap > :not(:empty) {
+    padding-inline-start: 0.16em;
   }
   .lk-landing-description {
     max-width: 34rem;
