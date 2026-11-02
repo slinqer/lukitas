@@ -5,7 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../api/gen/lukitas_api.dart';
+import '../../api/gen/wambito_api.dart';
 import '../../home/category_look.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/text_styles.dart';
@@ -78,7 +78,7 @@ class _CaptureCardEditorState extends State<CaptureCardEditor> {
   /// A field's caption: `text-[13px] font-bold text-ink-muted`, over its box.
   Widget _field(String label, Widget field) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
-    spacing: LukitasTokens.space1,
+    spacing: WambitoTokens.space1,
     children: [
       Text(label, style: LkText.fieldLabel.copyWith(color: context.lkColors.inkMuted)),
       field,
@@ -102,14 +102,14 @@ class _CaptureCardEditorState extends State<CaptureCardEditor> {
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
-        LukitasTokens.space1,
-        LukitasTokens.space1,
-        LukitasTokens.space1,
-        LukitasTokens.space2,
+        WambitoTokens.space1,
+        WambitoTokens.space1,
+        WambitoTokens.space1,
+        WambitoTokens.space2,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: LukitasTokens.space3,
+        spacing: WambitoTokens.space3,
         children: [
           SegmentedControl<p.Kind>(
             label: l10n.addKindLabel,
@@ -130,7 +130,7 @@ class _CaptureCardEditorState extends State<CaptureCardEditor> {
           ),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: LukitasTokens.space2,
+            spacing: WambitoTokens.space2,
             children: [
               Expanded(
                 child: _field(

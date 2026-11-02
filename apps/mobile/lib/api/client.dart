@@ -2,13 +2,13 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 
 import 'device.dart';
-import 'gen/lukitas_api.dart';
+import 'gen/wambito_api.dart';
 
-/// The client address a debug build tells the server it is (`--dart-define=LUKITAS_CLIENT_IP=...`,
+/// The client address a debug build tells the server it is (`--dart-define=WAMBITO_CLIENT_IP=...`,
 /// or set while the app runs), as `x-forwarded-for`. The emulator suite gives each group of tests its
 /// own, as the web's e2e gives each browser its own, so the API's per-address limit on sign-in codes
 /// counts each as a new client. Empty by default, and never sent by a release build.
-String debugClientIp = const String.fromEnvironment('LUKITAS_CLIENT_IP');
+String debugClientIp = const String.fromEnvironment('WAMBITO_CLIENT_IP');
 
 /// The API at one server: `<server>/api`, with the session's bearer token when signed in and the
 /// phone's time zone and language ([DeviceHints]) on every request.
@@ -17,7 +17,7 @@ String debugClientIp = const String.fromEnvironment('LUKITAS_CLIENT_IP');
 /// scripts/gen-api.sh); its paths carry no `/api` prefix, so the base URL adds it.
 class ApiClient {
   // No auth interceptors: the API declares no security scheme, and the token is a default header.
-  ApiClient._(this.dio) : api = LukitasApi(dio: dio, interceptors: []);
+  ApiClient._(this.dio) : api = WambitoApi(dio: dio, interceptors: []);
 
   /// A client for [server] (e.g. `https://app.wambito.com`). Any path on [server] is
   /// kept, so an API behind a sub-path works; a query or fragment is dropped.
@@ -60,7 +60,7 @@ class ApiClient {
   final Dio dio;
 
   /// The generated API client.
-  final LukitasApi api;
+  final WambitoApi api;
 
   /// The base URL calls go to, `<server>/api`.
   String get baseUrl => dio.options.baseUrl;

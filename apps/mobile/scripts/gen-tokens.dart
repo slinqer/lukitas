@@ -3,13 +3,13 @@
 /// Generates lib/theme/tokens.g.dart from the design system's tokens.json, the source the web's
 /// tokens.css is generated from (apps/web/scripts/gen-tokens.ts).
 ///
-/// The design system's shadows (`edge-sm`, `edge-md`, `edge-brand`) become `LukitasShadows`, the
+/// The design system's shadows (`edge-sm`, `edge-md`, `edge-brand`) become `WambitoShadows`, the
 /// Dart form of the `--edge-*` variables the web's tokens.css has: the web's `shadow-edge-*`
 /// utilities read them (apps/web/app/styles/app.css, `@theme inline`).
 ///
 /// Names follow the design system's, in lowerCamelCase: the colour `bg-glow` becomes
-/// `LukitasTokens.night.bgGlow`, `space-4` becomes `LukitasTokens.space4`, `radius-sm` becomes
-/// `LukitasTokens.radiusSm` and the duration `press` becomes `LukitasTokens.durationPress`. The
+/// `WambitoTokens.night.bgGlow`, `space-4` becomes `WambitoTokens.space4`, `radius-sm` becomes
+/// `WambitoTokens.radiusSm` and the duration `press` becomes `WambitoTokens.durationPress`. The
 /// first theme in `color.themes` (night) is the default.
 ///
 /// Usage, from apps/mobile: dart run scripts/gen-tokens.dart
@@ -143,8 +143,8 @@ String generateTokensDart(Map<String, dynamic> json) {
     ..writeln("import 'package:flutter/painting.dart';")
     ..writeln()
     ..writeln('/// The colour tokens of one theme.')
-    ..writeln('class LukitasColors {')
-    ..writeln('  const LukitasColors({');
+    ..writeln('class WambitoColors {')
+    ..writeln('  const WambitoColors({');
   for (final token in colors) {
     out.writeln('    required this.${_camel(token['name'] as String)},');
   }
@@ -159,7 +159,7 @@ String generateTokensDart(Map<String, dynamic> json) {
   }
   for (final theme in themes) {
     out
-      ..writeln('  static const $theme = LukitasColors(')
+      ..writeln('  static const $theme = WambitoColors(')
       ..writeAll(
         colors.map((token) {
           final name = token['name'] as String;
@@ -177,12 +177,12 @@ String generateTokensDart(Map<String, dynamic> json) {
     ..writeln()
     ..writeln(_shadowClass(json, themes))
     ..writeln('/// The design system tokens: colours per theme, spacing, radii and durations.')
-    ..writeln('abstract final class LukitasTokens {')
+    ..writeln('abstract final class WambitoTokens {')
     ..writeln('  /// The default theme.')
-    ..writeln('  static const LukitasColors defaultTheme = LukitasColors.${themes.first};')
+    ..writeln('  static const WambitoColors defaultTheme = WambitoColors.${themes.first};')
     ..writeln();
   for (final theme in themes) {
-    out.writeln('  static const LukitasColors $theme = LukitasColors.$theme;');
+    out.writeln('  static const WambitoColors $theme = WambitoColors.$theme;');
   }
 
   for (final (group, title, prefix, literal) in [
@@ -208,13 +208,13 @@ String generateTokensDart(Map<String, dynamic> json) {
   return out.toString();
 }
 
-/// `LukitasShadows`, the shadow tokens of every theme.
+/// `WambitoShadows`, the shadow tokens of every theme.
 String _shadowClass(Map<String, dynamic> json, List<String> themes) {
   final shadows = _tokens(json, 'shadow');
   final out = StringBuffer()
     ..writeln('/// The shadow tokens of one theme: a solid bottom edge, not a blur.')
-    ..writeln('class LukitasShadows {')
-    ..writeln('  const LukitasShadows({');
+    ..writeln('class WambitoShadows {')
+    ..writeln('  const WambitoShadows({');
   for (final token in shadows) {
     out.writeln('    required this.${_camel(token['name'] as String)},');
   }
@@ -228,7 +228,7 @@ String _shadowClass(Map<String, dynamic> json, List<String> themes) {
       ..writeln();
   }
   for (final theme in themes) {
-    out.writeln('  static const $theme = LukitasShadows(');
+    out.writeln('  static const $theme = WambitoShadows(');
     for (final token in shadows) {
       final name = token['name'] as String;
       final value = (token['value'] as Map<String, dynamic>)[theme];

@@ -11,7 +11,7 @@ import 'dart:math';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:lukitas/api/client.dart';
+import 'package:wambito/api/client.dart';
 
 import 'add_test.dart' as add;
 import 'budgets_test.dart' as budgets;

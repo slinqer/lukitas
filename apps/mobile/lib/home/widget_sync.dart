@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../api/device.dart';
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../api/session.dart';
 import '../settings/preferences.dart';
 import 'home_controller.dart';
@@ -101,7 +101,7 @@ class WidgetSync {
     });
   }
 
-  /// The session ended: the widget says "Abre Lukitas para empezar" and holds no figure. Written
+  /// The session ended: the widget says "Abre Wambito para empezar" and holds no figure. Written
   /// straight away, ahead of anything queued (which then finds the session gone and writes
   /// nothing), and never held up by a slow store read.
   Future<void> signedOut() async {

@@ -4,16 +4,16 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/home/lukitas_face.dart';
-import 'package:lukitas/theme/surfaces.dart';
-import 'package:lukitas/theme/theme.dart';
-import 'package:lukitas/ui/lukas_bubble.dart';
+import 'package:wambito/home/wambi_face.dart';
+import 'package:wambito/theme/surfaces.dart';
+import 'package:wambito/theme/theme.dart';
+import 'package:wambito/ui/wambi_bubble.dart';
 
 import '../support/parity.dart';
 
-/// `LukasBubble` against apps/web/app/ui/LukasBubble.stories.tsx (`lukas-lukasbubble--*`), each
+/// `WambiBubble` against apps/web/app/ui/WambiBubble.stories.tsx (`wambi-wambibubble--*`), each
 /// story as Storybook shows it after its `play` function, in night and in day (`CelebratingDay`
-/// pins day). Lukitas' sprite rests on its first frame, as the shots take it.
+/// pins day). Wambi's sprite rests on its first frame, as the shots take it.
 ///
 /// Update the goldens with `flutter test --update-goldens test/parity`, then compare with
 /// `dart run tool/parity/compose.dart` (docs/mobile/parity.md).
@@ -26,7 +26,7 @@ Widget _screen(Widget child) => ParityStoryFrame(
     child: Builder(
       builder: (context) => DecoratedBox(
         decoration: BoxDecoration(
-          gradient: LkSurface.background(Theme.of(context).extension<LukitasTheme>()!.colors),
+          gradient: LkSurface.background(Theme.of(context).extension<WambitoTheme>()!.colors),
         ),
         child: Padding(padding: const EdgeInsets.all(16), child: child),
       ),
@@ -55,7 +55,7 @@ class _AfterPaymentState extends State<_AfterPayment> {
     crossAxisAlignment: CrossAxisAlignment.stretch,
     spacing: 12,
     children: [
-      LukasBubble(message: _message, mood: LukitasMood.happy, quietKey: _quietKey),
+      WambiBubble(message: _message, mood: WambiMood.happy, quietKey: _quietKey),
       _ScaffoldButton('pay', () => setState(() => _message = _paidLine)),
       _ScaffoldButton(
         'time passes',
@@ -133,12 +133,12 @@ const _chromeRing = Color(0xFF005FCC);
 
 Future<void> _keyboardMode(WidgetTester t) => t.sendKeyEvent(LogicalKeyboardKey.shiftLeft);
 
-/// Lukitas' sprite sheets decode in real time, which `pumpAndSettle` does not wait for: decode them
+/// Wambi's sprite sheets decode in real time, which `pumpAndSettle` does not wait for: decode them
 /// first, so the picture is taken with him in it.
 Future<void> _sprites(WidgetTester t) async {
   await t.runAsync(() async {
-    final context = t.element(find.byType(LukasBubble));
-    for (final mood in LukitasMood.values) {
+    final context = t.element(find.byType(WambiBubble));
+    for (final mood in WambiMood.values) {
       await precacheImage(AssetImage(mood.sheet), context);
     }
   });
@@ -147,14 +147,14 @@ Future<void> _sprites(WidgetTester t) async {
 
 void main() {
   for (final theme in ['night', 'day']) {
-    testWidgets('lukas bubble parity: happy ($theme)', (t) async {
+    testWidgets('wambi bubble parity: happy ($theme)', (t) async {
       await parityGolden(
         t,
-        'lukas-bubble-happy',
+        'wambi-bubble-happy',
         _screen(
-          const LukasBubble(
+          const WambiBubble(
             message: '¡Vas bien! Te quedan 11 días y aún tienes margen.',
-            mood: LukitasMood.happy,
+            mood: WambiMood.happy,
           ),
         ),
         theme: theme,
@@ -162,14 +162,14 @@ void main() {
       );
     });
 
-    testWidgets('lukas bubble parity: worried ($theme)', (t) async {
+    testWidgets('wambi bubble parity: worried ($theme)', (t) async {
       await parityGolden(
         t,
-        'lukas-bubble-worried',
+        'wambi-bubble-worried',
         _screen(
-          const LukasBubble(
+          const WambiBubble(
             message: 'Ojo: ya te pasaste 20,20 € en Supermercado.',
-            mood: LukitasMood.worried,
+            mood: WambiMood.worried,
           ),
         ),
         theme: theme,
@@ -177,12 +177,12 @@ void main() {
       );
     });
 
-    testWidgets('lukas bubble parity: the payment line, then the month\'s again ($theme)', (
+    testWidgets('wambi bubble parity: the payment line, then the month\'s again ($theme)', (
       t,
     ) async {
       await parityGolden(
         t,
-        'lukas-bubble-payment-line',
+        'wambi-bubble-payment-line',
         _screen(const _AfterPayment()),
         theme: theme,
         act: (t) async {
@@ -196,10 +196,10 @@ void main() {
       );
     });
 
-    testWidgets('lukas bubble parity: the payment line, with no motion ($theme)', (t) async {
+    testWidgets('wambi bubble parity: the payment line, with no motion ($theme)', (t) async {
       await parityGolden(
         t,
-        'lukas-bubble-payment-line-reduced-motion',
+        'wambi-bubble-payment-line-reduced-motion',
         _screen(const _AfterPayment()),
         theme: theme,
         act: (t) async {
@@ -212,11 +212,11 @@ void main() {
     });
   }
 
-  testWidgets('lukas bubble parity: celebrating, day (day)', (t) async {
+  testWidgets('wambi bubble parity: celebrating, day (day)', (t) async {
     await parityGolden(
       t,
-      'lukas-bubble-celebrating-day',
-      _screen(const LukasBubble(message: '¡Anotado!', mood: LukitasMood.celebrating)),
+      'wambi-bubble-celebrating-day',
+      _screen(const WambiBubble(message: '¡Anotado!', mood: WambiMood.celebrating)),
       theme: 'day',
       act: _sprites,
     );

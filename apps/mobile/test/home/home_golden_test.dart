@@ -20,7 +20,7 @@ Future<void> pumpGoldenHome(WidgetTester tester, ThemeMode mode, FakeHomeReposit
   await tester.runAsync(() async {
     final context = tester.element(find.byType(Scaffold).first);
     for (final sheet in ['wave', 'worried', 'celebrate']) {
-      await precacheImage(AssetImage('assets/lukas/$sheet.webp'), context);
+      await precacheImage(AssetImage('assets/wambi/$sheet.webp'), context);
     }
   });
   await tester.pumpAndSettle();

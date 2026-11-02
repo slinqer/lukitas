@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/import/import_repository.dart';
-import 'package:lukitas/welcome/onboarding_repository.dart';
-import 'package:lukitas/welcome/suggested_categories.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/import/import_repository.dart';
+import 'package:wambito/welcome/onboarding_repository.dart';
+import 'package:wambito/welcome/suggested_categories.dart';
 
 import '../import/fakes.dart' show importOf, sampleStats;
 

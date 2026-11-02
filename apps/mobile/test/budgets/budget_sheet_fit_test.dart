@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/ui/amount_field.dart' show AmountDisplay;
-import 'package:lukitas/ui/lk_theme.dart';
+import 'package:wambito/ui/amount_field.dart' show AmountDisplay;
+import 'package:wambito/ui/lk_theme.dart';
 
 import '../home/fakes.dart';
 import '../support/screen_pixels.dart';

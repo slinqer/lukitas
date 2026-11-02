@@ -9,7 +9,7 @@ import 'package:flutter/semantics.dart' show SemanticsRole;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../api/device.dart';
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../home/home_controller.dart';
 import '../home/home_repository.dart';
 import '../l10n/app_localizations.dart';
@@ -84,7 +84,7 @@ class _TimeZoneSetting extends ConsumerWidget {
     final region = [zoneRegion(zone), offset].where((part) => part.isNotEmpty).join(' · ');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: LukitasTokens.space2,
+      spacing: WambitoTokens.space2,
       children: [
         SettingLabel(label: l10n.settingsTimezoneLabel, hint: l10n.settingsTimezoneHint),
         _RowCard(
@@ -219,15 +219,15 @@ class _ZoneSheetState extends ConsumerState<_ZoneSheet> {
     final offerDevice = device != _current && _supported.contains(device) ? device : null;
     final mutedStyle = LkText.copy.copyWith(color: colors.inkMuted, fontSize: 15);
     return Padding(
-      padding: const EdgeInsets.only(top: LukitasTokens.space3),
+      padding: const EdgeInsets.only(top: WambitoTokens.space3),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: LukitasTokens.space3,
+        spacing: WambitoTokens.space3,
         children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: LukitasTokens.space1,
+            spacing: WambitoTokens.space1,
             children: [
               Text(l10n.settingsTimezoneSearch, style: LkText.bodySm.copyWith(color: colors.ink)),
               WebTextField(
@@ -258,7 +258,7 @@ class _ZoneSheetState extends ConsumerState<_ZoneSheet> {
           else
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: LukitasTokens.space2,
+              spacing: WambitoTokens.space2,
               children: [
                 for (final candidate in found.matches)
                   _ZoneOption(
@@ -323,7 +323,7 @@ class _ZoneOption extends ConsumerWidget {
             child: SizedBox(
               width: double.infinity,
               child: Row(
-                spacing: LukitasTokens.space2,
+                spacing: WambitoTokens.space2,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
@@ -470,7 +470,7 @@ class _CurrencySettingState extends ConsumerState<_CurrencySetting> {
     if (known && locked) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: LukitasTokens.space1,
+        spacing: WambitoTokens.space1,
         children: [
           SettingLabel(label: l10n.settingsCurrencyLabel),
           CssParagraph(
@@ -491,12 +491,12 @@ class _CurrencySettingState extends ConsumerState<_CurrencySetting> {
       child: Column(
         key: const Key('settings.currency.group'),
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: LukitasTokens.space2,
+        spacing: WambitoTokens.space2,
         children: [
           // The legend: the group is named by the label, and the hint is read after it.
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: LukitasTokens.space1,
+            spacing: WambitoTokens.space1,
             children: [
               ExcludeSemantics(
                 child: CssParagraph(
@@ -574,14 +574,14 @@ class _CurrencyOption extends StatelessWidget {
             boxShadow: LkSurface.edgeShadow(lk, LkEdge.sm),
           ),
           padding: const EdgeInsets.symmetric(
-            horizontal: LukitasTokens.space4,
-            vertical: LukitasTokens.space2,
+            horizontal: WambitoTokens.space4,
+            vertical: WambitoTokens.space2,
           ),
           ringRadius: state.focusVisible ? radius : null,
           ringColor: colors.focus,
           child: ExcludeSemantics(
             child: Row(
-              spacing: LukitasTokens.space3,
+              spacing: WambitoTokens.space3,
               children: [
                 NativeRadio(checked: selected, accent: colors.brand),
                 Expanded(

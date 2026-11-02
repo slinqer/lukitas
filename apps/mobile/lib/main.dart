@@ -4,9 +4,11 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 
 import 'api/device.dart';
 import 'app.dart';
+import 'home/widget_snapshot.dart';
 import 'settings/initial_settings.dart';
 import 'settings/licenses.dart';
 import 'settings/settings_store.dart';
+import 'storage/migrate_keys.dart';
 
 Future<void> main() async {
   runApp(await bootstrap());
@@ -17,6 +19,8 @@ Future<void> main() async {
 /// [overrides] are for the integration tests (a fixed transcript in place of audio, say).
 Future<Widget> bootstrap({List<Override> overrides = const []}) async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Keys stored under the old name move first, before anything reads them. 2b: remove.
+  await migrateStoredKeys(const HomeWidgetStore());
   registerExtraLicenses();
   final hints = await DeviceHints.read();
   final settings = await InitialSettings.read(const SecureSettingsStore());
@@ -26,6 +30,6 @@ Future<Widget> bootstrap({List<Override> overrides = const []}) async {
       initialSettingsProvider.overrideWithValue(settings),
       ...overrides,
     ],
-    child: const LukitasApp(),
+    child: const WambitoApp(),
   );
 }

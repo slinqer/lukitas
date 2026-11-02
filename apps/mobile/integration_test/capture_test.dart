@@ -3,7 +3,7 @@
 // replaced by a fixed transcript" and "batch save and undo"):
 //
 //   flutter test integration_test/capture_test.dart -d emulator-5554 \
-//     --dart-define=LUKITAS_SERVER=http://10.0.2.2:3000
+//     --dart-define=WAMBITO_SERVER=http://10.0.2.2:3000
 //
 // The speech engine is replaced by one that "hears" a fixed sentence in the app's language; the
 // rest is the real app and the real API. Buttons are found by key: the emulator's language decides
@@ -12,18 +12,18 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/api/session.dart';
-import 'package:lukitas/capture/capture_repository.dart';
-import 'package:lukitas/capture/engine/speech_engine.dart';
-import 'package:lukitas/capture/parser/parse.dart' show Draft;
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/home/home_screen.dart';
-import 'package:lukitas/main.dart' as app;
-import 'package:lukitas/ui/pressable.dart';
-import 'package:lukitas/ui/toast.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/api/session.dart';
+import 'package:wambito/capture/capture_repository.dart';
+import 'package:wambito/capture/engine/speech_engine.dart';
+import 'package:wambito/capture/parser/parse.dart' show Draft;
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/home/home_screen.dart';
+import 'package:wambito/main.dart' as app;
+import 'package:wambito/ui/pressable.dart';
+import 'package:wambito/ui/toast.dart';
 
-const _server = String.fromEnvironment('LUKITAS_SERVER', defaultValue: 'http://10.0.2.2:3000');
+const _server = String.fromEnvironment('WAMBITO_SERVER', defaultValue: 'http://10.0.2.2:3000');
 
 final _http = Dio(BaseOptions(validateStatus: (_) => true));
 

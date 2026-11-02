@@ -2,7 +2,7 @@
 // what reaches a listen from the platform, and what must never reach the next one.
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/capture/engine/voice_channel.dart';
+import 'package:wambito/capture/engine/voice_channel.dart';
 
 const _events = 'lukitas/voice/events';
 const _codec = StandardMethodCodec();

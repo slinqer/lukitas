@@ -7,11 +7,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/app.dart' show withAppHosts;
-import 'package:lukitas/home/home_controller.dart';
-import 'package:lukitas/l10n/app_localizations.dart';
-import 'package:lukitas/theme/text_styles.dart';
-import 'package:lukitas/theme/theme.dart';
+import 'package:wambito/app.dart' show withAppHosts;
+import 'package:wambito/home/home_controller.dart';
+import 'package:wambito/l10n/app_localizations.dart';
+import 'package:wambito/theme/text_styles.dart';
+import 'package:wambito/theme/theme.dart';
 
 import 'emoji_font.dart';
 import 'fonts.dart';
@@ -360,7 +360,7 @@ class ParityStoryFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<LukitasTheme>()!.colors;
+    final colors = Theme.of(context).extension<WambitoTheme>()!.colors;
     final body = TextStyle(
       fontFamily: LkText.textFamily,
       fontFamilyFallback: parityFallbackFamilies,

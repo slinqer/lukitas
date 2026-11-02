@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/home/home_cache.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/home/widget_snapshot.dart';
-import 'package:lukitas/offline/pending_saves.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/home/home_cache.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/home/widget_snapshot.dart';
+import 'package:wambito/offline/pending_saves.dart';
 
 import 'fixtures.dart';
 
@@ -189,13 +189,19 @@ class FakeWidgetStore implements WidgetStore {
   }
 
   @override
+  Future<void> remove(String key) async {
+    if (failure != null) throw failure!;
+    saved.remove(key);
+  }
+
+  @override
   Future<void> updateWidgets() async {
     if (failure != null) throw failure!;
     updates++;
   }
 }
 
-/// Whether [store] holds the signed-out snapshot: "Abre Lukitas para empezar" and no figure of
+/// Whether [store] holds the signed-out snapshot: "Abre Wambito para empezar" and no figure of
 /// anyone (Review Focus 4).
 bool widgetSignedOut(FakeWidgetStore store) {
   final json = store.saved[widgetSnapshotKey];

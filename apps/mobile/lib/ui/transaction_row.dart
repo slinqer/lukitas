@@ -106,7 +106,7 @@ class _TransactionRowState extends State<TransactionRow> {
         ? (onPay != null
               // `lk-row-control -my-3`: a 44px target in a 20px line, above the row's hit area.
               ? OutsetBox(
-                  vertical: LukitasTokens.space3,
+                  vertical: WambitoTokens.space3,
                   // The badge comes after the row in the tab order, as its button does in the DOM.
                   child: FocusTraversalOrder(
                     order: const NumericFocusOrder(1),
@@ -204,7 +204,7 @@ class _TransactionRowState extends State<TransactionRow> {
                             ),
                             Wrap(
                               crossAxisAlignment: WrapCrossAlignment.center,
-                              spacing: LukitasTokens.space2,
+                              spacing: WambitoTokens.space2,
                               children: [
                                 ExcludeSemantics(
                                   child: BlinkLine(

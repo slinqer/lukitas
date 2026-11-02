@@ -8,15 +8,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/auth_api.dart';
-import 'package:lukitas/api/session.dart';
-import 'package:lukitas/entry/email_screen.dart';
-import 'package:lukitas/entry/verify_link_screen.dart';
-import 'package:lukitas/ui/app_shell.dart';
+import 'package:wambito/api/auth_api.dart';
+import 'package:wambito/api/session.dart';
+import 'package:wambito/entry/email_screen.dart';
+import 'package:wambito/entry/verify_link_screen.dart';
+import 'package:wambito/ui/app_shell.dart';
 
 import '../entry/fakes.dart';
 import '../support/parity.dart';
-import '../support/parity_home.dart' show precacheLukitas;
+import '../support/parity_home.dart' show precacheWambi;
 
 /// The entry screens against the stories that show them: `sign-in-signin--*` and
 /// `sign-in-verify--*` (apps/web/app/features/sign-in/SignIn.stories.tsx and Verify.stories.tsx),
@@ -26,7 +26,7 @@ import '../support/parity_home.dart' show precacheLukitas;
 /// Storybook pads every story by 16px, so the screens sit in a [ShellFrame] with that padding (and
 /// no 🎤, which only the bar has). The app focuses the email field on opening (the person came by
 /// tapping "Entrar con mi correo", and the keyboard is what they want), where the web leaves it
-/// alone so the keyboard does not cover Lukitas; the pairs put the focus down again, as the web has
+/// alone so the keyboard does not cover Wambi; the pairs put the focus down again, as the web has
 /// it. The code step's "Reenviar código" waits 30 s as the web's does, counted by the app's clock,
 /// which [parityGolden] pins to the story's (so both sides read "Reenviar en 30 s"). "Usar passkey"
 /// is the web's "Entrar con huella" here, through `EmailScreen.passkeyLabel`.
@@ -102,7 +102,7 @@ void main() {
         theme: theme,
         overrides: _overrides(FakeAuthApi()),
         act: (t) async {
-          await precacheLukitas(t);
+          await precacheWambi(t);
           await _putFocusDown(t);
         },
       );
@@ -116,7 +116,7 @@ void main() {
         theme: theme,
         overrides: _overrides(FakeAuthApi()),
         act: (t) async {
-          await precacheLukitas(t);
+          await precacheWambi(t);
           await _sendCodeTo(t, 'ana@');
         },
       );
@@ -131,7 +131,7 @@ void main() {
         theme: theme,
         overrides: _overrides(auth),
         act: (t) async {
-          await precacheLukitas(t);
+          await precacheWambi(t);
           await _sendCodeTo(t, 'ana@example.com');
         },
       );
@@ -145,7 +145,7 @@ void main() {
         theme: theme,
         overrides: _overrides(FakeAuthApi()),
         act: (t) async {
-          await precacheLukitas(t);
+          await precacheWambi(t);
           await _sendCodeTo(t, 'ana@example.com');
         },
       );
@@ -160,7 +160,7 @@ void main() {
         theme: theme,
         overrides: _overrides(auth),
         act: (t) async {
-          await precacheLukitas(t);
+          await precacheWambi(t);
           await _sendCodeTo(t, 'ana@example.com');
           auth.failures['verifyCode'] = const AuthFailure(code: 'INVALID_OTP', status: 400);
           await _submitCode(t, '123456');
@@ -177,7 +177,7 @@ void main() {
         theme: theme,
         overrides: _overrides(_HangingAuth()),
         act: (t) async {
-          await precacheLukitas(t);
+          await precacheWambi(t);
           await _sendCodeTo(t, 'ana@example.com');
           await _submitCode(t, '123456');
           await t.pump();
@@ -194,7 +194,7 @@ void main() {
         theme: theme,
         overrides: _overrides(auth),
         act: (t) async {
-          await precacheLukitas(t);
+          await precacheWambi(t);
           await _sendCodeTo(t, 'ana@example.com');
           auth.failures['verifyCode'] = const AuthFailure(status: 0);
           await _submitCode(t, '123456');
@@ -211,7 +211,7 @@ void main() {
         theme: theme,
         overrides: _overrides(FakeAuthApi(), passkeys: true),
         act: (t) async {
-          await precacheLukitas(t);
+          await precacheWambi(t);
           await _putFocusDown(t);
         },
       );
@@ -224,7 +224,7 @@ void main() {
         _frame(const VerifyLinkScreen(email: 'ana@example.com', code: '424242')),
         theme: theme,
         overrides: _overrides(_HangingAuth()),
-        act: precacheLukitas,
+        act: precacheWambi,
       );
     });
 
@@ -237,7 +237,7 @@ void main() {
         _frame(const VerifyLinkScreen(email: 'ana@example.com', code: '424242')),
         theme: theme,
         overrides: _overrides(auth),
-        act: precacheLukitas,
+        act: precacheWambi,
       );
     });
 
@@ -249,7 +249,7 @@ void main() {
         _frame(const VerifyLinkScreen(email: 'ana@example.com', code: '424242')),
         theme: theme,
         overrides: _overrides(auth),
-        act: precacheLukitas,
+        act: precacheWambi,
       );
     });
   }
@@ -265,7 +265,7 @@ void main() {
       locale: const Locale('en'),
       overrides: _overrides(auth, passkeys: true),
       act: (t) async {
-        await precacheLukitas(t);
+        await precacheWambi(t);
         await t.tap(_field('entry.passkey'));
         await t.pumpAndSettle();
         await _focusRinged(t, 'entry.passkey');
@@ -283,7 +283,7 @@ void main() {
       theme: 'day',
       locale: const Locale('en'),
       overrides: _overrides(auth),
-      act: precacheLukitas,
+      act: precacheWambi,
     );
   });
 }

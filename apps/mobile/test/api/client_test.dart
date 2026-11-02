@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/client.dart';
+import 'package:wambito/api/client.dart';
 
 /// Answers every request with `{}` and remembers the last one.
 class _RecordingAdapter implements HttpClientAdapter {
@@ -36,8 +36,8 @@ void main() {
       'https://app.wambito.com/api',
     );
     expect(
-      ApiClient.forServer(Uri.parse('https://example.test/lukas/')).baseUrl,
-      'https://example.test/lukas/api',
+      ApiClient.forServer(Uri.parse('https://example.test/wambito/')).baseUrl,
+      'https://example.test/wambito/api',
     );
     expect(
       ApiClient.forServer(Uri.parse('http://10.0.2.2:3000')).baseUrl,
@@ -46,13 +46,13 @@ void main() {
   });
 
   test('a request goes to <server>/api/<path> with the bearer token', () async {
-    final client = ApiClient.forServer(Uri.parse('https://example.test/lukas/'), token: 'abc');
+    final client = ApiClient.forServer(Uri.parse('https://example.test/wambito/'), token: 'abc');
     final adapter = _RecordingAdapter();
     client.dio.httpClientAdapter = adapter;
 
     await client.dio.get<Object>('/v1/me');
 
-    expect(adapter.last!.uri.toString(), 'https://example.test/lukas/api/v1/me');
+    expect(adapter.last!.uri.toString(), 'https://example.test/wambito/api/v1/me');
     expect(adapter.last!.headers['Authorization'], 'Bearer abc');
   });
 

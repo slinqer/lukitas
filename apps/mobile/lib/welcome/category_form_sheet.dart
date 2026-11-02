@@ -171,7 +171,7 @@ class WelcomeCategoryForm extends CategoryFormModel {
       ),
       RemovalArchive() || RemovalUnknown() => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: LukitasTokens.space2,
+        spacing: WambitoTokens.space2,
         children: [
           Text(
             switch (removal) {

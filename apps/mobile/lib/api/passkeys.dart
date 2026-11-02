@@ -17,7 +17,7 @@ abstract interface class Passkeys {
 
   /// Like [get], but only for a passkey the phone can offer at once (Credential Manager's
   /// "prefer immediately available credentials"): when there is none, nothing is shown and it
-  /// throws `NO_CREDENTIAL` at once. A provider such as Proton Pass that holds a Lukitas passkey
+  /// throws `NO_CREDENTIAL` at once. A provider such as Proton Pass that holds a Wambito passkey
   /// (made on the web, say) has its sheet appear; closing it throws `AUTH_CANCELLED`.
   Future<String> getAvailable(String optionsJson);
 

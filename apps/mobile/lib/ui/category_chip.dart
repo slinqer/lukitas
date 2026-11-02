@@ -172,7 +172,7 @@ class CategoryChipGrid extends StatelessWidget {
   final List<Widget> children;
 
   static const _columns = 4;
-  static const _gap = LukitasTokens.space2;
+  static const _gap = WambitoTokens.space2;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(

@@ -3,7 +3,7 @@
 // "the widget's deep links"; 7.1):
 //
 //   flutter test integration_test/widget_test.dart -d emulator-5554 \
-//     --dart-define=LUKITAS_SERVER=http://10.0.2.2:3000
+//     --dart-define=WAMBITO_SERVER=http://10.0.2.2:3000
 //
 // One test uses the real speech engine (🎤 twice, the first listen having ended by itself), and is
 // skipped unless the voice models are served as docs/mobile/setup.md describes (it also needs the
@@ -25,20 +25,20 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:lukitas/add/add_sheet.dart';
-import 'package:lukitas/api/session.dart';
-import 'package:lukitas/capture/capture_sheet.dart';
-import 'package:lukitas/capture/engine/speech_engine.dart';
-import 'package:lukitas/capture/engine/voice_channel.dart';
-import 'package:lukitas/capture/engine/vosk_engine.dart';
-import 'package:lukitas/capture/models_download.dart';
-import 'package:lukitas/entry/entry_screen.dart';
-import 'package:lukitas/home/home_screen.dart';
-import 'package:lukitas/home/widget_snapshot.dart';
-import 'package:lukitas/main.dart' as app;
-import 'package:lukitas/router.dart';
+import 'package:wambito/add/add_sheet.dart';
+import 'package:wambito/api/session.dart';
+import 'package:wambito/capture/capture_sheet.dart';
+import 'package:wambito/capture/engine/speech_engine.dart';
+import 'package:wambito/capture/engine/voice_channel.dart';
+import 'package:wambito/capture/engine/vosk_engine.dart';
+import 'package:wambito/capture/models_download.dart';
+import 'package:wambito/entry/entry_screen.dart';
+import 'package:wambito/home/home_screen.dart';
+import 'package:wambito/home/widget_snapshot.dart';
+import 'package:wambito/main.dart' as app;
+import 'package:wambito/router.dart';
 
-const _server = String.fromEnvironment('LUKITAS_SERVER', defaultValue: 'http://10.0.2.2:3000');
+const _server = String.fromEnvironment('WAMBITO_SERVER', defaultValue: 'http://10.0.2.2:3000');
 const _test = MethodChannel('lukitas/test');
 const _modelsUrl = String.fromEnvironment('VOICE_MODELS_URL');
 
@@ -240,12 +240,12 @@ void main() {
     },
   );
 
-  testWidgets('lukitas://capture sent to the exported launcher activity opens nothing', (
+  testWidgets('wambito://capture sent to the exported launcher activity opens nothing', (
     tester,
   ) async {
     await _startAsGuest(tester, overrides: [speechEngineProvider.overrideWithValue(_Listening())]);
     // What another app can do: start the launcher activity explicitly with the link.
-    await _test.invokeMethod<void>('openOnLauncherActivity', 'lukitas://capture');
+    await _test.invokeMethod<void>('openOnLauncherActivity', 'wambito://capture');
     for (var i = 0; i < 40; i++) {
       await tester.pump(const Duration(milliseconds: 100));
     }

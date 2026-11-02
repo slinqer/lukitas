@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/l10n/app_localizations.dart';
+import 'package:wambito/l10n/app_localizations.dart';
 
 Map<String, dynamic> _arb(String locale) =>
     jsonDecode(File('lib/l10n/app_$locale.arb').readAsStringSync()) as Map<String, dynamic>;
@@ -204,9 +204,9 @@ void main() {
     final it = await load('it');
     final pt = await load('pt');
 
-    expect(es.appName, 'Lukitas');
-    expect(it.appName, 'Lukitas');
-    expect(pt.appName, 'Lukitas');
+    expect(es.appName, 'Wambito');
+    expect(it.appName, 'Wambito');
+    expect(pt.appName, 'Wambito');
     expect(es.savedMovements(1, 'Mercado'), 'Guardaste 1 movimiento en Mercado');
     expect(es.savedMovements(3, 'Mercado'), 'Guardaste 3 movimientos en Mercado');
     expect(en.savedMovements(1, 'Mercado'), 'You saved 1 movement in Mercado');

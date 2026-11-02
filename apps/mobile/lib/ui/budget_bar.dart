@@ -62,7 +62,7 @@ class BudgetBar extends StatelessWidget {
     };
     final duration = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
-        : LukitasTokens.durationCountUp;
+        : WambitoTokens.durationCountUp;
     final height = size == BudgetBarSize.sm ? 7.0 : 12.0;
 
     final bar = SizedBox(
@@ -71,7 +71,7 @@ class BudgetBar extends StatelessWidget {
       child: SnappedDecoratedBox(
         decoration: BoxDecoration(
           color: colors.surfaceSunken,
-          borderRadius: BorderRadius.circular(LukitasTokens.radiusPill),
+          borderRadius: BorderRadius.circular(WambitoTokens.radiusPill),
         ),
         child: ClipRect(
           child: TweenAnimationBuilder<double>(
@@ -86,7 +86,7 @@ class BudgetBar extends StatelessWidget {
                 child: SnappedDecoratedBox(
                   decoration: BoxDecoration(
                     color: fill,
-                    borderRadius: BorderRadius.circular(LukitasTokens.radiusPill),
+                    borderRadius: BorderRadius.circular(WambitoTokens.radiusPill),
                   ),
                 ),
               ),

@@ -2,10 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/files/files_channel.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/import/import_repository.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/files/files_channel.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/import/import_repository.dart';
 
 import '../budgets/fakes.dart';
 import '../home/fakes.dart';

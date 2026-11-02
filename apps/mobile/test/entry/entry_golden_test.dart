@@ -7,14 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/session.dart';
-import 'package:lukitas/entry/entry_screen.dart';
-import 'package:lukitas/entry/verify_link_screen.dart';
-import 'package:lukitas/l10n/app_localizations.dart';
-import 'package:lukitas/progress/progress_screen.dart';
+import 'package:wambito/api/session.dart';
+import 'package:wambito/entry/entry_screen.dart';
+import 'package:wambito/entry/verify_link_screen.dart';
+import 'package:wambito/l10n/app_localizations.dart';
+import 'package:wambito/progress/progress_screen.dart';
 
 import '../support/parity.dart';
-import '../support/parity_home.dart' show precacheLukitas;
+import '../support/parity_home.dart' show precacheWambi;
 import 'fakes.dart';
 
 /// The entry screens that have no web story, to review by eye: the first screen with "Probar sin
@@ -55,7 +55,7 @@ Future<void> _golden(
       ),
     );
     await t.pumpAndSettle();
-    await precacheLukitas(t);
+    await precacheWambi(t);
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile(

@@ -1,8 +1,8 @@
-import 'package:lukitas/feedback/stored_flag.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/settings/assistants_repository.dart';
-import 'package:lukitas/welcome/onboarding_repository.dart';
-import 'package:lukitas/settings/settings_store.dart';
+import 'package:wambito/feedback/stored_flag.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/settings/assistants_repository.dart';
+import 'package:wambito/welcome/onboarding_repository.dart';
+import 'package:wambito/settings/settings_store.dart';
 
 import '../home/fakes.dart';
 import '../notices/fakes.dart';

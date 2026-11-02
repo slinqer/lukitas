@@ -4,9 +4,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/capture/mic_level.dart';
-import 'package:lukitas/theme/theme.dart';
-import 'package:lukitas/theme/tokens.g.dart';
+import 'package:wambito/capture/mic_level.dart';
+import 'package:wambito/theme/theme.dart';
+import 'package:wambito/theme/tokens.g.dart';
 
 Future<StreamController<double>> _pump(
   WidgetTester tester, {
@@ -76,7 +76,7 @@ void main() {
     tester,
   ) async {
     final levels = await _pump(tester);
-    final colors = LukitasColors.night;
+    final colors = WambitoColors.night;
     await _send(tester, levels, 1);
     expect(_barColor(tester, 7), colors.brand);
     expect(_barColor(tester, 0), colors.stroke);
@@ -144,6 +144,6 @@ void main() {
   testWidgets('in the day theme the colours are the day tokens', (tester) async {
     final levels = await _pump(tester, theme: dayTheme);
     await _send(tester, levels, 1);
-    expect(_barColor(tester, 7), LukitasColors.day.brand);
+    expect(_barColor(tester, 7), WambitoColors.day.brand);
   });
 }

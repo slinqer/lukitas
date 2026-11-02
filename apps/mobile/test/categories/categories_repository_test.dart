@@ -3,11 +3,11 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/client.dart';
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/categories/categories_repository.dart';
-import 'package:lukitas/categories/category_model.dart';
-import 'package:lukitas/home/home_repository.dart';
+import 'package:wambito/api/client.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/categories/categories_repository.dart';
+import 'package:wambito/categories/category_model.dart';
+import 'package:wambito/home/home_repository.dart';
 
 const _category = {
   'id': 'c1',

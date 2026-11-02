@@ -4,20 +4,20 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:home_widget/home_widget.dart';
 
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 
 /// The key the home snapshot is stored under (see [signedInSnapshot]).
-const widgetSnapshotKey = 'lukitas.widget.snapshot';
+const widgetSnapshotKey = 'wambito.widget.snapshot';
 
-/// The snapshot's shape version. The Kotlin widget draws "Abre Lukitas para empezar" for any other
+/// The snapshot's shape version. The Kotlin widget draws "Abre Wambito para empezar" for any other
 /// (`android/.../widget/WidgetSnapshot.kt`), so a phone that still holds an older snapshot never
 /// shows it as figures. Version 3 added `timezone`.
 const widgetSnapshotVersion = 3;
 
 /// The two widgets' receivers (`android/.../widget/`), which `updateWidgets` asks to redraw.
 const widgetReceivers = [
-  'com.wambito.app.widget.LukitasSmallWidgetReceiver',
-  'com.wambito.app.widget.LukitasMediumWidgetReceiver',
+  'com.wambito.app.widget.WambitoSmallWidgetReceiver',
+  'com.wambito.app.widget.WambitoMediumWidgetReceiver',
 ];
 
 /// Where the snapshot is kept. The app stores it with `home_widget`, which writes Android's
@@ -27,6 +27,9 @@ abstract interface class WidgetStore {
 
   /// What is stored under [key], or null.
   Future<String?> read(String key);
+
+  /// Removes what is stored under [key].
+  Future<void> remove(String key);
 
   /// Asks Android to redraw the widgets on the home screen from what is stored.
   Future<void> updateWidgets();
@@ -48,6 +51,12 @@ class HomeWidgetStore implements WidgetStore {
   Future<String?> read(String key) => HomeWidget.getWidgetData<String>(key);
 
   @override
+  Future<void> remove(String key) async {
+    // home_widget removes a key saved as null.
+    await HomeWidget.saveWidgetData<String>(key, null);
+  }
+
+  @override
   Future<void> updateWidgets() async {
     for (final receiver in widgetReceivers) {
       await HomeWidget.updateWidget(qualifiedAndroidName: receiver);
@@ -59,11 +68,11 @@ class HomeWidgetStore implements WidgetStore {
 /// widget (Jetpack Glance) and its refresh job (`RefreshWorker.kt`) read it without starting
 /// Flutter. The refresh job writes the same shape from `GET /v1/summary`.
 ///
-/// **Where.** One JSON string under the key [widgetSnapshotKey] (`lukitas.widget.snapshot`) in the
+/// **Where.** One JSON string under the key [widgetSnapshotKey] (`wambito.widget.snapshot`) in the
 /// Android SharedPreferences file `HomeWidgetPreferences`, which is where `home_widget` keeps its
 /// values.
 ///
-/// **Shape**, version 3 (a reader ignores unknown fields and draws "Abre Lukitas para empezar" for
+/// **Shape**, version 3 (a reader ignores unknown fields and draws "Abre Wambito para empezar" for
 /// a `v` it does not know, or when `signedIn` is not true):
 ///
 /// ```json
@@ -76,7 +85,7 @@ class HomeWidgetStore implements WidgetStore {
 ///   "currency": "COP",
 ///   "locale": "es",            // "es" | "en" | "it" | "pt": the widget's words and how the amount is written
 ///   "month": "2026-10",        // the month of the figures
-///   "mood": "happy",           // Lukitas' face: "happy" | "worried" (a category near or over)
+///   "mood": "happy",           // Wambi's face: "happy" | "worried" (a category near or over)
 ///   "updatedAt": "2026-10-22T15:30:00.000Z",  // UTC, when these figures came from the server
 ///   "hideAmount": false,       // Settings' "Ocultar el monto en el widget": draw "••••"
 ///   "theme": "dark",           // the app's theme choice: "dark" | "light" | "system"
@@ -118,7 +127,7 @@ Map<String, Object?> signedInSnapshot(
   };
 }
 
-/// What the widget shows with nobody signed in: "Abre Lukitas para empezar", in the app's theme
+/// What the widget shows with nobody signed in: "Abre Wambito para empezar", in the app's theme
 /// and language. It holds no figure at all, so after a sign-out nothing of the previous person is
 /// left for the widget (or its refresh job) to draw (Review Focus 4).
 Map<String, Object?> signedOutSnapshot({

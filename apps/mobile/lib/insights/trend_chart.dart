@@ -3,7 +3,7 @@
 // `.lk-swatch-expense`, `.lk-swatch-line`, `.lk-num`.
 import 'package:flutter/material.dart';
 
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../l10n/app_localizations.dart';
 import '../money/format.dart';
 import '../theme/text_styles.dart';
@@ -93,7 +93,7 @@ class _TrendChartState extends State<TrendChart> {
           const InsightLoading(height: trendHeight + 64)
         else if (empty || shown == null)
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: LukitasTokens.space4),
+            padding: const EdgeInsets.symmetric(vertical: WambitoTokens.space4),
             child: CssLines(
               style: LkText.body,
               child: Text(
@@ -110,7 +110,7 @@ class _TrendChartState extends State<TrendChart> {
               height: trendHeight,
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                  final width = constraints.maxWidth + 2 * LukitasTokens.space1;
+                  final width = constraints.maxWidth + 2 * WambitoTokens.space1;
                   final plot = width - yAxisWidth - trendMargin.right;
                   return OverflowBox(
                     minWidth: width,
@@ -124,7 +124,7 @@ class _TrendChartState extends State<TrendChart> {
                         children: [
                           // The selected month's band, behind the bars.
                           AnimatedPositioned(
-                            duration: reduce ? Duration.zero : LukitasTokens.durationSheet,
+                            duration: reduce ? Duration.zero : WambitoTokens.durationSheet,
                             curve: Curves.easeOut,
                             left: yAxisWidth + plot * selected / months.length,
                             width: plot / months.length,
@@ -133,7 +133,7 @@ class _TrendChartState extends State<TrendChart> {
                             child: DecoratedBox(
                               decoration: BoxDecoration(
                                 color: colors.surfaceSunken,
-                                borderRadius: BorderRadius.circular(LukitasTokens.radiusSm),
+                                borderRadius: BorderRadius.circular(WambitoTokens.radiusSm),
                               ),
                             ),
                           ),
@@ -151,7 +151,7 @@ class _TrendChartState extends State<TrendChart> {
                               ],
                               height: trendHeight,
                               animate: !reduce,
-                              duration: LukitasTokens.durationHop,
+                              duration: WambitoTokens.durationHop,
                               formatTick: (cents) => compactAmount(cents, locale),
                               onSweep: widget.onSpin,
                             ),
@@ -186,7 +186,7 @@ class _TrendChartState extends State<TrendChart> {
             ),
           ),
           Row(
-            spacing: LukitasTokens.space2,
+            spacing: WambitoTokens.space2,
             children: [
               StepButton(
                 glyph: '‹',
@@ -273,13 +273,13 @@ class _Readout extends StatelessWidget {
           child: Text(title, style: _titleStyle.copyWith(color: colors.ink)),
         ),
         Wrap(
-          spacing: LukitasTokens.space3,
+          spacing: WambitoTokens.space3,
           runSpacing: 2,
           children: [
             for (final (swatch, label, figure) in items)
               Row(
                 mainAxisSize: MainAxisSize.min,
-                spacing: LukitasTokens.space1,
+                spacing: WambitoTokens.space1,
                 children: [
                   switch (swatch) {
                     _Swatch.income => _Square(colors.chartIncome),

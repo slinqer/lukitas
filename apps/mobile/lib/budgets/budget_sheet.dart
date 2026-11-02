@@ -155,10 +155,10 @@ class _BudgetBody extends StatelessWidget {
     return ListenableBuilder(
       listenable: form,
       builder: (context, _) => Padding(
-        padding: const EdgeInsets.only(top: LukitasTokens.space2),
+        padding: const EdgeInsets.only(top: WambitoTokens.space2),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: LukitasTokens.space2,
+          spacing: WambitoTokens.space2,
           children: [
             Text(
               form.l10n.budgetSheetFromMonth(monthInSentence(form.month, form.locale)),

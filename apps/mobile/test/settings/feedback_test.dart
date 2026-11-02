@@ -4,7 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/settings/feedback.dart';
+import 'package:wambito/settings/feedback.dart';
 
 import 'harness.dart';
 
@@ -37,8 +37,8 @@ void main() {
     test('is the founder\'s address with the subject and body percent-encoded', () {
       expect(feedbackEmail, 'hola@wambito.com');
       expect(
-        feedbackMailto(subject: 'Lukitas: comentarios', body: '\n\nVersión: 1.2.3\nIdioma: es'),
-        'mailto:hola@wambito.com?subject=Lukitas%3A%20comentarios&body=%0A%0AVersi%C3%B3n%3A%201.2.3%0AIdioma%3A%20es',
+        feedbackMailto(subject: 'Wambito: comentarios', body: '\n\nVersión: 1.2.3\nIdioma: es'),
+        'mailto:hola@wambito.com?subject=Wambito%3A%20comentarios&body=%0A%0AVersi%C3%B3n%3A%201.2.3%0AIdioma%3A%20es',
       );
     });
 
@@ -59,7 +59,7 @@ void main() {
       await _scrollTo(t, 'settings.feedback');
       expect(_said('Comentarios e ideas'), findsWidgets);
       expect(
-        _said('¿Algo no funciona, o quieres que Lukitas haga algo más? Cuéntanos por correo.'),
+        _said('¿Algo no funciona, o quieres que Wambito haga algo más? Cuéntanos por correo.'),
         findsOneWidget,
       );
       expect(find.text('ESCRIBIRNOS'), findsOneWidget);
@@ -102,12 +102,12 @@ void main() {
         await t.pumpAndSettle();
         expect(
           env.opener.opened.single.toString(),
-          'mailto:hola@wambito.com?subject=Lukitas%3A%20comentarios'
-          '&body=%0A%0AVersi%C3%B3n%20de%20Lukitas%3A%201.2.3%0AIdioma%3A%20es',
+          'mailto:hola@wambito.com?subject=Wambito%3A%20comentarios'
+          '&body=%0A%0AVersi%C3%B3n%20de%20Wambito%3A%201.2.3%0AIdioma%3A%20es',
         );
         // Decoded, the body is those two lines and nothing of the account: no email, no token.
         final body = Uri.parse(env.opener.opened.single.toString()).queryParameters['body'];
-        expect(body, '\n\nVersión de Lukitas: 1.2.3\nIdioma: es');
+        expect(body, '\n\nVersión de Wambito: 1.2.3\nIdioma: es');
         expect(body, isNot(contains('@')));
         expect(body, isNot(contains('token')));
         // Nothing else is shown: the email app took it.
@@ -122,8 +122,8 @@ void main() {
       await t.pumpAndSettle();
       expect(
         env.opener.opened.single.toString(),
-        'mailto:hola@wambito.com?subject=Lukitas%3A%20feedback'
-        '&body=%0A%0ALukitas%20version%3A%201.2.3%0ALanguage%3A%20en',
+        'mailto:hola@wambito.com?subject=Wambito%3A%20feedback'
+        '&body=%0A%0AWambito%20version%3A%201.2.3%0ALanguage%3A%20en',
       );
     });
 
@@ -139,7 +139,7 @@ void main() {
       await t.pumpAndSettle();
       expect(
         Uri.parse(env.opener.opened.single.toString()).queryParameters['body'],
-        '\n\nVersión de Lukitas: dev\nIdioma: es',
+        '\n\nVersión de Wambito: dev\nIdioma: es',
       );
     });
   });

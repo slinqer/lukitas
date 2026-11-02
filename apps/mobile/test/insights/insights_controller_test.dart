@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/session.dart';
-import 'package:lukitas/home/home_cache.dart';
-import 'package:lukitas/home/home_controller.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/insights/insights_controller.dart';
-import 'package:lukitas/insights/insights_model.dart';
-import 'package:lukitas/insights/insights_repository.dart';
+import 'package:wambito/api/session.dart';
+import 'package:wambito/home/home_cache.dart';
+import 'package:wambito/home/home_controller.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/insights/insights_controller.dart';
+import 'package:wambito/insights/insights_model.dart';
+import 'package:wambito/insights/insights_repository.dart';
 
 import '../home/fakes.dart';
 import '../home/fixtures.dart';
@@ -83,7 +83,7 @@ void main() {
         expect(state.end, '2026-10');
         expect(state.span, 1);
         expect(state.byCategory.data!.items.first.name, 'Hogar');
-        // Lukitas' spending is the donut's own answer: one request, not two.
+        // Wambi's spending is the donut's own answer: one request, not two.
         expect(state.spending.data, same(state.byCategory.data));
         expect(state.trend.data!.months.single.month, '2026-10');
         expect(state.livingMonths, 2, reason: 'August is the first month with anything');
@@ -161,7 +161,7 @@ void main() {
     );
 
     test(
-      'income and a status are asked as the web asks them, and Lukitas still talks about spending',
+      'income and a status are asked as the web asks them, and Wambi still talks about spending',
       () async {
         final (container, _, repo) = await world();
         final controller = container.read(insightsProvider.notifier);
@@ -177,7 +177,7 @@ void main() {
         expect(repo.calls, [
           'byCategory 2026-10 2026-10 income -',
           'byCategory 2026-10 2026-10 income paid',
-        ], reason: 'the spending Lukitas talks about was kept from the first answer');
+        ], reason: 'the spending Wambi talks about was kept from the first answer');
         final state = container.read(insightsProvider);
         expect(state.byCategory.data!.items.map((i) => i.name), ['Nómina']);
         expect(state.spending.data!.items.first.name, 'Hogar');

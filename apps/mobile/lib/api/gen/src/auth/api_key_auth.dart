@@ -3,7 +3,7 @@
 //
 
 import 'package:dio/dio.dart';
-import 'package:lukitas/api/gen/src/auth/auth.dart';
+import 'package:wambito/api/gen/src/auth/auth.dart';
 
 class ApiKeyAuthInterceptor extends AuthInterceptor {
   final Map<String, String> apiKeys = {};

@@ -32,7 +32,7 @@ class ExportFile {
 
 /// The account's own endpoints. Every failure is a [HomeFailure].
 abstract interface class AccountRepository {
-  /// The export, named by the server (`lukas-export-<day>.<format>`).
+  /// The export, named by the server (`wambito-export-<day>.<format>`).
   Future<ExportFile> export(ExportFormat format);
 
   /// Deletes the account and everything in it, for good (`DELETE /v1/me`, 204).
@@ -58,7 +58,7 @@ class ApiAccountRepository implements AccountRepository {
       return ExportFile(
         name: filenameFrom(
           response.headers.value('content-disposition'),
-          'lukas-export.${format.name}',
+          'wambito-export.${format.name}',
         ),
         bytes: Uint8List.fromList(bytes),
         mime: format.mime,

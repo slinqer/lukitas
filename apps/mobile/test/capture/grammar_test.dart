@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/capture/engine/grammar.dart';
-import 'package:lukitas/capture/models_download.dart' show voiceModels;
-import 'package:lukitas/capture/parser/dates.dart' show dateAt;
-import 'package:lukitas/capture/parser/words.dart';
+import 'package:wambito/capture/engine/grammar.dart';
+import 'package:wambito/capture/models_download.dart' show voiceModels;
+import 'package:wambito/capture/parser/dates.dart' show dateAt;
+import 'package:wambito/capture/parser/words.dart';
 
 /// The model's words that the grammar and the parser use, checked against the model itself
 /// (test/fixtures/vosk_vocab_*.json): the model's vocabulary is a symbol table inside its Gr.fst.

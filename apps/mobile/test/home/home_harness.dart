@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/add/add_repository.dart';
-import 'package:lukitas/feedback/stored_flag.dart';
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/home/home_cache.dart';
-import 'package:lukitas/home/home_controller.dart';
-import 'package:lukitas/home/home_header.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/home/home_screen.dart';
-import 'package:lukitas/app.dart' show withAppHosts;
-import 'package:lukitas/l10n/app_localizations.dart';
-import 'package:lukitas/offline/pending_saves.dart';
-import 'package:lukitas/theme/theme.dart';
+import 'package:wambito/add/add_repository.dart';
+import 'package:wambito/feedback/stored_flag.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/home/home_cache.dart';
+import 'package:wambito/home/home_controller.dart';
+import 'package:wambito/home/home_header.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/home/home_screen.dart';
+import 'package:wambito/app.dart' show withAppHosts;
+import 'package:wambito/l10n/app_localizations.dart';
+import 'package:wambito/offline/pending_saves.dart';
+import 'package:wambito/theme/theme.dart';
 
 import '../settings/fakes.dart' show FakeFlagStore;
 import 'fakes.dart';
@@ -78,7 +78,7 @@ Future<HomeHarness> pumpHome(
       pendingSavesStoreProvider.overrideWithValue(pendingStore ?? FakePendingSavesStore()),
       pendingSavesTokenProvider.overrideWithValue(token),
       clockProvider.overrideWithValue(clock ?? () => now ?? testNow),
-      lukasVariantProvider.overrideWithValue(() => 1),
+      wambiVariantProvider.overrideWithValue(() => 1),
       widgetSnapshotWriterProvider.overrideWithValue(
         (summary, {required currency, required locale, required timezone}) async =>
             snapshots.add(WrittenSnapshot(summary, currency, locale)),

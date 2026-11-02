@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/theme/text_styles.dart';
-import 'package:lukitas/ui/budget_bar.dart';
-import 'package:lukitas/ui/money.dart';
+import 'package:wambito/theme/text_styles.dart';
+import 'package:wambito/ui/budget_bar.dart';
+import 'package:wambito/ui/money.dart';
 
 import '../support/fonts.dart';
 import '../support/ui_app.dart';

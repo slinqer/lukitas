@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import '../api/gen/lukitas_api.dart'
+import '../api/gen/wambito_api.dart'
     show CreateTransactionRepeatFrequencyEnum, TransactionSuggestion;
 import '../home/home_format.dart' show formatDay;
 import '../home/home_widgets.dart' show QuietSpinner;
@@ -42,7 +42,7 @@ class AddBody extends StatelessWidget {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: LukitasTokens.space2,
+        spacing: WambitoTokens.space2,
         children: [
           NameField(
             controller: session.name,
@@ -110,10 +110,10 @@ class _Unloaded extends StatelessWidget {
     final failure = session.home.failure;
     final failed = failure != null;
     return Padding(
-      padding: const EdgeInsets.all(LukitasTokens.space4),
+      padding: const EdgeInsets.all(WambitoTokens.space4),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        spacing: LukitasTokens.space3,
+        spacing: WambitoTokens.space3,
         children: [
           if (!failed) const QuietSpinner(size: 28),
           Semantics(

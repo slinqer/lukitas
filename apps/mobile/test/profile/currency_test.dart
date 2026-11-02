@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/profile/currency.dart';
+import 'package:wambito/profile/currency.dart';
 
 /// The web's `defaultCurrency` tests (apps/web/app/features/onboarding/onboarding.test.ts), one for
 /// one, and the rule behind them (`defaultCurrencyFor`, packages/core/src/default-currency.ts).

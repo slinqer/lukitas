@@ -3,7 +3,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../home/category_look.dart';
 import '../l10n/app_localizations.dart';
 import '../money/format.dart';
@@ -56,7 +56,7 @@ class CostOfLiving extends StatelessWidget {
       children: [
         if (empty)
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: LukitasTokens.space2),
+            padding: const EdgeInsets.symmetric(vertical: WambitoTokens.space2),
             child: CssLines(
               style: LkText.body,
               child: Text(
@@ -74,7 +74,7 @@ class CostOfLiving extends StatelessWidget {
             child: ExcludeSemantics(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                spacing: LukitasTokens.space3,
+                spacing: WambitoTokens.space3,
                 children: [
                   CssLines(
                     style: LkText.bodySm,
@@ -87,7 +87,7 @@ class CostOfLiving extends StatelessWidget {
                   _Split(data: data, money: money),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    spacing: LukitasTokens.space2,
+                    spacing: WambitoTokens.space2,
                     children: [
                       for (var i = 0; i < data.categories.length; i++)
                         _CategoryRow(
@@ -166,7 +166,7 @@ class _Total extends StatelessWidget {
     // `flex flex-wrap items-baseline`: "al mes" sits on the amount's baseline, 13px under its top,
     // which makes the row 35.5px, not the amount's 34.
     return Wrap(
-      spacing: LukitasTokens.space2,
+      spacing: WambitoTokens.space2,
       children: [
         Money(
           cents: data.total,
@@ -232,7 +232,7 @@ class _Split extends StatelessWidget {
       spacing: 2,
       children: [
         Row(
-          spacing: LukitasTokens.space1,
+          spacing: WambitoTokens.space1,
           children: [
             SizedBox.square(
               dimension: 10,
@@ -260,17 +260,17 @@ class _Split extends StatelessWidget {
     );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: LukitasTokens.space3,
+      spacing: WambitoTokens.space3,
       children: [
         SizedBox(
           height: 14,
           child: DecoratedBox(
             decoration: BoxDecoration(
               color: colors.surfaceSunken,
-              borderRadius: BorderRadius.circular(LukitasTokens.radiusPill),
+              borderRadius: BorderRadius.circular(WambitoTokens.radiusPill),
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(LukitasTokens.radiusPill),
+              borderRadius: BorderRadius.circular(WambitoTokens.radiusPill),
               child: Row(
                 children: [
                   _Part(
@@ -290,7 +290,7 @@ class _Split extends StatelessWidget {
         ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: LukitasTokens.space3,
+          spacing: WambitoTokens.space3,
           children: [
             Expanded(
               child: part(
@@ -329,7 +329,7 @@ class _Part extends StatelessWidget {
     return Expanded(
       flex: math.max(1, (fraction * 100000).round()),
       child: Entrance(
-        duration: LukitasTokens.durationHop,
+        duration: WambitoTokens.durationHop,
         delay: delay,
         builder: (context, t) => Transform.scale(
           scaleX: t,
@@ -375,14 +375,14 @@ class _CategoryRow extends StatelessWidget {
       leadingDistribution: TextLeadingDistribution.even,
     );
     return Entrance(
-      duration: LukitasTokens.durationSheet,
+      duration: WambitoTokens.durationSheet,
       delay: Duration(milliseconds: math.min(index, 10) * 30),
       builder: (context, t) => Opacity(
         opacity: t,
         child: Transform.translate(
           offset: Offset(0, 6 * (1 - t)),
           child: Row(
-            spacing: LukitasTokens.space3,
+            spacing: WambitoTokens.space3,
             children: [
               CategoryTile(glyph: look.glyph, tint: look.tint),
               Expanded(

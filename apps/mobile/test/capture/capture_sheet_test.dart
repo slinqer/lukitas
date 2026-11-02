@@ -5,17 +5,17 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/capture/capture_repository.dart';
-import 'package:lukitas/capture/capture_note.dart';
-import 'package:lukitas/capture/capture_sheet.dart';
-import 'package:lukitas/capture/engine/speech_engine.dart';
-import 'package:lukitas/capture/mic_level.dart';
-import 'package:lukitas/capture/models_download.dart';
-import 'package:lukitas/feedback/stored_flag.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/ui/press_button.dart';
-import 'package:lukitas/ui/toast.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/capture/capture_repository.dart';
+import 'package:wambito/capture/capture_note.dart';
+import 'package:wambito/capture/capture_sheet.dart';
+import 'package:wambito/capture/engine/speech_engine.dart';
+import 'package:wambito/capture/mic_level.dart';
+import 'package:wambito/capture/models_download.dart';
+import 'package:wambito/feedback/stored_flag.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/ui/press_button.dart';
+import 'package:wambito/ui/toast.dart';
 
 import '../home/fakes.dart';
 import '../home/fixtures.dart';
@@ -327,7 +327,7 @@ void main() {
     expect(env.engine.listens, 0);
     expect(find.byKey(const Key('capture.field')), findsOneWidget);
     expect(
-      find.text('Este teléfono no puede escuchar con Lukitas, así que escríbelo aquí.'),
+      find.text('Este teléfono no puede escuchar con Wambito, así que escríbelo aquí.'),
       findsOneWidget,
     );
     expect(find.byKey(const Key('capture.listen')), findsNothing);

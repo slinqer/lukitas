@@ -197,7 +197,7 @@ class CategoryRow extends StatelessWidget {
                       CssLines(
                         style: statusStyle,
                         child: Wrap(
-                          spacing: LukitasTokens.space2,
+                          spacing: WambitoTokens.space2,
                           children: [
                             ExcludeSemantics(
                               child: BlinkLine(

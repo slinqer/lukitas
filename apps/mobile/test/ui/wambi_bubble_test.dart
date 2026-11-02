@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/home/lukitas_face.dart';
-import 'package:lukitas/ui/lukas_bubble.dart';
+import 'package:wambito/home/wambi_face.dart';
+import 'package:wambito/ui/wambi_bubble.dart';
 
 import '../support/fonts.dart';
 import '../support/ui_app.dart';
 
-/// `LukasBubble`'s behaviour, as apps/web/app/ui/LukasBubble.tsx and its stories define it. How it
-/// looks is test/parity/lukas_bubble_parity_test.dart's job.
+/// `WambiBubble`'s behaviour, as apps/web/app/ui/WambiBubble.tsx and its stories define it. How it
+/// looks is test/parity/wambi_bubble_parity_test.dart's job.
 const _month = 'Vas muy bien: te quedan 501,13 € para 11 días.';
 const _paid = 'Pagaste «gym»: 32,00 €. Vas cumpliendo.';
 
 double _opacity(WidgetTester t) => t
     .widget<FadeTransition>(
-      find.descendant(of: find.byType(LukasBubble), matching: find.byType(FadeTransition)),
+      find.descendant(of: find.byType(WambiBubble), matching: find.byType(FadeTransition)),
     )
     .opacity
     .value;
@@ -21,20 +21,20 @@ double _opacity(WidgetTester t) => t
 void main() {
   setUpAll(loadAppFonts);
 
-  testWidgets('it shows Lukas\'s line beside him', (t) async {
+  testWidgets('it shows Wambi\'s line beside him', (t) async {
     await t.pumpWidget(
-      uiApp(const LukasBubble(message: _month, mood: LukitasMood.happy), width: 390),
+      uiApp(const WambiBubble(message: _month, mood: WambiMood.happy), width: 390),
     );
     expect(find.text(_month), findsOneWidget);
-    expect(find.byType(LukitasFace), findsOneWidget);
+    expect(find.byType(WambiFace), findsOneWidget);
   });
 
-  testWidgets('Lukas is decorative: the line is what screen readers get', (t) async {
+  testWidgets('Wambi is decorative: the line is what screen readers get', (t) async {
     final handle = t.ensureSemantics();
     await t.pumpWidget(
-      uiApp(const LukasBubble(message: _month, mood: LukitasMood.worried), width: 390),
+      uiApp(const WambiBubble(message: _month, mood: WambiMood.worried), width: 390),
     );
-    expect(find.bySemanticsLabel('Lukitas'), findsNothing);
+    expect(find.bySemanticsLabel('Wambi'), findsNothing);
     final line = t.getSemantics(find.text(_month));
     expect(line.flagsCollection.isLiveRegion, isTrue);
     expect(line.label, _month);
@@ -43,7 +43,7 @@ void main() {
 
   testWidgets('a new line fades in from faint over --fade (160 ms)', (t) async {
     Widget bubble(String message) =>
-        uiApp(LukasBubble(message: message, mood: LukitasMood.happy), width: 390);
+        uiApp(WambiBubble(message: message, mood: WambiMood.happy), width: 390);
     await t.pumpWidget(bubble(_month));
     expect(_opacity(t), 1);
     await t.pumpWidget(bubble(_paid));
@@ -57,7 +57,7 @@ void main() {
 
   testWidgets('with "remove animations" a new line just shows', (t) async {
     Widget bubble(String message) => uiApp(
-      LukasBubble(message: message, mood: LukitasMood.happy),
+      WambiBubble(message: message, mood: WambiMood.happy),
       width: 390,
       disableAnimations: true,
     );
@@ -69,7 +69,7 @@ void main() {
 
   testWidgets('the same line again does not fade', (t) async {
     Widget bubble() =>
-        uiApp(const LukasBubble(message: _month, mood: LukitasMood.happy), width: 390);
+        uiApp(const WambiBubble(message: _month, mood: WambiMood.happy), width: 390);
     await t.pumpWidget(bubble());
     await t.pumpWidget(bubble());
     await t.pump();
@@ -80,7 +80,7 @@ void main() {
     t,
   ) async {
     Widget bubble(String message, int quietKey) => uiApp(
-      LukasBubble(message: message, mood: LukitasMood.happy, quietKey: quietKey),
+      WambiBubble(message: message, mood: WambiMood.happy, quietKey: quietKey),
       width: 390,
     );
     await t.pumpWidget(bubble(_month, 0));
@@ -96,9 +96,9 @@ void main() {
   testWidgets('a long line at 130% on a 360px phone wraps and does not overflow', (t) async {
     await t.pumpWidget(
       uiApp(
-        const LukasBubble(
+        const WambiBubble(
           message: '¡Vas bien! Te quedan 11 días y aún tienes margen para casi todo el mes.',
-          mood: LukitasMood.happy,
+          mood: WambiMood.happy,
         ),
         width: 360,
         textScale: 1.3,

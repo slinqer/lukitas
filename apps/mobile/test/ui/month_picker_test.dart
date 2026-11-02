@@ -3,7 +3,7 @@ import 'dart:ui' show Tristate;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/ui/month_picker.dart';
+import 'package:wambito/ui/month_picker.dart';
 
 import '../support/fonts.dart';
 import '../support/ui_app.dart';

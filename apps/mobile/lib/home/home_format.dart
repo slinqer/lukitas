@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../l10n/app_localizations.dart';
 import 'day_groups.dart';
-import 'lukas_line.dart';
+import 'wambi_line.dart';
 
 /// The tag `intl` writes dates with for the app's [locale]. A bare `pt` is Brazilian in CLDR; the
 /// web writes European Portuguese (`Intl` with `pt-PT`), so the app does too. Its data is loaded
@@ -43,52 +43,52 @@ String monthInSentence(String month, String locale) {
 
 /// The words of [line], from the catalog: one of its three [variant]s (1 to 3) when it has them.
 /// [money] writes cents in the person's currency and language.
-String lukasLineText(AppLocalizations l, LukasLine line, int variant, String Function(int) money) {
+String wambiLineText(AppLocalizations l, WambiLine line, int variant, String Function(int) money) {
   final v = ((variant - 1) % 3) + 1;
   return switch (line.key) {
-    LukasKey.firstOfDay => switch (v) {
-      1 => l.lukasFirstOfDay1(line.name),
-      2 => l.lukasFirstOfDay2(line.name),
-      _ => l.lukasFirstOfDay3(line.name),
+    WambiKey.firstOfDay => switch (v) {
+      1 => l.wambiFirstOfDay1(line.name),
+      2 => l.wambiFirstOfDay2(line.name),
+      _ => l.wambiFirstOfDay3(line.name),
     },
-    LukasKey.onTrack => switch (v) {
-      1 => l.lukasOnTrack1(money(line.remaining), line.daysLeft),
-      2 => l.lukasOnTrack2(money(line.remaining), line.daysLeft),
-      _ => l.lukasOnTrack3(money(line.remaining), line.daysLeft),
+    WambiKey.onTrack => switch (v) {
+      1 => l.wambiOnTrack1(money(line.remaining), line.daysLeft),
+      2 => l.wambiOnTrack2(money(line.remaining), line.daysLeft),
+      _ => l.wambiOnTrack3(money(line.remaining), line.daysLeft),
     },
-    LukasKey.nearLimit => switch (v) {
-      1 => l.lukasNearLimit1(line.category, money(line.remaining)),
-      2 => l.lukasNearLimit2(line.category, money(line.remaining)),
-      _ => l.lukasNearLimit3(line.category, money(line.remaining)),
+    WambiKey.nearLimit => switch (v) {
+      1 => l.wambiNearLimit1(line.category, money(line.remaining)),
+      2 => l.wambiNearLimit2(line.category, money(line.remaining)),
+      _ => l.wambiNearLimit3(line.category, money(line.remaining)),
     },
-    LukasKey.overBudget => switch (v) {
-      1 => l.lukasOverBudget1(line.category, money(line.over)),
-      2 => l.lukasOverBudget2(line.category, money(line.over)),
-      _ => l.lukasOverBudget3(line.category, money(line.over)),
+    WambiKey.overBudget => switch (v) {
+      1 => l.wambiOverBudget1(line.category, money(line.over)),
+      2 => l.wambiOverBudget2(line.category, money(line.over)),
+      _ => l.wambiOverBudget3(line.category, money(line.over)),
     },
-    LukasKey.incomeReceived => switch (v) {
-      1 => l.lukasIncomeReceived1(line.name, money(line.amount)),
-      2 => l.lukasIncomeReceived2(line.name, money(line.amount)),
-      _ => l.lukasIncomeReceived3(line.name, money(line.amount)),
+    WambiKey.incomeReceived => switch (v) {
+      1 => l.wambiIncomeReceived1(line.name, money(line.amount)),
+      2 => l.wambiIncomeReceived2(line.name, money(line.amount)),
+      _ => l.wambiIncomeReceived3(line.name, money(line.amount)),
     },
-    LukasKey.pendingPaid => switch (v) {
-      1 => l.lukasPendingPaid1(line.name, money(line.amount)),
-      2 => l.lukasPendingPaid2(line.name, money(line.amount)),
-      _ => l.lukasPendingPaid3(line.name, money(line.amount)),
+    WambiKey.pendingPaid => switch (v) {
+      1 => l.wambiPendingPaid1(line.name, money(line.amount)),
+      2 => l.wambiPendingPaid2(line.name, money(line.amount)),
+      _ => l.wambiPendingPaid3(line.name, money(line.amount)),
     },
-    LukasKey.monthLastDay => switch (v) {
-      1 => l.lukasMonthLastDay1(money(line.remaining)),
-      2 => l.lukasMonthLastDay2(money(line.remaining)),
-      _ => l.lukasMonthLastDay3(money(line.remaining)),
+    WambiKey.monthLastDay => switch (v) {
+      1 => l.wambiMonthLastDay1(money(line.remaining)),
+      2 => l.wambiMonthLastDay2(money(line.remaining)),
+      _ => l.wambiMonthLastDay3(money(line.remaining)),
     },
-    LukasKey.monthClosedGreen => switch (v) {
-      1 => l.lukasMonthClosedGreen1(money(line.remaining)),
-      2 => l.lukasMonthClosedGreen2(money(line.remaining)),
-      _ => l.lukasMonthClosedGreen3(money(line.remaining)),
+    WambiKey.monthClosedGreen => switch (v) {
+      1 => l.wambiMonthClosedGreen1(money(line.remaining)),
+      2 => l.wambiMonthClosedGreen2(money(line.remaining)),
+      _ => l.wambiMonthClosedGreen3(money(line.remaining)),
     },
-    LukasKey.empty => l.lukasEmpty,
-    LukasKey.noBudget => l.lukasNoBudget(money(line.spent)),
-    LukasKey.overTotal => l.lukasOverTotal(money(line.over)),
+    WambiKey.empty => l.wambiEmpty,
+    WambiKey.noBudget => l.wambiNoBudget(money(line.spent)),
+    WambiKey.overTotal => l.wambiOverTotal(money(line.over)),
   };
 }
 

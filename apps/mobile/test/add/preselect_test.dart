@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/add/add_form.dart';
+import 'package:wambito/add/add_form.dart';
 
 import '../home/fixtures.dart';
 import 'add_form_test.dart' show form;

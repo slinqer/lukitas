@@ -210,7 +210,7 @@ class _Tab extends StatelessWidget {
     const radius = BorderRadius.all(Radius.circular(11));
     final duration = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
-        : LukitasTokens.durationPress;
+        : WambitoTokens.durationPress;
 
     return Pressable(
       onPressed: onPressed,

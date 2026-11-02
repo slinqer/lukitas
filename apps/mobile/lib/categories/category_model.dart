@@ -1,6 +1,6 @@
 // What the web's category form and sheets decide, apart from how they look
 // (apps/web/app/features/categories/CategoryForm.tsx and use-category-sheets.tsx).
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../home/category_look.dart';
 
 /// What the category sheet holds and saves: the web's `NewCategory`.

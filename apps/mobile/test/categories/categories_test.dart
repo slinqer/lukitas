@@ -3,16 +3,16 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/categories/categories_repository.dart';
-import 'package:lukitas/home/home_controller.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/home/home_screen.dart';
-import 'package:lukitas/notices/notice_backend.dart';
-import 'package:lukitas/notices/notice_platform.dart';
-import 'package:lukitas/notices/notice_sync.dart';
-import 'package:lukitas/ui/budget_bar.dart';
-import 'package:lukitas/ui/category_row.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/categories/categories_repository.dart';
+import 'package:wambito/home/home_controller.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/home/home_screen.dart';
+import 'package:wambito/notices/notice_backend.dart';
+import 'package:wambito/notices/notice_platform.dart';
+import 'package:wambito/notices/notice_sync.dart';
+import 'package:wambito/ui/budget_bar.dart';
+import 'package:wambito/ui/category_row.dart';
 
 import '../budgets/budgets_test.dart'
     show Env, openBudgetsTab, openDetail, pumpBudgets, testBudgets;

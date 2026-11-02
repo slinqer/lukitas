@@ -1,23 +1,23 @@
-// The web's LukasBubble (apps/web/app/ui/LukasBubble.tsx) and the CSS it uses: app.css `.lk-bubble`
+// The web's WambiBubble (apps/web/app/ui/WambiBubble.tsx) and the CSS it uses: app.css `.lk-bubble`
 // and `.lk-bubble-tail`.
 import 'package:flutter/material.dart';
 
-import '../home/lukitas_face.dart';
+import '../home/wambi_face.dart';
 import '../theme/text_styles.dart';
 import '../theme/tokens.g.dart';
 import 'lk_theme.dart';
 
-/// Lukas beside his speech bubble. The line carries the meaning, so Lukitas is decorative here;
+/// Wambi beside his speech bubble. The line carries the meaning, so Wambi is decorative here;
 /// the bubble is a polite live region, so a new line after a save or a month change is read out
 /// (once). A new line fades in over `--fade`, from faint to full; with "remove animations" it just
 /// shows.
-class LukasBubble extends StatefulWidget {
-  const LukasBubble({super.key, required this.message, required this.mood, this.quietKey});
+class WambiBubble extends StatefulWidget {
+  const WambiBubble({super.key, required this.message, required this.mood, this.quietKey});
 
-  /// Lukas's line, already translated and filled with the real figures.
+  /// Wambi's line, already translated and filled with the real figures.
   final String message;
 
-  final LukitasMood mood;
+  final WambiMood mood;
 
   /// Changing it swaps the line in quietly: the bubble is a new live region, and a live region
   /// that appears with its text is not announced. Home changes it when a line about a save or a
@@ -25,11 +25,11 @@ class LukasBubble extends StatefulWidget {
   final Object? quietKey;
 
   @override
-  State<LukasBubble> createState() => _LukasBubbleState();
+  State<WambiBubble> createState() => _WambiBubbleState();
 }
 
-class _LukasBubbleState extends State<LukasBubble> with SingleTickerProviderStateMixin {
-  late final _fade = AnimationController(vsync: this, duration: LukitasTokens.durationFade);
+class _WambiBubbleState extends State<WambiBubble> with SingleTickerProviderStateMixin {
+  late final _fade = AnimationController(vsync: this, duration: WambitoTokens.durationFade);
 
   /// From faint, never from nothing: the line is readable from its first frame.
   late final _opacity = Tween<double>(
@@ -44,7 +44,7 @@ class _LukasBubbleState extends State<LukasBubble> with SingleTickerProviderStat
   }
 
   @override
-  void didUpdateWidget(LukasBubble old) {
+  void didUpdateWidget(WambiBubble old) {
     super.didUpdateWidget(old);
     if (old.message == widget.message) return;
     if (MediaQuery.disableAnimationsOf(context)) return;
@@ -87,7 +87,7 @@ class _LukasBubbleState extends State<LukasBubble> with SingleTickerProviderStat
         ),
         // `.lk-bubble-tail::before`: a 12px square, turned 45 degrees, 8px out of the padding box
         // (6px out of the border) and centred on the bubble; only its left and bottom edges are
-        // drawn, so it points at Lukas, and its fill covers the bubble's border where they meet.
+        // drawn, so it points at Wambi, and its fill covers the bubble's border where they meet.
         Positioned(
           left: -6,
           top: 0,
@@ -115,9 +115,9 @@ class _LukasBubbleState extends State<LukasBubble> with SingleTickerProviderStat
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
-      spacing: LukitasTokens.space3,
+      spacing: WambitoTokens.space3,
       children: [
-        LukitasFace(mood: widget.mood, size: 72, decorative: true),
+        WambiFace(mood: widget.mood, size: 72, decorative: true),
         // The fade is on the whole bubble: the web animates the `<p>` that is the bubble.
         Expanded(
           child: FadeTransition(opacity: _opacity, child: bubble),

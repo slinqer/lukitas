@@ -3,17 +3,17 @@ import 'dart:async' as dart_async show AsyncError;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../api/session.dart';
 import '../capture/parser/dates.dart';
 import '../offline/pending_saves.dart';
 import '../settings/locale_resolution.dart';
 import 'home_cache.dart';
 import 'home_repository.dart';
-import 'lukas_line.dart';
+import 'wambi_line.dart';
 import 'widget_sync.dart';
 
-/// How long Lukitas talks about a save or a payment before going back to the month's line (the
+/// How long Wambi talks about a save or a payment before going back to the month's line (the
 /// web's `EVENT_LINE_MS`, founder feedback 2026-10-22: a line that stayed for ages).
 const eventLineDuration = Duration(seconds: 10);
 
@@ -99,15 +99,15 @@ class HomeData {
   );
 }
 
-/// The save or payment Lukitas is talking about.
+/// The save or payment Wambi is talking about.
 class HomeEvent {
   const HomeEvent(this.id, this.event, this.month);
 
   /// Grows with each event, so the same kind of event twice still counts as new.
   final int id;
-  final LukasEvent event;
+  final WambiEvent event;
 
-  /// The month (`YYYY-MM`) the movement belongs to: Lukitas talks about it only while that month is
+  /// The month (`YYYY-MM`) the movement belongs to: Wambi talks about it only while that month is
   /// on screen (the web's `fresh.event.month === summary.month`).
   final String month;
 }
@@ -156,7 +156,7 @@ class HomeState {
   final bool staleOffline;
   final bool loadingMore;
 
-  /// While Lukitas should still talk about it.
+  /// While Wambi should still talk about it.
   final HomeEvent? event;
 
   /// Rows brought back by Deshacer, which slide in.
@@ -165,7 +165,7 @@ class HomeState {
   /// Pending rows paid from home: their badge says "Pagado" although the row is already paid.
   final Set<String> paidHere;
 
-  /// Changes whenever a line about an event ends (Lukitas goes back to the month's line): the
+  /// Changes whenever a line about an event ends (Wambi goes back to the month's line): the
   /// bubble takes it as a new live region, so the month's line is not read out a second time.
   final int quietKey;
 
@@ -203,7 +203,7 @@ int _newestFirst(Transaction a, Transaction b) {
 }
 
 /// Home's state and what changes it: the month's summary and movements (loaded, paged, refreshed),
-/// deleting with Deshacer, marking a pending movement paid, and the event Lukitas talks about.
+/// deleting with Deshacer, marking a pending movement paid, and the event Wambi talks about.
 ///
 /// Changes show at once (optimistic) and roll back when the server refuses; a failure is thrown as
 /// a [HomeFailure] for the screen to say. Every load of the summary also writes the widget's
@@ -686,7 +686,7 @@ class HomeController extends Notifier<HomeState> {
     unawaited(_refreshSummary());
   }
 
-  /// Marks a pending [tx] paid. Lukitas talks about it for [eventLineDuration]. A refusal puts the
+  /// Marks a pending [tx] paid. Wambi talks about it for [eventLineDuration]. A refusal puts the
   /// row back to pending and throws a [HomeFailure].
   Future<void> markPaid(Transaction tx) async {
     final data = state.data;
@@ -707,8 +707,8 @@ class HomeController extends Notifier<HomeState> {
     // The figures after the payment first, so the line says the truth.
     await _refreshSummary();
     report(
-      LukasEvent(
-        kind: LukasEventKind.paid,
+      WambiEvent(
+        kind: WambiEventKind.paid,
         categoryId: tx.categoryId,
         amount: tx.amount,
         name: tx.name,
@@ -736,7 +736,7 @@ class HomeController extends Notifier<HomeState> {
   }
 
   /// A movement the add sheet just saved: its row is there at once, what is saved for a start with
-  /// no network follows, and the summary is asked again (only the latest answer counts). Lukitas
+  /// no network follows, and the summary is asked again (only the latest answer counts). Wambi
   /// talks about it once the figures are in, unless a newer event has taken over meanwhile.
   Future<void> saved(Transaction tx) async {
     if (state.data == null) return;
@@ -746,8 +746,8 @@ class HomeController extends Notifier<HomeState> {
     await _refreshSummary();
     if (!_alive || _eventId != eventBefore) return;
     report(
-      LukasEvent(
-        kind: LukasEventKind.saved,
+      WambiEvent(
+        kind: WambiEventKind.saved,
         categoryId: tx.categoryId,
         amount: tx.amount,
         name: tx.name,
@@ -758,7 +758,7 @@ class HomeController extends Notifier<HomeState> {
 
   /// Movements a quick capture just saved together: their rows are there at once, what is saved
   /// for a start with no network follows, and the summary is asked once (only the latest answer
-  /// counts). No Lukitas event: capture shows its own celebration for the batch.
+  /// counts). No Wambi event: capture shows its own celebration for the batch.
   Future<void> savedBatch(List<Transaction> saved) async {
     if (state.data == null) return;
     for (final tx in saved) {
@@ -791,10 +791,10 @@ class HomeController extends Notifier<HomeState> {
     await _refreshSummary();
   }
 
-  /// Lukitas talks about [event] for [eventLineDuration], then goes back to the month's line. Also
+  /// Wambi talks about [event] for [eventLineDuration], then goes back to the month's line. Also
   /// for a save (the add sheet reports it). [month] is the month the movement belongs to (the
-  /// month on screen when not given): Lukitas speaks of it only while that month is shown.
-  void report(LukasEvent event, {String? month}) {
+  /// month on screen when not given): Wambi speaks of it only while that month is shown.
+  void report(WambiEvent event, {String? month}) {
     _eventTimer?.cancel();
     final id = ++_eventId;
     _set(

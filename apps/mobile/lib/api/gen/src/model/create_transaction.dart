@@ -3,8 +3,8 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:wambito/api/gen/src/model/create_transaction_repeat.dart';
 import 'package:built_collection/built_collection.dart';
-import 'package:lukitas/api/gen/src/model/create_transaction_repeat.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 

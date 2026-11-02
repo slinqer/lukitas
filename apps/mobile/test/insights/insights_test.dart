@@ -5,18 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/feedback/feedback.dart';
-import 'package:lukitas/home/home_controller.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/home/home_screen.dart';
-import 'package:lukitas/insights/chart_geometry.dart';
-import 'package:lukitas/insights/charts.dart';
-import 'package:lukitas/insights/insights_controller.dart';
-import 'package:lukitas/insights/insights_repository.dart';
-import 'package:lukitas/insights/insights_screen.dart';
-import 'package:lukitas/theme/theme.dart';
-import 'package:lukitas/ui/month_picker.dart';
-import 'package:lukitas/ui/segmented_control.dart';
+import 'package:wambito/feedback/feedback.dart';
+import 'package:wambito/home/home_controller.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/home/home_screen.dart';
+import 'package:wambito/insights/chart_geometry.dart';
+import 'package:wambito/insights/charts.dart';
+import 'package:wambito/insights/insights_controller.dart';
+import 'package:wambito/insights/insights_repository.dart';
+import 'package:wambito/insights/insights_screen.dart';
+import 'package:wambito/theme/theme.dart';
+import 'package:wambito/ui/month_picker.dart';
+import 'package:wambito/ui/segmented_control.dart';
 
 import '../feedback/fakes.dart';
 import '../home/fakes.dart';
@@ -64,7 +64,7 @@ Future<Env> pumpInsights(
     overrides: [
       insightsRepositoryProvider.overrideWithValue(fake),
       clockProvider.overrideWithValue(() => testNow),
-      lukasVariantProvider.overrideWithValue(() => 1),
+      wambiVariantProvider.overrideWithValue(() => 1),
       ...overrides,
     ],
   );
@@ -124,7 +124,7 @@ void main() {
       expect(find.byType(InsightsScreen), findsNothing);
     });
 
-    testInsights('shows the same figures as the web: the heading, Lukitas and the three cards', (
+    testInsights('shows the same figures as the web: the heading, Wambi and the three cards', (
       tester,
     ) async {
       await pumpInsights(tester, location: '/insights');
@@ -256,7 +256,7 @@ void main() {
       expect(summary('Ingresos por categoría en octubre'), findsOneWidget);
       expect(find.text('RECIBIDO'), findsOneWidget);
       expect(find.text('Nómina'), findsOneWidget);
-      // Lukitas still talks about the spending.
+      // Wambi still talks about the spending.
       expect(find.textContaining('Hogar fue lo que más lukas'), findsOneWidget);
 
       await tester.tap(option<InsightsKind>('Gastos'));
@@ -318,7 +318,7 @@ void main() {
   });
 
   group('a month without data, and not enough history', () {
-    testInsights('says so in words in every card, and Lukitas says what will show up', (
+    testInsights('says so in words in every card, and Wambi says what will show up', (
       tester,
     ) async {
       await pumpInsights(
@@ -407,7 +407,7 @@ void main() {
       env.home.items.add(added);
       await env.settings.container.read(homeProvider.notifier).saved(added);
       await tester.pumpAndSettle();
-      // Lukitas talks about it for ten seconds; then he is quiet.
+      // Wambi talks about it for ten seconds; then he is quiet.
       await tester.pump(const Duration(seconds: 11));
 
       expect(find.textContaining('Ocio fue lo que más lukas se llevó en octubre'), findsOneWidget);

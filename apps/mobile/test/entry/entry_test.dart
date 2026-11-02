@@ -4,11 +4,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/auth_api.dart';
-import 'package:lukitas/api/session.dart';
-import 'package:lukitas/home/home_screen.dart';
-import 'package:lukitas/router.dart';
-import 'package:lukitas/ui/press_button.dart';
+import 'package:wambito/api/auth_api.dart';
+import 'package:wambito/api/session.dart';
+import 'package:wambito/home/home_screen.dart';
+import 'package:wambito/router.dart';
+import 'package:wambito/ui/press_button.dart';
 
 import 'fakes.dart';
 
@@ -175,7 +175,7 @@ void main() {
       },
     );
 
-    testWidgets('a not-allowlisted email shows "Lukitas todavía no está abierto al público…"', (
+    testWidgets('a not-allowlisted email shows "Wambito todavía no está abierto al público…"', (
       tester,
     ) async {
       await pumpApp(tester, auth: auth);
@@ -187,7 +187,7 @@ void main() {
 
       expect(
         find.text(
-          'Lukitas todavía no está abierto al público. Si quieres probarlo, escríbele a quien te '
+          'Wambito todavía no está abierto al público. Si quieres probarlo, escríbele a quien te '
           'invitó.',
         ),
         findsOneWidget,
@@ -481,7 +481,7 @@ void main() {
       expect(auth.calls, ['passkeySignInOptions']);
       expect(find.byType(HomeScreen), findsNothing);
       expect(find.textContaining('Inténtalo'), findsNothing);
-      expect(find.text('Entra a Lukitas'), findsOneWidget);
+      expect(find.text('Entra a Wambito'), findsOneWidget);
       expect(emailFocused(tester), isTrue);
 
       // And the email still works.

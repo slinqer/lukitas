@@ -1,4 +1,4 @@
-import 'package:lukitas/feedback/feedback.dart';
+import 'package:wambito/feedback/feedback.dart';
 
 /// The phone's motor and speaker, recorded.
 class FakeFeedbackPlatform implements FeedbackPlatform {

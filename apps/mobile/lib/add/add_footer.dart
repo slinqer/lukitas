@@ -33,7 +33,7 @@ class AddFooter extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: compact ? LukitasTokens.space1 : LukitasTokens.space2,
+      spacing: compact ? WambitoTokens.space1 : WambitoTokens.space2,
       children: [
         if (failure != null)
           SaveFailureRow(
@@ -54,25 +54,25 @@ class AddFooter extends StatelessWidget {
             compact: compact,
           ),
         Row(
-          spacing: LukitasTokens.space2,
+          spacing: WambitoTokens.space2,
           children: [
             if (editing)
               PressButton.text(
                 l10n.addDelete,
                 key: const Key('add.delete'),
                 tone: PressTone.secondary,
-                horizontalPadding: LukitasTokens.space4,
+                horizontalPadding: WambitoTokens.space4,
                 onPressed: session.saving ? null : session.delete,
               ),
             Expanded(
               child: PressButton(
                 key: const Key('add.save'),
-                horizontalPadding: LukitasTokens.space4,
+                horizontalPadding: WambitoTokens.space4,
                 onPressed: form.valid && !session.saving ? () => unawaited(session.save()) : null,
                 child: session.saving
                     ? Row(
                         mainAxisSize: MainAxisSize.min,
-                        spacing: LukitasTokens.space2,
+                        spacing: WambitoTokens.space2,
                         children: [const QuietSpinner(), Text(LkText.upperCase(l10n.addSaving))],
                       )
                     : Text(LkText.upperCase(editing ? l10n.addSaveChanges : l10n.addSave)),

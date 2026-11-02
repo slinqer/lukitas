@@ -2,9 +2,9 @@
 // income is income, an expense that leaves its category near or over its limit says so, and
 // otherwise it is a plain save. A batch takes the state after the whole batch.
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/feedback/feedback.dart';
-import 'package:lukitas/home/home_controller.dart';
-import 'package:lukitas/home/saved_feedback.dart';
+import 'package:wambito/feedback/feedback.dart';
+import 'package:wambito/home/home_controller.dart';
+import 'package:wambito/home/saved_feedback.dart';
 
 import '../home/fixtures.dart';
 

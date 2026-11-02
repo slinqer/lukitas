@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../api/session.dart';
 import '../home/home_controller.dart';
 import '../home/home_repository.dart';
@@ -93,7 +93,7 @@ class InsightsState {
   /// The donut's totals ([ByCategoryRange] answered).
   final Slot<CategoryReport> byCategory;
 
-  /// The period's spending, which Lukitas talks about whatever the donut shows.
+  /// The period's spending, which Wambi talks about whatever the donut shows.
   final Slot<CategoryReport> spending;
 
   /// Income, expenses and budget per month over the period ([Period] answered).
@@ -254,7 +254,7 @@ class InsightsController extends Notifier<InsightsState> {
     final period = periodOf(end, state.span);
     final range = (period: period, kind: state.kind, status: state.status);
     final spendingRange = (period: period, kind: InsightsKind.expense, status: InsightsStatus.all);
-    // Lukitas talks about the period's spending, whatever the donut shows. When the donut shows
+    // Wambi talks about the period's spending, whatever the donut shows. When the donut shows
     // that too, it is one request, as the web's shared query key makes it.
     final same = range == spendingRange;
     return Future.wait([

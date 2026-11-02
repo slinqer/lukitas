@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/entry/passkey_offer_screen.dart';
-import 'package:lukitas/ui/press_button.dart';
+import 'package:wambito/entry/passkey_offer_screen.dart';
+import 'package:wambito/ui/press_button.dart';
 
 import '../support/ui_app.dart';
 
@@ -47,7 +47,7 @@ void main() {
     expect(find.text('Así entras sin esperar el código.'), findsOneWidget);
     for (final point in [
       'Una passkey es una llave guardada en este teléfono, en Google, Samsung Pass, iCloud o Proton Pass.',
-      'Tu huella o tu cara solo la desbloquean. Lukitas nunca las recibe.',
+      'Tu huella o tu cara solo la desbloquean. Wambito nunca las recibe.',
       'Se sincroniza con tus otros dispositivos que usan la misma cuenta.',
       'Tu correo sigue funcionando como respaldo.',
     ]) {

@@ -135,7 +135,7 @@ class _PressableState extends State<Pressable> {
   /// Lets go, but not before the press has been shown for `--press`: a quick tap still sinks.
   void _up() {
     final shownFor = _downAt == null ? Duration.zero : DateTime.now().difference(_downAt!);
-    final left = LukitasTokens.durationPress - shownFor;
+    final left = WambitoTokens.durationPress - shownFor;
     _release?.cancel();
     if (left <= Duration.zero) {
       _letGo();
@@ -374,7 +374,7 @@ class PressSurface extends StatelessWidget {
   Widget build(BuildContext context) {
     final duration = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
-        : LukitasTokens.durationPress;
+        : WambitoTokens.durationPress;
     return AnimatedContainer(
       duration: duration,
       curve: Curves.ease,

@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/home/widget_snapshot.dart';
-import 'package:lukitas/theme/tokens.g.dart';
+import 'package:wambito/home/widget_snapshot.dart';
+import 'package:wambito/theme/tokens.g.dart';
 
 // Checks that the Kotlin side of the home-screen widget (android/.../widget/) agrees with the Dart
 // side it cannot import: the colours, the secure storage options, the snapshot version, the
@@ -24,8 +24,8 @@ void main() {
         .allMatches(source)
         .toList();
     expect(entries, isNotEmpty);
-    const night = LukitasColors.night;
-    const day = LukitasColors.day;
+    const night = WambitoColors.night;
+    const day = WambitoColors.day;
     final tokens = <String, (Color, Color)>{
       'surface': (night.surface, day.surface),
       'ink': (night.ink, day.ink),
@@ -110,7 +110,7 @@ void main() {
     final hex = RegExp(r'<color name="lukitas_night_bg">#([0-9A-Fa-f]{6})</color>')
         .firstMatch(colors)!
         .group(1)!;
-    expect(0xFF000000 | int.parse(hex, radix: 16), _argb(LukitasColors.night.bg));
+    expect(0xFF000000 | int.parse(hex, radix: 16), _argb(WambitoColors.night.bg));
     for (final file in ['drawable/launch_background.xml', 'drawable-v21/launch_background.xml']) {
       expect(File('$res/$file').readAsStringSync(), contains('@color/lukitas_night_bg'));
     }

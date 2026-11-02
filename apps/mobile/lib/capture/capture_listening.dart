@@ -2,17 +2,17 @@ import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/widgets.dart';
 
 import '../home/home_widgets.dart' show QuietSpinner;
-import '../home/lukitas_face.dart';
+import '../home/wambi_face.dart';
 import '../theme/surfaces.dart';
 import '../theme/text_styles.dart';
 import '../theme/tokens.g.dart';
 import '../ui/lk_theme.dart';
-import '../ui/lukas_bubble.dart';
+import '../ui/wambi_bubble.dart';
 import '../ui/press_button.dart';
 import 'capture_session.dart';
 import 'mic_level.dart';
 
-/// While the microphone is open: Lukas asks "¿En qué gastaste?" in his bubble (once the engine is
+/// While the microphone is open: Wambi asks "¿En qué gastaste?" in his bubble (once the engine is
 /// ready, so no start of a sentence is lost; before, he says he is getting the microphone ready),
 /// the input level moves in a sunken box under him, and what has been understood so far shows
 /// underneath, growing as the person speaks.
@@ -26,11 +26,11 @@ class CaptureListeningBody extends StatelessWidget {
     final colors = context.lkColors;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: LukitasTokens.space3,
+      spacing: WambitoTokens.space3,
       children: [
-        LukasBubble(
+        WambiBubble(
           message: session.ready ? l10n.captureListeningPrompt : l10n.capturePreparing,
-          mood: LukitasMood.happy,
+          mood: WambiMood.happy,
         ),
         CaptureWaves(ready: session.ready, levels: session.levels),
         // The explanation of where the voice goes, for the first use only.
@@ -80,7 +80,7 @@ class CaptureWaves extends StatelessWidget {
           child: ready
               ? Row(
                   mainAxisSize: MainAxisSize.min,
-                  spacing: LukitasTokens.space3,
+                  spacing: WambitoTokens.space3,
                   children: [
                     ExcludeSemantics(child: Icon(Icons.mic, size: 28, color: colors.brand)),
                     MicLevel(levels: levels),
@@ -105,20 +105,20 @@ class CaptureListeningActions extends StatelessWidget {
     final session = CaptureSession.of(context);
     final l10n = session.l10n;
     return Row(
-      spacing: LukitasTokens.space2,
+      spacing: WambitoTokens.space2,
       children: [
         PressButton.text(
           l10n.captureTypeInstead,
           key: const Key('capture.type'),
           tone: PressTone.secondary,
-          horizontalPadding: LukitasTokens.space4,
+          horizontalPadding: WambitoTokens.space4,
           onPressed: enabled ? () => session.type(null, text: session.heard) : null,
         ),
         Expanded(
           child: PressButton.text(
             l10n.captureStop,
             key: const Key('capture.stop'),
-            horizontalPadding: LukitasTokens.space4,
+            horizontalPadding: WambitoTokens.space4,
             onPressed: enabled ? session.stopListening : null,
           ),
         ),

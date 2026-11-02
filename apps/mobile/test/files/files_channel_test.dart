@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/files/files_channel.dart';
+import 'package:wambito/files/files_channel.dart';
 
 /// `lukitas/files` (android/.../files/FilesChannel.kt) as Dart talks to it: the arguments it sends
 /// and what it makes of the answers. The Kotlin side has its own tests and the emulator one.
@@ -89,11 +89,11 @@ void main() {
 
   test('saveFile sends the name, the bytes and the type; true when it was saved', () async {
     answer((_) async => true);
-    final saved = await files.saveFile('lukitas.csv', Uint8List.fromList([9]), 'text/csv');
+    final saved = await files.saveFile('wambito.csv', Uint8List.fromList([9]), 'text/csv');
     expect(saved, isTrue);
     expect(calls.single.method, 'save');
     expect(calls.single.arguments, {
-      'name': 'lukitas.csv',
+      'name': 'wambito.csv',
       'bytes': Uint8List.fromList([9]),
       'mime': 'text/csv',
     });

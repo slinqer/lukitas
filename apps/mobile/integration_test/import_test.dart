@@ -2,7 +2,7 @@
 // repo root), as docs/mobile/setup.md describes:
 //
 //   flutter test integration_test/import_test.dart -d emulator-5554 \
-//     --dart-define=LUKITAS_SERVER=http://10.0.2.2:3000
+//     --dart-define=WAMBITO_SERVER=http://10.0.2.2:3000
 //
 // The files go through the real `lukitas/files` channel (android/.../files/FilesChannel.kt): the
 // debug build lets the test stand in for the person at the system's document picker (`injectPick`
@@ -18,9 +18,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:lukitas/api/session.dart';
-import 'package:lukitas/home/home_screen.dart';
-import 'package:lukitas/main.dart' as app;
+import 'package:wambito/api/session.dart';
+import 'package:wambito/home/home_screen.dart';
+import 'package:wambito/main.dart' as app;
 
 /// CI's emulator draws with software rendering, and its longest gap was 866 ms with nothing wrong
 /// (the script passes `CI=true` from the runner's own environment). A phone or a local emulator keeps
@@ -28,7 +28,7 @@ import 'package:lukitas/main.dart' as app;
 const _ci = bool.fromEnvironment('CI');
 const _longestFrameGap = Duration(milliseconds: _ci ? 1500 : 700);
 
-const _server = String.fromEnvironment('LUKITAS_SERVER', defaultValue: 'http://10.0.2.2:3000');
+const _server = String.fromEnvironment('WAMBITO_SERVER', defaultValue: 'http://10.0.2.2:3000');
 const _files = MethodChannel('lukitas/files');
 
 final _http = Dio(BaseOptions(validateStatus: (_) => true));

@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/ui/app_shell.dart';
+import 'package:wambito/ui/app_shell.dart';
 
 /// Where the page's background gradient is now, on the test's screen: the web's `.lk-screen`, as
 /// tall as the page and scrolling with it (the shell paints it from its screen's scroll metrics).

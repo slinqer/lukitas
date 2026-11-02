@@ -137,7 +137,7 @@ class BottomBar extends StatelessWidget {
                   top: floor - 58,
                   height: 58,
                   child: Center(
-                    // Lukitas lands just above it when something is celebrated (the web's
+                    // Wambi lands just above it when something is celebrated (the web's
                     // `data-celebration-anchor="64"` on the ＋).
                     child: CelebrationAnchor(
                       size: 64,

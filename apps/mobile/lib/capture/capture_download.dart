@@ -30,7 +30,7 @@ class _VoiceCard extends StatelessWidget {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: LukitasTokens.space2,
+              spacing: WambitoTokens.space2,
               children: [title, ...children],
             ),
           ),
@@ -90,11 +90,11 @@ class CaptureOfferActions extends StatelessWidget {
     final megabytes = ((session.model?.bytes ?? 0) / 1e6).round();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: LukitasTokens.space1,
+      spacing: WambitoTokens.space1,
       children: [
         PressButton(
           key: const Key('capture.offer.download'),
-          horizontalPadding: LukitasTokens.space4,
+          horizontalPadding: WambitoTokens.space4,
           onPressed: () => unawaited(session.downloadModel()),
           child: Text(
             LkText.upperCase(
@@ -148,7 +148,7 @@ class CaptureDownloadingActions extends StatelessWidget {
       session.l10n.captureDownloadCancel,
       key: const Key('capture.download.cancel'),
       tone: PressTone.secondary,
-      horizontalPadding: LukitasTokens.space4,
+      horizontalPadding: WambitoTokens.space4,
       onPressed: session.cancelDownload,
     );
   }
@@ -166,8 +166,8 @@ class _ProgressTrack extends StatelessWidget {
     final colors = context.lkColors;
     final duration = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
-        : LukitasTokens.durationCountUp;
-    const radius = BorderRadius.all(Radius.circular(LukitasTokens.radiusPill));
+        : WambitoTokens.durationCountUp;
+    const radius = BorderRadius.all(Radius.circular(WambitoTokens.radiusPill));
     return ExcludeSemantics(
       child: SizedBox(
         height: 12,

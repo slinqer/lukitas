@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/server_url.dart';
-import 'package:lukitas/home/home_controller.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/router.dart';
-import 'package:lukitas/settings/assistants_repository.dart';
-import 'package:lukitas/settings/initial_settings.dart';
+import 'package:wambito/api/server_url.dart';
+import 'package:wambito/home/home_controller.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/router.dart';
+import 'package:wambito/settings/assistants_repository.dart';
+import 'package:wambito/settings/initial_settings.dart';
 
 import '../home/fakes.dart';
 import 'fakes.dart';
@@ -129,14 +129,14 @@ void main() {
         overrides: [
           initialSettingsProvider.overrideWithValue(
             InitialSettings(
-              serverUrl: Uri.parse('https://lukas.example.test'),
+              serverUrl: Uri.parse('https://wambito.example.test'),
               themeMode: ThemeMode.dark,
             ),
           ),
         ],
       );
       await _scrollTo(t, find.byKey(const Key('settings.assistants.copy')));
-      expect(find.text('https://lukas.example.test/mcp'), findsOneWidget);
+      expect(find.text('https://wambito.example.test/mcp'), findsOneWidget);
     });
 
     testPage('copies the address, and says so', (t) async {

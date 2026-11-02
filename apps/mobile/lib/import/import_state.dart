@@ -1,5 +1,5 @@
 // The import's state: a port of apps/web/app/features/onboarding/import-state.ts.
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../home/home_repository.dart' show HomeFailure;
 
 /// What the import does with the file's currency, from the preview's stats. [switching]: the account

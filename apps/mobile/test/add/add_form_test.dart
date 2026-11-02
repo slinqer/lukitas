@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/add/add_form.dart';
-import 'package:lukitas/add/idempotency_key.dart';
-import 'package:lukitas/add/keypad_input.dart';
-import 'package:lukitas/api/gen/lukitas_api.dart';
+import 'package:wambito/add/add_form.dart';
+import 'package:wambito/add/idempotency_key.dart';
+import 'package:wambito/add/keypad_input.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
 
 import '../home/fixtures.dart';
 

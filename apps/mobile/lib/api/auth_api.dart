@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'client.dart';
 import 'device.dart';
 import 'server_url.dart';
-import 'gen/lukitas_api.dart';
+import 'gen/wambito_api.dart';
 
 /// A failed auth call: the server's error `code` when it sent one (Better Auth's, such as
 /// `INVALID_OTP`, or the API's, such as `sign_in_not_allowed`), the HTTP status (0: no response),

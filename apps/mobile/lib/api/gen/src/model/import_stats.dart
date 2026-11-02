@@ -3,10 +3,10 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:lukitas/api/gen/src/model/import_stats_average_monthly_spending_inner.dart';
+import 'package:wambito/api/gen/src/model/import_stats_average_monthly_spending_inner.dart';
 import 'package:built_collection/built_collection.dart';
-import 'package:lukitas/api/gen/src/model/import_stats_rejected_inner.dart';
-import 'package:lukitas/api/gen/src/model/import_stats_average_window.dart';
+import 'package:wambito/api/gen/src/model/import_stats_average_window.dart';
+import 'package:wambito/api/gen/src/model/import_stats_rejected_inner.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 

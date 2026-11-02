@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/entry/code_input.dart';
-import 'package:lukitas/ui/pressable.dart';
+import 'package:wambito/entry/code_input.dart';
+import 'package:wambito/ui/pressable.dart';
 
 import '../support/ui_app.dart';
 

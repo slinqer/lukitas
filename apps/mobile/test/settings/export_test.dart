@@ -6,10 +6,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/files/files_channel.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/settings/account_repository.dart';
-import 'package:lukitas/ui/press_button.dart';
+import 'package:wambito/files/files_channel.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/settings/account_repository.dart';
+import 'package:wambito/ui/press_button.dart';
 
 import 'account_harness.dart';
 
@@ -56,7 +56,7 @@ void main() {
       await _tapExport(t, 'json');
       expect(env.accounts.exports, [ExportFormat.json]);
       expect(find.text('Tu archivo está listo'), findsOneWidget);
-      expect(find.text('¿Qué hacemos con lukas-export-2026-10-21.json?'), findsOneWidget);
+      expect(find.text('¿Qué hacemos con wambito-export-2026-10-21.json?'), findsOneWidget);
       expect(find.byKey(const Key('settings.export.save')), findsOneWidget);
       expect(find.byKey(const Key('settings.export.share')), findsOneWidget);
       // Nothing is written or sent before the person chooses.
@@ -72,11 +72,11 @@ void main() {
         await t.tap(find.byKey(const Key('settings.export.save')));
         await t.pumpAndSettle();
         final (name, bytes, mime) = env.files.saved.single;
-        expect(name, 'lukas-export-2026-10-21.json');
+        expect(name, 'wambito-export-2026-10-21.json');
         expect(mime, 'application/json');
         expect(utf8.decode(bytes), '{"user":{"id":"user-1"}}');
         expect(env.files.shared, isEmpty);
-        expect(find.text('Listo: guardamos lukas-export-2026-10-21.json.'), findsOneWidget);
+        expect(find.text('Listo: guardamos wambito-export-2026-10-21.json.'), findsOneWidget);
         // The question is gone.
         expect(find.text('Tu archivo está listo'), findsNothing);
         await t.pump(const Duration(seconds: 10));
@@ -90,7 +90,7 @@ void main() {
       await t.tap(find.byKey(const Key('settings.export.save')));
       await t.pumpAndSettle();
       final (name, bytes, mime) = env.files.saved.single;
-      expect(name, 'lukas-export-2026-10-21.csv');
+      expect(name, 'wambito-export-2026-10-21.csv');
       expect(mime, 'text/csv');
       expect(utf8.decode(bytes), startsWith('date,name,amount'));
       await t.pump(const Duration(seconds: 10));
@@ -125,7 +125,7 @@ void main() {
       await t.tap(find.byKey(const Key('settings.export.share')));
       await t.pumpAndSettle();
       final (name, bytes, mime) = env.files.shared.single;
-      expect(name, 'lukas-export-2026-10-21.csv');
+      expect(name, 'wambito-export-2026-10-21.csv');
       expect(mime, 'text/csv');
       expect(utf8.decode(bytes), contains('Arriendo'));
       expect(env.files.saved, isEmpty);

@@ -333,58 +333,58 @@
     "appTest": "test/parity/budget_bar_parity_test.dart"
   },
   {
-    "id": "lukas-bubble-happy",
-    "storyId": "lukas-lukasbubble--happy",
+    "id": "wambi-bubble-happy",
+    "storyId": "wambi-wambibubble--happy",
     "theme": "night",
-    "appTest": "test/parity/lukas_bubble_parity_test.dart"
+    "appTest": "test/parity/wambi_bubble_parity_test.dart"
   },
   {
-    "id": "lukas-bubble-happy",
-    "storyId": "lukas-lukasbubble--happy",
+    "id": "wambi-bubble-happy",
+    "storyId": "wambi-wambibubble--happy",
     "theme": "day",
-    "appTest": "test/parity/lukas_bubble_parity_test.dart"
+    "appTest": "test/parity/wambi_bubble_parity_test.dart"
   },
   {
-    "id": "lukas-bubble-worried",
-    "storyId": "lukas-lukasbubble--worried",
+    "id": "wambi-bubble-worried",
+    "storyId": "wambi-wambibubble--worried",
     "theme": "night",
-    "appTest": "test/parity/lukas_bubble_parity_test.dart"
+    "appTest": "test/parity/wambi_bubble_parity_test.dart"
   },
   {
-    "id": "lukas-bubble-worried",
-    "storyId": "lukas-lukasbubble--worried",
+    "id": "wambi-bubble-worried",
+    "storyId": "wambi-wambibubble--worried",
     "theme": "day",
-    "appTest": "test/parity/lukas_bubble_parity_test.dart"
+    "appTest": "test/parity/wambi_bubble_parity_test.dart"
   },
   {
-    "id": "lukas-bubble-celebrating-day",
-    "storyId": "lukas-lukasbubble--celebrating-day",
+    "id": "wambi-bubble-celebrating-day",
+    "storyId": "wambi-wambibubble--celebrating-day",
     "theme": "day",
-    "appTest": "test/parity/lukas_bubble_parity_test.dart"
+    "appTest": "test/parity/wambi_bubble_parity_test.dart"
   },
   {
-    "id": "lukas-bubble-payment-line",
-    "storyId": "lukas-lukasbubble--payment-line-then-quiet",
+    "id": "wambi-bubble-payment-line",
+    "storyId": "wambi-wambibubble--payment-line-then-quiet",
     "theme": "night",
-    "appTest": "test/parity/lukas_bubble_parity_test.dart"
+    "appTest": "test/parity/wambi_bubble_parity_test.dart"
   },
   {
-    "id": "lukas-bubble-payment-line",
-    "storyId": "lukas-lukasbubble--payment-line-then-quiet",
+    "id": "wambi-bubble-payment-line",
+    "storyId": "wambi-wambibubble--payment-line-then-quiet",
     "theme": "day",
-    "appTest": "test/parity/lukas_bubble_parity_test.dart"
+    "appTest": "test/parity/wambi_bubble_parity_test.dart"
   },
   {
-    "id": "lukas-bubble-payment-line-reduced-motion",
-    "storyId": "lukas-lukasbubble--payment-line-reduced-motion",
+    "id": "wambi-bubble-payment-line-reduced-motion",
+    "storyId": "wambi-wambibubble--payment-line-reduced-motion",
     "theme": "night",
-    "appTest": "test/parity/lukas_bubble_parity_test.dart"
+    "appTest": "test/parity/wambi_bubble_parity_test.dart"
   },
   {
-    "id": "lukas-bubble-payment-line-reduced-motion",
-    "storyId": "lukas-lukasbubble--payment-line-reduced-motion",
+    "id": "wambi-bubble-payment-line-reduced-motion",
+    "storyId": "wambi-wambibubble--payment-line-reduced-motion",
     "theme": "day",
-    "appTest": "test/parity/lukas_bubble_parity_test.dart"
+    "appTest": "test/parity/wambi_bubble_parity_test.dart"
   },
   {
     "id": "money-huge-amount",

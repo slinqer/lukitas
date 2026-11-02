@@ -1,6 +1,6 @@
 // The web's Insights (apps/web/app/features/insights/Insights.tsx), `/app/insights`: the month on
 // screen (the person's current one first, earlier ones browsable) or a run of months ending at it;
-// Lukitas saying what took the biggest bite; where the money went by category; income, spending
+// Wambi saying what took the biggest bite; where the money went by category; income, spending
 // and budget month by month; and what living costs.
 import 'dart:async';
 import 'dart:math' as math;
@@ -14,7 +14,7 @@ import '../capture/capture_sheet.dart';
 import '../feedback/feedback.dart';
 import '../home/home_controller.dart';
 import '../home/home_repository.dart';
-import '../home/lukitas_face.dart';
+import '../home/wambi_face.dart';
 import '../home/screen_error.dart';
 import '../home/home_widgets.dart' show QuietSpinner;
 import '../home/shell_navigation.dart';
@@ -25,7 +25,7 @@ import '../theme/tokens.g.dart';
 import '../ui/app_shell.dart';
 import '../ui/css_text.dart';
 import '../ui/lk_theme.dart';
-import '../ui/lukas_bubble.dart';
+import '../ui/wambi_bubble.dart';
 import '../ui/month_picker.dart';
 import '../ui/press_button.dart';
 import '../ui/segmented_control.dart';
@@ -148,7 +148,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
     final colors = context.lkColors;
     String money(int cents) => formatMoney(cents, data.currency, locale);
 
-    // Lukitas speaks about the answer he has, with its own period: never a new month's name with
+    // Wambi speaks about the answer he has, with its own period: never a new month's name with
     // an old month's figures.
     final spending = state.spending.data;
     final spendingRange = state.spending.dataKey;
@@ -157,8 +157,8 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
       final phrase = periodPhrase(l10n, spendingRange.period, current);
       final top = spending.items.firstOrNull;
       line = top == null
-          ? l10n.insightsLukasEmpty(phrase)
-          : l10n.insightsLukasTop(top.name, phrase, money(top.total));
+          ? l10n.insightsWambiEmpty(phrase)
+          : l10n.insightsWambiTop(top.name, phrase, money(top.total));
     }
     final byCategoryRange = state.byCategory.dataKey;
     final trendRange = state.trend.dataKey;
@@ -171,8 +171,8 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
         child: LayoutBuilder(
           builder: (context, constraints) {
             final inset = math.max(
-              LukitasTokens.space4,
-              (constraints.maxWidth - _maxContentWidth) / 2 + LukitasTokens.space4,
+              WambitoTokens.space4,
+              (constraints.maxWidth - _maxContentWidth) / 2 + WambitoTokens.space4,
             );
             // The page is a screen tall at least (`min-h-dvh`), and a pull anywhere on it refreshes.
             return SwipeScope(
@@ -188,13 +188,13 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                       Padding(
                         padding: EdgeInsets.fromLTRB(
                           inset + ShellRoom.sides(context).left,
-                          LukitasTokens.space3,
+                          WambitoTokens.space3,
                           inset + ShellRoom.sides(context).right,
                           ShellRoom.of(context),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
-                          spacing: LukitasTokens.space3,
+                          spacing: WambitoTokens.space3,
                           children: [
                             _Header(
                               title: l10n.insightsTitle,
@@ -215,7 +215,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                             ),
                             if (staleFailure != null)
                               Row(
-                                spacing: LukitasTokens.space3,
+                                spacing: WambitoTokens.space3,
                                 children: [
                                   Expanded(
                                     child: Semantics(
@@ -243,7 +243,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                                 constraints: const BoxConstraints(minHeight: 72),
                                 child: line == null
                                     ? const SizedBox.shrink()
-                                    : LukasBubble(message: line, mood: LukitasMood.happy),
+                                    : WambiBubble(message: line, mood: WambiMood.happy),
                               ),
                             ),
                             CategoryDonut(
@@ -356,8 +356,8 @@ class _Header extends StatelessWidget {
       child: Wrap(
         alignment: WrapAlignment.spaceBetween,
         crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: LukitasTokens.space2,
-        runSpacing: LukitasTokens.space1,
+        spacing: WambitoTokens.space2,
+        runSpacing: WambitoTokens.space1,
         children: [
           Semantics(
             header: true,

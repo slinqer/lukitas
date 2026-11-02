@@ -1,6 +1,6 @@
 // The welcome's suggested categories: a port of
 // apps/web/app/features/onboarding/suggested-categories.ts.
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../categories/normalize_name.dart';
 
 export '../categories/normalize_name.dart' show normalizeName;

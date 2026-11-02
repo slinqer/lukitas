@@ -2,7 +2,7 @@
 // root), as docs/mobile/setup.md describes:
 //
 //   flutter test integration_test/add_test.dart -d emulator-5554 \
-//     --dart-define=LUKITAS_SERVER=http://10.0.2.2:3000
+//     --dart-define=WAMBITO_SERVER=http://10.0.2.2:3000
 //
 // Buttons are found by key: the emulator's language decides the copy (the widget tests check the
 // Spanish and English words). Amounts are typed with the digit keys only, so the guest's currency
@@ -11,11 +11,11 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:lukitas/api/session.dart';
-import 'package:lukitas/home/home_screen.dart';
-import 'package:lukitas/main.dart' as app;
+import 'package:wambito/api/session.dart';
+import 'package:wambito/home/home_screen.dart';
+import 'package:wambito/main.dart' as app;
 
-const _server = String.fromEnvironment('LUKITAS_SERVER', defaultValue: 'http://10.0.2.2:3000');
+const _server = String.fromEnvironment('WAMBITO_SERVER', defaultValue: 'http://10.0.2.2:3000');
 
 final _http = Dio(BaseOptions(validateStatus: (_) => true));
 

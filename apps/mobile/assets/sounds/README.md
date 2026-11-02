@@ -3,7 +3,7 @@
 These are the web's feedback sounds, copied unchanged from
 [`apps/web/app/feedback/sounds`](../../../web/app/feedback/sounds/README.md).
 
-Every file is original work, made for Lukitas. There are no third-party samples, so there is
+Every file is original work, made for Wambito. There are no third-party samples, so there is
 nothing to attribute and no license to carry: they are released under the repository's license
 (AGPL-3.0).
 

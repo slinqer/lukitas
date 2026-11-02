@@ -120,7 +120,7 @@ class _ServerStatusState extends ConsumerState<ServerStatus> {
         !MediaQuery.disableAnimationsOf(context);
     return Row(
       key: const Key('settings.server.status'),
-      spacing: LukitasTokens.space2,
+      spacing: WambitoTokens.space2,
       children: [
         ExcludeSemantics(
           child: _Dot(color: color, pulses: pulses),

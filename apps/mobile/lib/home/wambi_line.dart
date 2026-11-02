@@ -1,10 +1,10 @@
-// What Lukitas says on home. A port of core's `lukasMessage` (packages/core/src/lukas-message.ts)
-// and the web's `homeLukasLine` (apps/web/app/features/home/home-model.ts): the rule picks a line
+// What Wambi says on home. A port of core's `wambiMessage` (packages/core/src/wambi-message.ts)
+// and the web's `homeWambiLine` (apps/web/app/features/home/home-model.ts): the rule picks a line
 // and its figures; the copy belongs to the ARB catalogs (home_screen.dart picks the variant).
 
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 
-enum LukasKey {
+enum WambiKey {
   firstOfDay,
   onTrack,
   nearLimit,
@@ -25,21 +25,21 @@ enum LukasKey {
   overTotal;
 
   /// Whether the catalog has three variants of the line.
-  bool get varied => index < LukasKey.empty.index;
+  bool get varied => index < WambiKey.empty.index;
 }
 
-enum LukasEventKind { saved, paid }
+enum WambiEventKind { saved, paid }
 
-/// The save or payment Lukitas is reacting to.
-class LukasEvent {
-  const LukasEvent({
+/// The save or payment Wambi is reacting to.
+class WambiEvent {
+  const WambiEvent({
     required this.kind,
     required this.categoryId,
     required this.amount,
     this.name = '',
   });
 
-  final LukasEventKind kind;
+  final WambiEventKind kind;
   final String categoryId;
 
   /// Signed cents, as stored.
@@ -51,8 +51,8 @@ class LukasEvent {
 
 /// A line to say: its [key] and the figures it uses (cents are unformatted, so the screen writes
 /// them in the person's currency and language).
-class LukasLine {
-  const LukasLine(
+class WambiLine {
+  const WambiLine(
     this.key, {
     this.name = '',
     this.category = '',
@@ -63,7 +63,7 @@ class LukasLine {
     this.daysLeft = 0,
   });
 
-  final LukasKey key;
+  final WambiKey key;
   final String name;
   final String category;
   final int amount;
@@ -90,15 +90,15 @@ int _daysLeft(String today, String month) {
   return left < 0 ? 0 : left;
 }
 
-/// The line Lukitas says on home. [summary] is the month's AFTER the [event] (if any) was applied;
+/// The line Wambi says on home. [summary] is the month's AFTER the [event] (if any) was applied;
 /// [todayCount] counts the transactions of today, the event's included. [categoryName] gives a
 /// category's name by id.
-LukasLine lukasLine({
+WambiLine wambiLine({
   required Summary summary,
   required String today,
   required int todayCount,
   required String Function(String categoryId) categoryName,
-  LukasEvent? event,
+  WambiEvent? event,
 }) {
   SummaryCategoriesInner? eventCategory;
   if (event != null) {
@@ -110,33 +110,33 @@ LukasLine lukasLine({
   // A movement without a name is called by its category.
   String movementName() => name.isEmpty ? categoryName(event!.categoryId) : name;
 
-  LukasLine nearLimit(SummaryCategoriesInner c) => LukasLine(
-    LukasKey.nearLimit,
+  WambiLine nearLimit(SummaryCategoriesInner c) => WambiLine(
+    WambiKey.nearLimit,
     category: categoryName(c.categoryId),
     remaining: c.remaining ?? 0,
   );
-  LukasLine overBudget(SummaryCategoriesInner c) => LukasLine(
-    LukasKey.overBudget,
+  WambiLine overBudget(SummaryCategoriesInner c) => WambiLine(
+    WambiKey.overBudget,
     category: categoryName(c.categoryId),
     over: -(c.remaining ?? 0),
   );
 
   // Core's rules, top to bottom: the first match wins.
-  LukasLine? picked;
-  LukasKey? aboutTheMonth;
-  if (event != null && event.kind == LukasEventKind.paid && event.amount < 0) {
-    picked = LukasLine(
-      LukasKey.pendingPaid,
+  WambiLine? picked;
+  WambiKey? aboutTheMonth;
+  if (event != null && event.kind == WambiEventKind.paid && event.amount < 0) {
+    picked = WambiLine(
+      WambiKey.pendingPaid,
       name: movementName(),
       category: categoryName(event.categoryId),
       amount: -event.amount,
     );
   } else if (event != null &&
       event.amount > 0 &&
-      (event.kind == LukasEventKind.paid || eventCategory == null)) {
+      (event.kind == WambiEventKind.paid || eventCategory == null)) {
     // A pending income marked paid was received, not paid.
-    picked = LukasLine(
-      LukasKey.incomeReceived,
+    picked = WambiLine(
+      WambiKey.incomeReceived,
       name: movementName(),
       category: categoryName(event.categoryId),
       amount: event.amount,
@@ -146,15 +146,15 @@ LukasLine lukasLine({
   } else if (eventCategory?.state == SummaryCategoriesInnerStateEnum.near) {
     picked = nearLimit(eventCategory!);
   } else if (event != null && todayCount == 1) {
-    picked = LukasLine(
-      LukasKey.firstOfDay,
+    picked = WambiLine(
+      WambiKey.firstOfDay,
       name: movementName(),
       category: categoryName(event.categoryId),
     );
   } else if (summary.month.compareTo(today.substring(0, 7)) < 0 && summary.remaining >= 0) {
-    aboutTheMonth = LukasKey.monthClosedGreen;
+    aboutTheMonth = WambiKey.monthClosedGreen;
   } else if (today == _lastDay(summary.month)) {
-    aboutTheMonth = LukasKey.monthLastDay;
+    aboutTheMonth = WambiKey.monthLastDay;
   } else if (event == null) {
     SummaryCategoriesInner? worst;
     SummaryCategoriesInner? least;
@@ -178,18 +178,18 @@ LukasLine lukasLine({
   if (picked != null) return picked;
 
   // What is left of the month's lines: core cannot know the budgets' total, so two cases get their
-  // own line and Lukitas never says something false.
+  // own line and Wambi never says something false.
   if (summary.budgetTotal == 0) {
     return summary.spent == 0
-        ? const LukasLine(LukasKey.empty)
-        : LukasLine(LukasKey.noBudget, spent: summary.spent);
+        ? const WambiLine(WambiKey.empty)
+        : WambiLine(WambiKey.noBudget, spent: summary.spent);
   }
-  if (summary.remaining < 0) return LukasLine(LukasKey.overTotal, over: -summary.remaining);
+  if (summary.remaining < 0) return WambiLine(WambiKey.overTotal, over: -summary.remaining);
   return switch (aboutTheMonth) {
-    LukasKey.monthClosedGreen ||
-    LukasKey.monthLastDay => LukasLine(aboutTheMonth!, remaining: summary.remaining),
-    _ => LukasLine(
-      LukasKey.onTrack,
+    WambiKey.monthClosedGreen ||
+    WambiKey.monthLastDay => WambiLine(aboutTheMonth!, remaining: summary.remaining),
+    _ => WambiLine(
+      WambiKey.onTrack,
       remaining: summary.remaining,
       daysLeft: _daysLeft(today, summary.month),
     ),

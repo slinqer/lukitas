@@ -1,5 +1,5 @@
-name: lukitas
-description: "Lukitas, a free-software personal-finance app."
+name: wambito
+description: "Wambito, a free-software personal-finance app."
 publish_to: "none"
 
 # The dev build's versionName and base versionCode. Release builds are given theirs from the
@@ -58,10 +58,10 @@ flutter:
   # AppLocalizations from lib/l10n (l10n.yaml).
   generate: true
   assets:
-    # Lukitas' sprite sheets, the web's own (apps/web/public/lukas): 4x2 frames of 500 px.
-    - assets/lukas/wave.webp
-    - assets/lukas/celebrate.webp
-    - assets/lukas/worried.webp
+    # Wambi's sprite sheets, the web's own (apps/web/public/wambi): 4x2 frames of 500 px.
+    - assets/wambi/wave.webp
+    - assets/wambi/celebrate.webp
+    - assets/wambi/worried.webp
     # The web's feedback sounds (apps/web/app/feedback/sounds), original work; see assets/sounds/README.md.
     # SoundChannel.kt plays them with Android's SoundPool.
     - assets/sounds/expense-saved.mp3

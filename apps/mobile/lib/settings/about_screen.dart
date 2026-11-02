@@ -16,7 +16,7 @@ import '../ui/press_button.dart';
 import 'licenses.dart';
 import 'settings_parts.dart';
 
-/// About (spec section 6.1.6): what Lukitas is, and the licences of everything in it, in the web's
+/// About (spec section 6.1.6): what Wambito is, and the licences of everything in it, in the web's
 /// settings style (a page header and a card). The licence page is Flutter's own, fed by the
 /// packages' LICENSE files (collected at build) and the extras of `registerExtraLicenses`: the
 /// voice models, the speech engine, the Android libraries and the sounds.

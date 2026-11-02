@@ -4,8 +4,8 @@
 import 'package:flutter/painting.dart';
 
 /// The colour tokens of one theme.
-class LukitasColors {
-  const LukitasColors({
+class WambitoColors {
+  const WambitoColors({
     required this.bg,
     required this.bgGlow,
     required this.surface,
@@ -31,7 +31,7 @@ class LukitasColors {
     required this.gold,
     required this.onGold,
     required this.candy,
-    required this.lukasShadow,
+    required this.wambiShadow,
     required this.chartIncome,
     required this.chartExpense,
     required this.tintOrange,
@@ -124,7 +124,7 @@ class LukitasColors {
   final Color candy;
 
   /// The soft ground shadow under the landing's traveling Lukitas: the center of a radial ellipse that fades to transparent. Decorative only.
-  final Color lukasShadow;
+  final Color wambiShadow;
 
   /// Income bars in charts. Day: 3.3:1 on surface, and 3.4:1 against chart-expense, so the two bars never differ by hue alone.
   final Color chartIncome;
@@ -168,7 +168,7 @@ class LukitasColors {
   /// Category tint gray drawn as a chart mark (donut sector, share bar, split bar). Night is the tint itself; day is darkened to at least 3:1 on surface.
   final Color tintGray;
 
-  static const night = LukitasColors(
+  static const night = WambitoColors(
     bg: Color(0xFF15122B),
     bgGlow: Color(0xFF3A1F6E),
     surface: Color(0xFF241F48),
@@ -194,7 +194,7 @@ class LukitasColors {
     gold: Color(0xFFFFE66D),
     onGold: Color(0xFF15122B),
     candy: Color(0xFFFF8FD8),
-    lukasShadow: Color(0xC7060414),
+    wambiShadow: Color(0xC7060414),
     chartIncome: Color(0xFF7CFFB2),
     chartExpense: Color(0xFFFF5C7A),
     tintOrange: Color(0xFFFF9F1C),
@@ -210,7 +210,7 @@ class LukitasColors {
     tintSky: Color(0xFF5AC8FA),
     tintGray: Color(0xFF8E87B8),
   );
-  static const day = LukitasColors(
+  static const day = WambitoColors(
     bg: Color(0xFFF7F4FF),
     bgGlow: Color(0xFFE9DDFF),
     surface: Color(0xFFFFFFFF),
@@ -236,7 +236,7 @@ class LukitasColors {
     gold: Color(0xFFFFD23F),
     onGold: Color(0xFF221A47),
     candy: Color(0xFFE0408F),
-    lukasShadow: Color(0x384A2BBF),
+    wambiShadow: Color(0x384A2BBF),
     chartIncome: Color(0xFF22A268),
     chartExpense: Color(0xFF760E2D),
     tintOrange: Color(0xFFD17900),
@@ -255,8 +255,8 @@ class LukitasColors {
 }
 
 /// The shadow tokens of one theme: a solid bottom edge, not a blur.
-class LukitasShadows {
-  const LukitasShadows({
+class WambitoShadows {
+  const WambitoShadows({
     required this.edgeSm,
     required this.edgeMd,
     required this.edgeBrand,
@@ -271,12 +271,12 @@ class LukitasShadows {
   /// Primary buttons and the ＋ button. Pressed: translateY(5px), 0 1px 0 brand-edge.
   final List<BoxShadow> edgeBrand;
 
-  static const night = LukitasShadows(
+  static const night = WambitoShadows(
     edgeSm: [BoxShadow(color: Color(0xFF0F0C22), offset: Offset(0, 3))],
     edgeMd: [BoxShadow(color: Color(0xFF0F0C22), offset: Offset(0, 5))],
     edgeBrand: [BoxShadow(color: Color(0xFF3F22A3), offset: Offset(0, 6)), BoxShadow(color: Color(0x738B5CFF), offset: Offset(0, 10), blurRadius: 24)],
   );
-  static const day = LukitasShadows(
+  static const day = WambitoShadows(
     edgeSm: [BoxShadow(color: Color(0xFFD6CCF5), offset: Offset(0, 3))],
     edgeMd: [BoxShadow(color: Color(0xFFD6CCF5), offset: Offset(0, 5))],
     edgeBrand: [BoxShadow(color: Color(0xFF4A2BBF), offset: Offset(0, 6)), BoxShadow(color: Color(0x477B3DF0), offset: Offset(0, 10), blurRadius: 24)],
@@ -284,12 +284,12 @@ class LukitasShadows {
 }
 
 /// The design system tokens: colours per theme, spacing, radii and durations.
-abstract final class LukitasTokens {
+abstract final class WambitoTokens {
   /// The default theme.
-  static const LukitasColors defaultTheme = LukitasColors.night;
+  static const WambitoColors defaultTheme = WambitoColors.night;
 
-  static const LukitasColors night = LukitasColors.night;
-  static const LukitasColors day = LukitasColors.day;
+  static const WambitoColors night = WambitoColors.night;
+  static const WambitoColors day = WambitoColors.day;
 
   // Spacing, in logical pixels.
 

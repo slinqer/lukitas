@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../add/add_sheet.dart';
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../budgets/category_detail_screen.dart' show detailFromCategories;
 import '../budgets/categories_tab.dart';
 import '../capture/capture_sheet.dart';
@@ -21,7 +21,7 @@ import '../theme/theme.dart';
 import '../theme/tokens.g.dart';
 import '../ui/app_shell.dart';
 import '../ui/lk_theme.dart';
-import '../ui/lukas_bubble.dart';
+import '../ui/wambi_bubble.dart';
 import '../ui/press_button.dart';
 import '../ui/segmented_control.dart';
 import '../ui/swipe_row.dart';
@@ -34,19 +34,19 @@ import 'home_format.dart';
 import 'home_header.dart';
 import 'home_repository.dart';
 import 'home_widgets.dart';
-import 'lukas_line.dart';
-import 'lukitas_face.dart';
+import 'wambi_line.dart';
+import 'wambi_face.dart';
 import 'nudges.dart';
 import 'screen_error.dart';
 import 'shell_navigation.dart';
 
-/// Picks which of Lukitas' three phrasings a line uses (1 to 3). Replaced in tests.
-final lukasVariantProvider = Provider<int Function()>((ref) {
+/// Picks which of Wambi's three phrasings a line uses (1 to 3). Replaced in tests.
+final wambiVariantProvider = Provider<int Function()>((ref) {
   final random = math.Random();
   return () => 1 + random.nextInt(3);
 });
 
-/// How long Lukitas celebrates a save or a payment (the web's `CELEBRATE_MS`).
+/// How long Wambi celebrates a save or a payment (the web's `CELEBRATE_MS`).
 const _celebrateFor = Duration(milliseconds: 2500);
 
 /// The widest the content grows on a big screen (the web's `max-w-[480px]`, padding included).
@@ -73,11 +73,11 @@ class HomeViewRequest extends Notifier<HomeView?> {
 final homeViewRequestProvider = NotifierProvider<HomeViewRequest, HomeView?>(HomeViewRequest.new);
 
 /// Home (spec section 6.1.2), as the web draws it (apps/web/app/features/home/Home.tsx): the
-/// header (the wordmark, the month with ‹ ›, the face button), Lukitas' line, "Te quedan" (or,
+/// header (the wordmark, the month with ‹ ›, the face button), Wambi's line, "Te quedan" (or,
 /// without budgets, "Gastado este mes") in large type, a card or two for an account that skipped
 /// the setup, and under the Movimientos | Categorías tabs the movements by day, with the web's
 /// gestures: swipe left deletes (with an 8 s Deshacer), swipe right edits, or marks a pending row
-/// paid. Lukitas names a save or a payment for 10 s, then goes back to the month's line. The last
+/// paid. Wambi names a save or a payment for 10 s, then goes back to the month's line. The last
 /// figures stay on screen while offline. The bottom bar has Inicio, ＋ (the add sheet), the 🎤
 /// (quick capture, listening) and Análisis.
 class HomeScreen extends ConsumerStatefulWidget {
@@ -126,7 +126,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   /// Where the tabs' thumb is, in tabs: 0 Movimientos, 1 Categorías.
   late final AnimationController _thumb = AnimationController(
     vsync: this,
-    duration: LukitasTokens.durationSheet,
+    duration: WambitoTokens.durationSheet,
   );
 
   HomeController get _controller => ref.read(homeProvider.notifier);
@@ -225,7 +225,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         _scroll.jumpTo(target);
       } else {
         unawaited(
-          _scroll.animateTo(target, duration: LukitasTokens.durationSheet, curve: Curves.easeOut),
+          _scroll.animateTo(target, duration: WambitoTokens.durationSheet, curve: Curves.easeOut),
         );
       }
     });
@@ -284,7 +284,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     }
   }
 
-  // -- Lukitas -------------------------------------------------------------------------------
+  // -- Wambi -------------------------------------------------------------------------------
 
   /// A new event starts a celebration (not near or over a limit: no party for that).
   void _onEvent(HomeEvent? event) {
@@ -301,7 +301,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     _celebrate();
   }
 
-  /// Lukitas celebrates for a moment, then goes back to his mood.
+  /// Wambi celebrates for a moment, then goes back to his mood.
   void _celebrate() {
     _celebrateTimer?.cancel();
     setState(() => _celebrating = true);
@@ -310,7 +310,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     });
   }
 
-  ({String message, LukitasMood mood}) _lukitas(
+  ({String message, WambiMood mood}) _wambi(
     AppLocalizations l10n,
     HomeState home,
     HomeData data,
@@ -323,20 +323,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       (c) => c.state != SummaryCategoriesInnerStateEnum.ok,
     );
     // Figures of an earlier month that could not be brought up to date (a cache opened after the
-    // month changed): Lukitas says so, and never talks about "this month" or a month that just
+    // month changed): Wambi says so, and never talks about "this month" or a month that just
     // closed as if it were live.
     if (home.stale && data.month != current) {
       return (
-        message: l10n.lukasOtherMonth(monthInSentence(data.month, locale)),
-        mood: worried ? LukitasMood.worried : LukitasMood.happy,
+        message: l10n.wambiOtherMonth(monthInSentence(data.month, locale)),
+        mood: worried ? WambiMood.worried : WambiMood.happy,
       );
     }
-    // The event is about its own month: Lukitas speaks of it only while that month is on screen.
+    // The event is about its own month: Wambi speaks of it only while that month is on screen.
     final fresh = home.event;
     final event = fresh != null && fresh.month == data.month && fresh.event.categoryId.isNotEmpty
         ? fresh
         : null;
-    final line = lukasLine(
+    final line = wambiLine(
       summary: data.summary,
       today: today,
       todayCount: data.items.where((t) => t.date == today).length,
@@ -347,7 +347,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     final situation = (line.key, event?.id, data.month);
     if (_variantFor != situation) {
       _variantFor = situation;
-      _variant = ref.read(lukasVariantProvider)();
+      _variant = ref.read(wambiVariantProvider)();
     }
     // A month closed in green gets a celebration of its own (the web's `closedGreen`).
     final closedGreen =
@@ -355,10 +355,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         data.summary.budgetTotal > 0 &&
         data.summary.remaining >= 0;
     return (
-      message: lukasLineText(l10n, line, _variant, money),
+      message: wambiLineText(l10n, line, _variant, money),
       mood: _celebrating || closedGreen
-          ? LukitasMood.celebrating
-          : (worried ? LukitasMood.worried : LukitasMood.happy),
+          ? WambiMood.celebrating
+          : (worried ? WambiMood.worried : WambiMood.happy),
     );
   }
 
@@ -376,7 +376,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       if (next != null) _onPendingNotice(next);
     });
     final home = ref.watch(homeProvider);
-    final colors = Theme.of(context).extension<LukitasTheme>()!.colors;
+    final colors = Theme.of(context).extension<WambitoTheme>()!.colors;
     final l10n = AppLocalizations.of(context);
     final data = home.data;
 
@@ -420,7 +420,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     final today = data.todayAt(ref.read(clockProvider)());
     final current = today.substring(0, 7);
     final shown = home.shown;
-    final lukitas = shown == null ? null : _lukitas(l10n, home, shown, today);
+    final wambi = shown == null ? null : _wambi(l10n, home, shown, today);
     final entries = shown == null ? const <_Entry>[] : _entries(home, shown, ref.watch(pendingSavesProvider.select((s) => s.saves)), l10n, today);
     final colors = context.lkColors;
 
@@ -431,8 +431,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         // The content is inset from the page's edge, and by the frame's padding too (none in the app).
         final inset =
             math.max(
-              LukitasTokens.space4,
-              (constraints.maxWidth - _maxContentWidth) / 2 + LukitasTokens.space4,
+              WambitoTokens.space4,
+              (constraints.maxWidth - _maxContentWidth) / 2 + WambitoTokens.space4,
             ) +
             ShellRoom.sides(context).left;
         return SwipeScope(
@@ -447,12 +447,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 SliverPadding(
                   // `px-4 pt-3`; the tabs' strip reaches 8px up into the gap above it, so the
                   // gap is 12 - 8.
-                  padding: EdgeInsets.fromLTRB(inset, LukitasTokens.space3, inset, 4),
+                  padding: EdgeInsets.fromLTRB(inset, WambitoTokens.space3, inset, 4),
                   sliver: SliverToBoxAdapter(
                     child: Column(
                       key: _aboveTabs,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
-                      spacing: LukitasTokens.space3,
+                      spacing: WambitoTokens.space3,
                       children: [
                         HomeHeader(
                           month: home.month ?? data.month,
@@ -472,9 +472,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                 ),
                               ),
                             ),
-                          LukasBubble(
-                            message: lukitas!.message,
-                            mood: lukitas.mood,
+                          WambiBubble(
+                            message: wambi!.message,
+                            mood: wambi.mood,
                             quietKey: home.quietKey,
                           ),
                           HomeHero(
@@ -512,7 +512,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 ),
                 if (shown == null)
                   SliverPadding(
-                    padding: EdgeInsets.fromLTRB(inset, LukitasTokens.space2, inset, room),
+                    padding: EdgeInsets.fromLTRB(inset, WambitoTokens.space2, inset, room),
                     sliver: SliverToBoxAdapter(
                       child: _MonthUnavailable(
                         failure: home.failure,
@@ -524,7 +524,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   )
                 else if (_view == HomeView.budgets)
                   SliverPadding(
-                    padding: EdgeInsets.fromLTRB(inset, LukitasTokens.space2, inset, room),
+                    padding: EdgeInsets.fromLTRB(inset, WambitoTokens.space2, inset, room),
                     sliver: SliverToBoxAdapter(
                       child: CategoriesTab(
                         summary: shown.summary,
@@ -546,7 +546,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   )
                 else
                   SliverPadding(
-                    padding: EdgeInsets.fromLTRB(inset, LukitasTokens.space2, inset, room),
+                    padding: EdgeInsets.fromLTRB(inset, WambitoTokens.space2, inset, room),
                     sliver: SliverList.builder(
                       itemCount: entries.length,
                       findChildIndexCallback: (key) {
@@ -592,7 +592,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       label: l10n.homeNudgesLabel,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: LukitasTokens.space2,
+        spacing: WambitoTokens.space2,
         children: [
           if (showBudgets)
             NudgeCard(
@@ -646,7 +646,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           'empty',
           () => Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: LukitasTokens.space3,
+            spacing: WambitoTokens.space3,
             children: [
               Text(
                 l10n.homeEmptyTransactions(formatMonthName(data.month, locale)),
@@ -736,7 +736,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     if (isUnsent(tx)) {
       return Padding(
         key: ValueKey(tx.id),
-        padding: const EdgeInsets.only(bottom: LukitasTokens.space2),
+        padding: const EdgeInsets.only(bottom: WambitoTokens.space2),
         child: _txRow(
           data,
           tx,
@@ -751,7 +751,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     final onEdit = widget.onEdit ?? (Transaction tx) => unawaited(openEditSheet(context, tx));
     return SwipeRow(
       key: ValueKey(tx.id),
-      gap: LukitasTokens.space2,
+      gap: WambitoTokens.space2,
       enter: home.restored.contains(tx.id),
       onEntered: () => _controller.settleRestored(tx.id),
       deleteLabel: l10n.swipeDelete,
@@ -826,7 +826,7 @@ class _MonthUnavailable extends StatelessWidget {
     if (message == null) return const SizedBox(height: 120);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: LukitasTokens.space3,
+      spacing: WambitoTokens.space3,
       children: [
         Semantics(
           liveRegion: true,
@@ -845,7 +845,7 @@ class _LoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<LukitasTheme>()!.colors;
+    final colors = Theme.of(context).extension<WambitoTheme>()!.colors;
     return Center(
       child: Semantics(
         label: label,
@@ -854,7 +854,7 @@ class _LoadingView extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const QuietSpinner(size: 28),
-            const SizedBox(height: LukitasTokens.space3),
+            const SizedBox(height: WambitoTokens.space3),
             Text(
               label,
               style: TextStyle(color: colors.inkMuted, fontWeight: FontWeight.w700),

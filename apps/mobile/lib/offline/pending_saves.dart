@@ -6,7 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../add/add_repository.dart';
 import '../add/save_outcome.dart' show canRetrySave;
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../api/session.dart';
 import '../capture/capture_repository.dart';
 import '../home/home_cache.dart' show sessionOwnerOf;

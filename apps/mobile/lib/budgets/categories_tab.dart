@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../categories/categories_actions.dart';
 import '../categories/category_sheet.dart';
 import '../home/category_look.dart';
@@ -109,7 +109,7 @@ class CategoriesTab extends ConsumerWidget {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: LukitasTokens.space2,
+      spacing: WambitoTokens.space2,
       children: [
         _SwitchAndAdd(
           switcher: SegmentedControl<CategoryKindEnum>(
@@ -136,7 +136,7 @@ class CategoriesTab extends ConsumerWidget {
             onPressed: () => unawaited(openCategorySheet(context)),
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              spacing: LukitasTokens.space2,
+              spacing: WambitoTokens.space2,
               children: [
                 const ExcludeSemantics(child: Text('＋')),
                 Text(LkText.upperCase(l10n.categoriesAdd)),
@@ -154,7 +154,7 @@ class CategoriesTab extends ConsumerWidget {
         if (archived.isNotEmpty)
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: LukitasTokens.space2,
+            spacing: WambitoTokens.space2,
             children: [
               Align(
                 alignment: Alignment.centerLeft,
@@ -165,7 +165,7 @@ class CategoriesTab extends ConsumerWidget {
                   onPressed: onToggleArchived,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    spacing: LukitasTokens.space2,
+                    spacing: WambitoTokens.space2,
                     children: [
                       ExcludeSemantics(child: Text(showArchived ? '▾' : '▸')),
                       Text(LkText.upperCase(l10n.categoriesArchivedFold(archived.length))),
@@ -179,7 +179,7 @@ class CategoriesTab extends ConsumerWidget {
                   label: l10n.categoriesArchivedTitle,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    spacing: LukitasTokens.space2,
+                    spacing: WambitoTokens.space2,
                     children: [
                       for (final category in archived) _archivedRow(context, ref, l10n, category),
                     ],
@@ -257,7 +257,7 @@ class _RenderSwitchAndAdd extends RenderBox
         ContainerRenderObjectMixin<RenderBox, _SwitchAndAddData>,
         RenderBoxContainerDefaultsMixin<RenderBox, _SwitchAndAddData> {
   static const _minSwitch = 200.0;
-  static const _gap = LukitasTokens.space2;
+  static const _gap = WambitoTokens.space2;
 
   @override
   void setupParentData(RenderBox child) {

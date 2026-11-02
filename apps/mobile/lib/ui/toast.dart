@@ -167,10 +167,10 @@ class _ToastHostState extends State<ToastHost> with TickerProviderStateMixin {
                 bottom: 0,
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(
-                    LukitasTokens.space4,
+                    WambitoTokens.space4,
                     0,
-                    LukitasTokens.space4,
-                    (safe > LukitasTokens.space4 ? safe : LukitasTokens.space4) +
+                    WambitoTokens.space4,
+                    (safe > WambitoTokens.space4 ? safe : WambitoTokens.space4) +
                         widget.lift +
                         _controller._lift,
                   ),
@@ -202,9 +202,9 @@ class _ToastScope extends InheritedWidget {
 /// What a [ToastHost] shows and does: [show] a toast, [dismiss] it.
 class ToastController extends ChangeNotifier {
   ToastController._(TickerProvider vsync)
-    : _enter = AnimationController(vsync: vsync, duration: LukitasTokens.durationSheet),
+    : _enter = AnimationController(vsync: vsync, duration: WambitoTokens.durationSheet),
       _bar = AnimationController(vsync: vsync),
-      _snap = AnimationController(vsync: vsync, duration: LukitasTokens.durationSheet) {
+      _snap = AnimationController(vsync: vsync, duration: WambitoTokens.durationSheet) {
     _enter.addListener(notifyListeners);
     _snap.addListener(_snapped);
   }
@@ -231,7 +231,7 @@ class ToastController extends ChangeNotifier {
   Offset _dragTotal = Offset.zero;
 
   Duration _life(ToastOptions options) =>
-      options.actions.isEmpty ? _toastLife : LukitasTokens.durationUndo;
+      options.actions.isEmpty ? _toastLife : WambitoTokens.durationUndo;
 
   /// Shows [options] now, or as soon as the toast on screen has left (the web's `mode="wait"`).
   void show(ToastOptions options) {
@@ -415,7 +415,7 @@ class ToastLayer extends StatelessWidget {
         final rest = controller._reduceMotion ? Offset.zero : const Offset(0, 16);
         final gone = away != null && !controller._reduceMotion ? away : rest;
         final offset = Offset.lerp(gone, controller._drag, t)!;
-        // Lukitas celebrates clear of the toasts: their layout box, not where a slide puts them.
+        // Wambi celebrates clear of the toasts: their layout box, not where a slide puts them.
         return CelebrationAvoid(
           child: Semantics(
             container: true,
@@ -472,7 +472,7 @@ class _ToastSlotState extends State<ToastSlot> {
       builder: (context, _) => controller.toast == null
           ? const SizedBox.shrink()
           : const Padding(
-              padding: EdgeInsets.only(top: LukitasTokens.space2),
+              padding: EdgeInsets.only(top: WambitoTokens.space2),
               child: ToastLayer(),
             ),
     );
@@ -610,7 +610,7 @@ class _ToastActionButton extends StatelessWidget {
         child: AnimatedContainer(
           duration: MediaQuery.disableAnimationsOf(context)
               ? Duration.zero
-              : LukitasTokens.durationPress,
+              : WambitoTokens.durationPress,
           curve: Curves.ease,
           transform: Matrix4.translationValues(0, state.pressed ? 2 : 0, 0),
           constraints: const BoxConstraints(minHeight: 44),

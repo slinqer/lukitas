@@ -4,7 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' show DateFormat;
 
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../home/category_look.dart';
 import '../home/home_format.dart';
 import '../l10n/app_localizations.dart';
@@ -166,7 +166,7 @@ class RecurringRow extends StatelessWidget {
                         ],
                       ),
                       Wrap(
-                        spacing: LukitasTokens.space2,
+                        spacing: WambitoTokens.space2,
                         children: [
                           for (final (text, color) in [
                             (ruleLine, colors.inkMuted),

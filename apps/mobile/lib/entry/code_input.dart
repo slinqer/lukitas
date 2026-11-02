@@ -114,8 +114,8 @@ class _CodeInputState extends State<CodeInput> {
     final ratio = MediaQuery.devicePixelRatioOf(context);
     // `min-[360px]:gap-(--space-2)`: a width of the viewport.
     final gap = MediaQuery.sizeOf(context).width >= 360
-        ? LukitasTokens.space2
-        : LukitasTokens.space1;
+        ? WambitoTokens.space2
+        : WambitoTokens.space1;
     final brightness = Theme.of(context).brightness;
     final edge = widget.invalid ? colors.over : LkSurface.fieldEdge(colors, brightness);
     final active = math.min(digits.length, codeLength - 1);
@@ -205,7 +205,7 @@ class _CodeInputState extends State<CodeInput> {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: LukitasTokens.space2,
+      spacing: WambitoTokens.space2,
       children: [FieldCaption(widget.label), group],
     );
   }

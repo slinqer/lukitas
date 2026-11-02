@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// What the API learns about the phone with every request: its IANA time zone
-/// (`x-lukas-timezone`) and its language tag (`x-lukas-locale`). A new user's profile, currency
+/// (`x-wambito-timezone`) and its language tag (`x-wambito-locale`). A new user's profile, currency
 /// included, starts from them, guest or email (apps/api/src/auth.ts, `guestDefaults`).
 class DeviceHints {
   const DeviceHints({required this.timezone, required this.locale});
@@ -34,13 +34,13 @@ class DeviceHints {
   final String timezone;
   final String locale;
 
-  /// The request headers, as the API names them. `x-lukas-client: android` marks the magic link of
+  /// The request headers, as the API names them. `x-wambito-client: android` marks the magic link of
   /// a sign-in started here `from=app`, so the web page it opens offers to open this app
   /// (apps/api/src/auth.ts, `CLIENT_HEADER`).
   Map<String, String> get headers => {
-    'x-lukas-timezone': timezone,
-    'x-lukas-locale': locale,
-    'x-lukas-client': 'android',
+    'x-wambito-timezone': timezone,
+    'x-wambito-locale': locale,
+    'x-wambito-client': 'android',
   };
 }
 

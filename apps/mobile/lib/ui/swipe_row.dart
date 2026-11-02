@@ -609,7 +609,7 @@ class _SwipeRowState extends State<SwipeRow> with TickerProviderStateMixin {
                         AnimatedScale(
                           // Past the threshold the action pops: letting go now runs it.
                           scale: armed ? 1.35 : 1,
-                          duration: _reduceMotion ? Duration.zero : LukitasTokens.durationPress,
+                          duration: _reduceMotion ? Duration.zero : WambitoTokens.durationPress,
                           curve: Curves.ease,
                           child: Text(glyph, style: LkText.swipeGlyph.copyWith(color: foreground)),
                         ),

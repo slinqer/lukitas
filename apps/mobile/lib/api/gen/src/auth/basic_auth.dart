@@ -5,7 +5,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:lukitas/api/gen/src/auth/auth.dart';
+import 'package:wambito/api/gen/src/auth/auth.dart';
 
 class BasicAuthInfo {
   final String username;

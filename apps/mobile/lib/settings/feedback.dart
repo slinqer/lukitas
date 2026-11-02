@@ -112,11 +112,11 @@ class _NoEmailApp extends StatelessWidget {
     final colors = context.lkColors;
     return Padding(
       key: const Key('settings.feedback.sheet'),
-      padding: const EdgeInsets.only(top: LukitasTokens.space3),
+      padding: const EdgeInsets.only(top: WambitoTokens.space3),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: LukitasTokens.space4,
+        spacing: WambitoTokens.space4,
         children: [
           CssParagraph(
             l10n.settingsFeedbackNoAppBody(feedbackEmail),

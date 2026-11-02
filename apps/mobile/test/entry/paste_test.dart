@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/entry/code_input.dart';
-import 'package:lukitas/ui/pressable.dart' show RingBox;
-import 'package:lukitas/ui/web_text_field.dart';
+import 'package:wambito/entry/code_input.dart';
+import 'package:wambito/ui/pressable.dart' show RingBox;
+import 'package:wambito/ui/web_text_field.dart';
 
 import '../support/ui_app.dart';
 

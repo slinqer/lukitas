@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show SemanticsAction;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/ui/keypad.dart';
+import 'package:wambito/ui/keypad.dart';
 
 import '../support/fonts.dart';
 import '../support/ui_app.dart';

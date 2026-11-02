@@ -6,10 +6,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/feedback/celebration.dart';
-import 'package:lukitas/feedback/feedback.dart';
-import 'package:lukitas/home/lukitas_face.dart';
-import 'package:lukitas/ui/press_button.dart';
+import 'package:wambito/feedback/celebration.dart';
+import 'package:wambito/feedback/feedback.dart';
+import 'package:wambito/home/wambi_face.dart';
+import 'package:wambito/ui/press_button.dart';
 
 import '../feedback/fakes.dart';
 import '../settings/fakes.dart' show FakeFlagStore;
@@ -21,7 +21,7 @@ import '../support/parity.dart';
 /// could not take of a moving one.
 ///
 /// The app is stopped at the same moment of its 1.2 s: [_at] pumps that long after the celebration
-/// has started (its controller and Lukitas' sprite start on the same frame, as the web's
+/// has started (its controller and Wambi's sprite start on the same frame, as the web's
 /// animations do).
 ///
 /// Update the goldens with `flutter test --update-goldens test/parity`, then compare with
@@ -73,7 +73,7 @@ List<Override> _overrides() => [
 Future<void> _at(WidgetTester t, double fraction) async {
   await t.runAsync(() async {
     final context = t.element(find.byType(PressButton));
-    await precacheImage(AssetImage(LukitasMood.celebrating.sheet), context);
+    await precacheImage(AssetImage(WambiMood.celebrating.sheet), context);
   });
   await t.sendKeyEvent(LogicalKeyboardKey.tab);
   await t.sendKeyEvent(LogicalKeyboardKey.enter);
@@ -122,7 +122,7 @@ void main() {
           // celebration is there).
           await t.runAsync(() async {
             final context = t.element(find.byType(PressButton));
-            await precacheImage(AssetImage(LukitasMood.celebrating.sheet), context);
+            await precacheImage(AssetImage(WambiMood.celebrating.sheet), context);
           });
           await t.sendKeyEvent(LogicalKeyboardKey.tab);
           await t.sendKeyEvent(LogicalKeyboardKey.enter);

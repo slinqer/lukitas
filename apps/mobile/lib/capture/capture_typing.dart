@@ -1,17 +1,17 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-import '../home/lukitas_face.dart';
+import '../home/wambi_face.dart';
 import '../theme/text_styles.dart';
 import '../theme/tokens.g.dart';
 import '../ui/lk_theme.dart';
-import '../ui/lukas_bubble.dart';
+import '../ui/wambi_bubble.dart';
 import '../ui/press_button.dart';
 import '../ui/web_text_field.dart';
 import 'capture_session.dart';
 
 /// The typing field, for when nothing listens (the person chose to type, or could not be heard):
-/// Lukas asks his question in the bubble, or says why the field shows, and under him is the
+/// Wambi asks his question in the bubble, or says why the field shows, and under him is the
 /// sentence's box, in the web's input.
 class CaptureTypingBody extends StatelessWidget {
   const CaptureTypingBody({super.key});
@@ -33,19 +33,19 @@ class CaptureTypingBody extends StatelessWidget {
     };
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: LukitasTokens.space3,
+      spacing: WambitoTokens.space3,
       children: [
         KeyedSubtree(
           key: why == null ? null : const Key('capture.note'),
-          child: LukasBubble(
+          child: WambiBubble(
             message: message,
             // Something that did not work worries him; asking is not.
-            mood: why == null ? LukitasMood.happy : LukitasMood.worried,
+            mood: why == null ? WambiMood.happy : WambiMood.worried,
           ),
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: LukitasTokens.space1,
+          spacing: WambitoTokens.space1,
           children: [
             Text(l10n.captureFieldLabel, style: LkText.fieldLabel.copyWith(color: colors.inkMuted)),
             WebTextField(
@@ -76,21 +76,21 @@ class CaptureTypingActions extends StatelessWidget {
     final session = CaptureSession.of(context);
     final l10n = session.l10n;
     return Row(
-      spacing: LukitasTokens.space2,
+      spacing: WambitoTokens.space2,
       children: [
         if (session.canListen)
           PressButton.text(
             l10n.captureListen,
             key: const Key('capture.listen'),
             tone: PressTone.secondary,
-            horizontalPadding: LukitasTokens.space4,
+            horizontalPadding: WambitoTokens.space4,
             onPressed: session.listen,
           ),
         Expanded(
           child: PressButton.text(
             l10n.captureRead,
             key: const Key('capture.read'),
-            horizontalPadding: LukitasTokens.space4,
+            horizontalPadding: WambitoTokens.space4,
             onPressed: session.readTyped,
           ),
         ),

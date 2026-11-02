@@ -6,7 +6,7 @@ import 'dart:math' as math;
 import '../theme/tokens.g.dart';
 
 /// The feel of the swipes, tuned on the web by hand on a 390 px phone (Task 12c). Durations are
-/// the design tokens ([LukitasTokens]); these are the rest: distances, speeds and springs.
+/// the design tokens ([WambitoTokens]); these are the rest: distances, speeds and springs.
 abstract final class SwipeFeel {
   /// px the finger moves before a gesture picks an axis (sideways, or the list's scroll).
   static const axisSlop = 8.0;
@@ -45,10 +45,10 @@ abstract final class SwipeFeel {
   static const rowOutDamping = 48.0;
 
   /// How long the row folds away after it left (the web's `--collapse`).
-  static const collapse = LukitasTokens.durationCollapse;
+  static const collapse = WambitoTokens.durationCollapse;
 
   /// The fade a reduced-motion row uses instead of moving (the web's `--fade`).
-  static const fade = LukitasTokens.durationFade;
+  static const fade = WambitoTokens.durationFade;
 }
 
 /// An axis. Named apart from Flutter's own `Axis`, which has no diagonal-free "undecided".

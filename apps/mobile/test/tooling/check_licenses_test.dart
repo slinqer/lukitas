@@ -29,7 +29,7 @@ Future<ProcessResult> _check({
 }
 
 const _pubspec = '''
-name: lukitas
+name: wambito
 dependencies:
   flutter:
     sdk: flutter
@@ -87,7 +87,7 @@ void main() {
 
   group('the bundled fonts', () {
     const withFonts = '''
-name: lukitas
+name: wambito
 dependencies:
   dio: 5.11.1
 flutter:

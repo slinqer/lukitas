@@ -4,7 +4,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/ui/segmented_control.dart';
+import 'package:wambito/ui/segmented_control.dart';
 
 import '../support/parity.dart';
 

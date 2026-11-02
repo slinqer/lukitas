@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/budgets/budgets_repository.dart';
-import 'package:lukitas/budgets/category_detail_controller.dart';
-import 'package:lukitas/home/home_cache.dart';
-import 'package:lukitas/home/home_controller.dart';
-import 'package:lukitas/home/home_repository.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/budgets/budgets_repository.dart';
+import 'package:wambito/budgets/category_detail_controller.dart';
+import 'package:wambito/home/home_cache.dart';
+import 'package:wambito/home/home_controller.dart';
+import 'package:wambito/home/home_repository.dart';
 
 import '../home/fakes.dart';
 import 'fakes.dart';

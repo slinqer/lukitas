@@ -32,12 +32,12 @@ String capitalize(String text, String locale) =>
 
 /// A tile's ground: the tint mixed into the sunken surface, so it reads in both themes
 /// (`tileGround`, `color-mix(in srgb, tint 45%, var(--surface-sunken))`).
-Color tileGround(LukitasColors colors, Color tint) => Color.lerp(colors.surfaceSunken, tint, 0.45)!;
+Color tileGround(WambitoColors colors, Color tint) => Color.lerp(colors.surfaceSunken, tint, 0.45)!;
 
 /// The colour to draw a category's tint with as a mark (a donut sector, a share bar) in the
 /// current theme: its theme token, which the day theme darkens to keep 3:1 on the card. A colour
 /// that is not one of the pickable tints is drawn as it is (`useMarkColor`).
-Color markColor(LukitasColors colors, Color tint) => switch (tintName(tint)) {
+Color markColor(WambitoColors colors, Color tint) => switch (tintName(tint)) {
   'orange' => colors.tintOrange,
   'red' => colors.tintRed,
   'purple' => colors.tintPurple,
@@ -145,7 +145,7 @@ class InsightCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.lkColors;
     return Entrance(
-      duration: LukitasTokens.durationSheet,
+      duration: WambitoTokens.durationSheet,
       delay: Duration(milliseconds: (order * 70)),
       builder: (context, t) => Opacity(
         opacity: t,
@@ -153,20 +153,20 @@ class InsightCard extends StatelessWidget {
           offset: Offset(0, 14 * (1 - t)),
           child: HeroCard(
             padding: const EdgeInsets.fromLTRB(
-              LukitasTokens.space4,
-              LukitasTokens.space3,
-              LukitasTokens.space4,
-              LukitasTokens.space4,
+              WambitoTokens.space4,
+              WambitoTokens.space3,
+              WambitoTokens.space4,
+              WambitoTokens.space4,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: LukitasTokens.space3,
+              spacing: WambitoTokens.space3,
               children: [
                 InsightBody(
                   busy: busy,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    spacing: LukitasTokens.space1,
+                    spacing: WambitoTokens.space1,
                     children: [
                       Semantics(
                         header: true,
@@ -191,7 +191,7 @@ class InsightCard extends StatelessWidget {
                   busy: busy,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    spacing: LukitasTokens.space3,
+                    spacing: WambitoTokens.space3,
                     children: children,
                   ),
                 ),
@@ -233,7 +233,7 @@ class InsightBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) => AnimatedOpacity(
     opacity: busy ? 0.45 : 1,
-    duration: reducedMotion(context) ? Duration.zero : LukitasTokens.durationSheet,
+    duration: reducedMotion(context) ? Duration.zero : WambitoTokens.durationSheet,
     curve: Curves.easeOut,
     child: child,
   );
@@ -251,7 +251,7 @@ class InsightLoading extends StatelessWidget {
     child: DecoratedBox(
       decoration: BoxDecoration(
         color: context.lkColors.surfaceSunken,
-        borderRadius: BorderRadius.circular(LukitasTokens.radiusLg),
+        borderRadius: BorderRadius.circular(WambitoTokens.radiusLg),
       ),
     ),
   );

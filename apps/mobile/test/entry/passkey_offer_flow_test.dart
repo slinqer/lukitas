@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lukitas/api/auth_api.dart';
-import 'package:lukitas/api/passkey_offer.dart';
-import 'package:lukitas/api/session.dart';
-import 'package:lukitas/home/home_screen.dart';
-import 'package:lukitas/router.dart';
+import 'package:wambito/api/auth_api.dart';
+import 'package:wambito/api/passkey_offer.dart';
+import 'package:wambito/api/session.dart';
+import 'package:wambito/home/home_screen.dart';
+import 'package:wambito/router.dart';
 
 import 'fakes.dart';
 

@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../feedback/feedback.dart';
 import 'home_controller.dart';
 
@@ -36,7 +36,7 @@ FeedbackEvent savedFeedbackFor(HomeData? data, Iterable<Transaction> saved) {
   return total > 0 && incomes == total ? FeedbackEvent.incomeSaved : FeedbackEvent.saved;
 }
 
-/// Whether a save's feedback is a celebration (Lukitas, confetti-style): not when it is a warning
+/// Whether a save's feedback is a celebration (Wambi, confetti-style): not when it is a warning
 /// about a limit, like home's own rule for a single save.
 bool celebrates(FeedbackEvent event) =>
     event != FeedbackEvent.nearLimit && event != FeedbackEvent.overBudget;

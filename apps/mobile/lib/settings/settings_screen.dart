@@ -220,7 +220,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: LukitasTokens.space1,
+          spacing: WambitoTokens.space1,
           children: [
             Semantics(header: true, child: Text(l10n.settingsTitle, style: titleStyle)),
             if (signedInAs != null) Text(signedInAs, style: signedInStyle),
@@ -315,7 +315,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: LukitasTokens.space2,
+              spacing: WambitoTokens.space2,
               children: [
                 SettingLabel(label: l10n.settingsImportTitle, hint: l10n.settingsImportLead),
                 _SelfStart(
@@ -516,16 +516,16 @@ class _ServerFormState extends State<_ServerForm> {
       onPressed: () => Navigator.of(context).pop(),
     );
     return Padding(
-      padding: const EdgeInsets.only(top: LukitasTokens.space3),
+      padding: const EdgeInsets.only(top: WambitoTokens.space3),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: LukitasTokens.space4,
+        spacing: WambitoTokens.space4,
         children: [
           Text(l10n.settingsServerLead, style: LkText.body.copyWith(color: colors.ink)),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: LukitasTokens.space1,
+            spacing: WambitoTokens.space1,
             children: [
               Text(l10n.settingsServerField, style: LkText.bodySm.copyWith(color: colors.ink)),
               WebTextField(
@@ -566,11 +566,11 @@ class _ServerFormState extends State<_ServerForm> {
           ),
           if (wide)
             // The ghost has 8px of padding each side, the primary 24px.
-            flexOneRow(gap: LukitasTokens.space2, items: [(16, cancel), (48, change)])
+            flexOneRow(gap: WambitoTokens.space2, items: [(16, cancel), (48, change)])
           else
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: LukitasTokens.space2,
+              spacing: WambitoTokens.space2,
               children: [change, cancel],
             ),
         ],

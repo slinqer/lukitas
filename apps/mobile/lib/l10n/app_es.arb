@@ -1,6 +1,6 @@
 {
   "@@locale": "es",
-  "appName": "Lukitas",
+  "appName": "Wambito",
   "@appName": {
     "description": "The app's name, in the launcher, the task switcher and the app bar."
   },
@@ -21,9 +21,9 @@
   "@entryLead": {
     "description": "The first screen's line under the name."
   },
-  "lukitasWaves": "Lukitas te saluda",
-  "@lukitasWaves": {
-    "description": "Screen-reader label of the waving Lukitas."
+  "wambiWaves": "Wambi te saluda",
+  "@wambiWaves": {
+    "description": "Screen-reader label of the waving Wambito."
   },
   "entryGuest": "Probar sin correo",
   "@entryGuest": {
@@ -57,7 +57,7 @@
   "@emailPasskeyBusy": {
     "description": "Email screen: while the phone's passkey prompt is open."
   },
-  "signInTitle": "Entra a Lukitas",
+  "signInTitle": "Entra a Wambito",
   "@signInTitle": {
     "description": "Email screen title."
   },
@@ -137,7 +137,7 @@
   "@guestSaveTitle": {
     "description": "Asked when a guest enters an email: claim it or sign in as another account."
   },
-  "guestSaveBody": "Estás usando Lukitas sin correo. Podemos guardar tu progreso en {email}: sigues con los mismos movimientos.",
+  "guestSaveBody": "Estás usando Wambito sin correo. Podemos guardar tu progreso en {email}: sigues con los mismos movimientos.",
   "@guestSaveBody": {
     "description": "Body of the guest's choice.",
     "placeholders": {
@@ -225,7 +225,7 @@
   "@errorTooManyRequests": {
     "description": "Error: too many codes asked for."
   },
-  "errorSignInNotAllowed": "Lukitas todavía no está abierto al público. Si quieres probarlo, escríbele a quien te invitó.",
+  "errorSignInNotAllowed": "Wambito todavía no está abierto al público. Si quieres probarlo, escríbele a quien te invitó.",
   "@errorSignInNotAllowed": {
     "description": "Error: the email is not on this install's allowlist."
   },
@@ -319,7 +319,7 @@
   "@homeNudgeBudgetsTitle": {
     "description": "Home: title of the card for an account without budgets."
   },
-  "homeNudgeBudgetsLead": "Así Lukitas te avisa antes de que te pases. Toca una categoría y ponle un monto.",
+  "homeNudgeBudgetsLead": "Así Wambito te avisa antes de que te pases. Toca una categoría y ponle un monto.",
   "@homeNudgeBudgetsLead": {
     "description": "Home: the card's explanation."
   },
@@ -458,40 +458,40 @@
       }
     }
   },
-  "lukitasMood": "Lukitas",
-  "@lukitasMood": {
-    "description": "Screen-reader label of Lukitas beside his line on home."
+  "wambiMood": "Wambi",
+  "@wambiMood": {
+    "description": "Screen-reader label of Wambi beside his line on home."
   },
-  "lukasFirstOfDay1": "¡«{name}» es tu primer apunte del día! Así se empieza.",
-  "@lukasFirstOfDay1": {
-    "description": "Lukitas' line on home, variant 1: first_of_day.",
+  "wambiFirstOfDay1": "¡«{name}» es tu primer apunte del día! Así se empieza.",
+  "@wambiFirstOfDay1": {
+    "description": "Wambi's line on home, variant 1: first_of_day.",
     "placeholders": {
       "name": {
         "type": "String"
       }
     }
   },
-  "lukasFirstOfDay2": "«{name}» quedó anotado. ¡Buen comienzo de día!",
-  "@lukasFirstOfDay2": {
-    "description": "Lukitas' line on home, variant 2: first_of_day.",
+  "wambiFirstOfDay2": "«{name}» quedó anotado. ¡Buen comienzo de día!",
+  "@wambiFirstOfDay2": {
+    "description": "Wambi's line on home, variant 2: first_of_day.",
     "placeholders": {
       "name": {
         "type": "String"
       }
     }
   },
-  "lukasFirstOfDay3": "Primer movimiento de hoy: «{name}». Llevar la cuenta es media victoria.",
-  "@lukasFirstOfDay3": {
-    "description": "Lukitas' line on home, variant 3: first_of_day.",
+  "wambiFirstOfDay3": "Primer movimiento de hoy: «{name}». Llevar la cuenta es media victoria.",
+  "@wambiFirstOfDay3": {
+    "description": "Wambi's line on home, variant 3: first_of_day.",
     "placeholders": {
       "name": {
         "type": "String"
       }
     }
   },
-  "lukasOnTrack1": "Vas muy bien: te quedan {remaining} para {daysLeft} {daysLeft, plural, one{día} other{días}}.",
-  "@lukasOnTrack1": {
-    "description": "Lukitas' line on home, variant 1: on_track.",
+  "wambiOnTrack1": "Vas muy bien: te quedan {remaining} para {daysLeft} {daysLeft, plural, one{día} other{días}}.",
+  "@wambiOnTrack1": {
+    "description": "Wambi's line on home, variant 1: on_track.",
     "placeholders": {
       "remaining": {
         "type": "String"
@@ -501,9 +501,9 @@
       }
     }
   },
-  "lukasOnTrack2": "Todo en orden. Quedan {remaining} y {daysLeft} {daysLeft, plural, one{día} other{días}} de mes.",
-  "@lukasOnTrack2": {
-    "description": "Lukitas' line on home, variant 2: on_track.",
+  "wambiOnTrack2": "Todo en orden. Quedan {remaining} y {daysLeft} {daysLeft, plural, one{día} other{días}} de mes.",
+  "@wambiOnTrack2": {
+    "description": "Wambi's line on home, variant 2: on_track.",
     "placeholders": {
       "remaining": {
         "type": "String"
@@ -513,9 +513,9 @@
       }
     }
   },
-  "lukasOnTrack3": "Buen ritmo: {remaining} libres, {daysLeft} {daysLeft, plural, one{día} other{días}} por delante.",
-  "@lukasOnTrack3": {
-    "description": "Lukitas' line on home, variant 3: on_track.",
+  "wambiOnTrack3": "Buen ritmo: {remaining} libres, {daysLeft} {daysLeft, plural, one{día} other{días}} por delante.",
+  "@wambiOnTrack3": {
+    "description": "Wambi's line on home, variant 3: on_track.",
     "placeholders": {
       "remaining": {
         "type": "String"
@@ -525,9 +525,9 @@
       }
     }
   },
-  "lukasNearLimit1": "Cuidado, a {category} solo le quedan {remaining}.",
-  "@lukasNearLimit1": {
-    "description": "Lukitas' line on home, variant 1: near_limit.",
+  "wambiNearLimit1": "Cuidado, a {category} solo le quedan {remaining}.",
+  "@wambiNearLimit1": {
+    "description": "Wambi's line on home, variant 1: near_limit.",
     "placeholders": {
       "category": {
         "type": "String"
@@ -537,9 +537,9 @@
       }
     }
   },
-  "lukasNearLimit2": "{category} está casi al límite: {remaining} y se acaba.",
-  "@lukasNearLimit2": {
-    "description": "Lukitas' line on home, variant 2: near_limit.",
+  "wambiNearLimit2": "{category} está casi al límite: {remaining} y se acaba.",
+  "@wambiNearLimit2": {
+    "description": "Wambi's line on home, variant 2: near_limit.",
     "placeholders": {
       "category": {
         "type": "String"
@@ -549,9 +549,9 @@
       }
     }
   },
-  "lukasNearLimit3": "Despacito con {category}: te quedan {remaining}.",
-  "@lukasNearLimit3": {
-    "description": "Lukitas' line on home, variant 3: near_limit.",
+  "wambiNearLimit3": "Despacito con {category}: te quedan {remaining}.",
+  "@wambiNearLimit3": {
+    "description": "Wambi's line on home, variant 3: near_limit.",
     "placeholders": {
       "category": {
         "type": "String"
@@ -561,21 +561,9 @@
       }
     }
   },
-  "lukasOverBudget1": "En {category} vas {over} por encima. Nada grave: ya lo sabes.",
-  "@lukasOverBudget1": {
-    "description": "Lukitas' line on home, variant 1: over_budget.",
-    "placeholders": {
-      "category": {
-        "type": "String"
-      },
-      "over": {
-        "type": "String"
-      }
-    }
-  },
-  "lukasOverBudget2": "{category} pasó su presupuesto por {over}. Verlo ya es un paso.",
-  "@lukasOverBudget2": {
-    "description": "Lukitas' line on home, variant 2: over_budget.",
+  "wambiOverBudget1": "En {category} vas {over} por encima. Nada grave: ya lo sabes.",
+  "@wambiOverBudget1": {
+    "description": "Wambi's line on home, variant 1: over_budget.",
     "placeholders": {
       "category": {
         "type": "String"
@@ -585,9 +573,9 @@
       }
     }
   },
-  "lukasOverBudget3": "Nos pasamos {over} en {category}. Sin drama: aquí lo tienes a la vista.",
-  "@lukasOverBudget3": {
-    "description": "Lukitas' line on home, variant 3: over_budget.",
+  "wambiOverBudget2": "{category} pasó su presupuesto por {over}. Verlo ya es un paso.",
+  "@wambiOverBudget2": {
+    "description": "Wambi's line on home, variant 2: over_budget.",
     "placeholders": {
       "category": {
         "type": "String"
@@ -597,9 +585,21 @@
       }
     }
   },
-  "lukasIncomeReceived1": "¡Entró dinero! «{name}»: {amount} más en tu cuenta.",
-  "@lukasIncomeReceived1": {
-    "description": "Lukitas' line on home, variant 1: income_received.",
+  "wambiOverBudget3": "Nos pasamos {over} en {category}. Sin drama: aquí lo tienes a la vista.",
+  "@wambiOverBudget3": {
+    "description": "Wambi's line on home, variant 3: over_budget.",
+    "placeholders": {
+      "category": {
+        "type": "String"
+      },
+      "over": {
+        "type": "String"
+      }
+    }
+  },
+  "wambiIncomeReceived1": "¡Entró dinero! «{name}»: {amount} más en tu cuenta.",
+  "@wambiIncomeReceived1": {
+    "description": "Wambi's line on home, variant 1: income_received.",
     "placeholders": {
       "name": {
         "type": "String"
@@ -609,9 +609,9 @@
       }
     }
   },
-  "lukasIncomeReceived2": "Ingreso anotado: «{name}», {amount}. ¡Buena noticia!",
-  "@lukasIncomeReceived2": {
-    "description": "Lukitas' line on home, variant 2: income_received.",
+  "wambiIncomeReceived2": "Ingreso anotado: «{name}», {amount}. ¡Buena noticia!",
+  "@wambiIncomeReceived2": {
+    "description": "Wambi's line on home, variant 2: income_received.",
     "placeholders": {
       "name": {
         "type": "String"
@@ -621,9 +621,9 @@
       }
     }
   },
-  "lukasIncomeReceived3": "Llegaron {amount} de «{name}». ¡Bien!",
-  "@lukasIncomeReceived3": {
-    "description": "Lukitas' line on home, variant 3: income_received.",
+  "wambiIncomeReceived3": "Llegaron {amount} de «{name}». ¡Bien!",
+  "@wambiIncomeReceived3": {
+    "description": "Wambi's line on home, variant 3: income_received.",
     "placeholders": {
       "name": {
         "type": "String"
@@ -633,9 +633,9 @@
       }
     }
   },
-  "lukasPendingPaid1": "Pagaste «{name}»: {amount}. ¡Qué alivio!",
-  "@lukasPendingPaid1": {
-    "description": "Lukitas' line on home, variant 1: pending_paid.",
+  "wambiPendingPaid1": "Pagaste «{name}»: {amount}. ¡Qué alivio!",
+  "@wambiPendingPaid1": {
+    "description": "Wambi's line on home, variant 1: pending_paid.",
     "placeholders": {
       "name": {
         "type": "String"
@@ -645,9 +645,9 @@
       }
     }
   },
-  "lukasPendingPaid2": "Listo, «{name}» pagado: {amount}. Una cosa menos en la cabeza.",
-  "@lukasPendingPaid2": {
-    "description": "Lukitas' line on home, variant 2: pending_paid.",
+  "wambiPendingPaid2": "Listo, «{name}» pagado: {amount}. Una cosa menos en la cabeza.",
+  "@wambiPendingPaid2": {
+    "description": "Wambi's line on home, variant 2: pending_paid.",
     "placeholders": {
       "name": {
         "type": "String"
@@ -657,9 +657,9 @@
       }
     }
   },
-  "lukasPendingPaid3": "Pagaste «{name}»: {amount}. Vas cumpliendo.",
-  "@lukasPendingPaid3": {
-    "description": "Lukitas' line on home, variant 3: pending_paid.",
+  "wambiPendingPaid3": "Pagaste «{name}»: {amount}. Vas cumpliendo.",
+  "@wambiPendingPaid3": {
+    "description": "Wambi's line on home, variant 3: pending_paid.",
     "placeholders": {
       "name": {
         "type": "String"
@@ -669,76 +669,76 @@
       }
     }
   },
-  "lukasMonthLastDay1": "¡Último día del mes! Te sobran {remaining}.",
-  "@lukasMonthLastDay1": {
-    "description": "Lukitas' line on home, variant 1: month_last_day.",
+  "wambiMonthLastDay1": "¡Último día del mes! Te sobran {remaining}.",
+  "@wambiMonthLastDay1": {
+    "description": "Wambi's line on home, variant 1: month_last_day.",
     "placeholders": {
       "remaining": {
         "type": "String"
       }
     }
   },
-  "lukasMonthLastDay2": "Hoy cierra el mes con {remaining} a tu favor. ¡Casi lo logras!",
-  "@lukasMonthLastDay2": {
-    "description": "Lukitas' line on home, variant 2: month_last_day.",
+  "wambiMonthLastDay2": "Hoy cierra el mes con {remaining} a tu favor. ¡Casi lo logras!",
+  "@wambiMonthLastDay2": {
+    "description": "Wambi's line on home, variant 2: month_last_day.",
     "placeholders": {
       "remaining": {
         "type": "String"
       }
     }
   },
-  "lukasMonthLastDay3": "Última curva del mes: {remaining} de margen.",
-  "@lukasMonthLastDay3": {
-    "description": "Lukitas' line on home, variant 3: month_last_day.",
+  "wambiMonthLastDay3": "Última curva del mes: {remaining} de margen.",
+  "@wambiMonthLastDay3": {
+    "description": "Wambi's line on home, variant 3: month_last_day.",
     "placeholders": {
       "remaining": {
         "type": "String"
       }
     }
   },
-  "lukasMonthClosedGreen1": "¡Mes cerrado en verde! Te sobraron {remaining}.",
-  "@lukasMonthClosedGreen1": {
-    "description": "Lukitas' line on home, variant 1: month_closed_green.",
+  "wambiMonthClosedGreen1": "¡Mes cerrado en verde! Te sobraron {remaining}.",
+  "@wambiMonthClosedGreen1": {
+    "description": "Wambi's line on home, variant 1: month_closed_green.",
     "placeholders": {
       "remaining": {
         "type": "String"
       }
     }
   },
-  "lukasMonthClosedGreen2": "Cerraste con {remaining} de sobra. ¡Eso merece celebrarse!",
-  "@lukasMonthClosedGreen2": {
-    "description": "Lukitas' line on home, variant 2: month_closed_green.",
+  "wambiMonthClosedGreen2": "Cerraste con {remaining} de sobra. ¡Eso merece celebrarse!",
+  "@wambiMonthClosedGreen2": {
+    "description": "Wambi's line on home, variant 2: month_closed_green.",
     "placeholders": {
       "remaining": {
         "type": "String"
       }
     }
   },
-  "lukasMonthClosedGreen3": "Mes completado en positivo: {remaining} a tu favor. ¡Bien hecho!",
-  "@lukasMonthClosedGreen3": {
-    "description": "Lukitas' line on home, variant 3: month_closed_green.",
+  "wambiMonthClosedGreen3": "Mes completado en positivo: {remaining} a tu favor. ¡Bien hecho!",
+  "@wambiMonthClosedGreen3": {
+    "description": "Wambi's line on home, variant 3: month_closed_green.",
     "placeholders": {
       "remaining": {
         "type": "String"
       }
     }
   },
-  "lukasEmpty": "¡Hola! Anota tu primer gasto con el ＋ y yo llevo la cuenta.",
-  "@lukasEmpty": {
-    "description": "Lukitas' line on an empty month without budgets."
+  "wambiEmpty": "¡Hola! Anota tu primer gasto con el ＋ y yo llevo la cuenta.",
+  "@wambiEmpty": {
+    "description": "Wambi's line on an empty month without budgets."
   },
-  "lukasNoBudget": "Este mes llevas {spent} en gastos. Cada apunte cuenta.",
-  "@lukasNoBudget": {
-    "description": "Lukitas' line when there are no budgets: what was spent.",
+  "wambiNoBudget": "Este mes llevas {spent} en gastos. Cada apunte cuenta.",
+  "@wambiNoBudget": {
+    "description": "Wambi's line when there are no budgets: what was spent.",
     "placeholders": {
       "spent": {
         "type": "String"
       }
     }
   },
-  "lukasOverTotal": "Este mes vas {over} por encima de tus presupuestos. Aquí lo tienes todo a la vista.",
-  "@lukasOverTotal": {
-    "description": "Lukitas' line when the month is over its total budget.",
+  "wambiOverTotal": "Este mes vas {over} por encima de tus presupuestos. Aquí lo tienes todo a la vista.",
+  "@wambiOverTotal": {
+    "description": "Wambi's line when the month is over its total budget.",
     "placeholders": {
       "over": {
         "type": "String"
@@ -794,9 +794,9 @@
       }
     }
   },
-  "lukasOtherMonth": "Estos son tus números de {month}. Cuando vuelva la conexión te muestro los más recientes.",
-  "@lukasOtherMonth": {
-    "description": "Lukitas' line when home shows figures of an earlier month (a cache opened offline).",
+  "wambiOtherMonth": "Estos son tus números de {month}. Cuando vuelva la conexión te muestro los más recientes.",
+  "@wambiOtherMonth": {
+    "description": "Wambi's line when home shows figures of an earlier month (a cache opened offline).",
     "placeholders": {
       "month": {
         "type": "String"
@@ -1045,7 +1045,7 @@
   "@captureMicDenied": {
     "description": "Quick capture: the one sentence over the typing field when the microphone permission is denied."
   },
-  "captureNoEngine": "Este teléfono no puede escuchar con Lukitas, así que escríbelo aquí.",
+  "captureNoEngine": "Este teléfono no puede escuchar con Wambito, así que escríbelo aquí.",
   "@captureNoEngine": {
     "description": "Quick capture: the one sentence over the typing field when the phone cannot run the speech engine."
   },
@@ -1065,7 +1065,7 @@
   "@captureNothingRead": {
     "description": "Quick capture: the sentence had no movement and nothing unread."
   },
-  "captureOfferTitle": "Para escucharte, Lukitas necesita su voz en español",
+  "captureOfferTitle": "Para escucharte, Wambito necesita su voz en español",
   "@captureOfferTitle": {
     "description": "Quick capture: the opt-in to download the voice model of the app's language."
   },
@@ -1203,7 +1203,7 @@
   "progressEmailBody": "Agrega tu correo y tus movimientos se quedan tal cual, en la misma cuenta. Te mandamos un código para confirmarlo.",
   "progressSave": "Guardar con mi correo",
   "progressPasskeyTitle": "O agrega una huella",
-  "progressPasskeyBody": "Una huella en este teléfono te deja entrar sin correo, pero si pierdes el teléfono o la huella, pierdes la cuenta. Para usar Lukitas en otro dispositivo o con asistentes de IA necesitas un correo.",
+  "progressPasskeyBody": "Una huella en este teléfono te deja entrar sin correo, pero si pierdes el teléfono o la huella, pierdes la cuenta. Para usar Wambito en otro dispositivo o con asistentes de IA necesitas un correo.",
   "@progressPasskeyBody": {
     "description": "Spec 4.3: a guest's passkey, and what only an email gives."
   },
@@ -1217,7 +1217,7 @@
     "description": "Home: the gear that opens Settings."
   },
   "settingsAccount": "Cuenta",
-  "settingsGuestAccount": "Estás usando Lukitas sin correo.",
+  "settingsGuestAccount": "Estás usando Wambito sin correo.",
   "settingsPreferences": "Preferencias",
   "settingsTheme": "Tema",
   "settingsThemeSystem": "Automático",
@@ -1251,10 +1251,10 @@
   "settingsDueNotice": "Hoy vence…",
   "settingsDueNoticeHint": "A las 9:00, un aviso con los pagos recurrentes que vencen hoy.",
   "settingsGuestNotice": "Aviso si no tienes correo",
-  "settingsGuestNoticeHint": "Si pasan 45 días sin abrir Lukitas y no tienes correo, te avisamos que tus datos se borrarán.",
+  "settingsGuestNoticeHint": "Si pasan 45 días sin abrir Wambito y no tienes correo, te avisamos que tus datos se borrarán.",
   "noticeAskTitle": "¿Quieres recibir avisos?",
-  "noticeAskDue": "Así Lukitas puede avisarte a las 9:00 los días en que vence un pago recurrente.",
-  "noticeAskGuest": "Así Lukitas puede avisarte si pasan 45 días sin abrirlo y tu cuenta no tiene correo, antes de que se borren tus datos.",
+  "noticeAskDue": "Así Wambito puede avisarte a las 9:00 los días en que vence un pago recurrente.",
+  "noticeAskGuest": "Así Wambito puede avisarte si pasan 45 días sin abrirlo y tu cuenta no tiene correo, antes de que se borren tus datos.",
   "noticeAskLater": "Ahora no",
   "noticeAskAllow": "Permitir avisos",
   "settingsWidget": "Widget",
@@ -1272,8 +1272,8 @@
   "settingsServerTitle": "Cambiar de servidor",
   "settingsServerLead": "Otro servidor es otra cuenta: al cambiar, cierras sesión aquí.",
   "settingsServerField": "Dirección del servidor",
-  "settingsServerInvalid": "Escribe una dirección que empiece por https://, como https://lukitas.ejemplo.com.",
-  "settingsServerUseDefault": "Usar el de Lukitas",
+  "settingsServerInvalid": "Escribe una dirección que empiece por https://, como https://wambito.ejemplo.com.",
+  "settingsServerUseDefault": "Usar el de Wambito",
   "settingsServerChange": "Cambiar",
   "settingsServerChanged": "Listo: ahora usas {server}.",
   "@settingsServerChanged": {
@@ -1306,7 +1306,7 @@
   },
   "settingsAbout": "Acerca de",
   "settingsWeb": "Más en la web",
-  "settingsWebHint": "La página de Lukitas y lo que viene.",
+  "settingsWebHint": "La página de Wambito y lo que viene.",
   "settingsWebFailed": "No pudimos abrir el navegador.",
   "settingsSignedInAs": "Entraste como {email}",
   "@settingsSignedInAs": {
@@ -1318,7 +1318,7 @@
   },
   "settingsPhone": "En este teléfono",
   "settingsSoundHintVibrationOff": "Suenan al anotar y al celebrar. La vibración sigue igual.",
-  "settingsWebOpen": "Ver la página de Lukitas",
+  "settingsWebOpen": "Ver la página de Wambito",
   "settingsAboutOpen": "Licencias y más",
   "aboutBack": "Volver a Ajustes",
   "aboutBackShort": "Ajustes",
@@ -1335,11 +1335,11 @@
     "description": "Includes the honest copy of the Task 14 brief, word for word."
   },
   "guestServerConfirm": "Cambiar de todos modos",
-  "aboutTitle": "Acerca de Lukitas",
-  "aboutLead": "Lukitas es software libre, bajo la licencia AGPL-3.0. Puedes leer y revisar su código.",
+  "aboutTitle": "Acerca de Wambito",
+  "aboutLead": "Wambito es software libre, bajo la licencia AGPL-3.0. Puedes leer y revisar su código.",
   "aboutVoice": "Dictar funciona en tu teléfono, con los modelos de voz Vosk (Apache-2.0). Tu voz no sale de él.",
   "aboutLicenses": "Licencias",
-  "aboutLicensesHint": "De cada pieza de software que usa Lukitas, los modelos de voz y los sonidos.",
+  "aboutLicensesHint": "De cada pieza de software que usa Wambito, los modelos de voz y los sonidos.",
   "licenseNoticeModel": "El modelo de voz en {language} de la captura rápida, de Alpha Cephei Inc., bajo la licencia Apache 2.0 (https://alphacephei.com/vosk/models). No viene en la app: se descarga al teléfono si aceptas, y reconoce la voz sin salir de él.",
   "@licenseNoticeModel": {
     "placeholders": {
@@ -1352,7 +1352,7 @@
   "licenseNoticeOpenBlas": "OpenBLAS (https://github.com/OpenMathLib/OpenBLAS), las rutinas de álgebra lineal que van dentro de la biblioteca nativa de Vosk, bajo la licencia BSD de 3 cláusulas.",
   "licenseNoticeClapack": "CLAPACK (https://www.netlib.org/clapack), la versión en C de LAPACK que va dentro de la biblioteca nativa de Vosk, bajo una licencia BSD. Trae libf2c, cuyo aviso va después de la licencia.",
   "licenseNoticeLibffi": "libffi (https://github.com/libffi/libffi), que va dentro de la biblioteca nativa de JNA, bajo la licencia MIT.",
-  "licenseNoticeJna": "Java Native Access (https://github.com/java-native-access/jna), por donde Vosk llega a su biblioteca nativa. Tiene doble licencia: Apache 2.0 o LGPL 2.1. Lukitas la usa bajo la licencia Apache 2.0.",
+  "licenseNoticeJna": "Java Native Access (https://github.com/java-native-access/jna), por donde Vosk llega a su biblioteca nativa. Tiene doble licencia: Apache 2.0 o LGPL 2.1. Wambito la usa bajo la licencia Apache 2.0.",
   "licenseNoticeLibraries": "Bibliotecas de Android con las que se construye la app. Cada una declara su licencia en su propio POM; esta es la del grupo: {license}. Ninguna es Google Play Services ni Firebase.",
   "@licenseNoticeLibraries": {
     "placeholders": {
@@ -1362,7 +1362,7 @@
     }
   },
   "licenseNoticeBsd": "Una biblioteca de Android con licencia BSD de 3 cláusulas, con el texto que se publica junto a ella. Va dentro de AndroidX Glance, que se usa para el widget.",
-  "licenseNoticeFont": "{font} ({source}), la tipografía que Lukitas usa para {role}, igual que la web. Va incluida en la app, nunca se descarga, bajo la SIL Open Font License 1.1, cuyo texto sigue tal como lo trae la tipografía.",
+  "licenseNoticeFont": "{font} ({source}), la tipografía que Wambito usa para {role}, igual que la web. Va incluida en la app, nunca se descarga, bajo la SIL Open Font License 1.1, cuyo texto sigue tal como lo trae la tipografía.",
   "@licenseNoticeFont": {
     "placeholders": {
       "font": {
@@ -1378,8 +1378,8 @@
   },
   "licenseNoticeFontRoleDisplay": "los títulos y las cifras",
   "licenseNoticeFontRoleText": "el resto del texto",
-  "licenseNoticeSounds": "Los sonidos de Lukitas al anotar, pagar, deshacer o acercarte a un límite son obra original hecha para Lukitas: unos pocos tonos simples, sin muestras de terceros. Se publican con la licencia de la propia app, la GNU Affero General Public License 3.0 (https://github.com/slinqer/lukitas).",
-  "licenseNoticeApp": "Lukitas es software libre, bajo la GNU Affero General Public License 3.0. Su código está en https://github.com/slinqer/lukitas.",
+  "licenseNoticeSounds": "Los sonidos de Wambito al anotar, pagar, deshacer o acercarte a un límite son obra original hecha para Wambito: unos pocos tonos simples, sin muestras de terceros. Se publican con la licencia de la propia app, la GNU Affero General Public License 3.0 (https://github.com/slinqer/lukitas).",
+  "licenseNoticeApp": "Wambito es software libre, bajo la GNU Affero General Public License 3.0. Su código está en https://github.com/slinqer/lukitas.",
   "aboutLegalese": "Software libre, AGPL-3.0",
   "close": "Cerrar",
   "@close": {
@@ -1673,9 +1673,9 @@
       }
     }
   },
-  "insightsLukasTop": "{name} fue lo que más lukas se llevó {period}: {amount}.",
-  "@insightsLukasTop": {
-    "description": "Análisis: Lukitas says which category took the biggest bite. {period} is insightsPeriodOne or insightsPeriodRange.",
+  "insightsWambiTop": "{name} fue lo que más lukas se llevó {period}: {amount}.",
+  "@insightsWambiTop": {
+    "description": "Análisis: Wambi says which category took the biggest bite. {period} is insightsPeriodOne or insightsPeriodRange.",
     "placeholders": {
       "name": {
         "type": "String"
@@ -1688,9 +1688,9 @@
       }
     }
   },
-  "insightsLukasEmpty": "No veo gastos {period}. Cuando los anotes, aquí te muestro en qué se van tus lukas.",
-  "@insightsLukasEmpty": {
-    "description": "Análisis: Lukitas when the period has no spending.",
+  "insightsWambiEmpty": "No veo gastos {period}. Cuando los anotes, aquí te muestro en qué se van tus lukas.",
+  "@insightsWambiEmpty": {
+    "description": "Análisis: Wambi when the period has no spending.",
     "placeholders": {
       "period": {
         "type": "String"
@@ -1900,13 +1900,13 @@
   "@themeSwitchToNight": {
     "description": "The day/night switch on the entry screens, by day: what a press does."
   },
-  "mascotHappy": "Lukitas, contento",
+  "mascotHappy": "Wambi, contento",
   "@mascotHappy": {
-    "description": "Lukitas on the entry screens, happy."
+    "description": "Wambi on the entry screens, happy."
   },
-  "mascotWorried": "Lukitas, preocupado",
+  "mascotWorried": "Wambi, preocupado",
   "@mascotWorried": {
-    "description": "Lukitas on the entry screens, worried (a failure)."
+    "description": "Wambi on the entry screens, worried (a failure)."
   },
   "signInOrEmail": "o con tu correo",
   "@signInOrEmail": {
@@ -1926,7 +1926,7 @@
       }
     }
   },
-  "verifyConfirmLead": "Toca Continuar para entrar a Lukitas con este correo.",
+  "verifyConfirmLead": "Toca Continuar para entrar a Wambito con este correo.",
   "@verifyConfirmLead": {
     "description": "The magic link: under the title."
   },
@@ -1946,7 +1946,7 @@
   "@passkeyOfferKey": {
     "description": "Passkey offer: first point."
   },
-  "passkeyOfferUnlock": "Tu huella o tu cara solo la desbloquean. Lukitas nunca las recibe.",
+  "passkeyOfferUnlock": "Tu huella o tu cara solo la desbloquean. Wambito nunca las recibe.",
   "@passkeyOfferUnlock": {
     "description": "Passkey offer: second point."
   },
@@ -2483,13 +2483,13 @@
   "@categoryErrorHasTransactions": {
     "description": "Category sheet: changing the kind of a category with transactions."
   },
-  "recurringLead": "Lo que se repite cada mes o cada año. Lukitas lo anota como pendiente para que no se te pase.",
+  "recurringLead": "Lo que se repite cada mes o cada año. Wambito lo anota como pendiente para que no se te pase.",
   "@recurringLead": {
     "description": "Recurring payments: the line under the title, when there are some."
   },
   "recurringEmpty": "Aquí van tus pagos fijos: arriendo, Spotify, el salario… Créalos una vez y cada mes te esperan como pendientes.",
   "@recurringEmpty": {
-    "description": "Recurring payments: what Lukitas says when there are none."
+    "description": "Recurring payments: what Wambi says when there are none."
   },
   "recurringMonthlyRule": "Cada mes, el día {day}",
   "@recurringMonthlyRule": {
@@ -3019,7 +3019,7 @@
   "@welcomeNext": {
     "description": "Welcome: applies what is on screen and moves on."
   },
-  "welcomeTitle": "Te damos la bienvenida a Lukitas",
+  "welcomeTitle": "Te damos la bienvenida a Wambito",
   "@welcomeTitle": {
     "description": "Welcome: the first screen's title."
   },
@@ -3279,7 +3279,7 @@
   "@settingsFeedbackTitle": {
     "description": "Settings: the card that writes to the founder."
   },
-  "settingsFeedbackLead": "¿Algo no funciona, o quieres que Lukitas haga algo más? Cuéntanos por correo.",
+  "settingsFeedbackLead": "¿Algo no funciona, o quieres que Wambito haga algo más? Cuéntanos por correo.",
   "@settingsFeedbackLead": {
     "description": "Settings: what the feedback card is for."
   },
@@ -3296,11 +3296,11 @@
       }
     }
   },
-  "settingsFeedbackMailSubject": "Lukitas: comentarios",
+  "settingsFeedbackMailSubject": "Wambito: comentarios",
   "@settingsFeedbackMailSubject": {
     "description": "The subject of the email to the founder."
   },
-  "settingsFeedbackMailBody": "Versión de Lukitas: {version}\nIdioma: {language}",
+  "settingsFeedbackMailBody": "Versión de Wambito: {version}\nIdioma: {language}",
   "@settingsFeedbackMailBody": {
     "description": "The email's body: only the app's version and the language (two lines, after two blank ones to write above).",
     "placeholders": {
@@ -3381,7 +3381,7 @@
   "@settingsAssistantsTitle": {
     "description": "Settings: the card for connecting an AI assistant through the MCP."
   },
-  "settingsAssistantsLead": "Usa Lukitas desde Claude o ChatGPT: anota tus movimientos y pregunta cómo vas, conversando.",
+  "settingsAssistantsLead": "Usa Wambito desde Claude o ChatGPT: anota tus movimientos y pregunta cómo vas, conversando.",
   "@settingsAssistantsLead": {
     "description": "Settings: what connecting an assistant is for."
   },

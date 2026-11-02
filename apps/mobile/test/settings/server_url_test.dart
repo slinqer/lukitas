@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/auth_api.dart';
-import 'package:lukitas/api/server_url.dart';
-import 'package:lukitas/api/session.dart';
-import 'package:lukitas/home/home_cache.dart';
-import 'package:lukitas/home/widget_snapshot.dart';
-import 'package:lukitas/settings/initial_settings.dart';
-import 'package:lukitas/settings/settings_store.dart';
+import 'package:wambito/api/auth_api.dart';
+import 'package:wambito/api/server_url.dart';
+import 'package:wambito/api/session.dart';
+import 'package:wambito/home/home_cache.dart';
+import 'package:wambito/home/widget_snapshot.dart';
+import 'package:wambito/settings/initial_settings.dart';
+import 'package:wambito/settings/settings_store.dart';
 
 import '../entry/fakes.dart';
 import '../home/fakes.dart';
@@ -21,8 +21,8 @@ void main() {
       expect(parseServerUrl('https://app.wambito.com'), isNotNull);
       expect(parseServerUrl('https://app.example.com/')?.toString(), 'https://app.example.com');
       expect(
-        parseServerUrl('https://app.example.com:8443/lukitas//')?.toString(),
-        'https://app.example.com:8443/lukitas',
+        parseServerUrl('https://app.example.com:8443/wambito//')?.toString(),
+        'https://app.example.com:8443/wambito',
       );
       expect(parseServerUrl('  https://app.example.com  ')?.toString(), 'https://app.example.com');
       expect(parseServerUrl('HTTPS://App.Example.com')?.host, 'app.example.com');
@@ -98,7 +98,7 @@ void main() {
       return container;
     }
 
-    test('it defaults to the Lukitas server', () {
+    test('it defaults to the Wambito server', () {
       final container = containerWith();
       expect(container.read(serverUrlProvider), defaultServerUrl);
       expect(defaultServerUrl.toString(), 'https://app.wambito.com');

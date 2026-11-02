@@ -5,16 +5,16 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/client.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/settings/account_repository.dart';
+import 'package:wambito/api/client.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/settings/account_repository.dart';
 
 /// Answers the export with a file and a `content-disposition`, remembers every request.
 class _Adapter implements HttpClientAdapter {
   final requests = <RequestOptions>[];
   int? status;
   bool noAnswer = false;
-  String? disposition = 'attachment; filename="lukas-export-2026-10-21.json"';
+  String? disposition = 'attachment; filename="wambito-export-2026-10-21.json"';
 
   @override
   Future<ResponseBody> fetch(
@@ -68,26 +68,26 @@ void main() {
       expect(adapter.requests.single.method, 'GET');
       expect(adapter.requests.single.path, '/v1/me/export');
       expect(adapter.requests.single.queryParameters, {'format': 'json'});
-      expect(file.name, 'lukas-export-2026-10-21.json');
+      expect(file.name, 'wambito-export-2026-10-21.json');
       expect(file.mime, 'application/json');
       expect(utf8.decode(file.bytes), '{"user":{"id":"u1"}}');
     },
   );
 
   test('exports as CSV', () async {
-    adapter.disposition = 'attachment; filename="lukas-export-2026-10-21.csv"';
+    adapter.disposition = 'attachment; filename="wambito-export-2026-10-21.csv"';
     final file = await repo.export(ExportFormat.csv);
     expect(adapter.requests.single.queryParameters, {'format': 'csv'});
-    expect(file.name, 'lukas-export-2026-10-21.csv');
+    expect(file.name, 'wambito-export-2026-10-21.csv');
     expect(file.mime, 'text/csv');
     expect(utf8.decode(file.bytes), startsWith('date,name,amount'));
   });
 
-  test('a missing name, or one with a path in it, is lukas-export.<format>', () async {
+  test('a missing name, or one with a path in it, is wambito-export.<format>', () async {
     adapter.disposition = null;
-    expect((await repo.export(ExportFormat.json)).name, 'lukas-export.json');
+    expect((await repo.export(ExportFormat.json)).name, 'wambito-export.json');
     adapter.disposition = 'attachment; filename="../../x.csv"';
-    expect((await repo.export(ExportFormat.csv)).name, 'lukas-export.csv');
+    expect((await repo.export(ExportFormat.csv)).name, 'wambito-export.csv');
   });
 
   test('a failed export is a HomeFailure with the status, and no answer is offline', () async {

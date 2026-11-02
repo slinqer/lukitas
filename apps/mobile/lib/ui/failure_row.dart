@@ -30,7 +30,7 @@ class SaveFailureRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.lkColors;
     return Row(
-      spacing: LukitasTokens.space2,
+      spacing: WambitoTokens.space2,
       children: [
         Expanded(
           child: Semantics(

@@ -104,7 +104,7 @@ class _AssistantsSectionState extends ConsumerState<AssistantsSection> {
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: LukitasTokens.space2,
+          spacing: WambitoTokens.space2,
           children: [
             SettingLabel(label: l10n.settingsAssistantsUrl, hint: l10n.settingsAssistantsUrlHint),
             PressSurface(
@@ -138,7 +138,7 @@ class _AssistantsSectionState extends ConsumerState<AssistantsSection> {
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: LukitasTokens.space2,
+          spacing: WambitoTokens.space2,
           children: [
             CssParagraph(l10n.settingsAssistantsClaude, style: inkSm),
             CssParagraph(l10n.settingsAssistantsChatGpt, style: inkSm),
@@ -146,7 +146,7 @@ class _AssistantsSectionState extends ConsumerState<AssistantsSection> {
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: LukitasTokens.space1,
+          spacing: WambitoTokens.space1,
           children: [
             CssParagraph(l10n.settingsAssistantsExamples, style: mutedSm),
             CssParagraph(l10n.settingsAssistantsExampleAdd, style: inkSm),
@@ -185,7 +185,7 @@ class _Connected extends ConsumerWidget {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: LukitasTokens.space2,
+      spacing: WambitoTokens.space2,
       children: [
         SettingLabel(label: l10n.settingsAssistantsConnected),
         if (list.hasError && items == null)
@@ -270,7 +270,7 @@ class _AssistantRow extends StatelessWidget {
                       ),
                     ),
                   Wrap(
-                    spacing: LukitasTokens.space2,
+                    spacing: WambitoTokens.space2,
                     children: [
                       CssBlinkLines(
                         style: LkText.fieldLabel,

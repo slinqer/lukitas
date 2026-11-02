@@ -1,11 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/auth_api.dart';
-import 'package:lukitas/api/session.dart';
-import 'package:lukitas/home/home_cache.dart';
-import 'package:lukitas/home/widget_snapshot.dart';
-import 'package:lukitas/router.dart';
+import 'package:wambito/api/auth_api.dart';
+import 'package:wambito/api/session.dart';
+import 'package:wambito/home/home_cache.dart';
+import 'package:wambito/home/widget_snapshot.dart';
+import 'package:wambito/router.dart';
 
 import '../entry/fakes.dart';
 import '../home/fakes.dart';

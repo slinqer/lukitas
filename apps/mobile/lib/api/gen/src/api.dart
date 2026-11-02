@@ -4,20 +4,20 @@
 
 import 'package:dio/dio.dart';
 import 'package:built_value/serializer.dart';
-import 'package:lukitas/api/gen/src/serializers.dart';
-import 'package:lukitas/api/gen/src/auth/api_key_auth.dart';
-import 'package:lukitas/api/gen/src/auth/basic_auth.dart';
-import 'package:lukitas/api/gen/src/auth/bearer_auth.dart';
-import 'package:lukitas/api/gen/src/auth/oauth.dart';
-import 'package:lukitas/api/gen/src/api/default_api.dart';
+import 'package:wambito/api/gen/src/serializers.dart';
+import 'package:wambito/api/gen/src/auth/api_key_auth.dart';
+import 'package:wambito/api/gen/src/auth/basic_auth.dart';
+import 'package:wambito/api/gen/src/auth/bearer_auth.dart';
+import 'package:wambito/api/gen/src/auth/oauth.dart';
+import 'package:wambito/api/gen/src/api/default_api.dart';
 
-class LukitasApi {
+class WambitoApi {
   static const String basePath = r'http://localhost:3000';
 
   final Dio dio;
   final Serializers serializers;
 
-  LukitasApi({
+  WambitoApi({
     Dio? dio,
     Serializers? serializers,
     String? basePathOverride,

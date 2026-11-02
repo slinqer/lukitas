@@ -6,12 +6,12 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/files/files_channel.dart';
-import 'package:lukitas/home/home_cache.dart';
-import 'package:lukitas/home/widget_snapshot.dart';
-import 'package:lukitas/notices/notice_platform.dart';
-import 'package:lukitas/settings/account_repository.dart';
-import 'package:lukitas/welcome/onboarding_repository.dart';
+import 'package:wambito/files/files_channel.dart';
+import 'package:wambito/home/home_cache.dart';
+import 'package:wambito/home/widget_snapshot.dart';
+import 'package:wambito/notices/notice_platform.dart';
+import 'package:wambito/settings/account_repository.dart';
+import 'package:wambito/welcome/onboarding_repository.dart';
 
 import '../home/fakes.dart';
 import '../home/fixtures.dart';
@@ -50,7 +50,7 @@ class FakeAccountRepository implements AccountRepository {
         ? 'date,name,amount\n2026-10-20,Arriendo,-1500\n'
         : '{"user":{"id":"user-1"}}';
     return ExportFile(
-      name: 'lukas-export-$stamp.${format.name}',
+      name: 'wambito-export-$stamp.${format.name}',
       bytes: Uint8List.fromList(utf8.encode(body)),
       mime: format.mime,
     );

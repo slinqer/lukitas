@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/ui/web_text_field.dart';
+import 'package:wambito/ui/web_text_field.dart';
 
 import '../support/ui_app.dart';
 

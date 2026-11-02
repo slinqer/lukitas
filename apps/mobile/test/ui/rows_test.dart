@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/ui/budget_bar.dart';
-import 'package:lukitas/ui/category_row.dart';
-import 'package:lukitas/ui/swipe_row.dart';
-import 'package:lukitas/ui/transaction_row.dart';
+import 'package:wambito/ui/budget_bar.dart';
+import 'package:wambito/ui/category_row.dart';
+import 'package:wambito/ui/swipe_row.dart';
+import 'package:wambito/ui/transaction_row.dart';
 
 import '../support/fonts.dart';
 import '../support/ui_app.dart';

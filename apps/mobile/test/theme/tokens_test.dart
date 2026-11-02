@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/theme/tokens.g.dart';
+import 'package:wambito/theme/tokens.g.dart';
 
 import '../../scripts/gen-tokens.dart' show generateTokensDart, tokensJsonPath;
 
@@ -20,14 +20,14 @@ void main() {
   });
 
   test('the tokens carry the design system values', () {
-    expect(LukitasTokens.night.bg, const Color(0xFF15122B));
-    expect(LukitasTokens.day.bg, const Color(0xFFF7F4FF));
-    expect(LukitasTokens.night.brand, const Color(0xFF7C4DFF));
+    expect(WambitoTokens.night.bg, const Color(0xFF15122B));
+    expect(WambitoTokens.day.bg, const Color(0xFFF7F4FF));
+    expect(WambitoTokens.night.brand, const Color(0xFF7C4DFF));
     // rgba(6, 4, 20, 0.78): alpha 0.78 × 255 rounds to 199.
-    expect(LukitasTokens.night.lukasShadow, const Color(0xC7060414));
-    expect(LukitasTokens.space4, 16.0);
-    expect(LukitasTokens.radiusPill, 999.0);
-    expect(LukitasTokens.durationPress, const Duration(milliseconds: 80));
-    expect(LukitasTokens.durationUndo, const Duration(seconds: 8));
+    expect(WambitoTokens.night.wambiShadow, const Color(0xC7060414));
+    expect(WambitoTokens.space4, 16.0);
+    expect(WambitoTokens.radiusPill, 999.0);
+    expect(WambitoTokens.durationPress, const Duration(milliseconds: 80));
+    expect(WambitoTokens.durationUndo, const Duration(seconds: 8));
   });
 }

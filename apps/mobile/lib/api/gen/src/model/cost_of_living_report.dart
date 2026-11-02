@@ -4,7 +4,7 @@
 
 // ignore_for_file: unused_element
 import 'package:built_collection/built_collection.dart';
-import 'package:lukitas/api/gen/src/model/cost_of_living_report_categories_inner.dart';
+import 'package:wambito/api/gen/src/model/cost_of_living_report_categories_inner.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 

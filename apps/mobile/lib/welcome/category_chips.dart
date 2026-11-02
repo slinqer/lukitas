@@ -1,5 +1,5 @@
 // The categories step's chips: a port of apps/web/app/features/onboarding/category-chips.ts.
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../home/category_look.dart';
 import 'suggested_categories.dart';
 

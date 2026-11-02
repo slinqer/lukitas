@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/home/home_format.dart';
+import 'package:wambito/home/home_format.dart';
 
 // A file of its own: nothing here loads the pt_PT date data first (a test file is one isolate), so
 // this is the app's path, where only the Material localizations have loaded the bare `pt`.

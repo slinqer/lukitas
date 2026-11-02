@@ -95,17 +95,17 @@ class _ChoiceBody<T> extends StatelessWidget {
     final colors = context.lkColors;
     final note = this.note;
     return Padding(
-      padding: const EdgeInsets.only(top: LukitasTokens.space3),
+      padding: const EdgeInsets.only(top: WambitoTokens.space3),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: LukitasTokens.space4,
+        spacing: WambitoTokens.space4,
         children: [
           Text(body, style: LkText.body.copyWith(color: colors.ink)),
           if (note != null) Text(note, style: LkText.body.copyWith(color: colors.ink)),
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: LukitasTokens.space2,
+            spacing: WambitoTokens.space2,
             children: [
               for (final choice in choices)
                 PressButton(
@@ -189,11 +189,11 @@ class _ConfirmBodyState extends State<_ConfirmBody> {
     // right. Narrower, one under the other, the action first.
     final wide = MediaQuery.sizeOf(context).width >= 400;
     return Padding(
-      padding: const EdgeInsets.only(top: LukitasTokens.space3),
+      padding: const EdgeInsets.only(top: WambitoTokens.space3),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: LukitasTokens.space4,
+        spacing: WambitoTokens.space4,
         children: [
           // As tall as CSS makes them: 22.5px a line, which Flutter would round to 23.
           CssLines(
@@ -207,7 +207,7 @@ class _ConfirmBodyState extends State<_ConfirmBody> {
             ),
           if (wide)
             flexOneRow(
-              gap: LukitasTokens.space2,
+              gap: WambitoTokens.space2,
               // `flex-1` is `flex: 1 1 0%`: each button is its own padding and border, and an equal
               // share of what is left. The ghost has 8px each side; the secondary 24px and a 2px
               // border.
@@ -216,7 +216,7 @@ class _ConfirmBodyState extends State<_ConfirmBody> {
           else
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: LukitasTokens.space2,
+              spacing: WambitoTokens.space2,
               children: [confirm, cancel],
             ),
         ],

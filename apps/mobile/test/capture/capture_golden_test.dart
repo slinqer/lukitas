@@ -7,18 +7,18 @@ import 'dart:io';
 import 'package:dio/dio.dart' show CancelToken;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/capture/capture_repository.dart';
-import 'package:lukitas/capture/capture_sheet.dart';
-import 'package:lukitas/capture/engine/speech_engine.dart';
-import 'package:lukitas/capture/models_download.dart';
-import 'package:lukitas/home/home_screen.dart';
+import 'package:wambito/capture/capture_repository.dart';
+import 'package:wambito/capture/capture_sheet.dart';
+import 'package:wambito/capture/engine/speech_engine.dart';
+import 'package:wambito/capture/models_download.dart';
+import 'package:wambito/home/home_screen.dart';
 
 import '../add/fakes.dart';
 import '../home/fakes.dart';
 import '../home/fixtures.dart';
 import '../home/home_harness.dart';
 import '../support/parity.dart';
-import '../support/parity_home.dart' show precacheLukitas;
+import '../support/parity_home.dart' show precacheWambi;
 import 'fakes.dart';
 
 /// Quick capture as a phone shows it, 412 × 915 at a device pixel ratio of 2, in night and in day.
@@ -97,7 +97,7 @@ Future<_Env> _open(
       modelStoreProvider.overrideWithValue(store),
     ],
   );
-  await precacheLukitas(t);
+  await precacheWambi(t);
   unawaited(openCapture(t.element(find.byType(HomeScreen))));
   await t.pump();
   await t.pump(const Duration(milliseconds: 400));

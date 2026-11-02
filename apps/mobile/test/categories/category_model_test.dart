@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/categories/category_model.dart';
-import 'package:lukitas/home/category_look.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/categories/category_model.dart';
+import 'package:wambito/home/category_look.dart';
 
 import '../home/fixtures.dart';
 

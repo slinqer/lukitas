@@ -4,7 +4,7 @@
 # The document is built from the API app itself, with no server and no database, the way the web's
 # types are (`pnpm --filter @wambito/web api:types --file`). openapi-generator's dart-dio generator
 # (version pinned in scripts/openapitools.json) turns it into a Dart package; its lib/ is copied
-# into lib/api/gen with `package:lukitas_api/` imports rewritten to `package:lukitas/api/gen/`,
+# into lib/api/gen with `package:wambito_api/` imports rewritten to `package:wambito/api/gen/`,
 # then build_runner writes the built_value parts and dart format formats the result.
 #
 # Usage, from anywhere: apps/mobile/scripts/gen-api.sh
@@ -31,7 +31,7 @@ echo "==> openapi-generator dart-dio"
   --input-spec "$WORK/openapi.json" \
   --output "$WORK/client" \
   --global-property apiTests=false,modelTests=false,apiDocs=false,modelDocs=false \
-  --additional-properties pubName=lukitas_api,pubLibrary=lukitas_api \
+  --additional-properties pubName=wambito_api,pubLibrary=wambito_api \
   >"$WORK/generator.log" 2>&1) || {
   cat "$WORK/generator.log"
   exit 1
@@ -41,7 +41,7 @@ echo "==> lib/api/gen"
 rm -rf "$OUT"
 mkdir -p "$OUT"
 cp -R "$WORK/client/lib/." "$OUT/"
-find "$OUT" -name '*.dart' -exec perl -pi -e 's#package:lukitas_api/#package:lukitas/api/gen/#g' {} +
+find "$OUT" -name '*.dart' -exec perl -pi -e 's#package:wambito_api/#package:wambito/api/gen/#g' {} +
 
 cd "$MOBILE"
 echo "==> build_runner (built_value parts)"

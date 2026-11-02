@@ -11,7 +11,7 @@ import '../ui/press_button.dart';
 import 'auth_errors.dart';
 import 'sign_in_frame.dart';
 
-/// First run (spec section 6.1): Lukitas on the web's sign-in frame, and three ways in: "Probar sin correo" (a guest),
+/// First run (spec section 6.1): Wambi on the web's sign-in frame, and three ways in: "Probar sin correo" (a guest),
 /// "Entrar con mi correo" (a code or magic link) and "Entrar con huella" (a passkey), the last only
 /// when the phone supports passkeys.
 class EntryScreen extends ConsumerStatefulWidget {
@@ -94,7 +94,7 @@ class _EntryScreenState extends ConsumerState<EntryScreen> {
         _full(
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: LukitasTokens.space3,
+            spacing: WambitoTokens.space3,
             children: [
               PressButton.text(
                 l10n.entryEmail,
@@ -108,7 +108,7 @@ class _EntryScreenState extends ConsumerState<EntryScreen> {
                   onPressed: busy ? null : _passkey,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    spacing: LukitasTokens.space2,
+                    spacing: WambitoTokens.space2,
                     children: [
                       const FingerprintIcon(),
                       Flexible(

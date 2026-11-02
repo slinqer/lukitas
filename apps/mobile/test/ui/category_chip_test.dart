@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/ui/category_chip.dart';
+import 'package:wambito/ui/category_chip.dart';
 
 import '../support/fonts.dart';
 import '../support/ui_app.dart';

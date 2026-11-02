@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart' show kDebugMode;
 
 /// The server the app talks to unless the person changes it (spec section 6.1): a build can point
-/// at another one with `--dart-define=LUKITAS_SERVER=http://10.0.2.2:3000` (the dev stack, seen
+/// at another one with `--dart-define=WAMBITO_SERVER=http://10.0.2.2:3000` (the dev stack, seen
 /// from the emulator).
 final defaultServerUrl = Uri.parse(
   const String.fromEnvironment(
-    'LUKITAS_SERVER',
+    'WAMBITO_SERVER',
     defaultValue: 'https://app.wambito.com',
   ),
 );

@@ -11,7 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../add/add_sheet.dart';
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../capture/capture_sheet.dart';
 import '../categories/categories_actions.dart';
 import '../categories/category_sheet.dart';
@@ -198,8 +198,8 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
         child: LayoutBuilder(
           builder: (context, constraints) {
             final inset = math.max(
-              LukitasTokens.space4,
-              (constraints.maxWidth - _maxContentWidth) / 2 + LukitasTokens.space4,
+              WambitoTokens.space4,
+              (constraints.maxWidth - _maxContentWidth) / 2 + WambitoTokens.space4,
             );
             // The page is a screen tall at least (`min-h-dvh`), and a pull anywhere on it refreshes.
             return SwipeScope(
@@ -215,13 +215,13 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
                       Padding(
                         padding: EdgeInsets.fromLTRB(
                           inset + ShellRoom.sides(context).left,
-                          LukitasTokens.space3,
+                          WambitoTokens.space3,
                           inset + ShellRoom.sides(context).right,
                           ShellRoom.of(context),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
-                          spacing: LukitasTokens.space3,
+                          spacing: WambitoTokens.space3,
                           children: children,
                         ),
                       ),
@@ -261,14 +261,14 @@ class _NotFound extends StatelessWidget {
     final colors = context.lkColors;
     return HeroCard(
       padding: const EdgeInsets.fromLTRB(
-        LukitasTokens.space4,
-        LukitasTokens.space3,
-        LukitasTokens.space4,
-        LukitasTokens.space4,
+        WambitoTokens.space4,
+        WambitoTokens.space3,
+        WambitoTokens.space4,
+        WambitoTokens.space4,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: LukitasTokens.space2,
+        spacing: WambitoTokens.space2,
         children: [
           Text(
             l10n.categoryNotFoundTitle,
@@ -416,10 +416,10 @@ class _DetailViewState extends ConsumerState<_DetailView> {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: LukitasTokens.space3,
+      spacing: WambitoTokens.space3,
       children: [
         Row(
-          spacing: LukitasTokens.space3,
+          spacing: WambitoTokens.space3,
           children: [
             ExcludeSemantics(
               child: Container(
@@ -535,20 +535,20 @@ class _ArchivedNote extends StatelessWidget {
         // `.lk-nudge`: `border: 2px dashed var(--stroke)`.
         foregroundPainter: DashedBorderPainter(
           color: colors.stroke,
-          radius: LukitasTokens.radiusLg,
+          radius: WambitoTokens.radiusLg,
           width: 2,
           bottomPhase: 4,
         ),
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: colors.surfaceRow,
-            borderRadius: BorderRadius.circular(LukitasTokens.radiusLg),
+            borderRadius: BorderRadius.circular(WambitoTokens.radiusLg),
           ),
           child: Padding(
             // `padding: var(--space-3)` inside the 2px border.
-            padding: const EdgeInsets.all(LukitasTokens.space3 + 2),
+            padding: const EdgeInsets.all(WambitoTokens.space3 + 2),
             child: Row(
-              spacing: LukitasTokens.space3,
+              spacing: WambitoTokens.space3,
               children: [
                 Expanded(
                   child: Text(
@@ -619,7 +619,7 @@ class _BudgetCard extends StatelessWidget {
     } else if (budget == null) {
       content = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: LukitasTokens.space2,
+        spacing: WambitoTokens.space2,
         children: [
           CssLines(
             style: LkText.body,
@@ -643,7 +643,7 @@ class _BudgetCard extends StatelessWidget {
       final spentOf = l10n.categorySpentOf(money(spent), money(budget));
       content = Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: LukitasTokens.space2,
+        spacing: WambitoTokens.space2,
         children: [
           CssLines(
             style: amountStyle,
@@ -666,14 +666,14 @@ class _BudgetCard extends StatelessWidget {
       label: l10n.categoryBudgetTitle,
       child: HeroCard(
         padding: const EdgeInsets.fromLTRB(
-          LukitasTokens.space4,
-          LukitasTokens.space3,
-          LukitasTokens.space4,
-          LukitasTokens.space4,
+          WambitoTokens.space4,
+          WambitoTokens.space3,
+          WambitoTokens.space4,
+          WambitoTokens.space4,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: LukitasTokens.space2,
+          spacing: WambitoTokens.space2,
           children: [
             Semantics(
               header: true,
@@ -726,10 +726,10 @@ class _IncomeCard extends StatelessWidget {
     );
     return HeroCard(
       padding: const EdgeInsets.fromLTRB(
-        LukitasTokens.space4,
-        LukitasTokens.space3,
-        LukitasTokens.space4,
-        LukitasTokens.space4,
+        WambitoTokens.space4,
+        WambitoTokens.space3,
+        WambitoTokens.space4,
+        WambitoTokens.space4,
       ),
       child: Text(
         l10n.categoryReceived(
@@ -791,7 +791,7 @@ class _Movements extends StatelessWidget {
       rows = [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: LukitasTokens.space3,
+          spacing: WambitoTokens.space3,
           children: [
             Text(
               l10n.categoryEmpty(category.name, monthName),
@@ -853,7 +853,7 @@ class _Movements extends StatelessWidget {
           ),
         ),
         // The rows and day headings carry their own gaps (`gap-2`), as on home.
-        const SizedBox(height: LukitasTokens.space2),
+        const SizedBox(height: WambitoTokens.space2),
         ...rows,
       ],
     );
@@ -863,7 +863,7 @@ class _Movements extends StatelessWidget {
     final pending = tx.status == TransactionStatusEnum.pending;
     return SwipeRow(
       key: ValueKey(tx.id),
-      gap: LukitasTokens.space2,
+      gap: WambitoTokens.space2,
       enter: detail.restored.contains(tx.id),
       onEntered: () => onSettled(tx.id),
       deleteLabel: l10n.swipeDelete,

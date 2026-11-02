@@ -177,11 +177,11 @@ class _DeleteFormState extends ConsumerState<_DeleteForm> {
       onPressed: _busy ? null : () => Navigator.of(context).pop(false),
     );
     return Padding(
-      padding: const EdgeInsets.only(top: LukitasTokens.space3),
+      padding: const EdgeInsets.only(top: WambitoTokens.space3),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: LukitasTokens.space4,
+        spacing: WambitoTokens.space4,
         children: [
           CssParagraph(
             l10n.settingsAccountDeleteSheetBody,
@@ -200,7 +200,7 @@ class _DeleteFormState extends ConsumerState<_DeleteForm> {
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: LukitasTokens.space1,
+            spacing: WambitoTokens.space1,
             children: [
               Text(
                 l10n.settingsAccountDeleteConfirmLabel,
@@ -234,11 +234,11 @@ class _DeleteFormState extends ConsumerState<_DeleteForm> {
             ),
           if (wide)
             // The ghost has 8px of padding each side, the secondary 24px and a 2px border.
-            flexOneRow(gap: LukitasTokens.space2, items: [(16, cancel), (52, confirm)])
+            flexOneRow(gap: WambitoTokens.space2, items: [(16, cancel), (52, confirm)])
           else
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: LukitasTokens.space2,
+              spacing: WambitoTokens.space2,
               children: [confirm, cancel],
             ),
         ],

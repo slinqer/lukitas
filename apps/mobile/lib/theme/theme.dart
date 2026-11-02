@@ -4,29 +4,29 @@ import 'text_styles.dart';
 import 'tokens.g.dart';
 
 /// The design system's colours and shadows for the current theme, as a [ThemeExtension]:
-/// `Theme.of(context).extension<LukitasTheme>()!.colors.bgGlow`.
+/// `Theme.of(context).extension<WambitoTheme>()!.colors.bgGlow`.
 @immutable
-class LukitasTheme extends ThemeExtension<LukitasTheme> {
-  const LukitasTheme(this.colors, this.shadows);
+class WambitoTheme extends ThemeExtension<WambitoTheme> {
+  const WambitoTheme(this.colors, this.shadows);
 
   /// Night, the default theme.
-  static const night = LukitasTheme(LukitasColors.night, LukitasShadows.night);
+  static const night = WambitoTheme(WambitoColors.night, WambitoShadows.night);
 
   /// Day.
-  static const day = LukitasTheme(LukitasColors.day, LukitasShadows.day);
+  static const day = WambitoTheme(WambitoColors.day, WambitoShadows.day);
 
-  final LukitasColors colors;
+  final WambitoColors colors;
 
   /// The `shadow-edge-*` tokens of the theme (see lib/theme/surfaces.dart).
-  final LukitasShadows shadows;
+  final WambitoShadows shadows;
 
   @override
-  LukitasTheme copyWith({LukitasColors? colors, LukitasShadows? shadows}) =>
-      LukitasTheme(colors ?? this.colors, shadows ?? this.shadows);
+  WambitoTheme copyWith({WambitoColors? colors, WambitoShadows? shadows}) =>
+      WambitoTheme(colors ?? this.colors, shadows ?? this.shadows);
 
   // Tokens are discrete per theme: the switch happens halfway through the animation.
   @override
-  LukitasTheme lerp(LukitasTheme? other, double t) => t < 0.5 || other == null ? this : other;
+  WambitoTheme lerp(WambitoTheme? other, double t) => t < 0.5 || other == null ? this : other;
 }
 
 /// Material's text styles in Nunito at the weight of the web's body, 700 (app.css:50-56: the body
@@ -34,7 +34,7 @@ class LukitasTheme extends ThemeExtension<LukitasTheme> {
 /// reads as the web's does, in the theme's own ink (`body { color: var(--ink) }`, app.css:50-56),
 /// not in a colour Material's typography picks for black or white. Sizes stay Material's: screens
 /// set theirs with [LkText].
-TextTheme _webTextTheme(LukitasColors colors) {
+TextTheme _webTextTheme(WambitoColors colors) {
   // Only the sizes, spacing and heights of Material's styles are kept: the colour is the ink's.
   final base = Typography.material2021().black;
   TextStyle? web(TextStyle? style) => style?.copyWith(
@@ -65,7 +65,7 @@ TextTheme _webTextTheme(LukitasColors colors) {
 }
 
 /// Material [ThemeData] built from the tokens of one theme.
-ThemeData lukitasThemeData(LukitasTheme tokens, Brightness brightness) {
+ThemeData wambitoThemeData(WambitoTheme tokens, Brightness brightness) {
   final c = tokens.colors;
   final scheme = ColorScheme(
     brightness: brightness,
@@ -107,7 +107,7 @@ ThemeData lukitasThemeData(LukitasTheme tokens, Brightness brightness) {
 }
 
 /// Night, the default theme.
-final ThemeData nightTheme = lukitasThemeData(LukitasTheme.night, Brightness.dark);
+final ThemeData nightTheme = wambitoThemeData(WambitoTheme.night, Brightness.dark);
 
 /// Day.
-final ThemeData dayTheme = lukitasThemeData(LukitasTheme.day, Brightness.light);
+final ThemeData dayTheme = wambitoThemeData(WambitoTheme.day, Brightness.light);

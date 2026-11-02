@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/auth_api.dart';
-import 'package:lukitas/entry/code_input.dart';
-import 'package:lukitas/home/home_controller.dart' show clockProvider;
-import 'package:lukitas/progress/progress_screen.dart';
-import 'package:lukitas/router.dart';
-import 'package:lukitas/ui/press_button.dart';
+import 'package:wambito/api/auth_api.dart';
+import 'package:wambito/entry/code_input.dart';
+import 'package:wambito/home/home_controller.dart' show clockProvider;
+import 'package:wambito/progress/progress_screen.dart';
+import 'package:wambito/router.dart';
+import 'package:wambito/ui/press_button.dart';
 
 import 'fakes.dart';
 
@@ -112,7 +112,7 @@ void main() {
 
       await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
-      expect(find.text('Entra a Lukitas'), findsOneWidget);
+      expect(find.text('Entra a Wambito'), findsOneWidget);
       expect(find.text('Revisa tu correo'), findsNothing);
 
       await tester.binding.handlePopRoute();

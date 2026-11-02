@@ -2,8 +2,8 @@
 // RecurringForm.tsx's `recurrenceProblem` and core's `occurrences` (packages/core/src/recurrence.ts)
 // that the model rests on.
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/recurring/recurring_model.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/recurring/recurring_model.dart';
 
 Recurrence rule({
   RecurrenceFrequencyEnum frequency = RecurrenceFrequencyEnum.monthly,

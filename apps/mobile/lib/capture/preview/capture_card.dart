@@ -5,13 +5,13 @@
 // still being read.
 import 'package:flutter/material.dart';
 
-import '../../api/gen/lukitas_api.dart';
+import '../../api/gen/wambito_api.dart';
 import '../../home/category_look.dart';
 import '../../l10n/app_localizations.dart';
 import '../../money/format.dart';
 import '../../theme/surfaces.dart';
 import '../../theme/text_styles.dart';
-import '../../theme/theme.dart' show LukitasTheme;
+import '../../theme/theme.dart' show WambitoTheme;
 import '../../theme/tokens.g.dart';
 import '../../ui/lk_theme.dart';
 import '../../ui/outset_box.dart';
@@ -25,7 +25,7 @@ const noCategoryGlyph = '🏷️';
 
 /// The box of a card of the preview: `.lk-rowcard` on a `surface-row`, its border the stroke, or
 /// [outline] (the amber of what still needs something from the person).
-BoxDecoration captureCardBox(LukitasTheme theme, {Color? outline, bool pressed = false}) =>
+BoxDecoration captureCardBox(WambitoTheme theme, {Color? outline, bool pressed = false}) =>
     BoxDecoration(
       color: theme.colors.surfaceRow,
       borderRadius: LkSurface.radius(LkRadius.lg),
@@ -208,7 +208,7 @@ class _CaptureCardViewState extends State<CaptureCardView> {
                                 // `lk-row-control -my-3`: a 44px target in a 20px line, above the
                                 // row's hit area.
                                 child: OutsetBox(
-                                  vertical: LukitasTokens.space3,
+                                  vertical: WambitoTokens.space3,
                                   child: FocusTraversalOrder(
                                     order: const NumericFocusOrder(1),
                                     child: _PickBadge(
@@ -241,7 +241,7 @@ class _CaptureCardViewState extends State<CaptureCardView> {
     return Column(
       key: Key('capture.card.$i'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: LukitasTokens.space2,
+      spacing: WambitoTokens.space2,
       children: [
         face,
         if (widget.open)
@@ -279,7 +279,7 @@ class _PickBadge extends StatelessWidget {
     final lk = context.lk;
     final colors = lk.colors;
     final text = LkText.badge.copyWith(color: colors.near);
-    const radius = BorderRadius.all(Radius.circular(LukitasTokens.radiusPill));
+    const radius = BorderRadius.all(Radius.circular(WambitoTokens.radiusPill));
     return Pressable(
       key: buttonKey,
       onPressed: onPressed,

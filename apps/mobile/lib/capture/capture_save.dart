@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../add/add_sheet.dart' show canRetrySave;
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../feedback/feedback.dart';
 import '../home/home_controller.dart';
 import '../home/home_repository.dart';
@@ -21,7 +21,7 @@ import 'capture_session.dart';
 
 /// Told about every batch saved, with its rows, once the month's figures include the whole batch.
 /// By default the batch feels like any save: by kind and by the limit state after the batch (see
-/// [savedFeedbackFor]), and Lukitas celebrates on home unless a category is near or over its limit,
+/// [savedFeedbackFor]), and Wambi celebrates on home unless a category is near or over its limit,
 /// like for a single save. The celebration line and Deshacer are the toast's. Tests replace it to
 /// see what was saved.
 final batchSavedFeedbackProvider = Provider<void Function(List<Transaction> saved)>(
@@ -50,7 +50,7 @@ class CaptureSaveFooter extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: LukitasTokens.space2,
+      spacing: WambitoTokens.space2,
       children: [
         if (failure != null)
           SaveFailureRow(
@@ -61,14 +61,14 @@ class CaptureSaveFooter extends StatelessWidget {
           ),
         PressButton(
           key: const Key('capture.save'),
-          horizontalPadding: LukitasTokens.space4,
+          horizontalPadding: WambitoTokens.space4,
           onPressed: loaded && preview.ready && !session.saving
               ? () => unawaited(session.save())
               : null,
           child: session.saving
               ? Row(
                   mainAxisSize: MainAxisSize.min,
-                  spacing: LukitasTokens.space2,
+                  spacing: WambitoTokens.space2,
                   children: [const QuietSpinner(), Text(LkText.upperCase(l10n.addSaving))],
                 )
               : Text(LkText.upperCase(loaded ? l10n.captureSave(count) : l10n.addSave)),

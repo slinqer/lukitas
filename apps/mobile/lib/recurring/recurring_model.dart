@@ -1,7 +1,7 @@
 // What the web's recurring payments decide, apart from how they look: apps/web/app/features/
 // recurring/recurring-model.ts (`nextOccurrence`), core's `occurrences` and date helpers
 // (packages/core/src/recurrence.ts and dates.ts), and RecurringForm.tsx's `recurrenceProblem`.
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 
 /// A yearly rule comes round within 12 months of any month, so 13 months always find it.
 const _lookaheadMonths = 13;

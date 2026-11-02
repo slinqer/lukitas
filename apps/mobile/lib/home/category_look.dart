@@ -62,7 +62,7 @@ CategoryLook categoryLook({required String icon, required String color}) => Cate
 );
 
 /// The name of a pickable tint (`yellow`) from its colour, or null for any other colour: a port of
-/// the web's `tintName`. Charts draw a named tint with its theme token (`LukitasColors.tintYellow`),
+/// the web's `tintName`. Charts draw a named tint with its theme token (`WambitoColors.tintYellow`),
 /// which the day theme darkens so a mark keeps 3:1 against the card.
 String? tintName(Color tint) {
   for (final MapEntry(:key, :value) in _importerTints.entries) {

@@ -3,12 +3,12 @@ import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/api/gen/lukitas_api.dart';
-import 'package:lukitas/api/session.dart';
-import 'package:lukitas/home/home_cache.dart';
-import 'package:lukitas/home/home_controller.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/home/lukas_line.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/api/session.dart';
+import 'package:wambito/home/home_cache.dart';
+import 'package:wambito/home/home_controller.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/home/wambi_line.dart';
 
 import 'fakes.dart';
 import 'fixtures.dart';
@@ -271,7 +271,7 @@ void main() {
   });
 
   test(
-    'markPaid pays once, refreshes the summary and starts the event Lukitas talks about',
+    'markPaid pays once, refreshes the summary and starts the event Wambi talks about',
     () async {
       final (container, repo, _) = setup(
         FakeHomeRepository(
@@ -293,7 +293,7 @@ void main() {
       expect(state.data!.items.first.status, TransactionStatusEnum.paid);
       expect(state.paidHere, {'rent'});
       expect(state.data!.summary.spent, 50000000);
-      expect(state.event!.event.kind, LukasEventKind.paid);
+      expect(state.event!.event.kind, WambiEventKind.paid);
       expect(state.event!.event.name, 'Arriendo');
     },
   );
@@ -325,7 +325,7 @@ void main() {
     final controller = container.read(homeProvider.notifier);
     final before = container.read(homeProvider).quietKey;
     controller.report(
-      const LukasEvent(kind: LukasEventKind.saved, categoryId: 'c', amount: -100, name: 'one'),
+      const WambiEvent(kind: WambiEventKind.saved, categoryId: 'c', amount: -100, name: 'one'),
     );
     expect(container.read(homeProvider).quietKey, before, reason: 'the line itself is announced');
     await tester.pump(const Duration(seconds: 11));
@@ -338,11 +338,11 @@ void main() {
     container.listen(homeProvider, (_, _) {});
     final controller = container.read(homeProvider.notifier);
     controller.report(
-      const LukasEvent(kind: LukasEventKind.saved, categoryId: 'c', amount: -100, name: 'one'),
+      const WambiEvent(kind: WambiEventKind.saved, categoryId: 'c', amount: -100, name: 'one'),
     );
     await tester.pump(const Duration(seconds: 6));
     controller.report(
-      const LukasEvent(kind: LukasEventKind.saved, categoryId: 'c', amount: -100, name: 'two'),
+      const WambiEvent(kind: WambiEventKind.saved, categoryId: 'c', amount: -100, name: 'two'),
     );
     await tester.pump(const Duration(seconds: 6));
     expect(container.read(homeProvider).event!.event.name, 'two');
@@ -631,7 +631,7 @@ void main() {
       expect(snapshots.map((s) => s.summary.month), everyElement('2026-10'));
       expect(snapshots.last.summary.spent, 1500);
       expect(await cachedMonth(store), '2026-10');
-      expect(state.event!.month, '2026-10', reason: 'Lukitas says it in October, not September');
+      expect(state.event!.month, '2026-10', reason: 'Wambi says it in October, not September');
     });
 
     test(
@@ -772,7 +772,7 @@ void main() {
       final (container, _, _, _) = await loaded();
       final controller = container.read(homeProvider.notifier);
       controller.report(
-        const LukasEvent(kind: LukasEventKind.saved, categoryId: 'c', amount: -100),
+        const WambiEvent(kind: WambiEventKind.saved, categoryId: 'c', amount: -100),
         month: '2026-09',
       );
       expect(container.read(homeProvider).event!.month, '2026-09');

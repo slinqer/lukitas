@@ -4,13 +4,13 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/theme/surfaces.dart';
-import 'package:lukitas/theme/text_styles.dart';
-import 'package:lukitas/theme/tokens.g.dart';
-import 'package:lukitas/ui/lk_theme.dart';
-import 'package:lukitas/ui/pressable.dart';
-import 'package:lukitas/ui/swipe_row.dart';
-import 'package:lukitas/ui/transaction_row.dart';
+import 'package:wambito/theme/surfaces.dart';
+import 'package:wambito/theme/text_styles.dart';
+import 'package:wambito/theme/tokens.g.dart';
+import 'package:wambito/ui/lk_theme.dart';
+import 'package:wambito/ui/pressable.dart';
+import 'package:wambito/ui/swipe_row.dart';
+import 'package:wambito/ui/transaction_row.dart';
 
 import '../support/parity.dart';
 
@@ -36,7 +36,7 @@ class _MoreRow extends StatelessWidget {
         color: colors.focus,
         child: Container(
           constraints: const BoxConstraints(minHeight: 44),
-          padding: const EdgeInsets.symmetric(horizontal: LukitasTokens.space3),
+          padding: const EdgeInsets.symmetric(horizontal: WambitoTokens.space3),
           alignment: Alignment.centerLeft,
           decoration: BoxDecoration(
             color: colors.surfaceRow,

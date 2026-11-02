@@ -1,4 +1,4 @@
-import 'package:lukitas/api/gen/lukitas_api.dart';
+import 'package:wambito/api/gen/wambito_api.dart';
 
 /// A transaction as the API sends it. [amount] is signed cents (expenses negative).
 Transaction tx(

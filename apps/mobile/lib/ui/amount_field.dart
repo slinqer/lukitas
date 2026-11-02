@@ -163,7 +163,7 @@ class _AmountDisplayState extends State<AmountDisplay> {
     // sheet that scrolls as a whole the figure has 4px above and below it (and is stuck at the top).
     return scope != null && !tight
         ? Padding(
-            padding: const EdgeInsets.symmetric(vertical: LukitasTokens.space1),
+            padding: const EdgeInsets.symmetric(vertical: WambitoTokens.space1),
             child: display,
           )
         : display;
@@ -278,7 +278,7 @@ class AmountField extends StatelessWidget {
     this.invalid = false,
     this.compact = false,
     this.onNegative,
-    this.gap = LukitasTokens.space2,
+    this.gap = WambitoTokens.space2,
   });
 
   /// The room between the figure and the keypad: the form's own gap, which the web's fragment

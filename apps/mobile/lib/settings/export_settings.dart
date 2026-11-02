@@ -122,12 +122,12 @@ class ExportBlock extends ConsumerWidget {
         guest || busy != null ? null : () => unawaited(runExport(context, format));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: LukitasTokens.space2,
+      spacing: WambitoTokens.space2,
       children: [
         SettingLabel(label: l10n.settingsExportTitle, hint: l10n.settingsExportLead),
         Wrap(
-          spacing: LukitasTokens.space2,
-          runSpacing: LukitasTokens.space2,
+          spacing: WambitoTokens.space2,
+          runSpacing: WambitoTokens.space2,
           children: [
             PressButton.text(
               l10n.settingsExportJson,

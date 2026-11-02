@@ -7,7 +7,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../home/home_header.dart' show LkWordmark;
-import '../home/lukitas_face.dart';
+import '../home/wambi_face.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/text_styles.dart';
 import '../theme/tokens.g.dart';
@@ -16,17 +16,17 @@ import '../ui/css_text.dart';
 import '../ui/lk_theme.dart';
 import '../ui/theme_toggle.dart';
 
-/// Lukitas' size on the sign-in screens: friendly, never crowding the form (`MASCOT_PX`).
+/// Wambi's size on the sign-in screens: friendly, never crowding the form (`MASCOT_PX`).
 const _mascotSize = 96.0;
 
-/// How Lukitas is named for assistive technology, as the web's `mascot.*` messages (a mood).
-String _mascotName(AppLocalizations l10n, LukitasMood mood) => switch (mood) {
-  LukitasMood.worried => l10n.mascotWorried,
+/// How Wambi is named for assistive technology, as the web's `mascot.*` messages (a mood).
+String _mascotName(AppLocalizations l10n, WambiMood mood) => switch (mood) {
+  WambiMood.worried => l10n.mascotWorried,
   _ => l10n.mascotHappy,
 };
 
 /// The frame of the entry screens: the page's background, the wordmark and the day/night switch on
-/// top, then one column with Lukitas above [children] (`SignInScreen`). On a phone the column sits
+/// top, then one column with Wambi above [children] (`SignInScreen`). On a phone the column sits
 /// on the background, so the code boxes get the whole width. The page is a screen tall at least
 /// (`min-h-dvh`) and scrolls when its content, or the keyboard, needs more.
 ///
@@ -36,14 +36,14 @@ class SignInFrame extends StatelessWidget {
   const SignInFrame({
     super.key,
     required this.children,
-    this.mood = LukitasMood.happy,
+    this.mood = WambiMood.happy,
     this.controller,
   });
 
   final List<Widget> children;
 
-  /// How Lukitas looks: happy, or worried when something failed.
-  final LukitasMood mood;
+  /// How Wambi looks: happy, or worried when something failed.
+  final WambiMood mood;
 
   final ScrollController? controller;
 
@@ -82,8 +82,8 @@ class SignInFrame extends StatelessWidget {
                       child: const Padding(
                         // `px-(--space-4) py-(--space-3)`.
                         padding: EdgeInsets.symmetric(
-                          horizontal: LukitasTokens.space4,
-                          vertical: LukitasTokens.space3,
+                          horizontal: WambitoTokens.space4,
+                          vertical: WambitoTokens.space3,
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -98,16 +98,16 @@ class SignInFrame extends StatelessWidget {
                       child: Padding(
                         // `px-(--space-4) pb-(--space-6)`.
                         padding: const EdgeInsets.fromLTRB(
-                          LukitasTokens.space4,
+                          WambitoTokens.space4,
                           0,
-                          LukitasTokens.space4,
-                          LukitasTokens.space6,
+                          WambitoTokens.space4,
+                          WambitoTokens.space6,
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
-                          spacing: LukitasTokens.space4,
+                          spacing: WambitoTokens.space4,
                           children: [
-                            LukitasFace(
+                            WambiFace(
                               mood: mood,
                               size: _mascotSize,
                               label: _mascotName(l10n, mood),
@@ -270,7 +270,7 @@ class OrDivider extends StatelessWidget {
     );
     return ExcludeSemantics(
       child: Row(
-        spacing: LukitasTokens.space3,
+        spacing: WambitoTokens.space3,
         children: [
           line,
           Text(text, style: LkText.labelSm.copyWith(color: colors.inkMuted)),

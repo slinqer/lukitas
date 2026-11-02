@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../api/gen/lukitas_api.dart';
+import '../api/gen/wambito_api.dart';
 import '../home/category_look.dart';
 import '../l10n/app_localizations.dart';
 import '../ui/category_chip.dart';

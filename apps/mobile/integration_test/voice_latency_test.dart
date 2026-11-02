@@ -7,7 +7,7 @@
 //   python3 -m http.server 8765 --directory <folder with the two model zips>
 //   adb -s emulator-5554 install -r -t -g build/app/outputs/flutter-apk/app-debug.apk
 //   flutter test integration_test/voice_latency_test.dart -d emulator-5554 \
-//     --dart-define=LUKITAS_SERVER=http://10.0.2.2:3000 \
+//     --dart-define=WAMBITO_SERVER=http://10.0.2.2:3000 \
 //     --dart-define=VOICE_MODELS_URL=http://10.0.2.2:8765 \
 //     --dart-define=VOICE_USED=true        # the person has captured by voice before
 //
@@ -20,14 +20,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:lukitas/api/session.dart';
-import 'package:lukitas/capture/capture_sheet.dart';
-import 'package:lukitas/capture/engine/speech_engine.dart';
-import 'package:lukitas/capture/engine/voice_channel.dart';
-import 'package:lukitas/capture/engine/vosk_engine.dart';
-import 'package:lukitas/capture/models_download.dart';
-import 'package:lukitas/home/home_screen.dart';
-import 'package:lukitas/main.dart' as app;
+import 'package:wambito/api/session.dart';
+import 'package:wambito/capture/capture_sheet.dart';
+import 'package:wambito/capture/engine/speech_engine.dart';
+import 'package:wambito/capture/engine/voice_channel.dart';
+import 'package:wambito/capture/engine/vosk_engine.dart';
+import 'package:wambito/capture/models_download.dart';
+import 'package:wambito/home/home_screen.dart';
+import 'package:wambito/main.dart' as app;
 
 const _modelsUrl = String.fromEnvironment('VOICE_MODELS_URL');
 const _voiceUsed = bool.fromEnvironment('VOICE_USED');

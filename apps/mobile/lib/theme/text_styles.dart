@@ -183,7 +183,7 @@ abstract final class LkText {
     leadingDistribution: TextLeadingDistribution.even,
   );
 
-  /// Lukitas' speech bubble: app.css `.lk-bubble`, Nunito 12px 800, line height 1.35.
+  /// Wambi's speech bubble: app.css `.lk-bubble`, Nunito 12px 800, line height 1.35.
   static const bubble = TextStyle(
     fontFamily: textFamily,
     fontSize: 12,

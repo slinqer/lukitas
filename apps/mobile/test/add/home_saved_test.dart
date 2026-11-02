@@ -4,10 +4,10 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lukitas/home/home_cache.dart';
-import 'package:lukitas/home/home_controller.dart';
-import 'package:lukitas/home/home_repository.dart';
-import 'package:lukitas/home/lukas_line.dart';
+import 'package:wambito/home/home_cache.dart';
+import 'package:wambito/home/home_controller.dart';
+import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/home/wambi_line.dart';
 
 import '../home/fakes.dart';
 import '../home/fixtures.dart';
@@ -67,8 +67,8 @@ void main() {
       expect(state.data!.summary.spent, 3500);
       expect((await HomeCache(store, token: 't1').read())!.items.map((t) => t.id), ['new', 'a']);
       expect(snapshots.last.spent, 3500);
-      // Lukitas talks about it once the figures are in.
-      expect(state.event!.event.kind, LukasEventKind.saved);
+      // Wambi talks about it once the figures are in.
+      expect(state.event!.event.kind, WambiEventKind.saved);
       expect(state.event!.event.name, 'Café');
       expect(state.event!.event.amount, -2500);
       expect(state.event!.event.categoryId, 'cat-groceries');

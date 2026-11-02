@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:lukitas/insights/chart_geometry.dart';
-import 'package:lukitas/insights/insights_model.dart';
+import 'package:wambito/insights/chart_geometry.dart';
+import 'package:wambito/insights/insights_model.dart';
 
 import '../support/parity.dart' show ParityFixtures;
 
