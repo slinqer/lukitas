@@ -27,7 +27,7 @@ import {
 
 /**
  * Pictures of the page until two in a row are the same (fonts in, transitions done). CSS
- * animations are taken at rest: a finite one at its end, an endless one (Lukitas' sprite) at its
+ * animations are taken at rest: a finite one at its end, an endless one (Wambi's sprite) at its
  * first frame, as Playwright's `animations: "disabled"` does.
  */
 async function settledShot(page: Page, tries = 20): Promise<Buffer> {

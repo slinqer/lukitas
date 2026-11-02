@@ -114,7 +114,7 @@ const sectorsIn = (scope: HTMLElement, count: number) =>
 /**
  * This month's spending by category: Casa first with 59,4 % (1329,78 € of 2237,08 €), seven
  * sectors (Transporte spent nothing), the legend in the same order, and the table for screen
- * readers saying the same. Lukitas says what took the biggest bite.
+ * readers saying the same. Wambi says what took the biggest bite.
  */
 export const DonutByCategory: Story = {
   render: october,
@@ -334,7 +334,7 @@ export const TrendBudgetGaps: Story = {
 
 /**
  * While another answer loads, the figures on screen keep their own labels (never the new ones)
- * and dim, and the card says it is busy; Lukitas keeps his line until he has the new month's
+ * and dim, and the card says it is busy; Wambi keeps his line until he has the new month's
  * figures. The toggles stay bright.
  */
 export const StaleWhileLoading: Story = {
@@ -369,7 +369,7 @@ export const StaleWhileLoading: Story = {
     await waitFor(() => expect(donut).not.toHaveAttribute("aria-busy"));
     await expect(figure).toHaveTextContent("Recibido");
 
-    // Lukitas: the old month's line stays whole until the earlier month's answer lands.
+    // Wambi: the old month's line stays whole until the earlier month's answer lands.
     const said = `Casa fue lo que más lukas se llevó en ${inSentence(0)}: ${eur("1329,78")}.`;
     const bubble = canvas.getByText(said);
     await userEvent.click(canvas.getByRole("button", { name: "Mes anterior" }));
@@ -497,7 +497,7 @@ export const CostOfLivingScrolled: Story = {
 // -- Empty ----------------------------------------------------------------------------------------
 
 /**
- * No transactions yet: every section says so in words (no blank charts), and Lukitas says what
+ * No transactions yet: every section says so in words (no blank charts), and Wambi says what
  * will show up here.
  */
 export const Empty: Story = {

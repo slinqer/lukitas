@@ -335,7 +335,7 @@ export function meRoutes(deps: AppDeps) {
           200,
           {
             "content-type": "text/csv; charset=utf-8",
-            "content-disposition": `attachment; filename="lukas-export-${stamp}.csv"`,
+            "content-disposition": `attachment; filename="wambito-export-${stamp}.csv"`,
           },
         );
       }
@@ -348,7 +348,7 @@ export function meRoutes(deps: AppDeps) {
       };
       return c.body(JSON.stringify(body), 200, {
         "content-type": "application/json",
-        "content-disposition": `attachment; filename="lukas-export-${stamp}.json"`,
+        "content-disposition": `attachment; filename="wambito-export-${stamp}.json"`,
       });
     },
   );

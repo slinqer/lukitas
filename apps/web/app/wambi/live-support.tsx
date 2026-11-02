@@ -25,12 +25,12 @@ export function whenLoadedAndIdle(callback: () => void): () => void {
 }
 
 /**
- * True once the live Lukas (the one that moves over the page) should mount: after the page (and
+ * True once the live Wambi (the one that moves over the page) should mount: after the page (and
  * so the prerendered hero) has rendered and loaded, when the browser is idle, and only without
  * reduced motion. Turns false again if the person switches reduced motion on, so the still,
- * prerendered Lukas comes back.
+ * prerendered Wambi comes back.
  */
-export function useLiveLukasReady(): boolean {
+export function useLiveWambiReady(): boolean {
   const reduceMotion = useReducedMotionPreference();
   const [ready, setReady] = useState(false);
   useEffect(() => {
@@ -40,8 +40,8 @@ export function useLiveLukasReady(): boolean {
   return ready && !reduceMotion;
 }
 
-/** Renders nothing if the live Lukas fails: the prerendered one stays. */
-export class LiveLukasBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+/** Renders nothing if the live Wambi fails: the prerendered one stays. */
+export class LiveWambiBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
   override state = { failed: false };
 
   static getDerivedStateFromError() {
@@ -49,8 +49,8 @@ export class LiveLukasBoundary extends Component<{ children: ReactNode }, { fail
   }
 
   override componentDidCatch(error: unknown) {
-    // Not an app error: the page keeps the prerendered Lukas. Keep a trace for debugging.
-    console.warn("The live Lukas is off:", error);
+    // Not an app error: the page keeps the prerendered Wambi. Keep a trace for debugging.
+    console.warn("The live Wambi is off:", error);
   }
 
   override render() {

@@ -1,16 +1,16 @@
 /*
- * The 3D Lukas' layer. It never takes clicks: only his body (`.lk-lukas3d-hit`) does, for the
- * jump and the spin. On a page with Lukas spots it is positioned (by Lukas3D) over the current
+ * The 3D Wambi's layer. It never takes clicks: only his body (`.lk-wambi3d-hit`) does, for the
+ * jump and the spin. On a page with Wambi spots it is positioned (by Wambi3D) over the current
  * spot, in the coordinates of its offset parent, so it scrolls with the page.
  */
 @layer components {
-  .lk-lukas3d {
+  .lk-wambi3d {
     position: relative;
     width: 100%;
     height: 100%;
     pointer-events: none;
   }
-  .lk-lukas3d.is-traveling {
+  .lk-wambi3d.is-traveling {
     position: absolute;
     top: 0;
     left: 0;
@@ -20,18 +20,18 @@
     transform-origin: 50% 50%;
     will-change: transform;
   }
-  .lk-lukas3d-stage {
+  .lk-wambi3d-stage {
     position: absolute;
     inset: 0;
   }
   /* No jumps or spins while he rolls in. */
-  .lk-lukas3d[data-entrance="playing"] .lk-lukas3d-hit {
+  .lk-wambi3d[data-entrance="playing"] .lk-wambi3d-hit {
     pointer-events: none;
   }
-  .lk-lukas3d canvas {
+  .lk-wambi3d canvas {
     display: block;
   }
-  .lk-lukas3d-hit {
+  .lk-wambi3d-hit {
     position: absolute;
     left: 24%;
     top: 16%;

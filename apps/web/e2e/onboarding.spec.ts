@@ -52,7 +52,7 @@ const profileOf = async (page: Page) =>
 
 /** The welcome, then CONFIGURAR EN 1 MINUTO: on /welcome/currency. */
 async function setUp(page: Page) {
-  await expect(heading(page, "Te damos la bienvenida a Lukitas")).toBeFocused();
+  await expect(heading(page, "Te damos la bienvenida a Wambito")).toBeFocused();
   await page.getByRole("button", { name: "Configurar en 1 minuto" }).click();
   await expect(page).toHaveURL(/\/welcome\/currency$/);
   await expect(heading(page, "¿En qué moneda llevas tus cuentas?")).toBeFocused();

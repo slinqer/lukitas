@@ -9,7 +9,7 @@ import type { Route } from "./+types/app-layout";
 
 /**
  * The layout of the app's own screens (sign-in, welcome, /app/*): the live API client with its cache,
- * the toasts, the celebration overlay (confetti and Lukitas when `feedback()` fires) and the app's
+ * the toasts, the celebration overlay (confetti and Wambi when `feedback()` fires) and the app's
  * messages (`AppMessages`). It is not in `root.tsx`, so the landing does not pay for any of it.
  *
  * Screens nest under it in routes.ts: `layout("routes/app-layout.tsx", [route("sign-in", ...)])`.

@@ -6,17 +6,17 @@ import en from "../../i18n/messages/en.json" with { type: "json" };
 import es from "../../i18n/messages/es.json" with { type: "json" };
 import it from "../../i18n/messages/it.json" with { type: "json" };
 import pt from "../../i18n/messages/pt.json" with { type: "json" };
-import { Lukas } from "../../lukas/Lukas.tsx";
 import { LANDING_PATH } from "../../site/paths.ts";
 import { PressLink } from "../../ui/PressLink.tsx";
 import { ThemeToggle } from "../../ui/ThemeToggle.tsx";
+import { Wambi } from "../../wambi/Wambi.tsx";
 import "./landing.css";
 
 const CATALOGS = { es, en, it, pt } as const;
 
 /** The page's tags: titled in every language and kept out of search results. */
 export const notFoundMeta = () => [
-  { title: "Lukitas · 404" },
+  { title: "Wambito · 404" },
   { name: "robots", content: "noindex" },
 ];
 
@@ -60,8 +60,8 @@ export function NotFound() {
         </div>
       </header>
       <main className="lk-landing-wrap lk-landing-notfound">
-        <div className="lk-landing-notfound-lukas" role="img" aria-label={t("mascot")}>
-          <Lukas mood="worried" size="100%" decorative />
+        <div className="lk-landing-notfound-wambi" role="img" aria-label={t("mascot")}>
+          <Wambi mood="worried" size="100%" decorative />
         </div>
         {LOCALES.map((locale) => (
           <Message key={locale} locale={locale} primary={locale === "es"} />

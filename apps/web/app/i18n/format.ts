@@ -15,7 +15,7 @@ export const isLocale = (value: unknown): value is Locale =>
 const decimalComma = (locale: Locale) => locale !== "en";
 
 /**
- * The tag `Intl` formats with. A bare `pt` is Brazilian in CLDR (`€ 1.234,50`); Lukitas writes
+ * The tag `Intl` formats with. A bare `pt` is Brazilian in CLDR (`€ 1.234,50`); Wambito writes
  * European Portuguese (`1234,50 €`), and `it` is Italy's Italian.
  */
 export function intlTag(locale: string): string {

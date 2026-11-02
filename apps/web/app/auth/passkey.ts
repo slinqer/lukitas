@@ -1,3 +1,4 @@
+import { localArea, readStored, type StoredArea, writeStored } from "../lib/stored.ts";
 import { authClient } from "./auth-client.ts";
 
 /**
@@ -5,44 +6,32 @@ import { authClient } from "./auth-client.ts";
  * the sign-in screen's fingerprint button, and the offer's decision per user), whether to offer
  * one after a sign-in, and creating one. The sign-in itself is in `features/sign-in/auth.ts`.
  *
- * Everything remembered lives in `localStorage`, which can be missing or blocked (private mode):
- * then nothing is remembered and nothing breaks.
+ * Everything remembered lives in `localStorage` (through `lib/stored.ts`), which can be missing or
+ * blocked (private mode): then nothing is remembered and nothing breaks.
  */
 
 /** What adding a passkey came to; `cancelled` is the person closing the browser's prompt. */
 export type PasskeyOutcome = "added" | "cancelled" | "failed";
 
 /** The part of `localStorage` used here. */
-export type MemoryStorage = Pick<Storage, "getItem" | "setItem">;
+export type MemoryStorage = StoredArea;
 
-/** Set once a passkey signed in, or was registered, in this browser. */
-export const PASSKEY_USED_KEY = "lukas.passkey.used";
-/** The ids of the users who made their choice about the offer ("Crear mi huella" or "Ahora no"). */
-export const PASSKEY_OFFERED_KEY = "lukas.passkey.offered";
+/** Set once a passkey signed in, or was registered, in this browser (`wambito.passkey.used`). */
+export const PASSKEY_USED_KEY = "passkey.used";
+/**
+ * The ids of the users who made their choice about the offer ("Crear mi huella" or "Ahora no"),
+ * kept under `wambito.passkey.offered`.
+ */
+export const PASSKEY_OFFERED_KEY = "passkey.offered";
 
-/** `localStorage`, or null where it is missing or blocked. */
-function browserStorage(): MemoryStorage | null {
-  try {
-    return typeof localStorage === "undefined" ? null : localStorage;
-  } catch {
-    return null;
-  }
+const browserStorage = localArea;
+
+function read(storage: MemoryStorage | null, name: string): string | null {
+  return readStored(name, storage);
 }
 
-function read(storage: MemoryStorage | null, key: string): string | null {
-  try {
-    return storage?.getItem(key) ?? null;
-  } catch {
-    return null;
-  }
-}
-
-function write(storage: MemoryStorage | null, key: string, value: string): void {
-  try {
-    storage?.setItem(key, value);
-  } catch {
-    // Not remembered; see above.
-  }
+function write(storage: MemoryStorage | null, name: string, value: string): void {
+  writeStored(name, value, storage);
 }
 
 /** Whether this browser can use passkeys at all (WebAuthn). */

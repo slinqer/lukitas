@@ -285,7 +285,7 @@ test("JSON export contains only the user's data", async () => {
   const res = await t.request("GET", "/v1/me/export", { headers: a.headers });
   expect(res.status).toBe(200);
   expect(res.headers.get("content-disposition")).toMatch(
-    /^attachment; filename="lukas-export-\d{4}-\d{2}-\d{2}\.json"$/,
+    /^attachment; filename="wambito-export-\d{4}-\d{2}-\d{2}\.json"$/,
   );
   const data = (await res.json()) as {
     user: { email: string };

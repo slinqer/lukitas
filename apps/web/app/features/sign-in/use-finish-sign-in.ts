@@ -23,7 +23,7 @@ export interface FinishSignIn {
   /** `?lang=` from the landing: the language a new user's profile starts in. */
   lang: Locale | null;
   /**
-   * How they signed in. After an email sign-in (code or magic link) Lukitas may offer a passkey;
+   * How they signed in. After an email sign-in (code or magic link) Wambito may offer a passkey;
    * someone who just used one needs no offer. Email unless said otherwise.
    */
   method?: "email" | "passkey";

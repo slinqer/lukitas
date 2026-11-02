@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
-import { Lukas, type LukasMood } from "../lukas/Lukas.tsx";
+import { Wambi, type WambiMood } from "../wambi/Wambi.tsx";
 import { durationToken, useReducedMotionPreference } from "./motion-tokens.ts";
 
-export interface LukasBubbleProps {
-  /** Lukas's line, already translated and filled with the real figures. */
+export interface WambiBubbleProps {
+  /** Wambi's line, already translated and filled with the real figures. */
   message: string;
-  mood: LukasMood;
+  mood: WambiMood;
   /**
    * Changing it swaps the line in quietly: the bubble is a new live region, and a live region
    * that appears with its text is not announced. Home changes it when a line about a save or a
@@ -15,11 +15,11 @@ export interface LukasBubbleProps {
 }
 
 /**
- * Lukas beside his speech bubble. The line carries the meaning, so Lukas is decorative here; the
+ * Wambi beside his speech bubble. The line carries the meaning, so Wambi is decorative here; the
  * bubble is a polite live region, so a new line after a save or a month change is read out (once).
  * A new line fades in (`--fade`); under reduced motion it just shows.
  */
-export function LukasBubble({ message, mood, quietKey }: LukasBubbleProps) {
+export function WambiBubble({ message, mood, quietKey }: WambiBubbleProps) {
   const line = useRef<HTMLParagraphElement>(null);
   const reduceMotion = useReducedMotionPreference();
   const shown = useRef(message);
@@ -38,7 +38,7 @@ export function LukasBubble({ message, mood, quietKey }: LukasBubbleProps) {
 
   return (
     <div className="flex items-center gap-(--space-3)">
-      <Lukas mood={mood} size={72} decorative />
+      <Wambi mood={mood} size={72} decorative />
       <p
         key={quietKey}
         ref={line}

@@ -14,7 +14,7 @@ describe("resolveSiteOrigin", () => {
     expect(resolveSiteOrigin(undefined)).toBe(DEFAULT_SITE_ORIGIN);
     expect(resolveSiteOrigin("")).toBe(DEFAULT_SITE_ORIGIN);
     expect(resolveSiteOrigin("   ")).toBe(DEFAULT_SITE_ORIGIN);
-    expect(DEFAULT_SITE_ORIGIN).toBe("https://lukas.app");
+    expect(DEFAULT_SITE_ORIGIN).toBe("https://wambito.test");
   });
 
   it("uses the configured origin", () => {

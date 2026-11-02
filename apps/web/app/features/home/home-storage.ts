@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { readStored, removeStored, writeStored } from "../../lib/stored.ts";
 
 /**
  * What home remembers on this device (localStorage): which list was showing, and the nudges the
@@ -8,24 +9,12 @@ import { useCallback, useState } from "react";
 
 export type HomeView = "budgets" | "transactions";
 
-const VIEW_KEY = "lukas.home.view";
-const dismissedKey = (userId: string) => `lukas.home.dismissed.${userId}`;
+/** `readStored` names (the keys are `wambito.home.view`, `wambito.home.dismissed.<userId>`). */
+const VIEW_KEY = "home.view";
+const dismissedKey = (userId: string) => `home.dismissed.${userId}`;
 
-function read(key: string): string | null {
-  try {
-    return localStorage.getItem(key);
-  } catch {
-    return null;
-  }
-}
-
-function write(key: string, value: string): void {
-  try {
-    localStorage.setItem(key, value);
-  } catch {
-    // Not remembered; see above.
-  }
-}
+const read = (name: string) => readStored(name);
+const write = (name: string, value: string) => writeStored(name, value);
 
 /**
  * The navigation state that opens home on its Categorías list (the avatar menu's and the sidebar's
@@ -41,12 +30,8 @@ export function requestedView(state: unknown): HomeView | null {
 
 /** Forgets everything home remembers for this person (stories start from nothing). */
 export function clearHomeStorage(userId: string): void {
-  try {
-    localStorage.removeItem(VIEW_KEY);
-    localStorage.removeItem(dismissedKey(userId));
-  } catch {
-    // See above.
-  }
+  removeStored(VIEW_KEY);
+  removeStored(dismissedKey(userId));
 }
 
 /**

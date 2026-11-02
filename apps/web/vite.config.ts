@@ -17,9 +17,9 @@ export default defineConfig({
       output: {
         // The mascot component is shared by the landing and the app, so it is its own chunk, and a
         // chunk is named after its module. The landing's HTML links that chunk, and its e2e check
-        // allows no `Lukas` (the old name) outside scripts, so the file is called `mascot`.
+        // allows no old names outside scripts, so the file is called `mascot`.
         chunkFileNames: (chunk) =>
-          chunk.name === "Lukas" ? "assets/mascot-[hash].js" : "assets/[name]-[hash].js",
+          chunk.name === "Wambi" ? "assets/mascot-[hash].js" : "assets/[name]-[hash].js",
       },
     },
   },

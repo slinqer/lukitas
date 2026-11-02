@@ -10,7 +10,7 @@ import pt from "./messages/pt.json" with { type: "json" };
 /**
  * Every message, per locale. The catalogs come in two parts: `es.json`/`en.json`/`it.json`/`pt.json`
  * hold what the public pages say (the landing, the roadmap, the theme and language switches,
- * Lukas' name), and `app.es.json` (and its pairs) everything else. The landing and roadmap ship the
+ * Wambi's name), and `app.es.json` (and its pairs) everything else. The landing and roadmap ship the
  * first part only (IntlProvider); the app's screens (sign-in, welcome, /app, the demo) import this
  * module, which adds the second (`AppMessages`). A namespace lives in exactly one part
  * (messages.test.ts).

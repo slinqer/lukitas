@@ -27,7 +27,7 @@ interface TransactionSheetContext {
   /** Opens the sheet on an existing transaction. */
   openEdit(tx: TransactionDto, options?: { focusName?: boolean }): void;
   actions: TransactionActions;
-  /** The latest save or payment in this session, for Lukitas on home. */
+  /** The latest save or payment in this session, for Wambi on home. */
   lastEvent: TransactionEvent | null;
   /** Transactions just brought back by Deshacer: their rows slide in when they reappear. */
   restored: ReadonlySet<string>;

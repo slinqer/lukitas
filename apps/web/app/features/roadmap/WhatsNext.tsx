@@ -8,7 +8,7 @@ import { LANDING_ROADMAP_IDS, roadmapItem } from "./roadmap.ts";
 /**
  * "Lo que viene" on the landing, after "open source" and before the FAQ: the three next features
  * in the same cards as "use it your way", and a button to the whole roadmap. No spot for the
- * traveling Lukitas here: he flies from "how it works" to the FAQ, past this section.
+ * traveling Wambi here: he flies from "how it works" to the FAQ, past this section.
  */
 export function WhatsNext() {
   const t = useTranslations("roadmap");

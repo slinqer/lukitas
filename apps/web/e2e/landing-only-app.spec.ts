@@ -26,7 +26,7 @@ const LOCALES = [
     soon: "Pronto",
     others: ["App para Android y iOS", "Con tu IA"],
     closingBody:
-      "Lukitas ya funciona y la estamos probando con un grupo pequeño. Si te invitaron, entra con tu correo.",
+      "Wambito ya funciona y la estamos probando con un grupo pequeño. Si te invitaron, entra con tu correo.",
     comingSoon: [/Muy pronto/, /Síguelo en GitHub/, /en construcción/],
     banned: [/\bjueg(o|a)\b/i],
   },
@@ -41,7 +41,7 @@ const LOCALES = [
     soon: "Soon",
     others: ["Android & iOS app", "With your AI"],
     closingBody:
-      "Lukitas already works, and we're trying it out with a small group. If you were invited, sign in with your email.",
+      "Wambito already works, and we're trying it out with a small group. If you were invited, sign in with your email.",
     comingSoon: [/Coming soon/, /Follow on GitHub/, /being built in the open/],
     banned: [/\bgames?\b/i],
   },
@@ -134,7 +134,7 @@ for (const l of LOCALES) {
         expect(html).not.toMatch(pattern);
       }
       for (const pattern of l.banned) expect(text).not.toMatch(pattern);
-      expect(text).not.toMatch(/\bLukas\b/);
+      expect(text).not.toMatch(/Luk(?:itas)|\bLuk(?:as)\b/);
     });
 
     test("every link to sign-in leaves for the app origin; none is relative", async ({ page }) => {
@@ -219,7 +219,7 @@ for (const l of LOCALES) {
           if (message.type() === "error") errors.push(message.text());
         });
         page.on("pageerror", (error) => errors.push(error.message));
-        await page.addInitScript(() => localStorage.setItem("lukas.theme", "day"));
+        await page.addInitScript(() => localStorage.setItem("wambito.theme", "day"));
         await page.goto(l.path);
         await page.waitForLoadState("networkidle");
         await expect(page.locator("html")).toHaveAttribute("data-theme", "day");

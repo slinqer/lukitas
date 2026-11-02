@@ -1,9 +1,9 @@
 import { type ReactNode, useEffect, useId, useRef } from "react";
 import { useTranslations } from "use-intl";
-import { Lukas, type LukasMood } from "../../lukas/Lukas.tsx";
 import { cx } from "../../ui/cx.ts";
 import { PressButton } from "../../ui/PressButton.tsx";
 import { ThemeToggle } from "../../ui/ThemeToggle.tsx";
+import { Wambi, type WambiMood } from "../../wambi/Wambi.tsx";
 import { SETUP_STEPS, type StepId } from "./steps.ts";
 
 /**
@@ -28,7 +28,7 @@ export interface StepFrameProps {
   step: StepId;
   title: string;
   lead?: ReactNode;
-  mood?: LukasMood;
+  mood?: WambiMood;
   onBack?: (() => void) | undefined;
   /** Back waits too (e.g. while an import is being read or confirmed). */
   backDisabled?: boolean;
@@ -41,12 +41,12 @@ export interface StepFrameProps {
   children?: ReactNode;
 }
 
-/** Lukitas' size beside a step's title: friendly, never crowding it. */
+/** Wambi's size beside a step's title: friendly, never crowding it. */
 const MASCOT_PX = 72;
 
 /**
  * The frame of an onboarding step: the wordmark and the day/night switch, the progress ("Paso 2 de
- * 4", not on the welcome), Lukitas beside the title, the content, and Back / SALTAR / SIGUIENTE at
+ * 4", not on the welcome), Wambi beside the title, the content, and Back / SALTAR / SIGUIENTE at
  * the bottom (they stay in reach while the content scrolls). The title takes focus when the step
  * shows, so a screen reader starts there and keyboard users continue from it.
  */
@@ -75,7 +75,7 @@ export function StepFrame({
   return (
     <div className="lk-screen flex min-h-dvh flex-col">
       <header className="mx-auto flex w-full max-w-[480px] items-center justify-between px-(--space-4) py-(--space-3)">
-        <span className="lk-logo inline-flex min-h-11 items-center">Lukitas</span>
+        <span className="lk-logo inline-flex min-h-11 items-center">Wambito</span>
         <ThemeToggle />
       </header>
       <main className="mx-auto flex w-full max-w-[480px] flex-1 flex-col px-(--space-4)">
@@ -99,7 +99,7 @@ export function StepFrame({
         )}
         <div className="mt-(--space-4) flex items-center gap-(--space-3)">
           <span className="shrink-0">
-            <Lukas mood={mood} size={MASCOT_PX} />
+            <Wambi mood={mood} size={MASCOT_PX} />
           </span>
           <h1
             ref={heading}

@@ -16,7 +16,7 @@ export interface SessionUser {
 /** Who the demo is "signed in" as. */
 export const DEMO_USER: SessionUser = {
   id: "demo",
-  email: "demo@lukas.app",
+  email: "demo@wambito.test",
   onboardingCompletedAt: "2026-01-01T00:00:00.000Z",
 };
 

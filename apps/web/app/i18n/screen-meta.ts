@@ -11,7 +11,7 @@ export const isDemoPath = (pathname: string) =>
  * The `<title>` (and `noindex`) of one of the app's screens, from its catalog namespace's
  * `meta_title`. The app's titles are Spanish (as they always were). The demo reuses the same route
  * modules: there the title is in the demo's language and says it is the demo ("Demo · Home ·
- * Lukitas").
+ * Wambito").
  */
 export function screenMeta(namespace: string, location: { pathname: string; search: string }) {
   const demo = isDemoPath(location.pathname);
@@ -25,7 +25,7 @@ export function screenMeta(namespace: string, location: { pathname: string; sear
   return [{ title }, { name: "robots", content: "noindex" }];
 }
 
-/** The demo layout's own title ("Demo · Lukitas"), in the demo's language, while a screen loads. */
+/** The demo layout's own title ("Demo · Wambito"), in the demo's language, while a screen loads. */
 export function demoMeta(location: { search: string }) {
   const locale = demoLocale(location.search);
   const t = createTranslator({ locale, messages: CATALOGS[locale], namespace: "demo" });

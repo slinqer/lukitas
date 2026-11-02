@@ -28,7 +28,7 @@ describe("spotMood", () => {
     ]);
   });
 
-  it("falls back to the pose's mood without a (valid) data-lukas-mood", () => {
+  it("falls back to the pose's mood without a (valid) data-wambi-mood", () => {
     expect(spotMood("wave", undefined)).toBe("happy");
     expect(spotMood("point", undefined)).toBe("happy");
     expect(spotMood("carry", undefined)).toBe("happy");
@@ -36,7 +36,7 @@ describe("spotMood", () => {
     expect(spotMood("celebrate", "grumpy")).toBe("celebrating");
   });
 
-  it("lets data-lukas-mood win over the pose", () => {
+  it("lets data-wambi-mood win over the pose", () => {
     expect(spotMood("wave", "worried")).toBe("worried");
   });
 

@@ -4,7 +4,7 @@ import { APP_ORIGIN, LANDING_ONLY } from "../../site/config.ts";
 /** The demo without an account ("Pruébalo sin cuenta"): part of the app, not of the landing. */
 export const DEMO_PATH = "/demo";
 
-/** The source code: Lukitas is open source (AGPL-3.0). Opened in a new tab. */
+/** The source code: Wambito is open source (AGPL-3.0). Opened in a new tab. */
 export const GITHUB_HREF = "https://github.com/slinqer/lukitas";
 
 /**

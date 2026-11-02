@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, waitFor } from "storybook/test";
-import { Lukas3D } from "./Lukas3D.tsx";
+import { Wambi3D } from "./Wambi3D.tsx";
 
 /**
- * The 3D Lukas on his own (no Lukas spots on the page): he fills his box and takes the pose of
+ * The 3D Wambi on his own (no Wambi spots on the page): he fills his box and takes the pose of
  * `mood`. Move the pointer around to see his eyes and body follow; hover for a jump, click for a
  * spin. On the landing page he travels between the sections' spots instead.
  */
 const meta = {
-  title: "Experimental/Lukas 3D",
-  component: Lukas3D,
+  title: "Experimental/Wambi 3D",
+  component: Wambi3D,
   args: { mood: "happy" },
   decorators: [
     (Story) => (
@@ -18,14 +18,14 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof Lukas3D>;
+} satisfies Meta<typeof Wambi3D>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 /** The layer is decorative and fills its box; the WebGL canvas comes up and marks him live. */
 async function expectLive(root: HTMLElement, pose: string) {
-  const layer = root.querySelector<HTMLElement>("[data-lukas3d-layer]");
+  const layer = root.querySelector<HTMLElement>("[data-wambi3d-layer]");
   await expect(layer).not.toBeNull();
   await expect(layer?.getAttribute("aria-hidden")).toBe("true");
   await expect(layer?.dataset.pose).toBe(pose);
@@ -33,7 +33,7 @@ async function expectLive(root: HTMLElement, pose: string) {
     () => {
       const canvas = layer?.querySelector("canvas");
       expect(canvas?.width).toBeGreaterThan(0);
-      expect(document.documentElement.dataset.lukas3d).toBe("live");
+      expect(document.documentElement.dataset.wambi3d).toBe("live");
     },
     { timeout: 10_000 },
   );
@@ -42,7 +42,7 @@ async function expectLive(root: HTMLElement, pose: string) {
   await expect(box?.height).toBe(320);
   // Only his body takes the pointer (for the jump and the spin), never the rest of the box.
   await expect(layer && getComputedStyle(layer).pointerEvents).toBe("none");
-  const hit = layer?.querySelector(".lk-lukas3d-hit");
+  const hit = layer?.querySelector(".lk-wambi3d-hit");
   await expect(hit && getComputedStyle(hit).pointerEvents).toBe("auto");
 }
 

@@ -1,5 +1,5 @@
 /*
- * The celebration overlay: confetti bursting from where Lukitas pops up (his landing spot, free
+ * The celebration overlay: confetti bursting from where Wambi pops up (his landing spot, free
  * space such as the ＋; see Celebration.tsx). It covers the screen but never takes a tap (`pointer-events: none`), sits above the toast, and lasts one `--celebrate`.
  * Colors are the brand tokens; each piece is placed by custom properties set in Celebration.tsx.
  */
@@ -11,14 +11,14 @@
   pointer-events: none;
 }
 
-/* Placed (inline) at the landing spot's center and top: Lukitas stands there, the burst starts. */
+/* Placed (inline) at the landing spot's center and top: Wambi stands there, the burst starts. */
 .lk-celebration-burst {
   position: absolute;
   width: 0;
   height: 0;
 }
 
-.lk-celebration-lukas {
+.lk-celebration-wambi {
   position: absolute;
   left: 0;
   top: 0;
@@ -27,8 +27,8 @@
   animation: lk-celebration-pop var(--celebrate) ease-out both;
 }
 
-/* Reduced motion: the same stay, but Lukitas only fades (his sprite shows its still frame). */
-.lk-celebration.is-reduced .lk-celebration-lukas {
+/* Reduced motion: the same stay, but Wambi only fades (his sprite shows its still frame). */
+.lk-celebration.is-reduced .lk-celebration-wambi {
   animation-name: lk-celebration-fade;
 }
 

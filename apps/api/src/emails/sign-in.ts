@@ -231,7 +231,7 @@ function codeEmail(copy: Copy, input: CodeEmailInput & { link?: string }): Omit<
   const code = escapeHtml(input.code);
   const link = input.link === undefined ? undefined : escapeHtml(input.link);
   const webHref = escapeHtml(web);
-  const image = escapeHtml(`${web}/email/lukitas-wave.png`);
+  const image = escapeHtml(`${web}/email/wambi-wave.png`);
   const expiry = escapeHtml(copy.expiry(input.expiresInMinutes));
 
   const text = [

@@ -1,5 +1,5 @@
 /*
- * The landing's traveling Lukas (TravelingLukas.tsx): an overlay positioned by script in the
+ * The landing's traveling Wambi (TravelingWambi.tsx): an overlay positioned by script in the
  * coordinates of its offset parent (the landing), so it scrolls with the page and never takes
  * part in the layout. It never takes clicks; only his body (`.lk-traveler-hit`) does, for the hop,
  * and only while he stands on a spot. Every color and duration is a token.
@@ -67,7 +67,7 @@
     opacity: 1;
   }
   /* Sheets that aren't showing hold still. */
-  .lk-traveler-mood:not(.is-active) .lk-lukas-sprite {
+  .lk-traveler-mood:not(.is-active) .lk-wambi-sprite {
     animation-play-state: paused;
   }
 
@@ -79,7 +79,7 @@
     width: 56%;
     height: 10%;
     border-radius: 50%;
-    background: radial-gradient(closest-side, var(--lukas-shadow), transparent);
+    background: radial-gradient(closest-side, var(--wambi-shadow), transparent);
     animation: lk-traveler-shadow-bob var(--bob) ease-in-out infinite;
   }
   .lk-traveler-shadow.is-hopping {

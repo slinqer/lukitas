@@ -1,7 +1,7 @@
 import { useTranslations } from "use-intl";
 import { ApiProblem, problemMessage, type Translator } from "../../api/errors.ts";
-import { Lukas } from "../../lukas/Lukas.tsx";
 import { PressButton } from "../../ui/PressButton.tsx";
+import { Wambi } from "../../wambi/Wambi.tsx";
 
 /**
  * What a screen of the app (or of the demo) shows when its loader or render fails, e.g. a session
@@ -13,7 +13,7 @@ export function ScreenError({ error }: { error: unknown }) {
   const message = error instanceof ApiProblem ? problemMessage(error, t) : t("errors.generic");
   return (
     <main className="lk-screen flex min-h-dvh flex-col items-center justify-center gap-(--space-4) p-(--space-4) text-center">
-      <Lukas mood="worried" size={96} />
+      <Wambi mood="worried" size={96} />
       <p role="alert" className="max-w-[360px] text-ink">
         {message}
       </p>

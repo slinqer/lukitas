@@ -500,7 +500,7 @@ function homeFetch({
         {
           headers: {
             "content-type": csv ? "text/csv; charset=utf-8" : "application/json",
-            "content-disposition": `attachment; filename="lukas-export-${STORY_TODAY}.${csv ? "csv" : "json"}"`,
+            "content-disposition": `attachment; filename="wambito-export-${STORY_TODAY}.${csv ? "csv" : "json"}"`,
           },
         },
       );

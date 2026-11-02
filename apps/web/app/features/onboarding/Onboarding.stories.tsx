@@ -67,7 +67,7 @@ export const Welcome: Story = {
     const canvas = within(canvasElement);
     const title = canvas.getByRole("heading", {
       level: 1,
-      name: "Te damos la bienvenida a Lukitas",
+      name: "Te damos la bienvenida a Wambito",
     });
     await waitFor(() => expect(title).toHaveFocus());
     await expect(canvas.queryByText(/^Paso/)).toBeNull();
@@ -461,7 +461,7 @@ export const BudgetsRunningTotal: Story = {
     await expect(home).toHaveValue("12.500,5");
     await expect(total).toHaveTextContent("12.921,00 €");
     await expect(canvas.getByRole("button", { name: "Siguiente" })).toBeEnabled();
-    await expect(canvas.queryByText(/lukas/)).toBeNull();
+    await expect(canvas.queryByText(/wambi/)).toBeNull();
   },
 };
 

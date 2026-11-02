@@ -6,11 +6,11 @@ describe("feedbackMailto", () => {
     expect(FEEDBACK_EMAIL).toBe("hola@wambito.com");
     expect(
       feedbackMailto({
-        subject: "Lukitas: comentarios",
+        subject: "Wambito: comentarios",
         body: "\n\nVersión: 1.2.3\nIdioma: es",
       }),
     ).toBe(
-      "mailto:hola@wambito.com?subject=Lukitas%3A%20comentarios&body=%0A%0AVersi%C3%B3n%3A%201.2.3%0AIdioma%3A%20es",
+      "mailto:hola@wambito.com?subject=Wambito%3A%20comentarios&body=%0A%0AVersi%C3%B3n%3A%201.2.3%0AIdioma%3A%20es",
     );
   });
 

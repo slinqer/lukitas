@@ -1,8 +1,10 @@
 /**
- * Lukas' entrance on the landing page, once per browser session: he rolls in on his edge (limbs
+ * Wambi's entrance on the landing page, once per browser session: he rolls in on his edge (limbs
  * tucked in), settles with a little bounce facing the viewer, pops his arms and legs out, and
- * waves. Pure timing here; `entranceFrame` (traveling.ts) turns it into the 2.5D Lukas' transforms.
+ * waves. Pure timing here; `entranceFrame` (traveling.ts) turns it into the 2.5D Wambi's transforms.
  */
+
+import { readStored, type StoredArea, writeStored } from "../lib/stored.ts";
 
 /** Phase lengths in ms (≈2 s in all). */
 export const ENTRANCE_MS = {
@@ -47,28 +49,26 @@ export function rollAt(
   return { offset, angle: radius > 0 ? (distance - offset) / radius : 0 };
 }
 
-/** sessionStorage key set once the entrance has played in this browser session. */
-export const ENTRANCE_KEY = "lukas:entrance";
+/**
+ * The `readStored` name set (in sessionStorage, as `wambito.entrance`) once the entrance has
+ * played in this browser session.
+ */
+export const ENTRANCE_KEY = "entrance";
+/** The sessionStorage key itself. */
+export const ENTRANCE_STORAGE_KEY = `wambito.${ENTRANCE_KEY}`;
 
 /**
  * Whether to play the entrance: not yet seen this session, and the hero is still in view (a
  * visitor who already scrolled past it never sees him roll in). Unreadable storage counts as
  * not seen.
  */
-export function shouldPlayEntrance(session: Storage | undefined, heroInView: boolean): boolean {
+export function shouldPlayEntrance(session: StoredArea | null, heroInView: boolean): boolean {
   if (!heroInView) return false;
-  try {
-    return session?.getItem(ENTRANCE_KEY) !== "seen";
-  } catch {
-    return true;
-  }
+  return readStored(ENTRANCE_KEY, session) !== "seen";
 }
 
 /** Remembers for this session that the entrance has played (silently, if storage is blocked). */
-export function markEntranceSeen(session: Storage | undefined): void {
-  try {
-    session?.setItem(ENTRANCE_KEY, "seen");
-  } catch {
-    // Private mode or blocked storage: he may roll in again next time, which is fine.
-  }
+export function markEntranceSeen(session: StoredArea | null): void {
+  // Private mode or blocked storage: he may roll in again next time, which is fine.
+  writeStored(ENTRANCE_KEY, "seen", session);
 }

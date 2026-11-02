@@ -1,6 +1,6 @@
 # Feedback sounds
 
-Every file here is original work, made for Lukitas. There are no third-party samples, so there is
+Every file here is original work, made for Wambito. There are no third-party samples, so there is
 nothing to attribute and no license to carry: they are released under the repository's license.
 
 Each sound is a few plain sine tones with a short fade in and out, joined and encoded as mono MP3

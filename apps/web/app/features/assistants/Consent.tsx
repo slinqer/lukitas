@@ -18,7 +18,7 @@ const PERMISSION_KEY = {
   offline_access: "permissions.offline",
 } as const satisfies Record<Permission, string>;
 
-/** Where the browser goes once the person answers: away from Lukitas, to the assistant. */
+/** Where the browser goes once the person answers: away from Wambito, to the assistant. */
 const leaveTo = (url: string) => window.location.assign(url);
 
 export interface ConsentProps {

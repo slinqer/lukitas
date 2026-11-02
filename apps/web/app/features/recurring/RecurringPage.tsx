@@ -7,10 +7,10 @@ import { formatMoney, intlTag, type Locale, monthInSentence } from "../../i18n/f
 import { useLocale } from "../../i18n/IntlProvider.tsx";
 import { ConfirmSheet } from "../../ui/ConfirmSheet.tsx";
 import { categoryLook } from "../../ui/category-look.ts";
-import { LukasBubble } from "../../ui/LukasBubble.tsx";
 import { PageHeader } from "../../ui/PageHeader.tsx";
 import { PressButton } from "../../ui/PressButton.tsx";
 import { useToast } from "../../ui/Toast.tsx";
+import { WambiBubble } from "../../ui/WambiBubble.tsx";
 import { ManageFrame } from "../categories/CategoryDetail.tsx";
 import { useAppPath } from "../home/app-path.ts";
 import { RecurringForm } from "./RecurringForm.tsx";
@@ -83,7 +83,7 @@ export function RecurringPage() {
         </div>
         {ready &&
           (recurrences.data.length === 0 ? (
-            <LukasBubble message={t("empty")} mood="happy" />
+            <WambiBubble message={t("empty")} mood="happy" />
           ) : (
             <>
               <p className="m-0 text-[14px] font-bold text-ink-muted">{t("lead")}</p>

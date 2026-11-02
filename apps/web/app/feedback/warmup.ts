@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { LUKAS_ART } from "../lukas/Lukas.tsx";
+import { WAMBI_ART } from "../wambi/Wambi.tsx";
 import { installSoundUnlock } from "./feedback.ts";
 
 /** Used when the browser has no `requestIdleCallback` (Safari): a moment after the first paint. */
@@ -24,13 +24,13 @@ export function prefetchImageWhenIdle(src: string): () => void {
 
 /**
  * Prepares the feedback module for the app's screens, once, from the app layout (never the
- * landing): the sounds are unlocked on the first tap or key press, and the celebrating Lukitas'
+ * landing): the sounds are unlocked on the first tap or key press, and the celebrating Wambi's
  * sprite sheet (386 KB) is prefetched when idle, so the first celebration is not a late pop-in.
  */
 export function useFeedbackWarmup(): void {
   useEffect(() => {
     const removeUnlock = installSoundUnlock();
-    const cancelPrefetch = prefetchImageWhenIdle(LUKAS_ART.celebrating.sprite.src);
+    const cancelPrefetch = prefetchImageWhenIdle(WAMBI_ART.celebrating.sprite.src);
     return () => {
       removeUnlock();
       cancelPrefetch();

@@ -1,7 +1,7 @@
 import { type IsoDate, lastDay, monthOf } from "./dates.ts";
 import type { CategorySummary, MonthSummary } from "./summary.ts";
 
-export type LukasMessageKey =
+export type WambiMessageKey =
   | "first_of_day"
   | "on_track"
   | "near_limit"
@@ -11,21 +11,21 @@ export type LukasMessageKey =
   | "month_last_day"
   | "month_closed_green";
 
-export interface LukasMessageInput {
+export interface WambiMessageInput {
   /** The month summary AFTER the event (if any) was applied. */
   summary: MonthSummary;
   today: IsoDate;
   /** Transactions recorded today, including the event's. */
   todayCount: number;
   /**
-   * The save or payment Lukas is reacting to. `name` is the movement's own name: the lines about
+   * The save or payment Wambi is reacting to. `name` is the movement's own name: the lines about
    * it say which one it was (empty or missing: the client says its category's name instead).
    */
   event?: { kind: "saved" | "paid"; categoryId: string; amount: number; name?: string };
 }
 
-export interface LukasMessage {
-  key: LukasMessageKey;
+export interface WambiMessage {
+  key: WambiMessageKey;
   params: Record<string, string | number>;
 }
 
@@ -41,14 +41,14 @@ function daysLeft(today: IsoDate, month: string): number {
   return Math.max(0, utcDay(lastDay(month)) - utcDay(today) + 1);
 }
 
-function overBudget(category: CategorySummary): LukasMessage {
+function overBudget(category: CategorySummary): WambiMessage {
   return {
     key: "over_budget",
     params: { categoryId: category.categoryId, over: -(category.remaining ?? 0) },
   };
 }
 
-function nearLimit(category: CategorySummary): LukasMessage {
+function nearLimit(category: CategorySummary): WambiMessage {
   return {
     key: "near_limit",
     params: { categoryId: category.categoryId, remaining: category.remaining ?? 0 },
@@ -56,10 +56,10 @@ function nearLimit(category: CategorySummary): LukasMessage {
 }
 
 /**
- * Picks the message Lukas shows. Returns only a key and its parameters; the copy belongs to the
+ * Picks the message Wambi shows. Returns only a key and its parameters; the copy belongs to the
  * client. Rules are evaluated top to bottom and the first match wins.
  */
-export function lukasMessage(input: LukasMessageInput): LukasMessage {
+export function wambiMessage(input: WambiMessageInput): WambiMessage {
   const { summary, today, todayCount, event } = input;
   const eventCategory = event
     ? summary.categories.find((c) => c.categoryId === event.categoryId)

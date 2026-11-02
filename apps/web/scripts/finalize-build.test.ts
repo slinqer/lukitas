@@ -8,7 +8,7 @@ const ORIGIN = "https://wambito.com";
 let dir: string;
 
 beforeEach(() => {
-  dir = mkdtempSync(join(tmpdir(), "lukas-build-"));
+  dir = mkdtempSync(join(tmpdir(), "wambito-build-"));
   writeFileSync(join(dir, "index.html"), "<html>es</html>");
   writeFileSync(join(dir, "__spa-fallback.html"), "<html>fallback</html>");
 });

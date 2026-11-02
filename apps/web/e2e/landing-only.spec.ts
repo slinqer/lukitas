@@ -27,7 +27,7 @@ const LOCALES = [
     ways: ["En la web", "App para Android y iOS", "Con tu IA"],
     closingTitle: "Cuando quieras, arrancamos.",
     closingBody:
-      "Lukitas está en construcción, en abierto. Mira cómo avanza en GitHub y prueba la app en cuanto abra.",
+      "Wambito está en construcción, en abierto. Mira cómo avanza en GitHub y prueba la app en cuanto abra.",
     oldClosing: /Crea tu cuenta/,
     oldCtas: ["Empieza ahora", "Entrar", "Empezar"],
     demoCta: "Pruébalo sin cuenta",
@@ -45,7 +45,7 @@ const LOCALES = [
     ways: ["On the web", "Android & iOS app", "With your AI"],
     closingTitle: "Ready when you are.",
     closingBody:
-      "Lukitas is being built in the open. Follow its progress on GitHub and try the app as soon as it opens.",
+      "Wambito is being built in the open. Follow its progress on GitHub and try the app as soon as it opens.",
     oldClosing: /Create your account/,
     oldCtas: ["Get started", "Sign in", "Start"],
     demoCta: "Try it without an account",
@@ -135,7 +135,7 @@ async function expectHeaderFits(
   cta: string,
 ) {
   await page.setViewportSize({ width, height: 800 });
-  await page.addInitScript((value) => localStorage.setItem("lukas.theme", value), theme);
+  await page.addInitScript((value) => localStorage.setItem("wambito.theme", value), theme);
   await page.goto(path);
   await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
   const header = page.getByRole("banner");
@@ -252,7 +252,7 @@ for (const l of LOCALES) {
       expect(html).not.toMatch(/href="[^"]*\/(sign-in|app|welcome|demo)(["/?#])/);
     });
 
-    test("the closing section tells the truth about the app, and keeps Lukas's spot", async ({
+    test("the closing section tells the truth about the app, and keeps Wambi's spot", async ({
       page,
       request,
     }) => {
@@ -264,22 +264,22 @@ for (const l of LOCALES) {
       const html = (await (await request.get(l.path)).text()).replaceAll("&#x27;", "'");
       expect(html).not.toMatch(l.oldClosing);
 
-      const spot = closing.locator("[data-lukas-spot='closing']");
-      await expect(spot).toHaveAttribute("data-lukas-mood", "celebrating");
-      await expect(spot).toHaveAttribute("data-lukas-pose", "celebrate");
-      await expect(spot.locator(".lk-lukas")).toHaveCount(1);
+      const spot = closing.locator("[data-wambi-spot='closing']");
+      await expect(spot).toHaveAttribute("data-wambi-mood", "celebrating");
+      await expect(spot).toHaveAttribute("data-wambi-pose", "celebrate");
+      await expect(spot.locator(".lk-wambi")).toHaveCount(1);
     });
 
-    test("is called Lukitas, in the text and in the share tags", async ({ page }) => {
+    test("is called Wambito, in the text and in the share tags", async ({ page }) => {
       await page.goto(l.path);
-      await expect(page).toHaveTitle(/^Lukitas · /);
+      await expect(page).toHaveTitle(/^Wambito · /);
       await expect(page.locator('meta[property="og:site_name"]')).toHaveAttribute(
         "content",
-        "Lukitas",
+        "Wambito",
       );
-      await expect(page.locator(".lk-logo").first()).toHaveText("Lukitas");
+      await expect(page.locator(".lk-logo").first()).toHaveText("Wambito");
       const text = await page.locator("body").evaluate((body) => body.textContent ?? "");
-      expect(text).not.toMatch(/\bLukas\b/);
+      expect(text).not.toMatch(/Luk(?:itas)|\bLuk(?:as)\b/);
     });
 
     test("is still free, open source and not a game", async ({ page }) => {
@@ -351,7 +351,7 @@ for (const l of LOCALES) {
           if (message.type() === "error") errors.push(message.text());
         });
         page.on("pageerror", (error) => errors.push(error.message));
-        await page.addInitScript(() => localStorage.setItem("lukas.theme", "day"));
+        await page.addInitScript(() => localStorage.setItem("wambito.theme", "day"));
         await page.goto(l.path);
         await page.waitForLoadState("networkidle");
         await expect(page.locator("html")).toHaveAttribute("data-theme", "day");
@@ -402,7 +402,7 @@ for (const l of LOCALES) {
       );
     });
 
-    test("leads nowhere near the app, and is called Lukitas", async ({ page, request }) => {
+    test("leads nowhere near the app, and is called Wambito", async ({ page, request }) => {
       await page.goto(r.path);
       const hrefs = await page
         .locator("a[href]")
@@ -412,10 +412,10 @@ for (const l of LOCALES) {
       const html = await (await request.get(r.path)).text();
       expect(html).not.toMatch(/href="[^"]*\/(sign-in|app|welcome|demo)(["/?#])/);
       const text = await page.locator("body").evaluate((body) => body.textContent ?? "");
-      expect(text).toContain("Lukitas");
-      expect(text).not.toMatch(/\bLukas\b/);
+      expect(text).toContain("Wambito");
+      expect(text).not.toMatch(/Luk(?:itas)|\bLuk(?:as)\b/);
       for (const pattern of l.banned) expect(text).not.toMatch(pattern);
-      await expect(page).toHaveTitle(/^Lukitas · /);
+      await expect(page).toHaveTitle(/^Wambito · /);
     });
 
     test("the header's coming-soon link to GitHub is the only call to action", async ({ page }) => {
@@ -474,7 +474,7 @@ for (const l of LOCALES) {
           if (message.type() === "error") errors.push(message.text());
         });
         page.on("pageerror", (error) => errors.push(error.message));
-        await page.addInitScript(() => localStorage.setItem("lukas.theme", "day"));
+        await page.addInitScript(() => localStorage.setItem("wambito.theme", "day"));
         await page.goto(r.path);
         await page.waitForLoadState("networkidle");
         await expect(page.locator("html")).toHaveAttribute("data-theme", "day");
@@ -497,7 +497,7 @@ test.describe("landing-only build output", () => {
         "en",
         "index.html",
         "it",
-        "lukas",
+        "wambi",
         "og-en.png",
         "og-es.png",
         "og-it.png",
@@ -519,7 +519,7 @@ test.describe("landing-only build output", () => {
   test("sitemap.xml and robots.txt are generated from the origin", async ({ request }) => {
     const robots = await (await request.get("/robots.txt")).text();
     expect(robots).toContain(`Sitemap: ${ORIGIN}/sitemap.xml`);
-    expect(robots).not.toContain("lukas.app");
+    expect(robots).not.toContain("wambito.test");
     expect(robots).not.toContain("Disallow");
     const sitemap = await (await request.get("/sitemap.xml")).text();
     expect(sitemap).toContain(`<loc>${ORIGIN}/</loc>`);
@@ -530,7 +530,7 @@ test.describe("landing-only build output", () => {
       expect(sitemap).toContain(`<loc>${ORIGIN}${path}</loc>`);
     }
     expect(sitemap).toContain(`hreflang="en" href="${ORIGIN}/en/roadmap"`);
-    expect(sitemap).not.toContain("lukas.app");
+    expect(sitemap).not.toContain("wambito.test");
   });
 
   test("_headers caches assets for good, HTML briefly, and sets the security headers", () => {
@@ -585,11 +585,11 @@ test.describe("landing-only build output", () => {
     ).not.toContainEqual(expect.stringMatching(APP_PATH));
     // The landing look: the same stylesheet, the night theme and the logo.
     await expect(page.locator(".lk-landing")).toHaveCount(1);
-    await expect(page.locator(".lk-logo").first()).toHaveText("Lukitas");
-    await expect(page).toHaveTitle("Lukitas · 404");
+    await expect(page.locator(".lk-logo").first()).toHaveText("Wambito");
+    await expect(page).toHaveTitle("Wambito · 404");
     const text = await page.locator("body").evaluate((body) => body.textContent ?? "");
-    expect(text).toContain("Lukitas");
-    expect(text).not.toMatch(/\bLukas\b/);
+    expect(text).toContain("Wambito");
+    expect(text).not.toMatch(/Luk(?:itas)|\bLuk(?:as)\b/);
   });
 
   test.describe("the 404 page with JavaScript", () => {

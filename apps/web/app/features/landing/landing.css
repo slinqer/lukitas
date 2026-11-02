@@ -4,7 +4,7 @@
  */
 @layer components {
   .lk-landing {
-    /* The traveling Lukas' layer is positioned in this box's coordinates. */
+    /* The traveling Wambi's layer is positioned in this box's coordinates. */
     position: relative;
     min-height: 100dvh;
     overflow-x: clip;
@@ -38,9 +38,9 @@
   }
 
   /*
-   * Lukas spots: where the traveling Lukas stands per section (empty boxes without him). Section
+   * Wambi spots: where the traveling Wambi stands per section (empty boxes without him). Section
    * spots sit at the end of the heading row, his feet on the content's top edge; the heading keeps
-   * clear of them. Once he is live, the prerendered Lukas in a spot (hero, closing) steps aside.
+   * clear of them. Once he is live, the prerendered Wambi in a spot (hero, closing) steps aside.
    */
   .lk-landing-section-head {
     --lk-spot: 92px;
@@ -64,7 +64,7 @@
     width: var(--lk-spot);
     height: var(--lk-spot);
   }
-  /* A section head without a spot for Lukas (what's next): the text may use the full width. */
+  /* A section head without a spot for Wambi (what's next): the text may use the full width. */
   .lk-landing-section-head.is-plain {
     padding-inline-end: 0;
   }
@@ -83,12 +83,12 @@
     width: 128px;
     height: 128px;
   }
-  [data-lukas-spot] > .lk-lukas {
+  [data-wambi-spot] > .lk-wambi {
     transition:
       opacity var(--sheet) ease,
       visibility 0s linear var(--sheet);
   }
-  html[data-lukas-live="live"] [data-lukas-spot] > .lk-lukas {
+  html[data-wambi-live="live"] [data-wambi-spot] > .lk-wambi {
     opacity: 0;
     visibility: hidden;
   }
@@ -149,6 +149,16 @@
   }
   .lk-landing-logo .lk-logo {
     font-size: 28px;
+  }
+  /* The narrowest phones (320px): "Wambito" is wider than the old wordmark, so it and the gaps
+     step down a little to keep the header on one row beside the longest CTA (es, it, pt). */
+  @media (max-width: 359px) {
+    .lk-landing-header {
+      gap: var(--space-2);
+    }
+    .lk-landing-logo .lk-logo {
+      font-size: 24px;
+    }
   }
   .lk-landing-nav {
     display: flex;
@@ -224,7 +234,7 @@
     width: clamp(190px, 58vw, 250px);
     aspect-ratio: 1;
   }
-  /* A soft gold halo behind Lukas, so the coin glows against the night sky. */
+  /* A soft gold halo behind Wambi, so the coin glows against the night sky. */
   .lk-landing-mascot::before {
     content: "";
     position: absolute;
@@ -321,7 +331,7 @@
     line-height: 1.5;
     color: var(--ink-muted);
   }
-  /* The first sentence of the description: what Lukas is. */
+  /* The first sentence of the description: what Wambi is. */
   .lk-landing-lead {
     display: block;
     margin-bottom: var(--space-2);
@@ -697,7 +707,7 @@
     padding-inline: var(--space-4);
   }
 
-  /* The 404 page: Lukas looking for the page, then the message in each language. */
+  /* The 404 page: Wambi looking for the page, then the message in each language. */
   .lk-landing-notfound {
     display: grid;
     justify-items: center;
@@ -705,7 +715,7 @@
     text-align: center;
     padding-block: var(--space-4) var(--space-6);
   }
-  .lk-landing-notfound-lukas {
+  .lk-landing-notfound-wambi {
     width: 160px;
     height: 160px;
   }
@@ -842,7 +852,7 @@
   }
 }
 
-/* Wide enough for a free column beside the FAQ list (max 760px): Lukas stands there, next to the
+/* Wide enough for a free column beside the FAQ list (max 760px): Wambi stands there, next to the
  * first questions. */
 @media (min-width: 1100px) {
   @layer components {

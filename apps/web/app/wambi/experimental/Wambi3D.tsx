@@ -11,21 +11,22 @@ import {
 } from "react";
 import { type Group, NeutralToneMapping, PMREMGenerator } from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
+import { sessionArea } from "../../lib/stored.ts";
 import { durationToken } from "../../ui/motion-tokens.ts";
 import { entrancePhase, markEntranceSeen, rollAt, shouldPlayEntrance } from "../entrance.ts";
-import type { LukasMood } from "../mood.ts";
-import { type LukasSpot, useScrollPose } from "../use-scroll-pose.ts";
+import type { WambiMood } from "../mood.ts";
+import { useScrollPose, type WambiSpot } from "../use-scroll-pose.ts";
 import { type CoinDrive, CoinModel, type CoinPose } from "./coin-model.tsx";
-import { LUKAS_3D_PALETTE as C } from "./lukas3d-palette.ts";
 import { Stage } from "./stage.tsx";
-import "./lukas3d.css";
+import { WAMBI_3D_PALETTE as C } from "./wambi3d-palette.ts";
+import "./wambi3d.css";
 
 /** Loaded only when a GLB replaces the procedural model (it brings the GLTF loader along). */
 const GltfModel = lazy(() => import("./gltf-model.tsx"));
 
-export interface Lukas3DProps {
-  mood?: LukasMood;
-  /** A GLB of Lukas to show instead of the procedural coin (same framing: ~3.4 units tall). */
+export interface Wambi3DProps {
+  mood?: WambiMood;
+  /** A GLB of Wambi to show instead of the procedural coin (same framing: ~3.4 units tall). */
   modelUrl?: string;
 }
 
@@ -33,12 +34,12 @@ export interface Lukas3DProps {
  * shows the coin's edge on the left). */
 const MAX_TURN = (12 * Math.PI) / 180;
 const BASE_YAW = 0.55;
-/** Through the last part of a section (scroll `y`), Lukas travels to the next section's spot. */
+/** Through the last part of a section (scroll `y`), Wambi travels to the next section's spot. */
 const TRAVEL_FROM = 0.7;
 /** A pointer older than this stops steering on touch screens; then the device tilt can. */
 const TOUCH_LOOK_MS = 4000;
 
-/** The framing: Lukas, arms up, fills the square canvas like the 2D sprite fills its frame. */
+/** The framing: Wambi, arms up, fills the square canvas like the 2D sprite fills its frame. */
 const CAMERA = { position: [0, 0.1, 6.6] as [number, number, number], fov: 30, near: 1, far: 20 };
 /** Scene units across the canvas (its height = width) at the coin: px per unit = size / this. */
 const VISIBLE_UNITS = 2 * CAMERA.position[2] * Math.tan(((CAMERA.fov / 2) * Math.PI) / 180);
@@ -52,7 +53,7 @@ const GL = {
   toneMapping: NeutralToneMapping,
 };
 
-const MOOD_POSE: Record<LukasMood, CoinPose> = {
+const MOOD_POSE: Record<WambiMood, CoinPose> = {
   happy: "wave",
   celebrating: "celebrate",
   worried: "worried",
@@ -305,19 +306,10 @@ function Rig({
   );
 }
 
-/** sessionStorage, or undefined where reading it throws (blocked storage). */
-function sessionStore(): Storage | undefined {
-  try {
-    return window.sessionStorage;
-  } catch {
-    return undefined;
-  }
-}
-
-/** The hero spot says where he rolls in from (`data-lukas-enter-from`, default right). */
+/** The hero spot says where he rolls in from (`data-wambi-enter-from`, default right). */
 function entranceSide(): 1 | -1 {
-  const hero = document.querySelector<HTMLElement>("[data-lukas-spot]");
-  return hero?.dataset.lukasEnterFrom === "left" ? -1 : 1;
+  const hero = document.querySelector<HTMLElement>("[data-wambi-spot]");
+  return hero?.dataset.wambiEnterFrom === "left" ? -1 : 1;
 }
 
 interface SpotBox {
@@ -327,21 +319,21 @@ interface SpotBox {
 }
 
 /**
- * Lukas in 3D (three.js through React Three Fiber): the procedural coin, or a GLB at `modelUrl`.
+ * Wambi in 3D (three.js through React Three Fiber): the procedural coin, or a GLB at `modelUrl`.
  * He bobs, blinks, follows the pointer with his eyes and up to ±12° of body turn (the last touch on
  * touch screens, or the device tilt where the browser allows it without asking), jumps on hover
  * and spins on tap.
  *
- * On a page with Lukas spots (`[data-lukas-spot]`, see `useScrollPose`) he travels with the
+ * On a page with Wambi spots (`[data-wambi-spot]`, see `useScrollPose`) he travels with the
  * scroll: he stands on the current section's spot in its pose and, through the end of the
  * section, flies to the next one (spinning like a tossed coin); the layer never takes clicks but
  * his body. Without spots he fills his parent and takes the pose of `mood`.
  *
  * Rendering pauses while he is off screen or the tab is hidden. Callers decide whether to show him
- * at all (reduced motion, WebGL, memory: see `useLukas3DReady`); `<html data-lukas3d="live">` is
- * set once his first frame is on screen, so the 2D Lukas in the spots can step aside.
+ * at all (reduced motion, WebGL, memory: see `useWambi3DReady`); `<html data-wambi3d="live">` is
+ * set once his first frame is on screen, so the 2D Wambi in the spots can step aside.
  */
-export function Lukas3D({ mood = "happy", modelUrl }: Lukas3DProps) {
+export function Wambi3D({ mood = "happy", modelUrl }: Wambi3DProps) {
   const layer = useRef<HTMLDivElement>(null);
   const hit = useRef<HTMLDivElement>(null);
   const drive = useRef<CoinDrive>({
@@ -358,13 +350,13 @@ export function Lukas3D({ mood = "happy", modelUrl }: Lukas3DProps) {
   const [pageVisible, setPageVisible] = useState(true);
 
   const place = useCallback(
-    ({ spots, index, y }: { spots: LukasSpot[]; index: number; y: number }) => {
+    ({ spots, index, y }: { spots: WambiSpot[]; index: number; y: number }) => {
       const element = layer.current;
       const parent = element?.offsetParent;
       const current = spots[index];
       if (!element || !parent || !current) return;
       const base = parent.getBoundingClientRect();
-      const boxOf = (spot: LukasSpot): SpotBox => {
+      const boxOf = (spot: WambiSpot): SpotBox => {
         const b = spot.element.getBoundingClientRect();
         return {
           x: b.left - base.left + b.width / 2,
@@ -405,15 +397,15 @@ export function Lukas3D({ mood = "happy", modelUrl }: Lukas3DProps) {
   const scroll = useScrollPose(place);
   // Decided on the first render (this component only renders in the browser), so the canvas is
   // never sized to the whole page for a frame.
-  const [traveling] = useState(() => document.querySelector("[data-lukas-spot]") !== null);
+  const [traveling] = useState(() => document.querySelector("[data-wambi-spot]") !== null);
 
   // The entrance plays on the landing once per session, if the hero (the first spot) is in view.
   const [entranceState, setEntranceState] = useState<Entrance["state"]>(() => {
-    const hero = document.querySelector<HTMLElement>("[data-lukas-spot]");
+    const hero = document.querySelector<HTMLElement>("[data-wambi-spot]");
     if (!hero) return "none";
     const box = hero.getBoundingClientRect();
     const heroInView = box.bottom > box.height * 0.25 && box.top < window.innerHeight;
-    return shouldPlayEntrance(sessionStore(), heroInView) ? "playing" : "skipped";
+    return shouldPlayEntrance(sessionArea(), heroInView) ? "playing" : "skipped";
   });
   const entrance = useRef<Entrance>({
     state: entranceState,
@@ -423,7 +415,7 @@ export function Lukas3D({ mood = "happy", modelUrl }: Lukas3DProps) {
     onDone: () => setEntranceState("done"),
   });
   useEffect(() => {
-    if (entrance.current.state === "playing") markEntranceSeen(sessionStore());
+    if (entrance.current.state === "playing") markEntranceSeen(sessionArea());
   }, []);
 
   useEffect(() => {
@@ -474,7 +466,7 @@ export function Lukas3D({ mood = "happy", modelUrl }: Lukas3DProps) {
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => () => document.documentElement.removeAttribute("data-lukas3d"), []);
+  useEffect(() => () => document.documentElement.removeAttribute("data-wambi3d"), []);
 
   // Off screen or in a hidden tab, nothing is drawn (battery).
   const rendering = inView && pageVisible;
@@ -497,23 +489,23 @@ export function Lukas3D({ mood = "happy", modelUrl }: Lukas3DProps) {
   );
 
   const onCreated = useCallback(() => {
-    // The first frame is drawn on the next animation frame: then the 2D Lukas can step aside.
+    // The first frame is drawn on the next animation frame: then the 2D Wambi can step aside.
     requestAnimationFrame(() =>
-      requestAnimationFrame(() => document.documentElement.setAttribute("data-lukas3d", "live")),
+      requestAnimationFrame(() => document.documentElement.setAttribute("data-wambi3d", "live")),
     );
   }, []);
 
   return (
     <div
       ref={layer}
-      className={traveling ? "lk-lukas3d is-traveling" : "lk-lukas3d"}
-      data-lukas3d-layer=""
+      className={traveling ? "lk-wambi3d is-traveling" : "lk-wambi3d"}
+      data-wambi3d-layer=""
       data-pose={traveling ? (scroll?.pose ?? "wave") : MOOD_POSE[mood]}
       data-rendering={rendering ? "running" : "paused"}
       data-entrance={entranceState}
       aria-hidden="true"
     >
-      <div ref={stage} className="lk-lukas3d-stage">
+      <div ref={stage} className="lk-wambi3d-stage">
         <Stage
           frameloop={rendering ? "always" : "never"}
           dpr={DPR}
@@ -525,7 +517,7 @@ export function Lukas3D({ mood = "happy", modelUrl }: Lukas3DProps) {
         </Stage>
         <div
           ref={hit}
-          className="lk-lukas3d-hit"
+          className="lk-wambi3d-hit"
           onPointerEnter={(event) => {
             if (event.pointerType === "mouse") motion.current.jumps += 1;
           }}
@@ -538,4 +530,4 @@ export function Lukas3D({ mood = "happy", modelUrl }: Lukas3DProps) {
   );
 }
 
-export default Lukas3D;
+export default Wambi3D;

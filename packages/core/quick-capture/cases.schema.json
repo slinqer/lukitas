@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://lukitas.app/schemas/quick-capture-cases.schema.json",
+  "$id": "https://wambito.com/schemas/quick-capture-cases.schema.json",
   "title": "Quick-capture parser cases",
   "description": "Shared test cases for the on-device sentence parser (spec section 5). Every parser (Dart, TypeScript) must produce `expected` for each case.",
   "type": "array",

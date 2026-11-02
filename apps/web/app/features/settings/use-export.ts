@@ -50,7 +50,7 @@ export function useExport(save: SaveFile) {
       const blob = dataOf(result) as Blob;
       const filename = filenameFrom(
         result.response.headers.get("content-disposition"),
-        `lukas-export.${format}`,
+        `wambito-export.${format}`,
       );
       save(blob, filename);
       toast.show({ message: t("exported", { file: filename }) });

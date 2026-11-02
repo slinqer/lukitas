@@ -1,16 +1,16 @@
 /**
- * Pure helpers for the traveling 2.5D Lukas on the landing page (see `TravelingLukas.tsx`): which
+ * Pure helpers for the traveling 2.5D Wambi on the landing page (see `TravelingWambi.tsx`): which
  * mood a spot asks for, the tilt toward the pointer, how he gets from one spot to the next without
  * ever crossing text, and the rolling entrance. No DOM here, so all of it is unit tested.
  */
 import { entrancePhase, rollAt } from "./entrance.ts";
-import type { LukasMood } from "./mood.ts";
-import type { LukasPose } from "./use-scroll-pose.ts";
+import type { WambiMood } from "./mood.ts";
+import type { WambiPose } from "./use-scroll-pose.ts";
 
-const MOODS: readonly LukasMood[] = ["happy", "worried", "celebrating"];
+const MOODS: readonly WambiMood[] = ["happy", "worried", "celebrating"];
 
-/** The mood a pose implies when its spot doesn't say (`data-lukas-mood`). */
-const POSE_MOOD: Record<LukasPose, LukasMood> = {
+/** The mood a pose implies when its spot doesn't say (`data-wambi-mood`). */
+const POSE_MOOD: Record<WambiPose, WambiMood> = {
   wave: "happy",
   point: "happy",
   carry: "happy",
@@ -18,12 +18,12 @@ const POSE_MOOD: Record<LukasPose, LukasMood> = {
 };
 
 /**
- * Lukas' mood on a spot: its `data-lukas-mood` when that is a mood, else the one its
- * `data-lukas-pose` implies (celebrate → celebrating, anything else → happy).
+ * Wambi's mood on a spot: its `data-wambi-mood` when that is a mood, else the one its
+ * `data-wambi-pose` implies (celebrate → celebrating, anything else → happy).
  */
-export function spotMood(pose: string | undefined, mood: string | undefined): LukasMood {
-  if (mood && (MOODS as readonly string[]).includes(mood)) return mood as LukasMood;
-  return POSE_MOOD[pose as LukasPose] ?? "happy";
+export function spotMood(pose: string | undefined, mood: string | undefined): WambiMood {
+  if (mood && (MOODS as readonly string[]).includes(mood)) return mood as WambiMood;
+  return POSE_MOOD[pose as WambiPose] ?? "happy";
 }
 
 /** The most he turns toward the pointer, either way, around either axis. */
@@ -119,7 +119,7 @@ function popOut(p: number): number {
 const RAD_TO_DEG = 180 / Math.PI;
 
 /**
- * The once-per-session entrance at `elapsedMs`, for a Lukas `size` px wide coming from `from`
+ * The once-per-session entrance at `elapsedMs`, for a Wambi `size` px wide coming from `from`
  * (1: the right, -1: the left). The sheet has no "limbs tucked" frame, so he is tucked by showing
  * only the coin (a circle around its face, `reveal` 0), dropped to the ground. He rolls one
  * circumference without sliding (`rollAt`), settles with a small bounce, unfolds (the circle

@@ -1,16 +1,16 @@
 import type { ReactNode, Ref } from "react";
 import { Link } from "react-router";
 import { useTranslations } from "use-intl";
-import { Lukas, type LukasMood } from "../../lukas/Lukas.tsx";
 import { landingLink } from "../../site/config.ts";
 import { ThemeToggle } from "../../ui/ThemeToggle.tsx";
+import { Wambi, type WambiMood } from "../../wambi/Wambi.tsx";
 
-/** Lukitas' size on the sign-in screens: friendly, never crowding the form. */
+/** Wambi's size on the sign-in screens: friendly, never crowding the form. */
 const MASCOT_PX = 96;
 
 /**
  * The frame of the sign-in screens (`/sign-in`, `/auth/verify`): the wordmark (home) and the
- * day/night switch on top, then one column with Lukitas above the content. On a phone the column
+ * day/night switch on top, then one column with Wambi above the content. On a phone the column
  * sits on the background, so the code boxes get the whole width; from `sm` up it is a raised card.
  */
 const LOGO_CLASS =
@@ -20,7 +20,7 @@ export function SignInScreen({
   mood = "happy",
   children,
 }: {
-  mood?: LukasMood;
+  mood?: WambiMood;
   children: ReactNode;
 }) {
   const t = useTranslations("sign_in");
@@ -31,18 +31,18 @@ export function SignInScreen({
         {home.external ? (
           // The landing lives on its own site here: a full page load, not a route of this app.
           <a href={home.href} aria-label={t("home")} className={LOGO_CLASS}>
-            Lukitas
+            Wambito
           </a>
         ) : (
           <Link to={home.href} aria-label={t("home")} className={LOGO_CLASS}>
-            Lukitas
+            Wambito
           </Link>
         )}
         <ThemeToggle />
       </header>
       <main className="flex flex-1 flex-col items-center px-(--space-4) pb-(--space-6)">
         <div className="flex w-full max-w-[420px] flex-col items-center gap-(--space-4) sm:mt-(--space-5) sm:rounded-xl sm:border-2 sm:border-stroke sm:bg-surface sm:p-(--space-6) sm:shadow-edge-md">
-          <Lukas mood={mood} size={MASCOT_PX} />
+          <Wambi mood={mood} size={MASCOT_PX} />
           {children}
         </div>
       </main>

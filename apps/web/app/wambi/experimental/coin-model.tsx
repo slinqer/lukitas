@@ -19,13 +19,13 @@ import {
   TorusGeometry,
   Vector2,
 } from "three";
-import type { LukasPose } from "../use-scroll-pose.ts";
-import { LUKAS_3D_PALETTE as C } from "./lukas3d-palette.ts";
+import type { WambiPose } from "../use-scroll-pose.ts";
+import { WAMBI_3D_PALETTE as C } from "./wambi3d-palette.ts";
 
 /** Everything the coin can do: the scroll poses, flying between spots, and worried. */
-export type CoinPose = LukasPose | "travel" | "worried";
+export type CoinPose = WambiPose | "travel" | "worried";
 
-/** What drives the model each frame; Lukas3D writes it, the model eases toward it. */
+/** What drives the model each frame; Wambi3D writes it, the model eases toward it. */
 export interface CoinDrive {
   pose: CoinPose;
   /** Where the pupils look, -1..1 (right, up are positive). */
@@ -67,7 +67,7 @@ function coinBodyGeometry(): LatheGeometry {
   return new LatheGeometry(points, 96);
 }
 
-/** A four-point sparkle, like the 2D celebrating Lukas'. */
+/** A four-point sparkle, like the 2D celebrating Wambi's. */
 function sparkleGeometry(): ShapeGeometry {
   const s = new Shape();
   s.moveTo(0, 1);
@@ -544,7 +544,7 @@ const SPARKLES = [
 ] as const;
 
 /**
- * Lukas as a procedural 3D model, after the concept: a chubby gold coin with a rounded, ridged edge
+ * Wambi as a procedural 3D model, after the concept: a chubby gold coin with a rounded, ridged edge
  * and a raised rim around a lighter face; big glossy eyes with highlights, brows, rosy cheeks and
  * an open smile; dark purple rubber-hose arms and legs; pink sneakers with white soles and laces.
  * It eases its limbs and face toward `drive` every frame. Facing +Z, about 3.4 units tall.

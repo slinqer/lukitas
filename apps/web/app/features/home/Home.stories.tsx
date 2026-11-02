@@ -96,7 +96,7 @@ const dialogGone = () =>
 
 // -- Home ------------------------------------------------------------------------------------------
 
-/** The month at a glance: what is left, Lukitas, and one row per spending category. */
+/** The month at a glance: what is left, Wambi, and one row per spending category. */
 export const Budgets: Story = {
   render: (args) => <HomeStage onRequest={args.onRequest} />,
   play: async ({ canvasElement }) => {
@@ -136,8 +136,8 @@ export const Budgets: Story = {
     await expectTarget(panel.getByRole("button", { name: "Nueva categoría" }));
     await expect(panel.queryByRole("button", { name: /^Archivadas/ })).toBeNull();
     await expect(panel.queryByRole("button", { name: /^Salario/ })).toBeNull();
-    // Lukitas talks about the month: the worst category first, except on its last day, when he
-    // talks about what is left (core's lukasMessage).
+    // Wambi talks about the month: the worst category first, except on its last day, when he
+    // talks about what is left (core's wambiMessage).
     const lastDayOfMonth = STORY_TODAY === lastDay(monthOf(STORY_TODAY));
     await expect(
       canvas.getByText(lastDayOfMonth ? new RegExp(eur("501,13")) : /Supermercado/, {

@@ -13,7 +13,7 @@ import { demoMeta } from "../i18n/screen-meta.ts";
 import { ToastProvider } from "../ui/Toast.tsx";
 import type { Route } from "./+types/demo";
 
-/** "Demo · Lukitas" in the demo's language, while it loads (each screen then sets its own). */
+/** "Demo · Wambito" in the demo's language, while it loads (each screen then sets its own). */
 export const meta = ({ location }: Route.MetaArgs) => demoMeta(location);
 
 /**

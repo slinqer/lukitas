@@ -172,7 +172,7 @@ test("a passkey added from settings is listed, and deleting it empties the list"
   await expect(keys.getByRole("listitem")).toHaveCount(0);
   await expect(keys).toContainText("Aún no tienes ninguna");
   // With no passkey left, the sign-in screen no longer offers the fingerprint here.
-  expect(await page.evaluate(() => localStorage.getItem("lukas.passkey.used"))).toBe("0");
+  expect(await page.evaluate(() => localStorage.getItem("wambito.passkey.used"))).toBe("0");
 });
 
 test("the export downloads the server's CSV and JSON under their own names", async ({ page }) => {
@@ -182,7 +182,7 @@ test("the export downloads the server's CSV and JSON under their own names", asy
     page.waitForEvent("download"),
     data.getByRole("button", { name: "Descargar CSV" }).click(),
   ]);
-  expect(csv.suggestedFilename()).toMatch(/^lukas-export-\d{4}-\d{2}-\d{2}\.csv$/);
+  expect(csv.suggestedFilename()).toMatch(/^wambito-export-\d{4}-\d{2}-\d{2}\.csv$/);
   const text = await (await csv.createReadStream()).toArray();
   expect(Buffer.concat(text).toString("utf8")).toMatch(/^date,name,amount,currency,category/);
 
@@ -190,7 +190,7 @@ test("the export downloads the server's CSV and JSON under their own names", asy
     page.waitForEvent("download"),
     data.getByRole("button", { name: "Descargar JSON" }).click(),
   ]);
-  expect(json.suggestedFilename()).toMatch(/^lukas-export-\d{4}-\d{2}-\d{2}\.json$/);
+  expect(json.suggestedFilename()).toMatch(/^wambito-export-\d{4}-\d{2}-\d{2}\.json$/);
   const body = JSON.parse(
     Buffer.concat(await (await json.createReadStream()).toArray()).toString("utf8"),
   ) as {

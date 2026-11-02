@@ -2,12 +2,12 @@ import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { useTranslations } from "use-intl";
 import { cx } from "../ui/cx.ts";
 import { useReducedMotionPreference } from "../ui/motion-tokens.ts";
-import type { LukasMood } from "./mood.ts";
+import type { WambiMood } from "./mood.ts";
 
-export type { LukasMood } from "./mood.ts";
+export type { WambiMood } from "./mood.ts";
 
 /** A sprite sheet: a full grid of square frames in reading order, played as a seamless loop. */
-export interface LukasSprite {
+export interface WambiSprite {
   /** Public URL of the transparent sheet. */
   src: string;
   columns: number;
@@ -17,8 +17,8 @@ export interface LukasSprite {
 }
 
 /** How one mood is drawn. Frames are 0-based indices in reading order. */
-export interface LukasMoodArt {
-  sprite: LukasSprite;
+export interface WambiMoodArt {
+  sprite: WambiSprite;
   /** Play the sheet's loop; otherwise show `frame`. */
   play: boolean;
   /** The frame shown when the sheet is not played. */
@@ -33,11 +33,11 @@ export interface LukasMoodArt {
 }
 
 /** The founder's sheets: 4×2 frames each, 500px cells. Each loop is timed by eye for its mood. */
-const WAVE: LukasSprite = { src: "/lukas/wave.webp", columns: 4, rows: 2, loopMs: 1200 };
+const WAVE: WambiSprite = { src: "/wambi/wave.webp", columns: 4, rows: 2, loopMs: 1200 };
 /** Worried wrings his hands and sweats: slower, so it reads as fretting, not panic. */
-const WORRIED: LukasSprite = { src: "/lukas/worried.webp", columns: 4, rows: 2, loopMs: 2000 };
+const WORRIED: WambiSprite = { src: "/wambi/worried.webp", columns: 4, rows: 2, loopMs: 2000 };
 /** Celebrating jumps with fists up among sparkles: quicker and bouncier. */
-const CELEBRATE: LukasSprite = { src: "/lukas/celebrate.webp", columns: 4, rows: 2, loopMs: 1000 };
+const CELEBRATE: WambiSprite = { src: "/wambi/celebrate.webp", columns: 4, rows: 2, loopMs: 1000 };
 
 /**
  * The art per mood: every mood plays its own sheet. Under reduced motion each shows one still
@@ -45,23 +45,23 @@ const CELEBRATE: LukasSprite = { src: "/lukas/celebrate.webp", columns: 4, rows:
  * frame 4 (fists up among sparkles). The `treatment` stays the seam for a future mood that has no
  * sheet yet: point it at a sheet's frame with `play: false` and a treatment; callers don't change.
  */
-export const LUKAS_ART: Record<LukasMood, LukasMoodArt> = {
+export const WAMBI_ART: Record<WambiMood, WambiMoodArt> = {
   happy: { sprite: WAVE, play: true, frame: 0, stillFrame: 0, treatment: "none" },
   worried: { sprite: WORRIED, play: true, frame: 0, stillFrame: 3, treatment: "none" },
   celebrating: { sprite: CELEBRATE, play: true, frame: 0, stillFrame: 4, treatment: "none" },
 };
 
-export interface LukasProps {
-  mood: LukasMood;
+export interface WambiProps {
+  mood: WambiMood;
   /** Width and height: px, or any CSS length (`"100%"` fills a sized box, e.g. the landing hero). */
   size?: number | string;
-  /** Hide from assistive technology when something next to Lukas already says the same. */
+  /** Hide from assistive technology when something next to Wambi already says the same. */
   decorative?: boolean;
   /** Overrides the art for this mood (final art, the landing page, stories). */
-  art?: LukasMoodArt;
+  art?: WambiMoodArt;
   /**
-   * For a Lukas far down a page: with JavaScript, his sheet is only fetched once he is within
-   * about a screen of the viewport (`data-lukas-defer`, see app.css), so it doesn't weigh on the
+   * For a Wambi far down a page: with JavaScript, his sheet is only fetched once he is within
+   * about a screen of the viewport (`data-wambi-defer`, see app.css), so it doesn't weigh on the
    * first load. Without JavaScript (or `scripting` media support) he loads as usual.
    */
   deferUntilNear?: boolean;
@@ -95,7 +95,7 @@ function useNearViewport(enabled: boolean, margin = "400px") {
 
 /** `background-position` of a frame: with `background-size: cols·100% rows·100%`, a cell's
  * percentage is its column over (cols − 1), and its row over (rows − 1). */
-function framePosition(sprite: LukasSprite, frame: number): string {
+function framePosition(sprite: WambiSprite, frame: number): string {
   const column = frame % sprite.columns;
   const row = Math.floor(frame / sprite.columns) % sprite.rows;
   const x = sprite.columns > 1 ? (column / (sprite.columns - 1)) * 100 : 0;
@@ -113,7 +113,7 @@ function round(value: number): number {
  * frames play in reading order; for the 4×2 wave that's 8 steps over 1.2s. The end values reach
  * one cell past the last one, which `steps()` never shows.
  */
-function playingVars(sprite: LukasSprite): Record<string, string | number> {
+function playingVars(sprite: WambiSprite): Record<string, string | number> {
   const end = (n: number) => (n > 1 ? `${round((n / (n - 1)) * 100)}%` : "0%");
   return {
     "--lk-sprite-cols": sprite.columns,
@@ -125,8 +125,8 @@ function playingVars(sprite: LukasSprite): Record<string, string | number> {
   };
 }
 
-/** Where the sparkles sit around Lukas; each one's twinkle is staggered by a quarter of
- * `--celebrate` (see `.lk-lukas-sparkle` in app.css). */
+/** Where the sparkles sit around Wambi; each one's twinkle is staggered by a quarter of
+ * `--celebrate` (see `.lk-wambi-sparkle` in app.css). */
 const SPARKLES = [
   { left: "4%", top: "10%", tone: "is-gold" },
   { left: "82%", top: "4%", tone: "is-candy" },
@@ -135,21 +135,21 @@ const SPARKLES = [
 ] as const;
 
 /**
- * Lukas, the gold coin, in 2D, drawn from the founder's sprite sheets: happy waves, worried wrings
+ * Wambi, the gold coin, in 2D, drawn from the founder's sprite sheets: happy waves, worried wrings
  * his hands, celebrating jumps among sparkles. Under reduced motion every mood is a still frame.
  * Art with a CSS `treatment` (shiver, hop) adds it on top. Named by its mood unless `decorative`.
  */
-export function Lukas({
+export function Wambi({
   mood,
   size = 96,
   decorative = false,
   art,
   deferUntilNear = false,
-}: LukasProps) {
+}: WambiProps) {
   const t = useTranslations("mascot");
   const { ref, near } = useNearViewport(deferUntilNear);
   const reduceMotion = useReducedMotionPreference();
-  const { sprite, play, frame, stillFrame, treatment } = art ?? LUKAS_ART[mood];
+  const { sprite, play, frame, stillFrame, treatment } = art ?? WAMBI_ART[mood];
   const moving = !reduceMotion;
   const playing = moving && play;
 
@@ -163,20 +163,20 @@ export function Lukas({
   return (
     <span
       className={cx(
-        "lk-lukas",
+        "lk-wambi",
         `is-${mood}`,
         moving && treatment === "shiver" && "is-shiver",
         moving && treatment === "hop" && "is-hop",
       )}
       style={{ width: size, height: size }}
       ref={ref}
-      data-lukas-defer={deferUntilNear ? (near ? "near" : "far") : undefined}
+      data-wambi-defer={deferUntilNear ? (near ? "near" : "far") : undefined}
       {...(decorative ? { "aria-hidden": true } : { role: "img", "aria-label": t(mood) })}
     >
-      <span className="lk-lukas-body">
-        <span className={cx("lk-lukas-sprite", playing && "is-playing")} style={spriteStyle} />
+      <span className="lk-wambi-body">
+        <span className={cx("lk-wambi-sprite", playing && "is-playing")} style={spriteStyle} />
         {treatment === "shiver" && (
-          <svg className="lk-lukas-sweat" viewBox="0 0 20 28" aria-hidden="true">
+          <svg className="lk-wambi-sweat" viewBox="0 0 20 28" aria-hidden="true">
             <path d="M10 2 C10 2 2 13 2 19 a8 8 0 0 0 16 0 C18 13 10 2 10 2 Z" />
           </svg>
         )}
@@ -185,7 +185,7 @@ export function Lukas({
         SPARKLES.map((s, index) => (
           <svg
             key={`${s.left}-${s.top}`}
-            className={cx("lk-lukas-sparkle", s.tone)}
+            className={cx("lk-wambi-sparkle", s.tone)}
             style={{ left: s.left, top: s.top, "--lk-sparkle-index": index } as CSSProperties}
             viewBox="0 0 24 24"
             aria-hidden="true"

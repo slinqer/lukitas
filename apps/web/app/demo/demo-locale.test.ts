@@ -6,12 +6,15 @@ const store = (initial: Record<string, string> = {}) => {
   return {
     getItem: (key: string) => data.get(key) ?? null,
     setItem: (key: string, value: string) => void data.set(key, value),
+    removeItem: (key: string) => void data.delete(key),
   };
 };
 
 describe("demoLocale", () => {
   it("takes the landing's ?lang= first", () => {
-    expect(demoLocale("?lang=en", store({ [DEMO_LANG_KEY]: "es" }), "es-CO")).toBe("en");
+    expect(demoLocale("?lang=en", store({ [`wambito.${DEMO_LANG_KEY}`]: "es" }), "es-CO")).toBe(
+      "en",
+    );
     expect(demoLocale("?lang=es", store(), "en-US")).toBe("es");
   });
 
@@ -22,7 +25,9 @@ describe("demoLocale", () => {
   });
 
   it("then the browser's language; anything else in ?lang or storage is ignored", () => {
-    expect(demoLocale("?lang=fr", store({ [DEMO_LANG_KEY]: "de" }), "es-CO")).toBe("es");
+    expect(demoLocale("?lang=fr", store({ [`wambito.${DEMO_LANG_KEY}`]: "de" }), "es-CO")).toBe(
+      "es",
+    );
     expect(demoLocale("", store(), "en-GB")).toBe("en");
   });
 
@@ -32,6 +37,9 @@ describe("demoLocale", () => {
         throw new Error("blocked");
       },
       setItem: () => {
+        throw new Error("blocked");
+      },
+      removeItem: () => {
         throw new Error("blocked");
       },
     };

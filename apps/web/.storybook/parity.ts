@@ -10,9 +10,9 @@
 declare global {
   interface Window {
     /** The fake API of the story on this page, if its harness has one. */
-    __lukasStoryFetch?: typeof fetch;
+    __wambitoStoryFetch?: typeof fetch;
     /** Each GET (path and query) the story's screens made through it. */
-    __lukasStoryGets?: Set<string>;
+    __wambitoStoryGets?: Set<string>;
   }
 }
 
@@ -23,8 +23,8 @@ declare global {
 export function exposeStoryFetch(fetch: typeof globalThis.fetch): typeof globalThis.fetch {
   if (typeof window === "undefined") return fetch;
   const gets = new Set<string>();
-  window.__lukasStoryFetch = fetch;
-  window.__lukasStoryGets = gets;
+  window.__wambitoStoryFetch = fetch;
+  window.__wambitoStoryGets = gets;
   return (input, init) => {
     const request = new Request(input, init);
     if (request.method === "GET") {

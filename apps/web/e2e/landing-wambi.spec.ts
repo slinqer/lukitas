@@ -4,9 +4,9 @@ import { gzipSync } from "node:zlib";
 import { expect, type Page, test } from "@playwright/test";
 
 /**
- * The 2.5D Lukas on the built landing page, with JavaScript on: the founder's sprite sheets in an
+ * The 2.5D Wambi on the built landing page, with JavaScript on: the founder's sprite sheets in an
  * overlay that mounts once the page is idle, rolls in once per session, takes each spot's mood,
- * never stands over text and never takes clicks but on his body; the prerendered 2D Lukas stays
+ * never stands over text and never takes clicks but on his body; the prerendered 2D Wambi stays
  * under reduced motion. No WebGL, no three.js. Also the JavaScript budget of `/`.
  */
 
@@ -38,7 +38,7 @@ async function settle(page: Page) {
 /** Scrolls so a spot's center sits where it takes over (40% down the viewport). */
 async function scrollToSpot(page: Page, id: string) {
   await page.evaluate((spotId) => {
-    const spot = document.querySelector<HTMLElement>(`[data-lukas-spot='${spotId}']`);
+    const spot = document.querySelector<HTMLElement>(`[data-wambi-spot='${spotId}']`);
     const box = spot?.getBoundingClientRect();
     if (!box) throw new Error(`no spot ${spotId}`);
     const top = box.top + window.scrollY + box.height / 2 - window.innerHeight * 0.4 + 2;
@@ -49,7 +49,7 @@ async function scrollToSpot(page: Page, id: string) {
 /** The computed sheet of the mood he is showing. */
 function activeSheet(page: Page) {
   return page
-    .locator("[data-lukas-traveler] .lk-traveler-mood.is-active .lk-lukas-sprite")
+    .locator("[data-wambi-traveler] .lk-traveler-mood.is-active .lk-wambi-sprite")
     .evaluate((el) => getComputedStyle(el).backgroundImage);
 }
 
@@ -71,34 +71,34 @@ async function centerDistance(page: Page, a: string, b: string): Promise<number>
   );
 }
 
-test.describe("2.5D Lukas", () => {
+test.describe("2.5D Wambi", () => {
   test("appears after load from the sprite sheets: no canvas, no three.js", async ({ page }) => {
     const errors = collectErrors(page);
     const scripts: string[] = [];
     page.on("response", async (response) => {
       if (response.url().endsWith(".js")) scripts.push(await response.text().catch(() => ""));
     });
-    await page.addInitScript(() => sessionStorage.setItem("lukas:entrance", "seen"));
+    await page.addInitScript(() => sessionStorage.setItem("wambito.entrance", "seen"));
     await page.goto("/");
-    const layer = page.locator("[data-lukas-traveler]");
+    const layer = page.locator("[data-wambi-traveler]");
     await expect(layer).toBeVisible({ timeout: 30_000 });
     await expect(layer).toHaveAttribute("aria-hidden", "true");
     await expect(layer).toHaveAttribute("data-spot", "hero");
     await expect(layer).toHaveAttribute("data-mood", "happy");
-    await expect(page.locator("html")).toHaveAttribute("data-lukas-live", "live");
-    expect(await activeSheet(page)).toContain("/lukas/wave.webp");
+    await expect(page.locator("html")).toHaveAttribute("data-wambi-live", "live");
+    expect(await activeSheet(page)).toContain("/wambi/wave.webp");
     await expect(page.locator("canvas")).toHaveCount(0);
     await page.waitForLoadState("networkidle");
     expect(scripts.length).toBeGreaterThan(0);
     expect(scripts.filter((source) => source.includes(THREE_SIGNATURE))).toEqual([]);
 
-    // He stands where the prerendered Lukas was; the box keeps its accessible name, the sprite hides.
+    // He stands where the prerendered Wambi was; the box keeps its accessible name, the sprite hides.
     const slot = page.locator("#hero [data-slot='hero-mascot']");
     await expect(slot).toHaveAttribute("role", "img");
     await expect(slot).toHaveAttribute("aria-label", /.+/);
-    await expect(slot.locator(".lk-lukas")).toBeHidden();
+    await expect(slot.locator(".lk-wambi")).toBeHidden();
     await expect
-      .poll(() => centerDistance(page, "#hero [data-slot='hero-mascot']", "[data-lukas-traveler]"))
+      .poll(() => centerDistance(page, "#hero [data-slot='hero-mascot']", "[data-wambi-traveler]"))
       .toBeLessThan(8);
 
     // Only his body takes the pointer: a hover (or tap) makes him hop, and nothing navigates.
@@ -116,17 +116,17 @@ test.describe("2.5D Lukas", () => {
 
   test("rolls in once per session, then waves", async ({ page }) => {
     await page.goto("/");
-    const layer = page.locator("[data-lukas-traveler]");
+    const layer = page.locator("[data-wambi-traveler]");
     await expect(layer).toBeAttached({ timeout: 30_000 });
     // The text was there first: he only arrives after the page has rendered.
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await expect(layer).toHaveAttribute("data-entrance", /playing|done/);
-    expect(await page.evaluate(() => sessionStorage.getItem("lukas:entrance"))).toBe("seen");
+    expect(await page.evaluate(() => sessionStorage.getItem("wambito.entrance"))).toBe("seen");
     await expect(layer).toHaveAttribute("data-entrance", "done", { timeout: 15_000 });
     // Standing and waving: the wave sheet plays, nothing tucked or turned.
     await expect(layer.locator(".lk-traveler-body")).toHaveCSS("clip-path", "none");
     await expect(layer.locator(".lk-traveler-roller")).toHaveCSS("transform", "none");
-    await expect(layer.locator(".lk-traveler-mood.is-active .lk-lukas-sprite")).toHaveClass(
+    await expect(layer.locator(".lk-traveler-mood.is-active .lk-wambi-sprite")).toHaveClass(
       /is-playing/,
     );
 
@@ -140,7 +140,7 @@ test.describe("2.5D Lukas", () => {
   test("skips the entrance when the page is already past the hero", async ({ page }) => {
     // The fragment scrolls the page down while it loads, before he mounts.
     await page.goto("/#closing");
-    const layer = page.locator("[data-lukas-traveler]");
+    const layer = page.locator("[data-wambi-traveler]");
     await expect(layer).toHaveAttribute("data-entrance", "skipped", { timeout: 30_000 });
     await expect(layer).toHaveAttribute("data-mood", "celebrating");
   });
@@ -149,17 +149,17 @@ test.describe("2.5D Lukas", () => {
     page,
   }) => {
     const errors = collectErrors(page);
-    await page.addInitScript(() => sessionStorage.setItem("lukas:entrance", "seen"));
+    await page.addInitScript(() => sessionStorage.setItem("wambito.entrance", "seen"));
     await page.goto("/");
-    const layer = page.locator("[data-lukas-traveler]");
+    const layer = page.locator("[data-wambi-traveler]");
     await expect(layer).toBeVisible({ timeout: 30_000 });
 
     await scrollToSpot(page, "how");
     await expect(layer).toHaveAttribute("data-spot", "how");
     await expect(layer).toHaveAttribute("data-mood", "worried");
-    await expect.poll(() => activeSheet(page)).toContain("/lukas/worried.webp");
+    await expect.poll(() => activeSheet(page)).toContain("/wambi/worried.webp");
     await expect
-      .poll(() => centerDistance(page, "[data-lukas-spot='how']", "[data-lukas-traveler]"))
+      .poll(() => centerDistance(page, "[data-wambi-spot='how']", "[data-wambi-traveler]"))
       .toBeLessThan(8);
 
     await page.evaluate(() =>
@@ -167,11 +167,11 @@ test.describe("2.5D Lukas", () => {
     );
     await expect(layer).toHaveAttribute("data-spot", "closing");
     await expect(layer).toHaveAttribute("data-mood", "celebrating");
-    await expect.poll(() => activeSheet(page)).toContain("/lukas/celebrate.webp");
-    const closing = page.locator("[data-lukas-spot='closing']");
-    await expect(closing.locator(".lk-lukas")).toBeHidden();
+    await expect.poll(() => activeSheet(page)).toContain("/wambi/celebrate.webp");
+    const closing = page.locator("[data-wambi-spot='closing']");
+    await expect(closing.locator(".lk-wambi")).toBeHidden();
     await expect
-      .poll(() => centerDistance(page, "[data-lukas-spot='closing']", "[data-lukas-traveler]"))
+      .poll(() => centerDistance(page, "[data-wambi-spot='closing']", "[data-wambi-traveler]"))
       .toBeLessThan(8);
 
     // Nothing on the page is covered for clicks: the closing button still gets them.
@@ -181,12 +181,12 @@ test.describe("2.5D Lukas", () => {
   });
 
   test("never stands over text, at any scroll position", async ({ page }) => {
-    await page.addInitScript(() => sessionStorage.setItem("lukas:entrance", "seen"));
+    await page.addInitScript(() => sessionStorage.setItem("wambito.entrance", "seen"));
     await page.goto("/");
-    await expect(page.locator("[data-lukas-traveler]")).toBeVisible({ timeout: 30_000 });
+    await expect(page.locator("[data-wambi-traveler]")).toBeVisible({ timeout: 30_000 });
     const overlaps = await page.evaluate(async () => {
       const frame = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-      const layer = document.querySelector<HTMLElement>("[data-lukas-traveler]");
+      const layer = document.querySelector<HTMLElement>("[data-wambi-traveler]");
       const turn = layer?.firstElementChild as HTMLElement | null;
       if (!layer || !turn) return ["no layer"];
       const texts: { rect: DOMRect; text: string }[] = [];
@@ -246,31 +246,31 @@ test.describe("2.5D Lukas", () => {
       }).observe({ type: "layout-shift", buffered: true });
     });
     await page.goto("/");
-    const layer = page.locator("[data-lukas-traveler]");
+    const layer = page.locator("[data-wambi-traveler]");
     await expect(layer).toHaveAttribute("data-entrance", "done", { timeout: 30_000 });
     const shift = await page.evaluate(() => (window as unknown as { shift: number }).shift);
     expect(shift).toBeLessThan(0.01);
   });
 
   test("never leaves a spot empty when a sheet fails to load", async ({ page }) => {
-    await page.route("**/lukas/worried.webp", (route) => route.abort());
-    await page.addInitScript(() => sessionStorage.setItem("lukas:entrance", "seen"));
+    await page.route("**/wambi/worried.webp", (route) => route.abort());
+    await page.addInitScript(() => sessionStorage.setItem("wambito.entrance", "seen"));
     await page.goto("/");
-    await expect(page.locator("[data-lukas-traveler]")).toBeVisible({ timeout: 30_000 });
+    await expect(page.locator("[data-wambi-traveler]")).toBeVisible({ timeout: 30_000 });
     await scrollToSpot(page, "how");
     // Give the failed sheet time to fail and the layer time to react.
     await page.waitForTimeout(1500);
     const state = await page.evaluate(async () => {
-      const layer = document.querySelector<HTMLElement>("[data-lukas-traveler]");
+      const layer = document.querySelector<HTMLElement>("[data-wambi-traveler]");
       if (!layer) {
-        const hero = document.querySelector("#hero [data-slot='hero-mascot'] .lk-lukas");
+        const hero = document.querySelector("#hero [data-slot='hero-mascot'] .lk-wambi");
         return {
           steppedAside: true,
-          live: document.documentElement.hasAttribute("data-lukas-live"),
+          live: document.documentElement.hasAttribute("data-wambi-live"),
           heroVisible: hero ? getComputedStyle(hero).visibility === "visible" : false,
         };
       }
-      const sprite = layer.querySelector(".lk-traveler-mood.is-active .lk-lukas-sprite");
+      const sprite = layer.querySelector(".lk-traveler-mood.is-active .lk-wambi-sprite");
       const url = sprite
         ? /url\("?([^")]+)"?\)/.exec(getComputedStyle(sprite).backgroundImage)?.[1]
         : undefined;
@@ -295,13 +295,13 @@ test.describe("2.5D Lukas", () => {
   test("steps aside when reduced motion is switched on while the page is open", async ({
     page,
   }) => {
-    await page.addInitScript(() => sessionStorage.setItem("lukas:entrance", "seen"));
+    await page.addInitScript(() => sessionStorage.setItem("wambito.entrance", "seen"));
     await page.goto("/");
-    await expect(page.locator("[data-lukas-traveler]")).toBeVisible({ timeout: 30_000 });
+    await expect(page.locator("[data-wambi-traveler]")).toBeVisible({ timeout: 30_000 });
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await expect(page.locator("[data-lukas-traveler]")).toHaveCount(0);
-    await expect(page.locator("html")).not.toHaveAttribute("data-lukas-live", /.*/);
-    const sprite = page.locator("#hero [data-slot='hero-mascot'] .lk-lukas-sprite");
+    await expect(page.locator("[data-wambi-traveler]")).toHaveCount(0);
+    await expect(page.locator("html")).not.toHaveAttribute("data-wambi-live", /.*/);
+    const sprite = page.locator("#hero [data-slot='hero-mascot'] .lk-wambi-sprite");
     await expect(sprite).toBeVisible();
     expect(await sprite.evaluate((el) => el.getAnimations().length)).toBe(0);
   });
@@ -310,10 +310,10 @@ test.describe("2.5D Lukas", () => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
     await settle(page);
-    await expect(page.locator("[data-lukas-traveler]")).toHaveCount(0);
+    await expect(page.locator("[data-wambi-traveler]")).toHaveCount(0);
     await expect(page.locator("canvas")).toHaveCount(0);
-    for (const spot of ["#hero [data-slot='hero-mascot']", "[data-lukas-spot='closing']"]) {
-      const sprite = page.locator(`${spot} .lk-lukas-sprite`);
+    for (const spot of ["#hero [data-slot='hero-mascot']", "[data-wambi-spot='closing']"]) {
+      const sprite = page.locator(`${spot} .lk-wambi-sprite`);
       await expect(sprite).toBeVisible();
       expect(await sprite.evaluate((el) => el.getAnimations().length)).toBe(0);
     }

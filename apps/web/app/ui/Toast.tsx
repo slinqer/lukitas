@@ -217,7 +217,7 @@ export function ToastProvider({
                 : "fixed inset-x-0 bottom-0 z-50 px-(--space-4) pb-[calc(max(var(--space-4),env(safe-area-inset-bottom))+var(--toast-lift,0px))]",
             )}
           >
-            {/* Lukitas celebrates clear of the toasts (Celebration.tsx). */}
+            {/* Wambi celebrates clear of the toasts (Celebration.tsx). */}
             <div role="status" data-celebration-avoid="" className="w-full max-w-[480px]">
               {render("info")}
             </div>

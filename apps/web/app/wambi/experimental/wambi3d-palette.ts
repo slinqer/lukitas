@@ -1,10 +1,10 @@
 /**
- * The 3D Lukas' colors: art, not UI. They are picked from the character concept
+ * The 3D Wambi's colors: art, not UI. They are picked from the character concept
  * (docs/brand/lukas-mascot-concept.webp) and only ever reach WebGL materials, never the DOM, so
  * they are literal values here instead of design tokens (which stay the source for every color on
  * the page). Keep them in this one module.
  */
-export const LUKAS_3D_PALETTE = {
+export const WAMBI_3D_PALETTE = {
   /** The coin's body and raised rim: warm gold. */
   gold: "#ffad00",
   /** The ridged edge, a shade deeper so the ridges read. */

@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { LukasMessageKey } from "@wambito/core";
+import type { WambiMessageKey } from "@wambito/core";
 import { createTranslator } from "use-intl/core";
 import { describe, expect, it } from "vitest";
 import { CATALOGS } from "./catalog.ts";
@@ -39,8 +39,8 @@ const catalogs = {
   pt: flatten(CATALOGS.pt),
 } as const;
 
-/** Exhaustive by construction: adding or removing a LukasMessageKey fails the type check. */
-const LUKAS_KEYS = {
+/** Exhaustive by construction: adding or removing a WambiMessageKey fails the type check. */
+const WAMBI_KEYS = {
   first_of_day: { name: "café", category: "Comida" },
   on_track: { remaining: "120,00 €", daysLeft: 9 },
   near_limit: { category: "Comida", remaining: "8,00 €" },
@@ -49,7 +49,7 @@ const LUKAS_KEYS = {
   pending_paid: { amount: "45,00 €", name: "gym", category: "Vida" },
   month_last_day: { remaining: "120,00 €" },
   month_closed_green: { remaining: "120,00 €" },
-} satisfies Record<LukasMessageKey, Record<string, string | number>>;
+} satisfies Record<WambiMessageKey, Record<string, string | number>>;
 
 /** Sorted, de-duplicated argument names of an ICU message (`{name}`, `{name, plural, ...}`). */
 function icuArguments(message: string): string[] {
@@ -187,7 +187,7 @@ describe("message catalogs", () => {
 
   it("keeps the brand untranslated and the Colombian slang out of Italian and Portuguese", () => {
     for (const language of ["it", "pt"] as const) {
-      expect(catalogs[language]["app.name"]).toBe("Lukitas");
+      expect(catalogs[language]["app.name"]).toBe("Wambito");
       for (const [key, value] of Object.entries(catalogs[language])) {
         expect(value, `${language}:${key}`).not.toMatch(/\blukas?\b|\bpalos?\b/i);
       }
@@ -207,10 +207,10 @@ describe("message catalogs", () => {
     }
   });
 
-  it("never names the product or the mascot Lukas (it is Lukitas; the slang word is lowercase)", () => {
+  it("never uses the old product or mascot name (the money slang is lowercase)", () => {
     for (const locale of LANGUAGES) {
       for (const [key, value] of Object.entries(catalogs[locale])) {
-        expect(value, `${locale}:${key}`).not.toMatch(/\bLukas\b/);
+        expect(value, `${locale}:${key}`).not.toMatch(/Luk(?:itas)|\bLuk(?:as)\b/);
       }
     }
   });
@@ -225,10 +225,10 @@ describe("message catalogs", () => {
 
   for (const locale of LANGUAGES) {
     describe(locale, () => {
-      for (const [key, params] of Object.entries(LUKAS_KEYS)) {
-        it(`has 3+ variants for lukas.${key} that all format`, () => {
+      for (const [key, params] of Object.entries(WAMBI_KEYS)) {
+        it(`has 3+ variants for wambi.${key} that all format`, () => {
           const variants = Object.keys(catalogs[locale]).filter((k) =>
-            new RegExp(`^lukas\\.${key}\\.\\d+$`).test(k),
+            new RegExp(`^wambi\\.${key}\\.\\d+$`).test(k),
           );
           expect(variants.length).toBeGreaterThanOrEqual(3);
           // A bad ICU string or a missing param must fail the test, not fall back to the key path.
@@ -248,11 +248,11 @@ describe("message catalogs", () => {
         });
       }
 
-      // After a save or a payment, Lukitas says which movement it was (Task 12d).
+      // After a save or a payment, Wambi says which movement it was (Task 12d).
       for (const key of ["first_of_day", "income_received", "pending_paid"] as const) {
-        it(`names the movement in every lukas.${key} variant`, () => {
+        it(`names the movement in every wambi.${key} variant`, () => {
           const variants = Object.entries(catalogs[locale]).filter(([k]) =>
-            new RegExp(`^lukas\\.${key}\\.\\d+$`).test(k),
+            new RegExp(`^wambi\\.${key}\\.\\d+$`).test(k),
           );
           for (const [variant, text] of variants) {
             expect(icuArguments(text), variant).toContain("name");
@@ -260,10 +260,10 @@ describe("message catalogs", () => {
         });
       }
 
-      it("has no lukas messages for unknown keys", () => {
-        const known = new Set(Object.keys(LUKAS_KEYS));
+      it("has no wambi messages for unknown keys", () => {
+        const known = new Set(Object.keys(WAMBI_KEYS));
         for (const path of Object.keys(catalogs[locale])) {
-          const match = /^lukas\.([a-z_]+)\./.exec(path);
+          const match = /^wambi\.([a-z_]+)\./.exec(path);
           if (match) expect(known.has(match[1] as string), path).toBe(true);
         }
       });

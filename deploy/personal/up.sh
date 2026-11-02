@@ -56,7 +56,7 @@ if [ "$build_web" = 1 ]; then
     # Its own folder: apps/web/build/client holds the landing release and must stay as it is.
     rm -rf apps/web/build-personal
     # `/` redirects to the public landing (Caddyfile), so the app's own links to it leave too.
-    VITE_SITE_URL="https://$host" VITE_LANDING_ONLY=false LUKAS_BUILD_DIR=build-personal \
+    VITE_SITE_URL="https://$host" VITE_LANDING_ONLY=false WAMBITO_BUILD_DIR=build-personal \
       VITE_LANDING_URL="$landing_url" pnpm --filter @wambito/web build
   )
 fi

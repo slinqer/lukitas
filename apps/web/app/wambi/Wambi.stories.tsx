@@ -1,18 +1,18 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, waitFor, within } from "storybook/test";
-import { LUKAS_ART, Lukas } from "./Lukas.tsx";
+import { WAMBI_ART, Wambi } from "./Wambi.tsx";
 
 const meta = {
-  title: "Lukas/Lukas",
-  component: Lukas,
+  title: "Wambi/Wambi",
+  component: Wambi,
   args: { mood: "happy", size: 160 },
-} satisfies Meta<typeof Lukas>;
+} satisfies Meta<typeof Wambi>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 function sprite(root: HTMLElement): HTMLElement {
-  return root.querySelector(".lk-lukas-sprite") as HTMLElement;
+  return root.querySelector(".lk-wambi-sprite") as HTMLElement;
 }
 
 function animationNames(element: Element): string[] {
@@ -36,19 +36,19 @@ function loads(src: string): Promise<{ width: number; height: number }> {
 export const Happy: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const lukas = canvas.getByRole("img", { name: "Lukitas, contento" });
-    const box = lukas.getBoundingClientRect();
+    const wambi = canvas.getByRole("img", { name: "Wambi, contento" });
+    const box = wambi.getBoundingClientRect();
     await expect(box.width).toBe(160);
     await expect(box.height).toBe(160);
 
-    const sheet = sprite(lukas);
+    const sheet = sprite(wambi);
     const style = getComputedStyle(sheet);
-    await expect(style.backgroundImage).toContain("/lukas/wave.webp");
+    await expect(style.backgroundImage).toContain("/wambi/wave.webp");
     await expect(style.backgroundSize).toBe("400% 200%");
-    await expect(await loads("/lukas/wave.webp")).toEqual({ width: 2000, height: 1000 });
+    await expect(await loads("/wambi/wave.webp")).toEqual({ width: 2000, height: 1000 });
 
     // Columns step 4× per row (600ms) and rows 2× per loop (1.2s): 8 frames of 150ms in reading order.
-    await expect(animationNames(lukas)).toEqual(["lk-sprite-x", "lk-sprite-y"]);
+    await expect(animationNames(wambi)).toEqual(["lk-sprite-x", "lk-sprite-y"]);
     const [x, y] = sheet.getAnimations() as CSSAnimation[];
     const timing = (a: Animation | undefined) => a?.effect?.getComputedTiming();
     await expect(timing(x)?.duration).toBe(600);
@@ -69,26 +69,26 @@ export const Happy: Story = {
 };
 
 /** The stepping of a playing sheet: its loop, half of it per row, 4 columns and 2 rows. */
-async function expectPlaying(lukas: HTMLElement, src: string, loopMs: number) {
-  const sheet = sprite(lukas);
+async function expectPlaying(wambi: HTMLElement, src: string, loopMs: number) {
+  const sheet = sprite(wambi);
   await expect(getComputedStyle(sheet).backgroundImage).toContain(src);
   await expect(getComputedStyle(sheet).backgroundSize).toBe("400% 200%");
   await expect(await loads(src)).toEqual({ width: 2000, height: 1000 });
-  await expect(animationNames(lukas)).toEqual(["lk-sprite-x", "lk-sprite-y"]);
+  await expect(animationNames(wambi)).toEqual(["lk-sprite-x", "lk-sprite-y"]);
   const [x, y] = sheet.getAnimations() as CSSAnimation[];
   await expect(x?.effect?.getComputedTiming().duration).toBe(loopMs / 2);
   await expect(y?.effect?.getComputedTiming().duration).toBe(loopMs);
   // Each mood has its own sheet now: no CSS stand-ins.
-  await expect(lukas.querySelector(".lk-lukas-sweat")).toBeNull();
-  await expect(lukas.querySelectorAll(".lk-lukas-sparkle")).toHaveLength(0);
+  await expect(wambi.querySelector(".lk-wambi-sweat")).toBeNull();
+  await expect(wambi.querySelectorAll(".lk-wambi-sparkle")).toHaveLength(0);
 }
 
 /** Worried: his own sheet, wringing his hands with a sweat drop; a slower 2s loop. */
 export const Worried: Story = {
   args: { mood: "worried" },
   play: async ({ canvasElement }) => {
-    const lukas = within(canvasElement).getByRole("img", { name: "Lukitas, preocupado" });
-    await expectPlaying(lukas, "/lukas/worried.webp", 2000);
+    const wambi = within(canvasElement).getByRole("img", { name: "Wambi, preocupado" });
+    await expectPlaying(wambi, "/wambi/worried.webp", 2000);
   },
 };
 
@@ -96,8 +96,8 @@ export const Worried: Story = {
 export const Celebrating: Story = {
   args: { mood: "celebrating" },
   play: async ({ canvasElement }) => {
-    const lukas = within(canvasElement).getByRole("img", { name: "Lukitas, celebrando" });
-    await expectPlaying(lukas, "/lukas/celebrate.webp", 1000);
+    const wambi = within(canvasElement).getByRole("img", { name: "Wambi, celebrando" });
+    await expectPlaying(wambi, "/wambi/celebrate.webp", 1000);
   },
 };
 
@@ -105,9 +105,9 @@ export const Celebrating: Story = {
 export const Moods: Story = {
   render: (args) => (
     <div className="lk-row-flex">
-      <Lukas {...args} mood="happy" />
-      <Lukas {...args} mood="worried" />
-      <Lukas {...args} mood="celebrating" />
+      <Wambi {...args} mood="happy" />
+      <Wambi {...args} mood="worried" />
+      <Wambi {...args} mood="celebrating" />
     </div>
   ),
   args: { size: 140 },
@@ -115,9 +115,9 @@ export const Moods: Story = {
     const [happy, worried, celebrating] = within(canvasElement).getAllByRole(
       "img",
     ) as HTMLElement[];
-    await expectPlaying(happy as HTMLElement, "/lukas/wave.webp", 1200);
-    await expectPlaying(worried as HTMLElement, "/lukas/worried.webp", 2000);
-    await expectPlaying(celebrating as HTMLElement, "/lukas/celebrate.webp", 1000);
+    await expectPlaying(happy as HTMLElement, "/wambi/wave.webp", 1200);
+    await expectPlaying(worried as HTMLElement, "/wambi/worried.webp", 2000);
+    await expectPlaying(celebrating as HTMLElement, "/wambi/celebrate.webp", 1000);
   },
 };
 
@@ -129,27 +129,27 @@ export const ReducedMotion: Story = {
   parameters: { reducedMotion: true },
   render: (args) => (
     <div className="lk-row-flex">
-      <Lukas {...args} mood="happy" />
-      <Lukas {...args} mood="worried" />
-      <Lukas {...args} mood="celebrating" />
+      <Wambi {...args} mood="happy" />
+      <Wambi {...args} mood="worried" />
+      <Wambi {...args} mood="celebrating" />
     </div>
   ),
   args: { size: 120 },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const [happy, worried, celebrating] = canvas.getAllByRole("img") as HTMLElement[];
-    for (const lukas of [happy, worried, celebrating] as HTMLElement[]) {
-      await expect(lukas.getAnimations({ subtree: true })).toHaveLength(0);
+    for (const wambi of [happy, worried, celebrating] as HTMLElement[]) {
+      await expect(wambi.getAnimations({ subtree: true })).toHaveLength(0);
     }
-    const still = (lukas: HTMLElement | undefined) => {
-      const style = getComputedStyle(sprite(lukas as HTMLElement));
-      return [style.backgroundImage.match(/\/lukas\/\w+\.webp/)?.[0], style.backgroundPosition];
+    const still = (wambi: HTMLElement | undefined) => {
+      const style = getComputedStyle(sprite(wambi as HTMLElement));
+      return [style.backgroundImage.match(/\/wambi\/\w+\.webp/)?.[0], style.backgroundPosition];
     };
-    await expect(still(happy)).toEqual(["/lukas/wave.webp", "0% 0%"]);
+    await expect(still(happy)).toEqual(["/wambi/wave.webp", "0% 0%"]);
     // Frame 3: last column, first row.
-    await expect(still(worried)).toEqual(["/lukas/worried.webp", "100% 0%"]);
+    await expect(still(worried)).toEqual(["/wambi/worried.webp", "100% 0%"]);
     // Frame 4: first column, second row.
-    await expect(still(celebrating)).toEqual(["/lukas/celebrate.webp", "0% 100%"]);
+    await expect(still(celebrating)).toEqual(["/wambi/celebrate.webp", "0% 100%"]);
   },
 };
 
@@ -157,8 +157,8 @@ export const ReducedMotion: Story = {
 export const Decorative: Story = {
   args: { decorative: true, size: 96 },
   play: async ({ canvasElement }) => {
-    const lukas = canvasElement.querySelector(".lk-lukas") as HTMLElement;
-    await expect(lukas).toHaveAttribute("aria-hidden", "true");
+    const wambi = canvasElement.querySelector(".lk-wambi") as HTMLElement;
+    await expect(wambi).toHaveAttribute("aria-hidden", "true");
     await expect(within(canvasElement).queryByRole("img")).toBeNull();
   },
 };
@@ -171,7 +171,7 @@ export const TreatmentShiver: Story = {
   args: {
     mood: "worried",
     art: {
-      sprite: LUKAS_ART.happy.sprite,
+      sprite: WAMBI_ART.happy.sprite,
       play: false,
       frame: 0,
       stillFrame: 0,
@@ -179,14 +179,14 @@ export const TreatmentShiver: Story = {
     },
   },
   play: async ({ canvasElement }) => {
-    const lukas = within(canvasElement).getByRole("img", { name: "Lukitas, preocupado" });
-    const sheet = sprite(lukas);
+    const wambi = within(canvasElement).getByRole("img", { name: "Wambi, preocupado" });
+    const sheet = sprite(wambi);
     await expect(getComputedStyle(sheet).backgroundPosition).toBe("0% 0%");
     await expect(sheet.getAnimations()).toHaveLength(0);
-    await expect(lukas.querySelector(".lk-lukas-sweat")).not.toBeNull();
-    await expect(animationNames(lukas)).toEqual(["lk-lukas-shiver"]);
+    await expect(wambi.querySelector(".lk-wambi-sweat")).not.toBeNull();
+    await expect(animationNames(wambi)).toEqual(["lk-wambi-shiver"]);
     // Timed by the `--shiver` token (1600ms).
-    const [shiver] = lukas.getAnimations({ subtree: true });
+    const [shiver] = wambi.getAnimations({ subtree: true });
     await expect(shiver?.effect?.getComputedTiming().duration).toBe(1600);
   },
 };
@@ -195,14 +195,14 @@ export const TreatmentShiver: Story = {
 export const TreatmentHop: Story = {
   args: {
     mood: "celebrating",
-    art: { sprite: LUKAS_ART.happy.sprite, play: false, frame: 0, stillFrame: 4, treatment: "hop" },
+    art: { sprite: WAMBI_ART.happy.sprite, play: false, frame: 0, stillFrame: 4, treatment: "hop" },
   },
   play: async ({ canvasElement }) => {
-    const lukas = within(canvasElement).getByRole("img", { name: "Lukitas, celebrando" });
-    const sparkles = lukas.querySelectorAll(".lk-lukas-sparkle");
+    const wambi = within(canvasElement).getByRole("img", { name: "Wambi, celebrando" });
+    const sparkles = wambi.querySelectorAll(".lk-wambi-sparkle");
     await expect(sparkles.length).toBeGreaterThanOrEqual(3);
-    await expect(animationNames(lukas)).toContain("lk-lukas-hop");
-    await expect(animationNames(lukas)).toContain("lk-lukas-twinkle");
+    await expect(animationNames(wambi)).toContain("lk-wambi-hop");
+    await expect(animationNames(wambi)).toContain("lk-wambi-twinkle");
     // Each twinkle lasts `--celebrate` and starts a quarter of it after the previous one.
     const twinkles = [...sparkles].map((sparkle) => sparkle.getAnimations()[0]);
     await expect(twinkles.map((a) => a?.effect?.getComputedTiming().duration)).toEqual([
@@ -219,7 +219,7 @@ export const DayEnglish: Story = {
   globals: { theme: "day", locale: "en" },
   play: async ({ canvasElement }) => {
     await expect(
-      within(canvasElement).getByRole("img", { name: "Lukitas, celebrating" }),
+      within(canvasElement).getByRole("img", { name: "Wambi, celebrating" }),
     ).toBeVisible();
   },
 };

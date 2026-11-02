@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { lukasMessage, type MonthSummary, monthSummary } from "../src/index.ts";
+import { type MonthSummary, monthSummary, wambiMessage } from "../src/index.ts";
 import { OCTOBER_2026 } from "./fixtures/october-2026.ts";
 
 /**
@@ -42,10 +42,10 @@ const ALL_OK = {
   taxes: 1000,
 };
 
-describe("lukasMessage", () => {
+describe("wambiMessage", () => {
   test("1: a paid pending transaction → pending_paid with the absolute amount and its name", () => {
     expect(
-      lukasMessage({
+      wambiMessage({
         summary: october(),
         today: "2026-10-21",
         todayCount: 3,
@@ -59,7 +59,7 @@ describe("lukasMessage", () => {
 
   test("1: an unnamed movement gets an empty name (the client says its category instead)", () => {
     expect(
-      lukasMessage({
+      wambiMessage({
         summary: october(),
         today: "2026-10-21",
         todayCount: 3,
@@ -67,7 +67,7 @@ describe("lukasMessage", () => {
       }).params,
     ).toEqual({ amount: 120000, name: "", categoryId: "casa" });
     expect(
-      lukasMessage({
+      wambiMessage({
         summary: october(),
         today: "2026-10-21",
         todayCount: 3,
@@ -78,7 +78,7 @@ describe("lukasMessage", () => {
 
   test("1: a pending income marked paid is income received, not a payment", () => {
     expect(
-      lukasMessage({
+      wambiMessage({
         summary: october(),
         today: "2026-10-21",
         todayCount: 3,
@@ -92,7 +92,7 @@ describe("lukasMessage", () => {
 
   test("1: pending_paid wins even when the category is over budget", () => {
     expect(
-      lukasMessage({
+      wambiMessage({
         summary: october(),
         today: "2026-10-21",
         todayCount: 1,
@@ -103,7 +103,7 @@ describe("lukasMessage", () => {
 
   test("2: saving income → income_received", () => {
     expect(
-      lukasMessage({
+      wambiMessage({
         summary: october(),
         today: "2026-10-21",
         todayCount: 1,
@@ -117,7 +117,7 @@ describe("lukasMessage", () => {
 
   test("3: saving −500 in Supermercado → over_budget with the overspend", () => {
     expect(
-      lukasMessage({
+      wambiMessage({
         summary: october({ extra: { supermercado: 500 } }),
         today: "2026-10-21",
         todayCount: 2,
@@ -129,7 +129,7 @@ describe("lukasMessage", () => {
   test("4: saving into a category that reaches the near-limit zone → near_limit", () => {
     // Ocio: 26280 of 65000 spent; push it to 80% (52000).
     expect(
-      lukasMessage({
+      wambiMessage({
         summary: october({ spent: { ocio: 52000 } }),
         today: "2026-10-21",
         todayCount: 2,
@@ -140,7 +140,7 @@ describe("lukasMessage", () => {
 
   test("5: the first save of the day in an ok category → first_of_day", () => {
     expect(
-      lukasMessage({
+      wambiMessage({
         summary: october(),
         today: "2026-10-21",
         todayCount: 1,
@@ -151,7 +151,7 @@ describe("lukasMessage", () => {
 
   test("5: a later save of the day is not first_of_day", () => {
     expect(
-      lukasMessage({
+      wambiMessage({
         summary: october({ spent: ALL_OK }),
         today: "2026-10-21",
         todayCount: 2,
@@ -162,7 +162,7 @@ describe("lukasMessage", () => {
 
   test("a saved expense with an unknown category does not match the category rows", () => {
     expect(
-      lukasMessage({
+      wambiMessage({
         summary: october({ spent: ALL_OK }),
         today: "2026-10-21",
         todayCount: 1,
@@ -173,7 +173,7 @@ describe("lukasMessage", () => {
 
   test("6: a closed month that ended in the green → month_closed_green", () => {
     const summary = { ...october({ spent: ALL_OK }), month: "2026-09", remaining: 100 };
-    expect(lukasMessage({ summary, today: "2026-10-01", todayCount: 0 })).toEqual({
+    expect(wambiMessage({ summary, today: "2026-10-01", todayCount: 0 })).toEqual({
       key: "month_closed_green",
       params: { remaining: 100 },
     });
@@ -181,26 +181,26 @@ describe("lukasMessage", () => {
 
   test("6: a closed month that ended in the red is not month_closed_green", () => {
     const summary = { ...october({ spent: ALL_OK }), month: "2026-09", remaining: -100 };
-    expect(lukasMessage({ summary, today: "2026-10-01", todayCount: 0 }).key).toBe("on_track");
+    expect(wambiMessage({ summary, today: "2026-10-01", todayCount: 0 }).key).toBe("on_track");
   });
 
   test("7: the last day of the month → month_last_day", () => {
     const summary = october({ spent: ALL_OK });
-    expect(lukasMessage({ summary, today: "2026-10-31", todayCount: 0 })).toEqual({
+    expect(wambiMessage({ summary, today: "2026-10-31", todayCount: 0 })).toEqual({
       key: "month_last_day",
       params: { remaining: summary.remaining },
     });
   });
 
   test("7: month_last_day beats an over category without event", () => {
-    expect(lukasMessage({ summary: october(), today: "2026-10-31", todayCount: 0 }).key).toBe(
+    expect(wambiMessage({ summary: october(), today: "2026-10-31", todayCount: 0 }).key).toBe(
       "month_last_day",
     );
   });
 
   test("8: no event and categories over → the worst overspend", () => {
     // Over: supermercado −1412, suscripciones −689, taxes −150.
-    expect(lukasMessage({ summary: october(), today: "2026-10-21", todayCount: 0 })).toEqual({
+    expect(wambiMessage({ summary: october(), today: "2026-10-21", todayCount: 0 })).toEqual({
       key: "over_budget",
       params: { categoryId: "supermercado", over: 1412 },
     });
@@ -209,7 +209,7 @@ describe("lukasMessage", () => {
   test("9: no event, none over, some near → the near one with the least remaining", () => {
     // Casa (remaining 2022) and restaurante (4633) are near.
     const summary = october({ spent: { supermercado: 5000, suscripciones: 1000, taxes: 1000 } });
-    expect(lukasMessage({ summary, today: "2026-10-21", todayCount: 0 })).toEqual({
+    expect(wambiMessage({ summary, today: "2026-10-21", todayCount: 0 })).toEqual({
       key: "near_limit",
       params: { categoryId: "casa", remaining: 2022 },
     });
@@ -217,7 +217,7 @@ describe("lukasMessage", () => {
 
   test("10: everything ok → on_track with remaining and days left", () => {
     const summary = october({ spent: ALL_OK });
-    expect(lukasMessage({ summary, today: "2026-10-21", todayCount: 0 })).toEqual({
+    expect(wambiMessage({ summary, today: "2026-10-21", todayCount: 0 })).toEqual({
       key: "on_track",
       params: { remaining: summary.remaining, daysLeft: 11 },
     });

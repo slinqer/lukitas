@@ -16,7 +16,7 @@ function sources(dir: string): string[] {
 /** Static imports, re-exports and dynamic imports whose specifier goes through `experimental/`. */
 const EXPERIMENTAL = /(?:from\s*|import\s*\(\s*|import\s+)["'][^"']*\/experimental\/[^"']*["']/;
 
-describe("the 3D Lukas experiment", () => {
+describe("the 3D Wambi experiment", () => {
   it("is never imported by the app's features or routes", () => {
     const files = ["features", "routes"].flatMap((dir) => sources(join(APP, dir)));
     expect(files.length).toBeGreaterThan(0);

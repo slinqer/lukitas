@@ -3,7 +3,7 @@ import { useReducedMotionPreference } from "../../ui/motion-tokens.ts";
 import { whenLoadedAndIdle } from "../live-support.tsx";
 
 /**
- * Whether this browser gets the 3D Lukas: WebGL works and the device has at least 4 GB of memory
+ * Whether this browser gets the 3D Wambi: WebGL works and the device has at least 4 GB of memory
  * (`navigator.deviceMemory`, where the browser reports it). Reduced motion is checked by the hook
  * below, since it can change while the page is open.
  */
@@ -23,11 +23,11 @@ export function canRender3D(): boolean {
 }
 
 /**
- * True once the 3D Lukas should load: after the page has rendered and loaded, when the browser is
+ * True once the 3D Wambi should load: after the page has rendered and loaded, when the browser is
  * idle, and only without reduced motion, with WebGL and enough memory. Turns false again if the
  * person switches reduced motion on.
  */
-export function useLukas3DReady(): boolean {
+export function useWambi3DReady(): boolean {
   const reduceMotion = useReducedMotionPreference();
   const [ready, setReady] = useState(false);
   useEffect(() => {

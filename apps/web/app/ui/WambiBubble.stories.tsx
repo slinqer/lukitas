@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
-import { LukasBubble } from "./LukasBubble.tsx";
+import { WambiBubble } from "./WambiBubble.tsx";
 
 const meta = {
-  title: "Lukas/LukasBubble",
-  component: LukasBubble,
+  title: "Wambi/WambiBubble",
+  component: WambiBubble,
   decorators: [
     (Story) => (
       <div className="lk-screen max-w-[390px] p-(--space-4)">
@@ -14,21 +14,21 @@ const meta = {
     ),
   ],
   args: { message: "¡Vas bien! Te quedan 11 días y aún tienes margen.", mood: "happy" },
-} satisfies Meta<typeof LukasBubble>;
+} satisfies Meta<typeof WambiBubble>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** Lukas beside his line. The line is the content; Lukas is decorative next to it. */
+/** Wambi beside his line. The line is the content; Wambi is decorative next to it. */
 export const Happy: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const bubble = canvas.getByText("¡Vas bien! Te quedan 11 días y aún tienes margen.");
     await expect(bubble).toHaveClass("lk-bubble");
     await expect(bubble).toHaveAttribute("aria-live", "polite");
-    const lukas = canvasElement.querySelector(".lk-lukas") as HTMLElement;
-    await expect(lukas).toHaveAttribute("aria-hidden", "true");
-    await expect(lukas).toHaveClass("is-happy");
+    const wambi = canvasElement.querySelector(".lk-wambi") as HTMLElement;
+    await expect(wambi).toHaveAttribute("aria-hidden", "true");
+    await expect(wambi).toHaveClass("is-happy");
     await expect(canvas.queryByRole("img")).toBeNull();
   },
 };
@@ -36,7 +36,7 @@ export const Happy: Story = {
 export const Worried: Story = {
   args: { message: "Ojo: ya te pasaste 20,20 € en Supermercado.", mood: "worried" },
   play: async ({ canvasElement }) => {
-    await expect(canvasElement.querySelector(".lk-lukas")).toHaveClass("is-worried");
+    await expect(canvasElement.querySelector(".lk-wambi")).toHaveClass("is-worried");
     await expect(
       within(canvasElement).getByText("Ojo: ya te pasaste 20,20 € en Supermercado."),
     ).toBeVisible();
@@ -47,7 +47,7 @@ export const CelebratingDay: Story = {
   args: { message: "¡Anotado!", mood: "celebrating" },
   globals: { theme: "day" },
   play: async ({ canvasElement }) => {
-    await expect(canvasElement.querySelector(".lk-lukas")).toHaveClass("is-celebrating");
+    await expect(canvasElement.querySelector(".lk-wambi")).toHaveClass("is-celebrating");
   },
 };
 
@@ -63,7 +63,7 @@ function AfterPayment() {
   const [state, setState] = useState({ message: MONTH_LINE, quietKey: 0 });
   return (
     <div className="flex flex-col gap-(--space-3)">
-      <LukasBubble message={state.message} mood="happy" quietKey={state.quietKey} />
+      <WambiBubble message={state.message} mood="happy" quietKey={state.quietKey} />
       <button type="button" onClick={() => setState((s) => ({ ...s, message: PAID_LINE }))}>
         pay
       </button>

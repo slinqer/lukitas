@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
-  ENTRANCE_KEY,
   ENTRANCE_MS,
+  ENTRANCE_STORAGE_KEY,
   entrancePhase,
   markEntranceSeen,
   rollAt,
@@ -88,7 +88,7 @@ describe("shouldPlayEntrance", () => {
     const session = storage();
     expect(shouldPlayEntrance(session, true)).toBe(true);
     markEntranceSeen(session);
-    expect(session.getItem(ENTRANCE_KEY)).toBe("seen");
+    expect(session.getItem(ENTRANCE_STORAGE_KEY)).toBe("seen");
     expect(shouldPlayEntrance(session, true)).toBe(false);
   });
 
@@ -100,6 +100,6 @@ describe("shouldPlayEntrance", () => {
     const blocked = storage(true);
     expect(shouldPlayEntrance(blocked, true)).toBe(true);
     expect(() => markEntranceSeen(blocked)).not.toThrow();
-    expect(shouldPlayEntrance(undefined, true)).toBe(true);
+    expect(shouldPlayEntrance(null, true)).toBe(true);
   });
 });

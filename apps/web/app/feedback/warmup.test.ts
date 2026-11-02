@@ -26,10 +26,10 @@ describe("prefetchImageWhenIdle", () => {
       },
       cancelIdleCallback: vi.fn(),
     });
-    prefetchImageWhenIdle("/lukas/celebrate.webp");
+    prefetchImageWhenIdle("/wambi/celebrate.webp");
     expect(loaded).toEqual([]);
     idle();
-    expect(loaded).toEqual(["/lukas/celebrate.webp"]);
+    expect(loaded).toEqual(["/wambi/celebrate.webp"]);
   });
 
   it("cancels the idle callback", () => {
@@ -44,10 +44,10 @@ describe("prefetchImageWhenIdle", () => {
     vi.useFakeTimers();
     vi.stubGlobal("Image", FakeImage);
     vi.stubGlobal("window", {});
-    prefetchImageWhenIdle("/lukas/celebrate.webp");
+    prefetchImageWhenIdle("/wambi/celebrate.webp");
     expect(loaded).toEqual([]);
     vi.advanceTimersByTime(2000);
-    expect(loaded).toEqual(["/lukas/celebrate.webp"]);
+    expect(loaded).toEqual(["/wambi/celebrate.webp"]);
   });
 
   it("cancels the timeout", () => {

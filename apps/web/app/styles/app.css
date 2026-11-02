@@ -56,7 +56,7 @@
   }
 }
 
-/* Lukas components, copied from docs/design/system/project/components/bundle.css. Prefix: lk- */
+/* Wambi components, copied from docs/design/system/project/components/bundle.css. Prefix: lk- */
 @layer components {
   .lk-screen {
     background: radial-gradient(120% 60% at 50% 0%, var(--bg-glow) 0%, var(--bg) 55%);
@@ -532,7 +532,7 @@
     cursor: pointer;
   }
 
-  /* Lukas speech bubble */
+  /* Wambi speech bubble */
   .lk-bubble {
     font-size: 12px;
     font-weight: 800;
@@ -636,7 +636,7 @@
 
 /*
  * Domain components (Task 7b): pressable rows with a separate hit area (so a row can hold its own
- * buttons, like the pending badge), chips, shortcuts, the bottom bar and Lukas. Every pressable
+ * buttons, like the pending badge), chips, shortcuts, the bottom bar and Wambi. Every pressable
  * sinks into its edge on `:active` and on `.is-pressed`.
  */
 @layer components {
@@ -866,7 +866,7 @@
     opacity: 0.5;
   }
 
-  /* Lukas speech bubble: a tail pointing at Lukas on its left. */
+  /* Wambi speech bubble: a tail pointing at Wambi on its left. */
   .lk-bubble-tail {
     position: relative;
   }
@@ -883,43 +883,43 @@
     transform: translateY(-50%) rotate(45deg);
   }
 
-  /* Lukas 2D: a sprite sheet stepped frame by frame, plus a CSS treatment per mood. */
-  .lk-lukas {
+  /* Wambi 2D: a sprite sheet stepped frame by frame, plus a CSS treatment per mood. */
+  .lk-wambi {
     position: relative;
     display: inline-block;
     flex: none;
   }
-  .lk-lukas-body {
+  .lk-wambi-body {
     position: absolute;
     inset: 0;
     transform-origin: 50% 92%;
   }
-  .lk-lukas-sprite {
+  .lk-wambi-sprite {
     position: absolute;
     inset: 0;
     background-repeat: no-repeat;
   }
   /*
-   * A deferred Lukas (`deferUntilNear`) keeps his sheet unfetched while far from the viewport.
+   * A deferred Wambi (`deferUntilNear`) keeps his sheet unfetched while far from the viewport.
    * Only with scripting: without JavaScript nothing would ever mark him near, so he loads as usual.
    */
   @media (scripting: enabled) {
-    .lk-lukas[data-lukas-defer="far"] .lk-lukas-sprite {
+    .lk-wambi[data-wambi-defer="far"] .lk-wambi-sprite {
       background-image: none !important;
     }
   }
-  .lk-lukas-sprite.is-playing {
+  .lk-wambi-sprite.is-playing {
     animation:
       lk-sprite-x var(--lk-sprite-row-ms) steps(var(--lk-sprite-cols)) infinite,
       lk-sprite-y var(--lk-sprite-loop-ms) steps(var(--lk-sprite-rows)) infinite;
   }
-  .lk-lukas.is-shiver .lk-lukas-body {
-    animation: lk-lukas-shiver var(--shiver) ease-in-out infinite;
+  .lk-wambi.is-shiver .lk-wambi-body {
+    animation: lk-wambi-shiver var(--shiver) ease-in-out infinite;
   }
-  .lk-lukas.is-hop .lk-lukas-body {
-    animation: lk-lukas-hop var(--celebrate) ease-in-out infinite;
+  .lk-wambi.is-hop .lk-wambi-body {
+    animation: lk-wambi-hop var(--celebrate) ease-in-out infinite;
   }
-  .lk-lukas-sweat {
+  .lk-wambi-sweat {
     position: absolute;
     left: 66%;
     top: 14%;
@@ -929,20 +929,20 @@
     stroke: var(--brand-edge);
     stroke-width: 1.5;
   }
-  .lk-lukas-sparkle {
+  .lk-wambi-sparkle {
     position: absolute;
     width: 14%;
     height: auto;
   }
   /* Sparkles twinkle in turn: sparkle i starts i quarters of a celebration loop late. */
-  .lk-lukas.is-hop .lk-lukas-sparkle {
-    animation: lk-lukas-twinkle var(--celebrate) ease-in-out infinite;
+  .lk-wambi.is-hop .lk-wambi-sparkle {
+    animation: lk-wambi-twinkle var(--celebrate) ease-in-out infinite;
     animation-delay: calc(var(--celebrate) * var(--lk-sparkle-index, 0) / 4);
   }
-  .lk-lukas-sparkle.is-gold {
+  .lk-wambi-sparkle.is-gold {
     fill: var(--gold);
   }
-  .lk-lukas-sparkle.is-candy {
+  .lk-wambi-sparkle.is-candy {
     fill: var(--candy);
   }
 }
@@ -966,7 +966,7 @@
 }
 
 /* Short bursts of a small side-to-side shake, then a pause. */
-@keyframes lk-lukas-shiver {
+@keyframes lk-wambi-shiver {
   0%,
   40%,
   100% {
@@ -985,7 +985,7 @@
 }
 
 /* Crouch (squash), spring up (stretch), float, land (squash), settle. */
-@keyframes lk-lukas-hop {
+@keyframes lk-wambi-hop {
   0%,
   100% {
     transform: translateY(0) scale(1, 1);
@@ -1007,7 +1007,7 @@
   }
 }
 
-@keyframes lk-lukas-twinkle {
+@keyframes lk-wambi-twinkle {
   0%,
   100% {
     transform: scale(0.4) rotate(0deg);
@@ -1021,7 +1021,7 @@
 }
 
 /*
- * Reduced motion for the domain components: presses stay but are instant, and Lukas never
+ * Reduced motion for the domain components: presses stay but are instant, and Wambi never
  * animates (the component already shows a still frame; this also covers the prerendered HTML).
  */
 @media (prefers-reduced-motion: reduce) {
@@ -1034,8 +1034,8 @@
   .lk-step {
     transition-duration: 0s;
   }
-  .lk-lukas,
-  .lk-lukas * {
+  .lk-wambi,
+  .lk-wambi * {
     animation: none !important;
   }
 }

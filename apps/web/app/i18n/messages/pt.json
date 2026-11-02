@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Lukitas"
+    "name": "Wambito"
   },
   "theme": {
     "label": "Tema",
@@ -18,14 +18,14 @@
     "pt": "Português"
   },
   "mascot": {
-    "happy": "Lukitas, contente",
-    "worried": "Lukitas, preocupado",
-    "celebrating": "Lukitas a celebrar"
+    "happy": "Wambi, contente",
+    "worried": "Wambi, preocupado",
+    "celebrating": "Wambi a celebrar"
   },
   "roadmap": {
     "meta": {
-      "title": "Lukitas · O que vem aí",
-      "description": "O que temos planeado para Lukitas: funcionar sem ligação, a app para iPhone, a tua IA ligada, a encriptação ponta a ponta e mais. Sem datas, e pode mudar."
+      "title": "Wambito · O que vem aí",
+      "description": "O que temos planeado para Wambito: funcionar sem ligação, a app para iPhone, a tua IA ligada, a encriptação ponta a ponta e mais. Sem datas, e pode mudar."
     },
     "title": "O que vem aí",
     "intro": "Isto é o que temos planeado. Pode mudar com o tempo.",
@@ -93,13 +93,13 @@
   "landing": {
     "new_tab": "(abre num novo separador)",
     "meta": {
-      "title": "Lukitas · O teu dinheiro, finalmente claro",
-      "description": "Lukitas é o teu orçamento, e vais gostar de cuidar dele: regista uma despesa em segundos e vê para onde vai o teu dinheiro. Grátis para sempre, de código aberto e sem palavras-passe.",
-      "image_alt": "Lukitas, uma moeda de ouro sorridente, acena junto ao título: O teu dinheiro, finalmente claro."
+      "title": "Wambito · O teu dinheiro, finalmente claro",
+      "description": "Wambito é o teu orçamento, e vais gostar de cuidar dele: regista uma despesa em segundos e vê para onde vai o teu dinheiro. Grátis para sempre, de código aberto e sem palavras-passe.",
+      "image_alt": "Wambi, uma moeda de ouro sorridente, acena junto ao título: O teu dinheiro, finalmente claro."
     },
     "nav": {
       "label": "Principal",
-      "home": "Lukitas, início",
+      "home": "Wambito, início",
       "how": "Como funciona",
       "roadmap": "O que vem aí",
       "faq": "Perguntas",
@@ -108,12 +108,12 @@
     },
     "hero": {
       "headline": "O teu <mark>dinheiro</mark>, finalmente claro.",
-      "description": "<lead>Lukitas é o teu orçamento, e vais gostar de cuidar dele.</lead> Regista uma despesa em segundos e vê para onde vai cada cêntimo.",
+      "description": "<lead>Wambito é o teu orçamento, e vais gostar de cuidar dele.</lead> Regista uma despesa em segundos e vê para onde vai cada cêntimo.",
       "cta": "Começa agora",
       "cta_soon": "Em breve · Segue no GitHub",
       "cta_demo": "Experimenta sem conta",
       "perks": "Grátis para sempre · <github>Código aberto</github> · Sem palavras-passe",
-      "mascot": "Lukitas, uma moeda de ouro sorridente, cumprimenta-te"
+      "mascot": "Wambi, uma moeda de ouro sorridente, cumprimenta-te"
     },
     "ways": {
       "title": "Usa-o como preferires",
@@ -130,7 +130,7 @@
       "ai": {
         "title": "Com a tua IA",
         "with": "Claude / ChatGPT",
-        "body": "«Lukitas, quanto gastei em restaurantes?», e o teu assistente responde-te com os teus números."
+        "body": "«Wambito, quanto gastei em restaurantes?», e o teu assistente responde-te com os teus números."
       }
     },
     "how": {
@@ -143,7 +143,7 @@
       },
       "log": {
         "title": "Regista em segundos",
-        "body": "Tocas em ＋, escreves o valor e já está: menos de cinco segundos desde que abres a app. Lukitas celebra contigo.",
+        "body": "Tocas em ＋, escreves o valor e já está: menos de cinco segundos desde que abres a app. Wambi celebra contigo.",
         "demo_name": "Café e pastel de nata",
         "demo_saved": "Registado!"
       },
@@ -166,14 +166,14 @@
     },
     "open_source": {
       "title": "Código aberto",
-      "body": "Qualquer pessoa pode ler o código de Lukitas: não há nada escondido nele. É software livre, com licença AGPL-3.0.",
+      "body": "Qualquer pessoa pode ler o código de Wambito: não há nada escondido nele. É software livre, com licença AGPL-3.0.",
       "cta": "Ver o código no GitHub"
     },
     "faq": {
       "title": "Perguntas frequentes",
       "what": {
-        "q": "O que é Lukitas?",
-        "a": "Uma app para levares o orçamento do mês sem que pareça um trabalho de casa. Registas o que gastas, vês quanto te resta em cada categoria e Lukitas, uma moeda de ouro com muita personalidade, faz-te companhia: celebra quando registas e avisa-te quando algo está a encher."
+        "q": "O que é Wambito?",
+        "a": "Uma app para levares o orçamento do mês sem que pareça um trabalho de casa. Registas o que gastas, vês quanto te resta em cada categoria e Wambi, uma moeda de ouro com muita personalidade, faz-te companhia: celebra quando registas e avisa-te quando algo está a encher."
       },
       "import": {
         "q": "Posso trazer o meu histórico de outras apps?",
@@ -189,7 +189,7 @@
       },
       "free": {
         "q": "É grátis?",
-        "a": "Sim, e vai ser sempre. Lukitas é grátis e de código aberto: todo o código está no <github>GitHub</github> e qualquer pessoa o pode rever. Não te pedimos cartão."
+        "a": "Sim, e vai ser sempre. Wambito é grátis e de código aberto: todo o código está no <github>GitHub</github> e qualquer pessoa o pode rever. Não te pedimos cartão."
       },
       "languages": {
         "q": "Em que idiomas está?",
@@ -198,21 +198,21 @@
     },
     "closing": {
       "title": "Quando quiseres, começamos.",
-      "body": "Cria a tua conta com o teu email em menos de um minuto. Lukitas encarrega-se de que seja divertido.",
-      "body_soon": "Lukitas está em construção, em aberto. Vê como avança no GitHub e experimenta a app assim que abrir.",
-      "body_invite": "Lukitas já funciona e estamos a testá-la com um grupo pequeno. Se te convidaram, entra com o teu email."
+      "body": "Cria a tua conta com o teu email em menos de um minuto. Wambito encarrega-se de que seja divertido.",
+      "body_soon": "Wambito está em construção, em aberto. Vê como avança no GitHub e experimenta a app assim que abrir.",
+      "body_invite": "Wambito já funciona e estamos a testá-la com um grupo pequeno. Se te convidaram, entra com o teu email."
     },
     "footer": {
       "language": "Idioma",
       "privacy": "Privacidade",
-      "copyright": "© {year} Lukitas",
+      "copyright": "© {year} Wambito",
       "roadmap": "O que vem aí"
     },
     "not_found": {
       "title": "Esta página não existe",
-      "body": "Pode ser que a ligação esteja quebrada ou que a página tenha mudado de sítio. Lukitas já a procurou por todo o lado.",
+      "body": "Pode ser que a ligação esteja quebrada ou que a página tenha mudado de sítio. Wambi já a procurou por todo o lado.",
       "home": "Voltar ao início",
-      "mascot": "Lukitas, uma moeda de ouro preocupada, procura a página"
+      "mascot": "Wambi, uma moeda de ouro preocupada, procura a página"
     }
   }
 }

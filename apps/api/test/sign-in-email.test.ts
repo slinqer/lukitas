@@ -140,18 +140,18 @@ describe("sign-in email", () => {
 
   test("Wambi waves at the top: the image URL is built from WEB_URL, with size and alt", () => {
     const mail = signInEmail({ ...input, locale: "es" });
-    const img = /<img[^>]*lukitas-wave\.png[^>]*>/.exec(mail.html)?.[0] ?? "";
-    expect(img).toContain(`src="${WEB_URL}/email/lukitas-wave.png"`);
+    const img = /<img[^>]*wambi-wave\.png[^>]*>/.exec(mail.html)?.[0] ?? "";
+    expect(img).toContain(`src="${WEB_URL}/email/wambi-wave.png"`);
     expect(img).toContain('width="160"');
     expect(img).toContain('height="160"');
     expect(img).toMatch(/alt="[^"]+"/);
     // The first thing in the card area, before the heading.
-    expect(mail.html.indexOf("lukitas-wave.png")).toBeLessThan(mail.html.indexOf("¡Hola!"));
+    expect(mail.html.indexOf("wambi-wave.png")).toBeLessThan(mail.html.indexOf("¡Hola!"));
   });
 
   test("a trailing slash on WEB_URL does not double up in the image or footer URLs", () => {
     const mail = signInEmail({ ...input, webUrl: `${WEB_URL}/`, locale: "en" });
-    expect(mail.html).toContain(`src="${WEB_URL}/email/lukitas-wave.png"`);
+    expect(mail.html).toContain(`src="${WEB_URL}/email/wambi-wave.png"`);
     expect(mail.html).toContain(`href="${WEB_URL}"`);
   });
 
@@ -271,7 +271,7 @@ describe("claim email (a guest saves their progress)", () => {
 
   test("the same layout as sign-in: the mascot, the brand palette, email-safe HTML", () => {
     const { html } = claimEmail({ ...claim, locale: "es" });
-    expect(html).toContain(`src="${WEB_URL}/email/lukitas-wave.png"`);
+    expect(html).toContain(`src="${WEB_URL}/email/wambi-wave.png"`);
     expect(html).toContain("#f7f4ff");
     expect(html).toContain('role="presentation"');
     expect(html).not.toMatch(/<script/i);

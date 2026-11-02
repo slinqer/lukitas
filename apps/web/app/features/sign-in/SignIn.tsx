@@ -257,7 +257,7 @@ export function SignIn({ auth, resendDelayMs = RESEND_DELAY_MS }: SignInProps) {
   }
 
   // Back from the code step: the email field, ready to fix. (Not on first load: on a phone the
-  // keyboard would cover Lukitas and the fingerprint button before anyone chose.)
+  // keyboard would cover Wambi and the fingerprint button before anyone chose.)
   useEffect(() => {
     if (step !== "email" || !focusEmailOnShow.current) return;
     focusEmailOnShow.current = false;

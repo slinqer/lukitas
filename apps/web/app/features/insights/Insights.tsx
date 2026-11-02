@@ -4,9 +4,9 @@ import { useTranslations } from "use-intl";
 import { useAllCategories, useMe, useReportByCategory, useTrend } from "../../api/queries.ts";
 import { formatMoney } from "../../i18n/format.ts";
 import { useLocale } from "../../i18n/IntlProvider.tsx";
-import { LukasBubble } from "../../ui/LukasBubble.tsx";
 import { MonthPicker } from "../../ui/MonthPicker.tsx";
 import { SegmentedControl } from "../../ui/SegmentedControl.tsx";
+import { WambiBubble } from "../../ui/WambiBubble.tsx";
 import { CategoryDonut, type Kind, type StatusFilter } from "./CategoryDonut.tsx";
 import { CostOfLiving } from "./CostOfLiving.tsx";
 import { isSpan, periodOf, SPANS, type Span, trendPeriod } from "./insights-model.ts";
@@ -15,7 +15,7 @@ import { TrendChart } from "./TrendChart.tsx";
 
 /**
  * Insights (`/app/insights`, spec §2.7): the month on screen (the person's current one first,
- * earlier ones browsable) or a run of months ending at it; Lukitas saying what took the biggest
+ * earlier ones browsable) or a run of months ending at it; Wambi saying what took the biggest
  * bite; where the money went by category (CategoryDonut); income, spending and budget month by
  * month (TrendChart); and what living costs (CostOfLiving). One column on phones; on wide screens
  * the donut takes the left column and the trend and what living costs stack on the right.
@@ -42,7 +42,7 @@ function InsightsView({ current, currency }: { current: Month; currency: string 
     kind,
     ...(status === "all" ? {} : { status }),
   });
-  // Lukitas talks about the period's spending, whatever the donut shows.
+  // Wambi talks about the period's spending, whatever the donut shows.
   const spending = useReportByCategory({ ...period, kind: "expense" });
   const trend = useTrend(trendRange);
   const categories = useAllCategories();
@@ -55,19 +55,19 @@ function InsightsView({ current, currency }: { current: Month; currency: string 
     void import("./charts.tsx");
   }, []);
 
-  // Lukitas speaks about the answer he has, with its own period: never a new month's name with
+  // Wambi speaks about the answer he has, with its own period: never a new month's name with
   // an old month's figures (his bubble is a live region, so that would be read out).
   const phrasing = usePeriodPhrase(locale, current);
   const top = spending.data?.items[0];
   const line = !spending.data
     ? null
     : top
-      ? t("lukas_top", {
+      ? t("wambi_top", {
           name: top.name,
           period: phrasing(spending.data.range),
           amount: formatMoney(top.total, currency, locale),
         })
-      : t("lukas_empty", { period: phrasing(spending.data.range) });
+      : t("wambi_empty", { period: phrasing(spending.data.range) });
 
   return (
     <div className="mx-auto flex w-full max-w-[480px] flex-col gap-(--space-3) px-(--space-4) pt-(--space-3) lg:max-w-[1040px] lg:px-(--space-6) lg:pt-(--space-5)">
@@ -93,7 +93,7 @@ function InsightsView({ current, currency }: { current: Month; currency: string 
           className="lk-insight-body min-h-[72px] lg:col-span-2 lg:max-w-[640px]"
           aria-busy={spending.isPlaceholderData || undefined}
         >
-          {line && <LukasBubble message={line} mood="happy" />}
+          {line && <WambiBubble message={line} mood="happy" />}
         </div>
         <CategoryDonut
           className="lg:row-span-2"

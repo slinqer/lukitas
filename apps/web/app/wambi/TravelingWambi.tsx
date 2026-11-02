@@ -1,37 +1,29 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { sessionArea } from "../lib/stored.ts";
 import { cx } from "../ui/cx.ts";
 import { markEntranceSeen, shouldPlayEntrance } from "./entrance.ts";
-import { LUKAS_ART, Lukas, type LukasMoodArt } from "./Lukas.tsx";
-import type { LukasMood } from "./mood.ts";
+import type { WambiMood } from "./mood.ts";
 import { COIN, entranceFrame, spotMood, tiltToward, travelFrame } from "./traveling.ts";
-import { type LukasSpot, useScrollPose } from "./use-scroll-pose.ts";
-import "./traveling-lukas.css";
+import { useScrollPose, type WambiSpot } from "./use-scroll-pose.ts";
+import { WAMBI_ART, Wambi, type WambiMoodArt } from "./Wambi.tsx";
+import "./traveling-wambi.css";
 
 /** The entrance's still frame: the first frame of the wave sheet, not playing. */
-const TUCKED_ART: LukasMoodArt = { ...LUKAS_ART.happy, play: false, frame: 0 };
+const TUCKED_ART: WambiMoodArt = { ...WAMBI_ART.happy, play: false, frame: 0 };
 /** Mood layers, in a fixed order so React keeps each one's node (and its loaded sheet). */
-const MOOD_ORDER: readonly LukasMood[] = ["happy", "worried", "celebrating"];
-/** The attribute on `<html>` that makes the prerendered Lukas in the spots step aside. */
-const LIVE_ATTRIBUTE = "data-lukas-live";
+const MOOD_ORDER: readonly WambiMood[] = ["happy", "worried", "celebrating"];
+/** The attribute on `<html>` that makes the prerendered Wambi in the spots step aside. */
+const LIVE_ATTRIBUTE = "data-wambi-live";
 
 type EntranceState = "playing" | "skipped" | "done";
 
-/** sessionStorage, or undefined where reading it throws (blocked storage). */
-function sessionStore(): Storage | undefined {
-  try {
-    return window.sessionStorage;
-  } catch {
-    return undefined;
-  }
+function moodOf(spot: HTMLElement | null | undefined): WambiMood {
+  return spotMood(spot?.dataset.wambiPose, spot?.dataset.wambiMood);
 }
 
-function moodOf(spot: HTMLElement | null | undefined): LukasMood {
-  return spotMood(spot?.dataset.lukasPose, spot?.dataset.lukasMood);
-}
-
-/** The first spot (the hero) says where he rolls in from (`data-lukas-enter-from`, default right). */
+/** The first spot (the hero) says where he rolls in from (`data-wambi-enter-from`, default right). */
 function entranceSide(): 1 | -1 {
-  return firstSpot()?.dataset.lukasEnterFrom === "left" ? -1 : 1;
+  return firstSpot()?.dataset.wambiEnterFrom === "left" ? -1 : 1;
 }
 
 function initialEntrance(): EntranceState {
@@ -39,7 +31,7 @@ function initialEntrance(): EntranceState {
   if (!hero) return "skipped";
   const box = hero.getBoundingClientRect();
   const heroInView = box.bottom > box.height * 0.25 && box.top < window.innerHeight;
-  return shouldPlayEntrance(sessionStore(), heroInView) ? "playing" : "skipped";
+  return shouldPlayEntrance(sessionArea(), heroInView) ? "playing" : "skipped";
 }
 
 /** The clip that tucks his arms and legs away: a circle around the coin, grown by `reveal`. */
@@ -50,10 +42,10 @@ function tuckClip(reveal: number): string {
 }
 
 /**
- * Lukas living on the landing page, in 2.5D: the founder's sprite sheets with CSS depth on top.
+ * Wambi living on the landing page, in 2.5D: the founder's sprite sheets with CSS depth on top.
  * One sprite in an overlay (absolutely positioned in the page, `aria-hidden`, out of the layout)
- * that stands on the page's Lukas spots (`[data-lukas-spot]`, see `useScrollPose`), in each
- * spot's mood (`data-lukas-mood`, else from `data-lukas-pose`; moods cross-fade). Between spots
+ * that stands on the page's Wambi spots (`[data-wambi-spot]`, see `useScrollPose`), in each
+ * spot's mood (`data-wambi-mood`, else from `data-wambi-pose`; moods cross-fade). Between spots
  * he turns edge-on like a coin and fades out, then turns back in on the next spot: he never
  * crosses the page, so he never covers text (`travelFrame`).
  *
@@ -63,18 +55,18 @@ function tuckClip(reveal: number): string {
  * from the text, settles, unfolds and waves (`entranceFrame`).
  *
  * Client-only, and mounted after the page's spots are in the DOM: the landing mounts him once the
- * page has loaded and is idle, and only without reduced motion. The prerendered Lukas in the spots
+ * page has loaded and is idle, and only without reduced motion. The prerendered Wambi in the spots
  * steps aside while he is live.
  */
-export function TravelingLukas() {
+export function TravelingWambi() {
   const layer = useRef<HTMLDivElement>(null);
   const turn = useRef<HTMLDivElement>(null);
   const roller = useRef<HTMLDivElement>(null);
   const body = useRef<HTMLDivElement>(null);
   const tilt = useRef<HTMLDivElement>(null);
-  const [mood, setMood] = useState<LukasMood>(() => moodOf(firstSpot()));
-  const [mounted, setMounted] = useState<ReadonlySet<LukasMood>>(() => new Set([mood]));
-  const [spotId, setSpotId] = useState(() => firstSpot()?.dataset.lukasSpot ?? "");
+  const [mood, setMood] = useState<WambiMood>(() => moodOf(firstSpot()));
+  const [mounted, setMounted] = useState<ReadonlySet<WambiMood>>(() => new Set([mood]));
+  const [spotId, setSpotId] = useState(() => firstSpot()?.dataset.wambiSpot ?? "");
   const [entrance, setEntrance] = useState<EntranceState>(initialEntrance);
   const [tucked, setTucked] = useState(entrance === "playing");
   const [hopping, setHopping] = useState(false);
@@ -87,9 +79,9 @@ export function TravelingLukas() {
   const shown = useRef(mood);
   shown.current = mood;
   const sheets = useRef({
-    ready: new Set<LukasMood>(),
-    loading: new Set<LukasMood>(),
-    failed: new Set<LukasMood>(),
+    ready: new Set<WambiMood>(),
+    loading: new Set<WambiMood>(),
+    failed: new Set<WambiMood>(),
   });
   const [broken, setBroken] = useState(false);
 
@@ -97,13 +89,13 @@ export function TravelingLukas() {
    * Loads a mood's sheet once; then mounts its layer and, if his spot wants it, shows it. A sheet
    * that failed isn't tried again until his spot asks for it anew (`retry`).
    */
-  const load = useCallback((m: LukasMood, retry = false) => {
+  const load = useCallback((m: WambiMood, retry = false) => {
     const { ready, loading, failed } = sheets.current;
     if (retry) failed.delete(m);
     if (ready.has(m) || loading.has(m) || failed.has(m)) return;
     loading.add(m);
     const image = new Image();
-    image.src = LUKAS_ART[m].sprite.src;
+    image.src = WAMBI_ART[m].sprite.src;
     image.decode().then(
       () => {
         loading.delete(m);
@@ -121,13 +113,13 @@ export function TravelingLukas() {
   }, []);
 
   const place = useCallback(
-    ({ spots, index, y }: { spots: LukasSpot[]; index: number; y: number }) => {
+    ({ spots, index, y }: { spots: WambiSpot[]; index: number; y: number }) => {
       const element = layer.current;
       const parent = element?.offsetParent;
       const current = spots[index];
       if (!element || !parent || !current) return;
       const base = parent.getBoundingClientRect();
-      const boxOf = (spot: LukasSpot) => {
+      const boxOf = (spot: WambiSpot) => {
         const b = spot.element.getBoundingClientRect();
         return {
           x: b.left - base.left + b.width / 2,
@@ -172,12 +164,12 @@ export function TravelingLukas() {
   // Every spot's sheet starts loading as soon as he is live (the page has loaded and is idle), so
   // a jump straight to a section (the header's "how it works" link) finds it ready or in flight.
   useEffect(() => {
-    for (const spot of document.querySelectorAll<HTMLElement>("[data-lukas-spot]")) {
+    for (const spot of document.querySelectorAll<HTMLElement>("[data-wambi-spot]")) {
       load(moodOf(spot));
     }
   }, [load]);
 
-  // He is live: the prerendered Lukas in the spots steps aside (and comes back when he unmounts or
+  // He is live: the prerendered Wambi in the spots steps aside (and comes back when he unmounts or
   // steps aside himself).
   useEffect(() => {
     if (broken) return;
@@ -193,7 +185,7 @@ export function TravelingLukas() {
   // The entrance: roll in, settle, unfold, wave; driven per frame from the pure `entranceFrame`.
   useEffect(() => {
     if (entrance !== "playing") return;
-    markEntranceSeen(sessionStore());
+    markEntranceSeen(sessionArea());
     const from = entranceSide();
     let start = 0;
     let frame = 0;
@@ -272,7 +264,7 @@ export function TravelingLukas() {
     <div
       ref={layer}
       className="lk-traveler"
-      data-lukas-traveler=""
+      data-wambi-traveler=""
       data-spot={spotId}
       data-mood={mood}
       data-entrance={entrance}
@@ -296,7 +288,7 @@ export function TravelingLukas() {
                       className={cx("lk-traveler-mood", m === mood && "is-active")}
                       data-mood={m}
                     >
-                      <Lukas
+                      <Wambi
                         mood={m}
                         size="100%"
                         decorative
@@ -323,5 +315,5 @@ export function TravelingLukas() {
 
 /** The first spot in page order (the hero): where he starts, before the first scroll update. */
 function firstSpot(): HTMLElement | null {
-  return document.querySelector<HTMLElement>("[data-lukas-spot]");
+  return document.querySelector<HTMLElement>("[data-wambi-spot]");
 }
