@@ -913,6 +913,14 @@
       lk-sprite-x var(--lk-sprite-row-ms) steps(var(--lk-sprite-cols)) infinite,
       lk-sprite-y var(--lk-sprite-loop-ms) steps(var(--lk-sprite-rows)) infinite;
   }
+  /*
+   * Once: the same keyframes for a single pass, then back to the inline first frame (no fill mode,
+   * so the end values one cell past the sheet are never held). The columns repeat once per row
+   * (`--lk-sprite-rows`), the rows run once, so both end together after one loop.
+   */
+  .lk-wambi-sprite.is-playing.is-once {
+    animation-iteration-count: var(--lk-sprite-rows), 1;
+  }
   .lk-wambi.is-shiver .lk-wambi-body {
     animation: lk-wambi-shiver var(--shiver) ease-in-out infinite;
   }

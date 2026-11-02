@@ -68,6 +68,29 @@ export const Happy: Story = {
   },
 };
 
+/** `playOnce`: one pass of the wave (the loop's time), then rest on frame 0; the default keeps looping. */
+export const PlayOnce: Story = {
+  args: { playOnce: true },
+  play: async ({ canvasElement }) => {
+    const wambi = within(canvasElement).getByRole("img", { name: "Wambi, contento" });
+    const sheet = sprite(wambi);
+    await expect(sheet).toHaveClass("is-once");
+    await expect(getComputedStyle(sheet).animationIterationCount).toBe("2, 1");
+    // Both tracks end together at one pass (1.2s), then the sheet rests on its first frame.
+    await waitFor(() => expect(sheet.getAnimations()).toHaveLength(0), { timeout: 4000 });
+    await expect(getComputedStyle(sheet).backgroundPosition).toBe("0% 0%");
+  },
+};
+
+/** The default loops: no `is-once`, endless iterations. */
+export const LoopsByDefault: Story = {
+  play: async ({ canvasElement }) => {
+    const sheet = sprite(within(canvasElement).getByRole("img", { name: "Wambi, contento" }));
+    await expect(sheet).not.toHaveClass("is-once");
+    await expect(getComputedStyle(sheet).animationIterationCount).toBe("infinite, infinite");
+  },
+};
+
 /** The stepping of a playing sheet: its loop, half of it per row, 4 columns and 2 rows. */
 async function expectPlaying(wambi: HTMLElement, src: string, loopMs: number) {
   const sheet = sprite(wambi);

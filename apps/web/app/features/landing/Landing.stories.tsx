@@ -95,6 +95,8 @@ export const HeroSection: Story = {
     const mascot = canvas.getByRole("img", { name: /Wambi/ });
     await expect(mascot).toHaveAttribute("data-slot", "hero-mascot");
     await expect(mascot.querySelector(".lk-wambi")).toHaveAttribute("aria-hidden", "true");
+    // He waves once and rests: the hero's sprite plays its sheet a single time.
+    await expect(mascot.querySelector(".lk-wambi-sprite")).toHaveClass("is-once");
   },
 };
 

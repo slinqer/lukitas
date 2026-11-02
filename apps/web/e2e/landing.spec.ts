@@ -945,6 +945,15 @@ for (const l of LOCALES) {
       const sprite = mascot.locator(".lk-wambi-sprite");
       await expect(sprite).toHaveCSS("background-image", /\/wambi\/wave\.webp/);
       expect(await sprite.evaluate((el) => el.getAnimations().length)).toBeGreaterThan(0);
+      // He waves once, then rests on his first frame: one pass of the sheet, not a loop.
+      await expect(sprite).toHaveClass(/is-once/);
+      expect(await sprite.evaluate((el) => getComputedStyle(el).animationIterationCount)).toBe(
+        "2, 1",
+      );
+      await expect
+        .poll(() => sprite.evaluate((el) => el.getAnimations().length), { timeout: 5000 })
+        .toBe(0);
+      await expect(sprite).toHaveCSS("background-position", "0% 0%");
 
       await page.emulateMedia({ reducedMotion: "reduce" });
       expect(await sprite.evaluate((el) => el.getAnimations().length)).toBe(0);

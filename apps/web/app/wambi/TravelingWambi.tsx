@@ -52,7 +52,8 @@ function tuckClip(reveal: number): string {
  * Depth: a soft ground shadow that shrinks as he rises, an idle bob, a hop with squash and
  * stretch on hover or tap (only his body takes the pointer), and, with a fine pointer, a tilt of
  * up to ±12° toward it. Once per session, with the hero in view, he rolls in from the side away
- * from the text, settles, unfolds and waves (`entranceFrame`).
+ * from the text, settles, unfolds and waves (`entranceFrame`). His happy wave plays once and then
+ * rests on its first frame, like the hero's prerendered sprite; worried and celebrating loop.
  *
  * Client-only, and mounted after the page's spots are in the DOM: the landing mounts him once the
  * page has loaded and is idle, and only without reduced motion. The prerendered Wambi in the spots
@@ -293,6 +294,7 @@ export function TravelingWambi() {
                         size="100%"
                         decorative
                         art={m === "happy" && tucked ? TUCKED_ART : undefined}
+                        playOnce={m === "happy"}
                       />
                     </div>
                   ))}

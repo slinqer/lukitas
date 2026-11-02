@@ -130,6 +130,17 @@ test.describe("2.5D Wambi", () => {
       /is-playing/,
     );
 
+    // He waves once, then holds on his first frame; the other moods keep looping.
+    const standing = layer.locator(".lk-traveler-mood[data-mood='happy'] .lk-wambi-sprite");
+    await expect(standing).toHaveClass(/is-once/);
+    await expect
+      .poll(() => standing.evaluate((el) => el.getAnimations().length), { timeout: 5000 })
+      .toBe(0);
+    await expect(standing).toHaveCSS("background-position", "0% 0%");
+    await expect(
+      layer.locator(".lk-traveler-mood[data-mood='worried'] .lk-wambi-sprite"),
+    ).not.toHaveClass(/is-once/);
+
     // Same session: no second entrance.
     await page.reload();
     await expect(layer).toBeAttached({ timeout: 30_000 });

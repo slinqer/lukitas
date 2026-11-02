@@ -65,6 +65,11 @@ export interface WambiProps {
    * first load. Without JavaScript (or `scripting` media support) he loads as usual.
    */
   deferUntilNear?: boolean;
+  /**
+   * Play the sheet once (one `loopMs`), then rest on its first frame, instead of looping. Only for
+   * a playing mood; the landing hero uses it so he waves once and stays still.
+   */
+  playOnce?: boolean;
 }
 
 /** False until the element comes within `margin` of the viewport (true without IntersectionObserver). */
@@ -145,6 +150,7 @@ export function Wambi({
   decorative = false,
   art,
   deferUntilNear = false,
+  playOnce = false,
 }: WambiProps) {
   const t = useTranslations("mascot");
   const { ref, near } = useNearViewport(deferUntilNear);
@@ -174,7 +180,14 @@ export function Wambi({
       {...(decorative ? { "aria-hidden": true } : { role: "img", "aria-label": t(mood) })}
     >
       <span className="lk-wambi-body">
-        <span className={cx("lk-wambi-sprite", playing && "is-playing")} style={spriteStyle} />
+        <span
+          className={cx(
+            "lk-wambi-sprite",
+            playing && "is-playing",
+            playing && playOnce && "is-once",
+          )}
+          style={spriteStyle}
+        />
         {treatment === "shiver" && (
           <svg className="lk-wambi-sweat" viewBox="0 0 20 28" aria-hidden="true">
             <path d="M10 2 C10 2 2 13 2 19 a8 8 0 0 0 16 0 C18 13 10 2 10 2 Z" />
