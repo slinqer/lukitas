@@ -189,19 +189,20 @@ const ROADMAP = {
           "App para Android",
           "Android: widget con micrófono",
           "Importa tu historial de Budge",
+          "Funciona sin conexión",
         ],
       },
       {
         label: "En construcción",
-        items: ["Funciona sin conexión", "App para iPhone", "Importa desde Buddy y otras apps"],
+        items: ["Conecta tu IA", "App para iPhone", "Importa desde Buddy y otras apps"],
       },
-      { label: "Próximo", items: ["Conecta tu IA", "Cifrado de punta a punta"] },
+      { label: "Próximo", items: ["Cifrado de punta a punta"] },
       {
         label: "Más adelante",
         items: ["Captura automática de las alertas de tu banco", "Sin servidor central"],
       },
     ],
-    landingItems: ["Funciona sin conexión", "App para iPhone", "Conecta tu IA"],
+    landingItems: ["Conecta tu IA", "App para iPhone", "Cifrado de punta a punta"],
     cta: "Ver el roadmap",
     navLink: "Lo que viene",
     description: /Lo que tenemos planeado para Wambito/,
@@ -222,19 +223,20 @@ const ROADMAP = {
           "Android app",
           "Android: widget with a microphone",
           "Import your history from Budge",
+          "Works offline",
         ],
       },
       {
         label: "Being built",
-        items: ["Works offline", "iPhone app", "Import from Buddy and other apps"],
+        items: ["Connect your AI", "iPhone app", "Import from Buddy and other apps"],
       },
-      { label: "Next", items: ["Connect your AI", "End-to-end encryption"] },
+      { label: "Next", items: ["End-to-end encryption"] },
       {
         label: "Later",
         items: ["Automatic capture of your bank's alerts", "No central server"],
       },
     ],
-    landingItems: ["Works offline", "iPhone app", "Connect your AI"],
+    landingItems: ["Connect your AI", "iPhone app", "End-to-end encryption"],
     cta: "See the roadmap",
     navLink: "What's next",
     description: /What we have planned for Wambito/,
@@ -255,19 +257,20 @@ const ROADMAP = {
           "App per Android",
           "Android: widget con microfono",
           "Importa il tuo storico da Budge",
+          "Funziona offline",
         ],
       },
       {
         label: "In costruzione",
-        items: ["Funziona offline", "App per iPhone", "Importa da Buddy e da altre app"],
+        items: ["Collega la tua IA", "App per iPhone", "Importa da Buddy e da altre app"],
       },
-      { label: "Prossimo", items: ["Collega la tua IA", "Crittografia end-to-end"] },
+      { label: "Prossimo", items: ["Crittografia end-to-end"] },
       {
         label: "Più avanti",
         items: ["Cattura automatica degli avvisi della tua banca", "Senza server centrale"],
       },
     ],
-    landingItems: ["Funziona offline", "App per iPhone", "Collega la tua IA"],
+    landingItems: ["Collega la tua IA", "App per iPhone", "Crittografia end-to-end"],
     cta: "Vedi la roadmap",
     navLink: "In arrivo",
     description: /Cosa abbiamo in programma per Wambito/,
@@ -288,19 +291,20 @@ const ROADMAP = {
           "App para Android",
           "Android: widget com microfone",
           "Importa o teu histórico do Budge",
+          "Funciona sem ligação",
         ],
       },
       {
         label: "Em construção",
-        items: ["Funciona sem ligação", "App para iPhone", "Importa do Buddy e de outras apps"],
+        items: ["Liga a tua IA", "App para iPhone", "Importa do Buddy e de outras apps"],
       },
-      { label: "A seguir", items: ["Liga a tua IA", "Encriptação ponta a ponta"] },
+      { label: "A seguir", items: ["Encriptação ponta a ponta"] },
       {
         label: "Mais à frente",
         items: ["Captura automática dos alertas do teu banco", "Sem servidor central"],
       },
     ],
-    landingItems: ["Funciona sem ligação", "App para iPhone", "Liga a tua IA"],
+    landingItems: ["Liga a tua IA", "App para iPhone", "Encriptação ponta a ponta"],
     cta: "Ver o roadmap",
     navLink: "O que vem aí",
     description: /O que temos planeado para Wambito/,
@@ -609,9 +613,16 @@ for (const l of LOCALES) {
 
     test("says nothing about games, best friends or paying later", async ({ page, request }) => {
       const html = await (await request.get(l.path)).text();
-      const withoutScripts = html.replace(/<script[\s\S]*?<\/script>/g, "");
+      // "What's next" lists planned items (end-to-end encryption among them): plans, not claims.
+      const withoutScripts = html
+        .replace(/<script[\s\S]*?<\/script>/g, "")
+        .replace(/<section id="whats-next"[\s\S]*?<\/section>/, "");
       await page.goto(l.path);
-      const text = await page.locator("body").evaluate((body) => body.textContent ?? "");
+      const text = await page.locator("body").evaluate((body) => {
+        const copy = body.cloneNode(true) as HTMLElement;
+        copy.querySelector("#whats-next")?.remove();
+        return copy.textContent ?? "";
+      });
       for (const pattern of l.banned) {
         expect(withoutScripts).not.toMatch(pattern);
         expect(text).not.toMatch(pattern);
@@ -660,9 +671,16 @@ for (const l of LOCALES) {
     test("privacy copy promises only what Wambito does today", async ({ page, request }) => {
       // React escapes apostrophes in text ("can't" → "can&#x27;t"): decode before matching.
       const html = (await (await request.get(l.path)).text()).replaceAll("&#x27;", "'");
-      const withoutScripts = html.replace(/<script[\s\S]*?<\/script>/g, "");
+      // "What's next" lists planned items (end-to-end encryption among them): plans, not claims.
+      const withoutScripts = html
+        .replace(/<script[\s\S]*?<\/script>/g, "")
+        .replace(/<section id="whats-next"[\s\S]*?<\/section>/, "");
       await page.goto(l.path);
-      const text = await page.locator("body").evaluate((body) => body.textContent ?? "");
+      const text = await page.locator("body").evaluate((body) => {
+        const copy = body.cloneNode(true) as HTMLElement;
+        copy.querySelector("#whats-next")?.remove();
+        return copy.textContent ?? "";
+      });
       for (const pattern of l.overclaims) {
         expect(withoutScripts).not.toMatch(pattern);
         expect(text).not.toMatch(pattern);

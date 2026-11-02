@@ -109,8 +109,19 @@ describe("roadmapColumns", () => {
 });
 
 describe("the landing's what's-next items", () => {
-  it("are working offline, the iPhone app, and connecting your AI", () => {
-    expect(LANDING_ROADMAP_IDS).toEqual(["offline", "iphone_app", "connect_ai"]);
+  it("are connecting your AI, the iPhone app, and end-to-end encryption", () => {
+    expect(LANDING_ROADMAP_IDS).toEqual(["connect_ai", "iphone_app", "e2e_encryption"]);
     for (const id of LANDING_ROADMAP_IDS) expect(roadmapItem(id).id).toBe(id);
+  });
+
+  it("never shows a done item", () => {
+    for (const id of LANDING_ROADMAP_IDS) expect(roadmapItem(id).status, id).not.toBe("done");
+  });
+});
+
+describe("the roadmap's statuses", () => {
+  it("has working offline done and connecting your AI being built", () => {
+    expect(roadmapItem("offline").status).toBe("done");
+    expect(roadmapItem("connect_ai").status).toBe("building");
   });
 });
