@@ -24,7 +24,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 
 /**
- * Passkeys through Android's Credential Manager, on the `lukitas/passkeys` channel (lib/api/passkeys.dart).
+ * Passkeys through Android's Credential Manager, on the `wambito/passkeys` channel (lib/api/passkeys.dart).
  *
  * Only `androidx.credentials:credentials` is used, never `credentials-play-services-auth`: on Android 14
  * (API 34) and newer the library talks to the platform's own Credential Manager, and the person's
@@ -40,7 +40,7 @@ import io.flutter.plugin.common.MethodChannel
 class PasskeyChannel(private val activity: Activity, messenger: BinaryMessenger) :
     MethodChannel.MethodCallHandler {
 
-    private val channel = MethodChannel(messenger, "lukitas/passkeys")
+    private val channel = MethodChannel(messenger, "wambito/passkeys")
 
     init {
         channel.setMethodCallHandler(this)

@@ -4,7 +4,7 @@ import 'package:wambito/notices/notice_platform.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  const channel = MethodChannel('lukitas/notices');
+  const channel = MethodChannel('wambito/notices');
   final calls = <MethodCall>[];
   Object? Function(MethodCall call)? answer;
 

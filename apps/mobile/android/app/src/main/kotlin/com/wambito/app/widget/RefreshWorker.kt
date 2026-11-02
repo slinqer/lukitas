@@ -5,6 +5,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import com.wambito.app.Migration
 import com.wambito.app.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -38,6 +39,7 @@ class RefreshDependencies(
 class RefreshWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
         val context = applicationContext
+        Migration.run(context) // 2b: remove
         val dependencies = Companion.dependencies?.invoke(context) ?: RefreshDependencies(
             session = SecureStorageSession(context),
             fetcher = SummaryFetcher(),

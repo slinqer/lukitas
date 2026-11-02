@@ -16,7 +16,7 @@ import java.time.format.DateTimeParseException
  * home_widget's SharedPreferences file [PREFS].
  *
  * Amounts are cents, as the API sends them. A snapshot that is missing, of another version, signed
- * out, or missing a figure reads as signed out: "Abre Lukitas para empezar", never a stale figure.
+ * out, or missing a figure reads as signed out: "Abre Wambito para empezar", never a stale figure.
  */
 data class WidgetSnapshot(
     val signedIn: Boolean,
@@ -78,7 +78,7 @@ data class WidgetSnapshot(
 
     companion object {
         const val PREFS = "HomeWidgetPreferences"
-        const val KEY = "lukitas.widget.snapshot"
+        const val KEY = "wambito.widget.snapshot"
         const val VERSION = 3
 
         /** The snapshot in [json], or null when there is none of this version. */

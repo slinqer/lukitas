@@ -13,8 +13,8 @@ import 'package:wambito/feedback/feedback.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  const sounds = MethodChannel('lukitas/sounds');
-  const haptics = MethodChannel('lukitas/haptics');
+  const sounds = MethodChannel('wambito/sounds');
+  const haptics = MethodChannel('wambito/haptics');
 
   testWidgets('every sound is found in the APK and loads', (tester) async {
     final loaded = await sounds.invokeMethod<int>('preload', {

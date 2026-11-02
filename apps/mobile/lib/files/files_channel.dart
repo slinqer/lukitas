@@ -60,11 +60,11 @@ abstract interface class FilesChannel {
   Future<void> clearShared();
 }
 
-/// [FilesChannel] over `lukitas/files`.
+/// [FilesChannel] over `wambito/files`.
 class MethodFilesChannel implements FilesChannel {
   const MethodFilesChannel();
 
-  static const _channel = MethodChannel('lukitas/files');
+  static const _channel = MethodChannel('wambito/files');
 
   static Future<T?> _call<T>(String method, Map<String, Object?> arguments) async {
     try {

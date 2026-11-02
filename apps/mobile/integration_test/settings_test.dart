@@ -63,7 +63,7 @@ void main() {
     (tester) async {
       await app.bootstrap();
       // The channel asked directly, as a compromised Dart side would: the Android side checks too.
-      const channel = MethodChannel('lukitas/device');
+      const channel = MethodChannel('wambito/device');
       for (final address in [
         'javascript:alert(1)',
         'intent:#Intent;action=android.intent.action.CALL;end',

@@ -6,10 +6,10 @@
 #   apps/mobile/scripts/release.sh [--tag mobile-vX.Y.Z] [--out <dir>] [--no-clean] [--allow-dirty]
 #
 # The signing material comes only from the environment, never from a file in the repo:
-#   LUKITAS_KEYSTORE            path of the keystore (.p12 / .jks)
-#   LUKITAS_KEY_ALIAS           the key's alias in it
-#   LUKITAS_KEYSTORE_PASSWORD   the keystore's password
-#   LUKITAS_KEY_PASSWORD        the key's password; left out, the keystore's (PKCS12 keystores have one)
+#   WAMBITO_KEYSTORE            path of the keystore (.p12 / .jks)
+#   WAMBITO_KEY_ALIAS           the key's alias in it
+#   WAMBITO_KEYSTORE_PASSWORD   the keystore's password
+#   WAMBITO_KEY_PASSWORD        the key's password; left out, the keystore's (PKCS12 keystores have one)
 # None of the four is ever printed (tracing is switched off at the first line and the tools get the
 # passwords through their environment, not their arguments), and Gradle and Flutter never see them:
 # the APKs are built unsigned and signed afterwards with apksigner.
@@ -18,7 +18,7 @@
 # dev build, 0.0.0-dev.<commit>, below every release (scripts/release-lib.sh). A tagged build needs a
 # clean working tree (--allow-dirty to override).
 #
-# Output: <out>/<versionName>/lukitas-<versionName>-<abi>.apk for arm64-v8a and armeabi-v7a, with
+# Output: <out>/<versionName>/wambito-<versionName>-<abi>.apk for arm64-v8a and armeabi-v7a, with
 # SHA256SUMS and ANDROID_CERT_SHA256.txt. <out> defaults to apps/mobile/dist, which is git-ignored.
 # Exit codes: 0 done, 1 a check failed, 2 missing input or tool.
 set +x
@@ -32,7 +32,7 @@ source "$HERE/release-lib.sh"
 
 ABIS=(arm64-v8a armeabi-v7a)
 PACKAGE="com.wambito.app"
-SECRET_NAMES=(LUKITAS_KEYSTORE LUKITAS_KEY_ALIAS LUKITAS_KEYSTORE_PASSWORD LUKITAS_KEY_PASSWORD)
+SECRET_NAMES=(WAMBITO_KEYSTORE WAMBITO_KEY_ALIAS WAMBITO_KEYSTORE_PASSWORD WAMBITO_KEY_PASSWORD)
 
 die() {
   echo "release.sh: $1" >&2
@@ -57,7 +57,7 @@ redact() {
 
 # A child process without tracing and without the passwords (only apksigner and keytool get them).
 without_secrets() {
-  env -u SHELLOPTS -u BASH_ENV -u LUKITAS_KEYSTORE_PASSWORD -u LUKITAS_KEY_PASSWORD -u LUKITAS_KEYSTORE -u LUKITAS_KEY_ALIAS "$@"
+  env -u SHELLOPTS -u BASH_ENV -u WAMBITO_KEYSTORE_PASSWORD -u WAMBITO_KEY_PASSWORD -u WAMBITO_KEYSTORE -u WAMBITO_KEY_ALIAS "$@"
 }
 with_secrets() {
   env -u SHELLOPTS -u BASH_ENV "$@"
@@ -93,15 +93,15 @@ done
 
 # --- The signing material (present, not printed) ---------------------------------------------
 missing=()
-for name in LUKITAS_KEYSTORE LUKITAS_KEY_ALIAS LUKITAS_KEYSTORE_PASSWORD; do
+for name in WAMBITO_KEYSTORE WAMBITO_KEY_ALIAS WAMBITO_KEYSTORE_PASSWORD; do
   if [ -z "${!name:-}" ]; then missing+=("$name"); fi
 done
 if [ ${#missing[@]} -gt 0 ]; then
   echo "release.sh: set ${missing[*]} in your shell first (docs/mobile/release.md, 'The signing key')." >&2
   exit 2
 fi
-[ -f "$LUKITAS_KEYSTORE" ] && [ -r "$LUKITAS_KEYSTORE" ] || die "the file LUKITAS_KEYSTORE names does not exist or is not readable" 2
-export LUKITAS_KEY_PASSWORD="${LUKITAS_KEY_PASSWORD:-$LUKITAS_KEYSTORE_PASSWORD}"
+[ -f "$WAMBITO_KEYSTORE" ] && [ -r "$WAMBITO_KEYSTORE" ] || die "the file WAMBITO_KEYSTORE names does not exist or is not readable" 2
+export WAMBITO_KEY_PASSWORD="${WAMBITO_KEY_PASSWORD:-$WAMBITO_KEYSTORE_PASSWORD}"
 
 # --- Tools -----------------------------------------------------------------------------------------
 sdk="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
@@ -163,7 +163,7 @@ else
   echo "release.sh: no mobile-v* tag at HEAD: this is a DEV build ($version_name), not a release." >&2
 fi
 
-echo "Building Lukitas $version_name (base code $base_code) from $short_commit"
+echo "Building Wambito $version_name (base code $base_code) from $short_commit"
 
 # --- Build, unsigned -----------------------------------------------------------------------------
 if [ "$clean" -eq 1 ]; then
@@ -172,8 +172,8 @@ fi
 quietly without_secrets flutter pub get --enforce-lockfile || die "flutter pub get failed" 1
 flutter_out="$MOBILE/build/app/outputs/flutter-apk"
 for abi in "${ABIS[@]}"; do rm -f "$flutter_out/app-$abi-release.apk"; done
-# LUKITAS_UNSIGNED_RELEASE: android/app/build.gradle.kts leaves the release APK without a signature.
-without_secrets env LUKITAS_UNSIGNED_RELEASE=1 flutter build apk --release --split-per-abi \
+# WAMBITO_UNSIGNED_RELEASE: android/app/build.gradle.kts leaves the release APK without a signature.
+without_secrets env WAMBITO_UNSIGNED_RELEASE=1 flutter build apk --release --split-per-abi \
   --target-platform android-arm,android-arm64 --build-name "$version_name" --build-number "$base_code"
 
 # --- Sign, verify, record ----------------------------------------------------------------------
@@ -184,7 +184,7 @@ fingerprint=""
 for abi in "${ABIS[@]}"; do
   unsigned="$flutter_out/app-$abi-release.apk"
   [ -f "$unsigned" ] || die "Flutter did not produce $unsigned" 1
-  signed="$dist/lukitas-$version_name-$abi.apk"
+  signed="$dist/wambito-$version_name-$abi.apk"
 
   # AGP aligns the APK (4 bytes, and 16 KB for the native libraries: Android 15+ phones with 16 KB
   # pages); signing must not move anything, so alignment is checked before and after.
@@ -192,8 +192,8 @@ for abi in "${ABIS[@]}"; do
 
   signed_ok=1
   with_secrets "$build_tools/apksigner" sign \
-    --ks "$LUKITAS_KEYSTORE" --ks-key-alias "$LUKITAS_KEY_ALIAS" \
-    --ks-pass env:LUKITAS_KEYSTORE_PASSWORD --key-pass env:LUKITAS_KEY_PASSWORD \
+    --ks "$WAMBITO_KEYSTORE" --ks-key-alias "$WAMBITO_KEY_ALIAS" \
+    --ks-pass env:WAMBITO_KEYSTORE_PASSWORD --key-pass env:WAMBITO_KEY_PASSWORD \
     --min-sdk-version 26 --out "$signed" "$unsigned" 2>&1 | redact ||
     signed_ok=0
   [ "$signed_ok" -eq 1 ] && [ -f "$signed" ] || die "$abi: apksigner did not sign the APK (is the alias, or a password, wrong?)" 1
@@ -239,14 +239,14 @@ $(grep -i -E 'certificate|digest' <<<"$report" || echo '(none)')" 1
   fi
 
   "$HERE/check-permissions.sh" --apk "$signed" >/dev/null || die "$abi: check-permissions.sh refuses the APK (run it for the details)" 1
-  echo "Signed and verified: lukitas-$version_name-$abi.apk (versionCode $expected_code)"
+  echo "Signed and verified: wambito-$version_name-$abi.apk (versionCode $expected_code)"
 done
 
 # The same certificate, read from the keystore itself (keytool, when there is one): the APK is
 # signed by the key that was named, not by something else that happens to verify.
 if command -v keytool >/dev/null 2>&1; then
-  listing="$(with_secrets keytool -list -v -keystore "$LUKITAS_KEYSTORE" -alias "$LUKITAS_KEY_ALIAS" \
-    -storepass:env LUKITAS_KEYSTORE_PASSWORD 2>&1)" || die "keytool cannot read the key:
+  listing="$(with_secrets keytool -list -v -keystore "$WAMBITO_KEYSTORE" -alias "$WAMBITO_KEY_ALIAS" \
+    -storepass:env WAMBITO_KEYSTORE_PASSWORD 2>&1)" || die "keytool cannot read the key:
 $(printf '%s\n' "$listing" | redact)" 1
   from_keystore="$(printf '%s\n' "$listing" | sed -n 's/^[[:space:]]*SHA256:[[:space:]]*//p' | head -n 1)"
   [ "$(release_format_fingerprint "$from_keystore")" = "$fingerprint" ] ||
@@ -259,13 +259,13 @@ release_is_fingerprint "$fingerprint" || die "internal error: '$fingerprint' is 
 
 (
   cd "$dist"
-  for apk in lukitas-*.apk; do printf '%s  %s\n' "$(release_sha256 "$apk")" "$apk"; done >SHA256SUMS
+  for apk in wambito-*.apk; do printf '%s  %s\n' "$(release_sha256 "$apk")" "$apk"; done >SHA256SUMS
 )
 printf '%s\n' "$fingerprint" >"$dist/ANDROID_CERT_SHA256.txt"
 
 echo
 echo "Done: $dist"
-(cd "$dist" && ls -l lukitas-*.apk | awk '{ print "  " $NF "  " $5 " bytes" }')
+(cd "$dist" && ls -l wambito-*.apk | awk '{ print "  " $NF "  " $5 " bytes" }')
 echo
 echo "Put this in deploy/personal/.env, then run deploy/personal/up.sh:"
 echo "ANDROID_CERT_SHA256=$fingerprint"

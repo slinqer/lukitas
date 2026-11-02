@@ -41,11 +41,14 @@ class MainActivity : FlutterActivity() {
     private var files: FilesChannel? = null
     private var launch: MethodChannel? = null
 
-    /** The widget's or the tile's `lukitas://` link, until Dart takes it (lib/launch/launch_links.dart). */
+    /** The widget's or the tile's `wambito://` link, until Dart takes it (lib/launch/launch_links.dart). */
     private var pendingLink: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Taken before Flutter starts, so its router never sees it (it would read "lukitas://add"
+        // What an older build kept under the old name moves first, before anything reads it
+        // (the voice hint just below). 2b: remove.
+        Migration.run(this)
+        // Taken before Flutter starts, so its router never sees it (it would read "wambito://add"
         // as "/"). An activity recreated from saved state gets its first link again: not reopened.
         takeLink(intent, act = savedInstanceState == null)
         // The speech model Dart last asked to have loaded in advance (after a first capture) loads in
@@ -61,9 +64,9 @@ class MainActivity : FlutterActivity() {
     }
 
     /**
-     * Keeps [intent]'s `lukitas://` link for Dart (when [act]) and strips it from the intent. Flutter
+     * Keeps [intent]'s `wambito://` link for Dart (when [act]) and strips it from the intent. Flutter
      * reads an intent's data as a route to open, so nothing but the sign-in email's magic link may
-     * stay on it ([LaunchLinks.routerMayRead]): a `lukitas://` link (taken here, or one that did not
+     * stay on it ([LaunchLinks.routerMayRead]): a `wambito://` link (taken here, or one that did not
      * come through the app's own entry and only opens the app), a web link for a host other than the
      * configured server's, and the `glance-action:/CALLBACK?...` Glance puts on a tap on the widget
      * itself are all stripped.
@@ -94,7 +97,7 @@ class MainActivity : FlutterActivity() {
         val messenger = flutterEngine.dartExecutor.binaryMessenger
 
         // The widget's ＋ and 🎤 and the Quick Settings tile (launch/LaunchLinks.kt).
-        launch = MethodChannel(messenger, "lukitas/launch").apply {
+        launch = MethodChannel(messenger, "wambito/launch").apply {
             setMethodCallHandler { call, result ->
                 when (call.method) {
                     "take" -> {
@@ -127,7 +130,7 @@ class MainActivity : FlutterActivity() {
 
         // The phone's IANA time zone (lib/api/device.dart): Dart only knows its abbreviation. And
         // the browser, for "Más en la web".
-        MethodChannel(messenger, "lukitas/device").setMethodCallHandler { call, result ->
+        MethodChannel(messenger, "wambito/device").setMethodCallHandler { call, result ->
             when (call.method) {
                 "timeZone" -> result.success(ZoneId.systemDefault().id)
                 // "Más en la web" and "Comentarios e ideas" (lib/settings/url_opener.dart): a page in
@@ -149,7 +152,7 @@ class MainActivity : FlutterActivity() {
         // Debuggable builds only: the integration tests open a link in this app as Android
         // delivers an App Link (an ACTION_VIEW intent), to test the manifest's filter and routing.
         if (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {
-            MethodChannel(messenger, "lukitas/test").setMethodCallHandler { call, result ->
+            MethodChannel(messenger, "wambito/test").setMethodCallHandler { call, result ->
                 when (call.method) {
                     "openLink" -> {
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(call.arguments as String))
@@ -169,7 +172,7 @@ class MainActivity : FlutterActivity() {
                         )
                         result.success(null)
                     }
-                    // What a browser does with the web page's "Abrir en Lukitas": it parses the
+                    // What a browser does with the web page's "Abrir en Wambito": it parses the
                     // `intent://` address and starts the intent as a browsable view, with no
                     // component of its own, so Android resolves it through the manifest's filters.
                     "openIntentUri" -> {

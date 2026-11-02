@@ -26,11 +26,11 @@ abstract interface class Passkeys {
   Future<String> create(String optionsJson);
 }
 
-/// [Passkeys] over the `lukitas/passkeys` platform channel.
+/// [Passkeys] over the `wambito/passkeys` platform channel.
 class PlatformPasskeys implements Passkeys {
   const PlatformPasskeys();
 
-  static const _channel = MethodChannel('lukitas/passkeys');
+  static const _channel = MethodChannel('wambito/passkeys');
 
   static const _codes = {'cancelled': 'AUTH_CANCELLED', 'no_credential': 'NO_CREDENTIAL'};
 

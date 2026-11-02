@@ -17,7 +17,7 @@ import java.io.IOException
 import kotlin.concurrent.thread
 
 /**
- * Files in and out of the app, on the `lukitas/files` method channel (lib/files/files_channel.dart),
+ * Files in and out of the app, on the `wambito/files` method channel (lib/files/files_channel.dart),
  * and nothing else: the app asks for no storage permission. A person picks a file with the system's
  * document picker (Storage Access Framework, `ACTION_OPEN_DOCUMENT`), chooses where to save one
  * (`ACTION_CREATE_DOCUMENT`), or hands one to another app (the share sheet, `ACTION_SEND` with a
@@ -38,7 +38,7 @@ class FilesChannel(
     messenger: BinaryMessenger,
 ) : MethodChannel.MethodCallHandler {
 
-    private val methods = MethodChannel(messenger, "lukitas/files")
+    private val methods = MethodChannel(messenger, "wambito/files")
     private val main = Handler(Looper.getMainLooper())
 
     private class PendingPick(val result: MethodChannel.Result, val limit: Int)

@@ -45,12 +45,13 @@ class NoticeSettings(context: Context) {
         preferences.edit().apply(change).commit()
     }
 
-    private companion object {
-        const val FILE = "lukitas.notices"
-        const val DUE = "due"
-        const val GUEST = "guest"
-        const val ZONE = "zone"
-        const val LANGUAGE = "language"
-        const val LAST_DUE_DAY = "lastDueDay"
+    companion object {
+        /** The SharedPreferences file (before the rename `lukitas.notices`, which Migration moves; 2b: remove this note). */
+        internal const val FILE = "wambito.notices"
+        private const val DUE = "due"
+        private const val GUEST = "guest"
+        private const val ZONE = "zone"
+        private const val LANGUAGE = "language"
+        private const val LAST_DUE_DAY = "lastDueDay"
     }
 }

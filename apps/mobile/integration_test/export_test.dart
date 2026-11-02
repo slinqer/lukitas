@@ -6,7 +6,7 @@
 //     --dart-define=MAILPIT_URL=http://10.0.2.2:8025
 //
 // A new email user with one movement exports from Settings against the real API, and the file goes
-// through the real `lukitas/files` channel (android/.../files/FilesChannel.kt):
+// through the real `wambito/files` channel (android/.../files/FilesChannel.kt):
 //  * Save: the debug build lets the test stand in for the person at the system's "save as" picker
 //    (`injectSave` names the file the next save writes to); the bytes are then written by the same
 //    Kotlin code a saved document goes through, and read back here.
@@ -28,7 +28,7 @@ import 'package:wambito/main.dart' as app;
 
 const _server = String.fromEnvironment('WAMBITO_SERVER', defaultValue: 'http://10.0.2.2:3000');
 const _mailpit = String.fromEnvironment('MAILPIT_URL', defaultValue: 'http://10.0.2.2:8025');
-const _files = MethodChannel('lukitas/files');
+const _files = MethodChannel('wambito/files');
 
 final _http = Dio(BaseOptions(validateStatus: (_) => true));
 
@@ -181,7 +181,7 @@ void main() {
 
     // The sheet is closed, as a person would: the suites after this one (suites_test.dart) open
     // links in the app, which must land on this activity, not on top of the sheet.
-    await const MethodChannel('lukitas/test').invokeMethod<void>('returnToApp');
+    await const MethodChannel('wambito/test').invokeMethod<void>('returnToApp');
     await tester.pump(const Duration(seconds: 1));
   });
 }

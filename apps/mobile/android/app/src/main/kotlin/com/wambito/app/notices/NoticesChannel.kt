@@ -90,7 +90,7 @@ class NoticesChannel(private val activity: Activity, messenger: BinaryMessenger)
     }
 
     companion object {
-        const val NAME = "lukitas/notices"
+        const val NAME = "wambito/notices"
         private const val PERMISSION_REQUEST = 4211
     }
 }

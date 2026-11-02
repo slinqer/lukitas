@@ -10,7 +10,7 @@ import io.flutter.plugin.common.MethodChannel
 import java.io.File
 
 /**
- * The feedback sounds (lib/feedback/feedback_platform.dart), on the `lukitas/sounds` method
+ * The feedback sounds (lib/feedback/feedback_platform.dart), on the `wambito/sounds` method
  * channel: Android's own [SoundPool], so there is no audio plugin and nothing from Google.
  *
  * `preload({assets})` → Int loads Flutter assets (the web's tiny mp3 files, under 4 KB each) so the
@@ -22,7 +22,7 @@ import java.io.File
 class SoundChannel(private val context: Context, messenger: BinaryMessenger) :
     MethodChannel.MethodCallHandler {
 
-    private val methods = MethodChannel(messenger, "lukitas/sounds")
+    private val methods = MethodChannel(messenger, "wambito/sounds")
     private var pool: SoundPool? = null
     private val ids = HashMap<String, Int>()
     private val loaded = HashSet<Int>()

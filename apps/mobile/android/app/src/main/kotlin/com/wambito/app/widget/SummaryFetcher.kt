@@ -14,7 +14,7 @@ data class SummaryFigures(
     val budgetTotal: Long,
     val spent: Long,
     val remaining: Long,
-    /** A category is near or over its limit (Lukitas is worried). */
+    /** A category is near or over its limit (Wambi is worried). */
     val worried: Boolean,
 )
 
@@ -57,9 +57,9 @@ class SummaryFetcher(
             connection.setRequestProperty("Accept", "application/json")
             // Not activity: the API reads the session without sliding it, so a phone that only runs
             // this job does not keep a guest from the 60-day cleanup.
-            connection.setRequestProperty("x-lukas-background", "1")
-            connection.setRequestProperty("x-lukas-timezone", ZoneId.systemDefault().id)
-            connection.setRequestProperty("x-lukas-locale", Locale.getDefault().toLanguageTag())
+            connection.setRequestProperty("x-wambito-background", "1")
+            connection.setRequestProperty("x-wambito-timezone", ZoneId.systemDefault().id)
+            connection.setRequestProperty("x-wambito-locale", Locale.getDefault().toLanguageTag())
             when (connection.responseCode) {
                 200 -> parse(connection.inputStream.bufferedReader().use { it.readText() })
                 401 -> SummaryResult.Unauthorized

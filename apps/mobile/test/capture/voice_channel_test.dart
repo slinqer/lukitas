@@ -1,10 +1,10 @@
-// The Dart side of the `lukitas/voice/events` event channel (lib/capture/engine/voice_channel.dart):
+// The Dart side of the `wambito/voice/events` event channel (lib/capture/engine/voice_channel.dart):
 // what reaches a listen from the platform, and what must never reach the next one.
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wambito/capture/engine/voice_channel.dart';
 
-const _events = 'lukitas/voice/events';
+const _events = 'wambito/voice/events';
 const _codec = StandardMethodCodec();
 
 void main() {

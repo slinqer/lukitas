@@ -17,14 +17,14 @@ enum class WidgetTheme { NIGHT, DAY, SYSTEM }
 /** The progress bar's colour: on track, a category near its limit, over the budgets. */
 enum class Tone { GOOD, NEAR, OVER }
 
-/** Lukitas' face on the medium widget. */
+/** Wambi's face on the medium widget. */
 enum class Mood { HAPPY, WORRIED }
 
 /** What the widget says (spec section 7.1), worked out from a snapshot before anything is drawn. */
 sealed interface WidgetModel {
     val theme: WidgetTheme
 
-    /** Nobody signed in (or nothing to show yet): "Abre Lukitas para empezar". */
+    /** Nobody signed in (or nothing to show yet): "Abre Wambito para empezar". */
     data class SignedOut(val message: String, override val theme: WidgetTheme) : WidgetModel
 
     data class Figures(

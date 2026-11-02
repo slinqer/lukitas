@@ -68,9 +68,9 @@ class RefreshWorkerTest {
             headers += mapOf(
                 "path" to request.path,
                 "authorization" to request.headers["authorization"],
-                "timezone" to request.headers["x-lukas-timezone"],
-                "locale" to request.headers["x-lukas-locale"],
-                "background" to request.headers["x-lukas-background"],
+                "timezone" to request.headers["x-wambito-timezone"],
+                "locale" to request.headers["x-wambito-locale"],
+                "background" to request.headers["x-wambito-background"],
             )
             whileAnswering?.invoke()
             status to body
@@ -131,7 +131,7 @@ class RefreshWorkerTest {
         assertEquals(ZoneId.systemDefault().id, headers[0]["timezone"])
         assertTrue(headers[0]["locale"]!!.isNotEmpty())
         // A job the person did not start is not activity: the API reads the session without
-        // sliding it (x-lukas-background), so the widget never keeps a guest from being cleaned up.
+        // sliding it (x-wambito-background), so the widget never keeps a guest from being cleaned up.
         assertEquals("1", headers[0]["background"])
         assertEquals(
             earlier.copy(
@@ -146,10 +146,10 @@ class RefreshWorkerTest {
 
     @Test
     fun `the server chosen in Settings is used, with any path it has`() {
-        session.serverUrl = "http://127.0.0.1:${server.port}/lukitas/"
+        session.serverUrl = "http://127.0.0.1:${server.port}/wambito/"
         store(earlier)
         runWorker()
-        assertEquals("/lukitas/api/v1/summary", headers[0]["path"])
+        assertEquals("/wambito/api/v1/summary", headers[0]["path"])
     }
 
     @Test
@@ -252,7 +252,7 @@ class RefreshWorkerTest {
     }
 
     @Test
-    fun `signed out, nothing is asked and the widget says Abre Lukitas`() {
+    fun `signed out, nothing is asked and the widget says Abre Wambito`() {
         store(earlier)
         session.stored = null
         runWorker()
@@ -263,7 +263,7 @@ class RefreshWorkerTest {
     }
 
     @Test
-    fun `a session the server no longer knows shows Abre Lukitas, never the old figure`() {
+    fun `a session the server no longer knows shows Abre Wambito, never the old figure`() {
         store(earlier)
         status = 401
         body = """{"type":"about:blank","status":401}"""

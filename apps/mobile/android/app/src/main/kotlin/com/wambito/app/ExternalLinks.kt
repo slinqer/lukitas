@@ -5,7 +5,7 @@ import android.net.Uri
 
 /**
  * What the app asks the phone to open for it (lib/settings/url_opener.dart, the `openUrl` call of the
- * `lukitas/device` channel): a web page (`http`, `https`: "Más en la web") or an email to write
+ * `wambito/device` channel): a web page (`http`, `https`: "Más en la web") or an email to write
  * (`mailto`: "Comentarios e ideas"). Nothing else: a `javascript:`, `intent:`, `file:`, `content:`,
  * `tel:`, `sms:` or `market:` address is refused, whoever sent it, so the channel is no way to start
  * an arbitrary activity.

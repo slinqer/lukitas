@@ -4,7 +4,7 @@
 //   flutter test integration_test/import_test.dart -d emulator-5554 \
 //     --dart-define=WAMBITO_SERVER=http://10.0.2.2:3000
 //
-// The files go through the real `lukitas/files` channel (android/.../files/FilesChannel.kt): the
+// The files go through the real `wambito/files` channel (android/.../files/FilesChannel.kt): the
 // debug build lets the test stand in for the person at the system's document picker (`injectPick`
 // hands the next pick a file in the app's cache), and the file is then read, bounded, off the main
 // thread by the same Kotlin code a picked document goes through. Everything after it is the real
@@ -29,7 +29,7 @@ const _ci = bool.fromEnvironment('CI');
 const _longestFrameGap = Duration(milliseconds: _ci ? 1500 : 700);
 
 const _server = String.fromEnvironment('WAMBITO_SERVER', defaultValue: 'http://10.0.2.2:3000');
-const _files = MethodChannel('lukitas/files');
+const _files = MethodChannel('wambito/files');
 
 final _http = Dio(BaseOptions(validateStatus: (_) => true));
 

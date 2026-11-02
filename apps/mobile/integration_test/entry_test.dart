@@ -151,7 +151,7 @@ void main() {
     expect(me['isAnonymous'], isTrue);
     // The guest's profile starts from the phone's time zone (x-wambito-timezone).
     // The server stores the canonical name, so an emulator's "Etc/UTC" comes back as "UTC".
-    final zone = await const MethodChannel('lukitas/device').invokeMethod<String>('timeZone');
+    final zone = await const MethodChannel('wambito/device').invokeMethod<String>('timeZone');
     const utcAliases = {
       'Etc/UTC',
       'Etc/UCT',
@@ -202,7 +202,7 @@ void main() {
       path: '/auth/verify',
       query: link.query,
     );
-    await const MethodChannel('lukitas/test').invokeMethod<void>('openLink', foreign.toString());
+    await const MethodChannel('wambito/test').invokeMethod<void>('openLink', foreign.toString());
     for (var i = 0; i < 30; i++) {
       await tester.pump(const Duration(milliseconds: 100));
     }
@@ -217,7 +217,7 @@ void main() {
       path: '/auth/verify',
       query: link.query,
     );
-    await const MethodChannel('lukitas/test').invokeMethod<void>('openLink', appLink.toString());
+    await const MethodChannel('wambito/test').invokeMethod<void>('openLink', appLink.toString());
     await _pumpUntil(tester, find.byKey(const Key('welcome.page')));
 
     final me = await _me();
@@ -257,7 +257,7 @@ void main() {
         'intent://${server.host}:${server.port}/auth/verify?$query'
         '#Intent;scheme=${server.scheme};package=com.wambito.app;'
         'S.browser_fallback_url=${Uri.encodeComponent(fallback.toString())};end';
-    await const MethodChannel('lukitas/test').invokeMethod<void>('openIntentUri', intentUri);
+    await const MethodChannel('wambito/test').invokeMethod<void>('openIntentUri', intentUri);
     await _pumpUntil(tester, find.byKey(const Key('welcome.page')));
 
     final me = await _me();

@@ -5,7 +5,7 @@ import 'package:wambito/settings/url_opener.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
-  const channel = MethodChannel('lukitas/device');
+  const channel = MethodChannel('wambito/device');
   final calls = <MethodCall>[];
 
   tearDown(() {
@@ -14,7 +14,7 @@ void main() {
   });
 
   test(
-    'the address goes to lukitas/device as an openUrl call, and the answer comes back',
+    'the address goes to wambito/device as an openUrl call, and the answer comes back',
     () async {
       messenger.setMockMethodCallHandler(channel, (call) async {
         calls.add(call);

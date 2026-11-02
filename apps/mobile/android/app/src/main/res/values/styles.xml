@@ -7,6 +7,6 @@
     </style>
     <!-- The window behind Flutter's UI once it runs (Flutter's Android embedding V2). -->
     <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
-        <item name="android:windowBackground">@color/lukitas_night_bg</item>
+        <item name="android:windowBackground">@color/wambito_night_bg</item>
     </style>
 </resources>

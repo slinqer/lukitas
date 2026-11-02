@@ -15,7 +15,7 @@ object FileTransfer {
     const val MAX_LIMIT = 32 * 1024 * 1024
 
     private const val MAX_NAME = 120
-    private const val FALLBACK_NAME = "lukitas"
+    private const val FALLBACK_NAME = "wambito"
 
     /**
      * Reads [input] whole, or null when it holds more than [limit] bytes. It never reads more than
@@ -42,7 +42,7 @@ object FileTransfer {
     /**
      * A file name that is safe to put in the app's cache for a share: no folders (a name such as
      * `../../x` stays `x`), no control characters, no leading dots, at most 120 characters with the
-     * extension kept. A name with nothing left is `lukitas`.
+     * extension kept. A name with nothing left is `wambito`.
      */
     fun safeName(name: String): String {
         val leaf = name.substringAfterLast('/').substringAfterLast('\\')

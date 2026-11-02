@@ -26,7 +26,7 @@ import 'package:wambito/settings/settings_screen.dart';
 import 'package:wambito/settings/settings_store.dart';
 
 const _server = String.fromEnvironment('WAMBITO_SERVER', defaultValue: 'http://10.0.2.2:3000');
-const _test = MethodChannel('lukitas/test');
+const _test = MethodChannel('wambito/test');
 const _platform = ChannelNoticePlatform();
 
 /// For a person (or adb) to tap the real notification on the shade instead of the test sending its

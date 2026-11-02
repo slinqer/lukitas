@@ -84,7 +84,7 @@ void main() {
     }
   });
 
-  test('the deep links: lukitas://add and capture, only through a not-exported alias', () {
+  test('the deep links: wambito:// (and lukitas:// until 2b), only through a not-exported alias', () {
     final alias = RegExp(
       r'<activity-alias((?:(?!</activity-alias>).)*)</activity-alias>',
       dotAll: true,
@@ -92,44 +92,54 @@ void main() {
     expect(alias, contains('android:name=".LaunchLinkAlias"'));
     expect(alias, contains('android:exported="false"'));
     expect(alias, contains('android:targetActivity=".MainActivity"'));
-    expect(alias, contains('android:scheme="lukitas" android:host="add"'));
-    expect(alias, contains('android:scheme="lukitas" android:host="capture"'));
+    for (final host in ['add', 'capture', 'due', 'progress', 'home']) {
+      expect(alias, contains('android:scheme="wambito" android:host="$host"'));
+      // Links pinned before the rename (a notice on the shade): 2b: remove.
+      expect(alias, contains('android:scheme="lukitas" android:host="$host"'));
+    }
+    expect(alias, contains('2b: remove'));
     expect(alias, isNot(contains('BROWSABLE')));
-    // The exported launcher activity takes no lukitas:// link: other apps can start it.
+    // The exported launcher activity takes no app link of either scheme: other apps can start it.
     final main = RegExp(
       r'<activity\s((?:(?!</activity>).)*)</activity>',
       dotAll: true,
     ).firstMatch(_manifest)!.group(1)!;
     expect(main, contains('android:name=".MainActivity"'));
     expect(main, isNot(contains('lukitas')));
+    expect(main, isNot(contains('android:scheme="wambito"')));
+  });
+
+  test('the app is Wambito on the phone', () {
+    expect(_manifest, contains('android:label="Wambito"'));
+    expect(_kotlin('../launch/LaunchLinks.kt'), contains('SCHEME = "wambito"'));
   });
 
   test('a cold start is night: the launch window and the Android 12 splash', () {
     const res = 'android/app/src/main/res';
     final colors = File('$res/values/colors.xml').readAsStringSync();
-    final hex = RegExp(r'<color name="lukitas_night_bg">#([0-9A-Fa-f]{6})</color>')
+    final hex = RegExp(r'<color name="wambito_night_bg">#([0-9A-Fa-f]{6})</color>')
         .firstMatch(colors)!
         .group(1)!;
     expect(0xFF000000 | int.parse(hex, radix: 16), _argb(WambitoColors.night.bg));
     for (final file in ['drawable/launch_background.xml', 'drawable-v21/launch_background.xml']) {
-      expect(File('$res/$file').readAsStringSync(), contains('@color/lukitas_night_bg'));
+      expect(File('$res/$file').readAsStringSync(), contains('@color/wambito_night_bg'));
     }
     final styles = File('$res/values/styles.xml').readAsStringSync();
     expect(styles, isNot(contains('Theme.Light')));
     expect(
       styles,
-      contains('<item name="android:windowBackground">@color/lukitas_night_bg</item>'),
+      contains('<item name="android:windowBackground">@color/wambito_night_bg</item>'),
     );
     expect(File('$res/values-night/styles.xml').existsSync(), isFalse, reason: 'one night theme');
     final splash = File('$res/values-v31/styles.xml').readAsStringSync();
     expect(
       splash,
-      contains('<item name="android:windowSplashScreenBackground">@color/lukitas_night_bg</item>'),
+      contains('<item name="android:windowSplashScreenBackground">@color/wambito_night_bg</item>'),
     );
     expect(
       splash,
       contains(
-        '<item name="android:windowSplashScreenIconBackgroundColor">@color/lukitas_night_bg</item>',
+        '<item name="android:windowSplashScreenIconBackgroundColor">@color/wambito_night_bg</item>',
       ),
     );
   });

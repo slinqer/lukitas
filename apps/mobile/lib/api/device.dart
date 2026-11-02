@@ -12,7 +12,7 @@ class DeviceHints {
   /// Until the phone has answered, and in tests: the API then falls back to UTC and Spanish.
   static const fallback = DeviceHints(timezone: 'UTC', locale: 'es');
 
-  static const _channel = MethodChannel('lukitas/device');
+  static const _channel = MethodChannel('wambito/device');
 
   /// The phone's settings: the zone from Android (Dart only knows its abbreviation), the
   /// language as a BCP 47 tag such as `es-CO`, which also carries the region.

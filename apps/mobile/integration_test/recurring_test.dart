@@ -21,7 +21,7 @@ import 'package:wambito/main.dart' as app;
 import 'package:wambito/notices/notice_platform.dart';
 
 const _server = String.fromEnvironment('WAMBITO_SERVER', defaultValue: 'http://10.0.2.2:3000');
-const _test = MethodChannel('lukitas/test');
+const _test = MethodChannel('wambito/test');
 const _platform = ChannelNoticePlatform();
 
 final _http = Dio(BaseOptions(validateStatus: (_) => true));

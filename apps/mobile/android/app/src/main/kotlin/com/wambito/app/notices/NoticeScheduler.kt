@@ -25,8 +25,8 @@ import java.time.ZoneId
  * warning asks nothing, so it waits for none: a phone offline on day 44 is warned all the same.
  */
 object NoticeScheduler {
-    const val DUE = "lukitas.notice.due"
-    const val GUEST = "lukitas.notice.guest"
+    const val DUE = "wambito.notice.due"
+    const val GUEST = "wambito.notice.guest"
 
     /**
      * The server deletes an inactive guest at 60 days (apps/api/src/services/guest-cleanup.ts), but
@@ -57,9 +57,13 @@ object NoticeScheduler {
     fun enqueueNextDue(context: Context, zone: ZoneId, now: Instant) =
         enqueueDue(context, zone, now, ExistingWorkPolicy.REPLACE)
 
-    private fun enqueueDue(context: Context, zone: ZoneId, now: Instant, policy: ExistingWorkPolicy) {
+    private fun enqueueDue(context: Context, zone: ZoneId, now: Instant, policy: ExistingWorkPolicy) =
+        enqueueDueIn(context, Duration.between(now, NoticeTimes.nextDueRun(now, zone).toInstant()), policy)
+
+    /** The "Hoy vence…" job [delay] from now, on a network (also Migration's, for the old name's). */
+    internal fun enqueueDueIn(context: Context, delay: Duration, policy: ExistingWorkPolicy) {
         val request = OneTimeWorkRequestBuilder<DueWorker>()
-            .setInitialDelay(Duration.between(now, NoticeTimes.nextDueRun(now, zone).toInstant()))
+            .setInitialDelay(delay)
             .setConstraints(network)
             .build()
         WorkManager.getInstance(context).enqueueUniqueWork(DUE, policy, request)
@@ -81,10 +85,15 @@ object NoticeScheduler {
         val settings = NoticeSettings(context)
         settings.guestEnabled = true
         settings.language = language
+        enqueueGuestIn(context, GUEST_AFTER, ExistingWorkPolicy.REPLACE)
+    }
+
+    /** The guest warning's job [delay] from now (also Migration's, for the old name's). */
+    internal fun enqueueGuestIn(context: Context, delay: Duration, policy: ExistingWorkPolicy) {
         val request = OneTimeWorkRequestBuilder<GuestWorker>()
-            .setInitialDelay(GUEST_AFTER)
+            .setInitialDelay(delay)
             .build()
-        WorkManager.getInstance(context).enqueueUniqueWork(GUEST, ExistingWorkPolicy.REPLACE, request)
+        WorkManager.getInstance(context).enqueueUniqueWork(GUEST, policy, request)
     }
 
     fun cancelGuest(context: Context) {

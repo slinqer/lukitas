@@ -32,7 +32,7 @@
     <!-- No backup: the session token is encrypted with a Keystore key, which never leaves this phone, so it cannot be restored on another device. -->
     <application
         android:allowBackup="false"
-        android:label="Lukitas"
+        android:label="Wambito"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -70,8 +70,8 @@
             <!-- Flutter hands an opened link to the router (go_router reads /auth/verify?...). -->
             <meta-data android:name="flutter_deeplinking_enabled" android:value="true"/>
         </activity>
-        <!-- The widget's ＋ (lukitas://add) and 🎤 and the Quick Settings tile
-             (lukitas://capture), spec section 7.1, and the "Hoy vence…" notice (lukitas://due),
+        <!-- The widget's ＋ (wambito://add) and 🎤 and the Quick Settings tile
+             (wambito://capture), spec section 7.1, and the "Hoy vence…" notice (wambito://due),
              7.2, open MainActivity through this alias, which is
              not exported: only the app itself (its widget's, tile's and notice's PendingIntents) can start
              it, so no other app and no web page can open the microphone sheet. MainActivity hands
@@ -83,37 +83,48 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
+                <data android:scheme="wambito" android:host="add"/>
+                <data android:scheme="wambito" android:host="capture"/>
+                <!-- The "Hoy vence…" notice (notices/NoticePoster.kt): home, with the payments in view. -->
+                <data android:scheme="wambito" android:host="due"/>
+                <!-- The guest warning (notices/NoticePoster.kt): "Guarda tu progreso". -->
+                <data android:scheme="wambito" android:host="progress"/>
+                <!-- A tap on the widget itself: home. -->
+                <data android:scheme="wambito" android:host="home"/>
+            </intent-filter>
+            <!-- The same links under the old name, from a notice an older build put on the shade.
+                 2b: remove (with LaunchLinks.OLD_SCHEME). -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
                 <data android:scheme="lukitas" android:host="add"/>
                 <data android:scheme="lukitas" android:host="capture"/>
-                <!-- The "Hoy vence…" notice (notices/NoticePoster.kt): home, with the payments in view. -->
                 <data android:scheme="lukitas" android:host="due"/>
-                <!-- The guest warning (notices/NoticePoster.kt): "Guarda tu progreso". -->
                 <data android:scheme="lukitas" android:host="progress"/>
-                <!-- A tap on the widget itself: home. -->
                 <data android:scheme="lukitas" android:host="home"/>
             </intent-filter>
         </activity-alias>
         <!-- The home-screen widget, small (2×1) and medium (4×2), drawn with Jetpack Glance
              (widget/). The app and the refresh job ask them to redraw. -->
         <receiver
-            android:name=".widget.LukitasSmallWidgetReceiver"
+            android:name=".widget.WambitoSmallWidgetReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/lukitas_small_widget"/>
+                android:resource="@xml/wambito_small_widget"/>
         </receiver>
         <receiver
-            android:name=".widget.LukitasMediumWidgetReceiver"
+            android:name=".widget.WambitoMediumWidgetReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/lukitas_medium_widget"/>
+                android:resource="@xml/wambito_medium_widget"/>
         </receiver>
         <!-- The Quick Settings tile: quick capture, listening (tile/CaptureTileService.kt). Only the
              system's Quick Settings may bind it. -->

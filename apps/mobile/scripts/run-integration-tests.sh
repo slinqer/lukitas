@@ -15,7 +15,7 @@
 #
 # The API allows 5 code requests per 10 minutes from one address, and the emulator is one address for
 # every file. So each run is a client of its own, as each browser is in the web's e2e suite
-# (apps/web/e2e/helpers.ts): it is given a made-up address (--dart-define=LUKITAS_CLIENT_IP, and
+# (apps/web/e2e/helpers.ts): it is given a made-up address (--dart-define=WAMBITO_CLIENT_IP, and
 # suites_test.dart a new one per file), which a debug build sends as x-forwarded-for and the dev
 # stack counts. A release build never sends it, and
 # the API's limits are as they are. Runs every file even when one fails, and exits 1 if any did.
@@ -29,7 +29,7 @@ while [ $# -gt 0 ]; do
     *) echo "Unknown argument: $1" >&2; exit 2 ;;
   esac
 done
-server="${LUKITAS_SERVER:-http://10.0.2.2:3000}"
+server="${WAMBITO_SERVER:-http://10.0.2.2:3000}"
 mailpit="${MAILPIT_URL:-http://10.0.2.2:8025}"
 package="com.wambito.app"
 notification="android.permission.POST_NOTIFICATIONS"
@@ -64,7 +64,7 @@ run() { # run <granted|revoked> <label> <flutter test args...>
   prepare "$state"
   # A new address per run (the web's `clientIp`: 198.18.0.0/15, a range for benchmarking).
   local client_ip="198.$((18 + RANDOM % 2)).$((RANDOM % 256)).$((1 + RANDOM % 254))"
-  if flutter test "$@" -d "$device" --dart-define=LUKITAS_SERVER="$server" --dart-define=MAILPIT_URL="$mailpit" --dart-define=LUKITAS_CLIENT_IP="$client_ip" --dart-define=CI="${CI:-false}"; then
+  if flutter test "$@" -d "$device" --dart-define=WAMBITO_SERVER="$server" --dart-define=MAILPIT_URL="$mailpit" --dart-define=WAMBITO_CLIENT_IP="$client_ip" --dart-define=CI="${CI:-false}"; then
     passed+=("$label")
   else
     failed+=("$label")

@@ -55,7 +55,7 @@ abstract interface class LaunchLinkSource {
   Stream<String> get links;
 }
 
-/// [LaunchLinkSource] over the `lukitas/launch` channel. Android keeps the latest link until it is
+/// [LaunchLinkSource] over the `wambito/launch` channel. Android keeps the latest link until it is
 /// taken; it says `linkArrived` when one comes in while the app runs, and the link is then taken.
 /// A link that comes before Dart listens is taken at the start instead, so none is lost.
 class ChannelLaunchLinkSource implements LaunchLinkSource {
@@ -67,7 +67,7 @@ class ChannelLaunchLinkSource implements LaunchLinkSource {
     });
   }
 
-  static const _channel = MethodChannel('lukitas/launch');
+  static const _channel = MethodChannel('wambito/launch');
   final _links = StreamController<String>.broadcast();
 
   Future<String?> _take() async {

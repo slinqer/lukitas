@@ -33,7 +33,7 @@ String feedbackMailto({required String subject, required String body}) =>
 /// it cannot be known (tests, a platform with no Android side).
 final appVersionProvider = FutureProvider<String>((ref) async {
   try {
-    return await const MethodChannel('lukitas/device').invokeMethod<String>('appVersion') ?? 'dev';
+    return await const MethodChannel('wambito/device').invokeMethod<String>('appVersion') ?? 'dev';
   } on PlatformException {
     return 'dev';
   } on MissingPluginException {

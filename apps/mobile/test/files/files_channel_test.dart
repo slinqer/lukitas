@@ -2,11 +2,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wambito/files/files_channel.dart';
 
-/// `lukitas/files` (android/.../files/FilesChannel.kt) as Dart talks to it: the arguments it sends
+/// `wambito/files` (android/.../files/FilesChannel.kt) as Dart talks to it: the arguments it sends
 /// and what it makes of the answers. The Kotlin side has its own tests and the emulator one.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  const channel = MethodChannel('lukitas/files');
+  const channel = MethodChannel('wambito/files');
   final calls = <MethodCall>[];
 
   void answer(Future<Object?> Function(MethodCall call) handler) {

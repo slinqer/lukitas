@@ -23,7 +23,7 @@
   },
   "wambiWaves": "Wambi te saluda",
   "@wambiWaves": {
-    "description": "Screen-reader label of the waving Wambito."
+    "description": "Screen-reader label of the waving Wambi."
   },
   "entryGuest": "Probar sin correo",
   "@entryGuest": {

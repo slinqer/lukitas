@@ -277,21 +277,21 @@ jobs:
       # verification, and the fingerprint in the ANDROID_CERT_SHA256 format. Last, because it cleans.
       - name: scripts/release.sh, with a throwaway key
         run: |
-          export LUKITAS_KEYSTORE="$RUNNER_TEMP/throwaway.p12"
-          export LUKITAS_KEY_ALIAS="ci-throwaway"
-          LUKITAS_KEYSTORE_PASSWORD="$(openssl rand -hex 16)"
-          echo "::add-mask::$LUKITAS_KEYSTORE_PASSWORD"
-          export LUKITAS_KEYSTORE_PASSWORD
-          keytool -genkeypair -keystore "$LUKITAS_KEYSTORE" -storetype PKCS12 \
-            -alias "$LUKITAS_KEY_ALIAS" -keyalg RSA -keysize 2048 -validity 2 \
-            -dname "CN=Lukitas CI throwaway" -storepass:env LUKITAS_KEYSTORE_PASSWORD
+          export WAMBITO_KEYSTORE="$RUNNER_TEMP/throwaway.p12"
+          export WAMBITO_KEY_ALIAS="ci-throwaway"
+          WAMBITO_KEYSTORE_PASSWORD="$(openssl rand -hex 16)"
+          echo "::add-mask::$WAMBITO_KEYSTORE_PASSWORD"
+          export WAMBITO_KEYSTORE_PASSWORD
+          keytool -genkeypair -keystore "$WAMBITO_KEYSTORE" -storetype PKCS12 \
+            -alias "$WAMBITO_KEY_ALIAS" -keyalg RSA -keysize 2048 -validity 2 \
+            -dname "CN=Wambito CI throwaway" -storepass:env WAMBITO_KEYSTORE_PASSWORD
           scripts/release.sh --out "$RUNNER_TEMP/dist"
-          rm -f "$LUKITAS_KEYSTORE"
+          rm -f "$WAMBITO_KEYSTORE"
       # The release APK release.sh just signed asks for INTERNET and for no permission nobody chose,
       # and About can list a licence for every Dart package (Flutter collects them into NOTICES.Z).
       - name: The release APK's permissions and licences
         run: |
-          apk="$(ls "$RUNNER_TEMP"/dist/*/lukitas-*-arm64-v8a.apk)"
+          apk="$(ls "$RUNNER_TEMP"/dist/*/wambito-*-arm64-v8a.apk)"
           scripts/check-permissions.sh --apk "$apk"
           scripts/check-licenses.sh --apk "$apk"
 

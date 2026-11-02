@@ -11,7 +11,7 @@
 //
 //     --dart-define=VOICE_MODELS_URL=http://10.0.2.2:8765
 //
-// The buttons are pressed as the widget presses them: the debug-only `lukitas/test` channel starts
+// The buttons are pressed as the widget presses them: the debug-only `wambito/test` channel starts
 // the very intent the widget's ＋ and 🎤 start (launch/LaunchLinks.kt). The refresh job runs for
 // real through WorkManager, reading the session where the app keeps it.
 import 'dart:async';
@@ -39,7 +39,7 @@ import 'package:wambito/main.dart' as app;
 import 'package:wambito/router.dart';
 
 const _server = String.fromEnvironment('WAMBITO_SERVER', defaultValue: 'http://10.0.2.2:3000');
-const _test = MethodChannel('lukitas/test');
+const _test = MethodChannel('wambito/test');
 const _modelsUrl = String.fromEnvironment('VOICE_MODELS_URL');
 
 final _http = Dio(BaseOptions(validateStatus: (_) => true));

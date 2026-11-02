@@ -22,8 +22,8 @@ import java.io.File
 import java.util.concurrent.Executors
 
 /**
- * Quick capture's ears (lib/capture/engine/voice_channel.dart), on the `lukitas/voice` method channel
- * and the `lukitas/voice/events` event channel.
+ * Quick capture's ears (lib/capture/engine/voice_channel.dart), on the `wambito/voice` method channel
+ * and the `wambito/voice/events` event channel.
  *
  * Speech is recognised on the phone by Vosk (the voice spike's choice), never by Android's platform
  * speech recognition API, which hands audio to the phone's recognition service. Audio comes from
@@ -52,8 +52,8 @@ import java.util.concurrent.Executors
 class VoiceChannel(private val activity: Activity, messenger: BinaryMessenger) :
     MethodChannel.MethodCallHandler, EventChannel.StreamHandler {
 
-    private val methods = MethodChannel(messenger, "lukitas/voice")
-    private val events = EventChannel(messenger, "lukitas/voice/events")
+    private val methods = MethodChannel(messenger, "wambito/voice")
+    private val events = EventChannel(messenger, "wambito/voice/events")
     private val main = Handler(Looper.getMainLooper())
     private val worker = Executors.newSingleThreadExecutor()
     private val files = Executors.newSingleThreadExecutor()

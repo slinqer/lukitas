@@ -31,7 +31,7 @@ data class NoticeProfile(
  * The two reads the notices make, as the app does (lib/api/client.dart): `<server>/api`, the bearer
  * token, and the phone's time zone and language on every request. With the platform's
  * HttpURLConnection: no HTTP library, nothing from Google. They only read: a notice never changes
- * anything on the server, and `x-lukas-background: 1` keeps them from counting as activity.
+ * anything on the server, and `x-wambito-background: 1` keeps them from counting as activity.
  */
 class NoticeApi(
     private val connectTimeoutMillis: Int = 10_000,
@@ -120,10 +120,10 @@ class NoticeApi(
             connection.setRequestProperty("Authorization", "Bearer $token")
             connection.setRequestProperty("Accept", "application/json")
             // A job the person did not start is not activity: the API reads the session without
-            // sliding it (x-lukas-background), so these reads never postpone the guest cleanup.
-            connection.setRequestProperty("x-lukas-background", "1")
-            connection.setRequestProperty("x-lukas-timezone", ZoneId.systemDefault().id)
-            connection.setRequestProperty("x-lukas-locale", Locale.getDefault().toLanguageTag())
+            // sliding it (x-wambito-background), so these reads never postpone the guest cleanup.
+            connection.setRequestProperty("x-wambito-background", "1")
+            connection.setRequestProperty("x-wambito-timezone", ZoneId.systemDefault().id)
+            connection.setRequestProperty("x-wambito-locale", Locale.getDefault().toLanguageTag())
             when (connection.responseCode) {
                 200 -> ApiResult.Ok(connection.inputStream.bufferedReader().use { it.readText() })
                 401 -> ApiResult.Unauthorized

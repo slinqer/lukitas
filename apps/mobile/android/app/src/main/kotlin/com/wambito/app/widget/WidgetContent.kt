@@ -52,7 +52,7 @@ private val mediumBox = DpSize(220.dp, 100.dp)
 
 /**
  * Both widgets draw the layout that fits the box they really have, not the one they were added
- * as: a 4×2 box once showed the small layout (no Lukitas, no 🎤) until the app was opened.
+ * as: a 4×2 box once showed the small layout (no Wambi, no 🎤) until the app was opened.
  */
 val widgetSizeMode = SizeMode.Responsive(setOf(DpSize(110.dp, 40.dp), mediumBox))
 
@@ -98,7 +98,7 @@ private fun toneColor(tone: Tone): String = when (tone) {
 
 /**
  * Opens the app on home (a tap anywhere but the buttons: the figures, the face, the empty areas).
- * It is the app's own `lukitas://home` link, like the buttons': a plain `actionStartActivity<MainActivity>()`
+ * It is the app's own `wambito://home` link, like the buttons': a plain `actionStartActivity<MainActivity>()`
  * carries Glance's `glance-action:/CALLBACK?...` as data, which Flutter's router took for a route
  * ("Page Not Found") whenever the app was already running.
  */
@@ -145,8 +145,8 @@ private fun SignedOutContent(model: WidgetModel.SignedOut, face: Boolean) {
     ) {
         if (face) {
             Image(
-                provider = ImageProvider(R.drawable.lukitas_happy),
-                contentDescription = LocalContext.current.getString(R.string.widget_lukitas),
+                provider = ImageProvider(R.drawable.wambi_happy),
+                contentDescription = LocalContext.current.getString(R.string.widget_wambito),
                 modifier = GlanceModifier.size(64.dp),
             )
             Spacer(GlanceModifier.width(12.dp))
@@ -225,7 +225,7 @@ fun SmallWidgetContent(model: WidgetModel) {
     }
 }
 
-/** Medium (4×2): Lukitas' face, the month, "Te quedan" with its progress bar, ＋ and 🎤. */
+/** Medium (4×2): Wambi's face, the month, "Te quedan" with its progress bar, ＋ and 🎤. */
 @Composable
 fun MediumWidgetContent(model: WidgetModel) {
     if (model is WidgetModel.SignedOut) return SignedOutContent(model, face = true)
@@ -243,9 +243,9 @@ fun MediumWidgetContent(model: WidgetModel) {
     ) {
         Image(
             provider = ImageProvider(
-                if (model.mood == Mood.WORRIED) R.drawable.lukitas_worried else R.drawable.lukitas_happy,
+                if (model.mood == Mood.WORRIED) R.drawable.wambi_worried else R.drawable.wambi_happy,
             ),
-            contentDescription = context.getString(R.string.widget_lukitas),
+            contentDescription = context.getString(R.string.widget_wambito),
             modifier = GlanceModifier.size(64.dp),
         )
         Spacer(GlanceModifier.width(10.dp))

@@ -22,16 +22,16 @@ import java.time.ZoneId
  * Google.
  */
 object RefreshScheduler {
-    const val PERIODIC = "lukitas.widget.refresh"
-    const val MIDNIGHT = "lukitas.widget.midnight"
+    const val PERIODIC = "wambito.widget.refresh"
+    const val MIDNIGHT = "wambito.widget.midnight"
     val INTERVAL: Duration = Duration.ofHours(3)
 
     private val RECEIVERS = listOf(
-        LukitasSmallWidgetReceiver::class.java,
-        LukitasMediumWidgetReceiver::class.java,
+        WambitoSmallWidgetReceiver::class.java,
+        WambitoMediumWidgetReceiver::class.java,
     )
 
-    /** Whether any Lukitas widget is on the home screen. */
+    /** Whether any Wambito widget is on the home screen. */
     fun hasWidgets(context: Context): Boolean {
         val manager = AppWidgetManager.getInstance(context) ?: return false
         return RECEIVERS.any { manager.getAppWidgetIds(ComponentName(context, it)).isNotEmpty() }
@@ -83,14 +83,14 @@ object RefreshScheduler {
     private fun zoneOf(context: Context, phoneZone: ZoneId): ZoneId =
         WidgetSnapshot.read(context)?.zone(phoneZone) ?: phoneZone
 
-    private const val PREFS = "lukitas.widget.refresh"
+    internal const val PREFS = "wambito.widget.refresh"
 
     /** The zone the midnight run was planned in. */
     private const val MIDNIGHT_ZONE = "midnightZone"
 
     private fun preferences(context: Context) = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
-    /** Stops refreshing once no Lukitas widget is left. */
+    /** Stops refreshing once no Wambito widget is left. */
     fun cancelIfNoWidgets(context: Context) {
         if (hasWidgets(context)) return
         val workManager = WorkManager.getInstance(context)
