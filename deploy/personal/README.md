@@ -1,9 +1,13 @@
 # Personal install
 
-Run your own Lukitas on one machine (a Mac, to start), reach it from your phone through a Cloudflare
-tunnel at `https://app-lukas.andersonlaverde.com`, and keep your real data safe with a daily backup.
-Later the same files move to a server and the data comes with them (see
-[Moving to a server](#moving-to-a-server)).
+Run your own Lukitas on one machine, reach it from your phone at `https://app.wambito.com`, and keep
+your real data safe with a daily backup. Two ways to be reached, chosen in `.env`:
+
+- **Tunnel** (the default): a machine with no public address, such as a Mac at home, reached
+  through a Cloudflare tunnel. The setup below starts this way.
+- **Direct**: a server with its own public address serves the app itself, with its own
+  certificate and no tunnel. The same files and the data move there (see
+  [Moving to a server](#moving-to-a-server)).
 
 It is a separate stack from the development one in the repository root: its own Docker project
 (`lukitas-personal`), database volume (`lukitas-personal-db`) and private network. Nothing is shared
@@ -17,13 +21,23 @@ with `docker compose up` in the root (ports 5433, 3000, 5173, 8025, 1026), so bo
                                                              (this Mac only)
 ```
 
-- **One origin.** The app and the API share `app-lukas.andersonlaverde.com` (the API is under
+The direct way (`COMPOSE_FILE` in `.env`, see [Moving to a server](#moving-to-a-server)):
+
+```
+ phone ──https──> web (Caddy, its own certificate) ──/api/*──> api ──> postgres
+        :80 :443   │ static app
+                   └ http://127.0.0.1:8088 (this server only)
+```
+
+- **One origin.** The app and the API share `app.wambito.com` (the API is under
   `/api`), so the session cookie is first-party and secure. No CORS.
 - **Allowlist.** Only the emails in `SIGN_IN_ALLOWLIST` can ask for a sign-in code. Anyone else
   gets "Lukitas todavía no está abierto al público" and no email is sent.
 - **The landing lives elsewhere.** `/`, `/en`, `/it`, `/pt` and the roadmaps redirect (302, same path and query)
-  to the public landing at `LANDING_URL` (default `https://lukitas.andersonlaverde.com`), whose
-  buttons come back here to `/sign-in` and `/demo`. The web build gets the same value
+  to the public landing at `LANDING_URL` (default `https://wambito.com`), whose
+  buttons come back here to `/sign-in` and `/demo`. Until the landing is deployed at `wambito.com`
+  that redirect points at an empty site; the app's own paths are not affected. A home install can
+  set `LANDING_URL` in `.env` to its own landing. The web build gets the same value
   (`VITE_LANDING_URL`), so the sign-in screen's logo and the end of "delete my account" leave
   for the landing too.
 - **Assistants connect at `/mcp`.** Claude or ChatGPT add `https://<host>/mcp` as a connector,
@@ -34,16 +48,20 @@ with `docker compose up` in the root (ports 5433, 3000, 5173, 8025, 1026), so bo
   assistants in Ajustes → Conecta tu asistente.
 - **Not everything is public.** Caddy answers 404 for `/api/openapi.json`, which is for
   developers.
-- **No open ports.** Postgres and the API publish nothing. Caddy publishes `127.0.0.1:8088` for
-  checking on this Mac. The tunnel is outbound only.
-- **Mail** goes out as `hola@andersonlaverde.com` through Proton Bridge on the host.
+- **No open ports through the tunnel.** Postgres and the API publish nothing. Caddy publishes
+  `127.0.0.1:8088` for checking on this machine. The tunnel is outbound only. In the direct way
+  Caddy also publishes 80 and 443 (TCP, and UDP for HTTP/3), and nothing else is added.
+- **Mail** goes out from `MAIL_FROM` (default `hola@wambito.com`): through Resend on a server, or
+  through Proton Bridge on a Mac, signed in to the Proton account that owns that address.
 - **The API never holds the owner password.** A one-shot `migrate` service creates the `lukas_app`
   role and applies the migrations; the API connects as `lukas_app` only.
 
 ## First-time setup
 
-You need Docker Desktop, Node 22 with pnpm (`corepack enable`), `cloudflared`
-(`brew install cloudflared`) and Proton Bridge, signed in to the `hola@andersonlaverde.com` account.
+On a Mac, through the tunnel. You need Docker Desktop, Node 22 with pnpm (`corepack enable`),
+`cloudflared` (`brew install cloudflared`) and Proton Bridge, signed in to the Proton account you
+send from (`MAIL_FROM` must be one of its addresses). On a server, see
+[Moving to a server](#moving-to-a-server) instead: mail goes through Resend there.
 
 ### 1. Proton Bridge credentials
 
@@ -75,7 +93,8 @@ Fill it in (every variable is explained in the file; `.env` is ignored by git an
 | `APP_DB_PASSWORD` | `openssl rand -hex 24` |
 | `BETTER_AUTH_SECRET` | `openssl rand -hex 32` |
 | `SIGN_IN_ALLOWLIST` | your email(s), comma-separated |
-| `SMTP_URL` | `smtp://hola%40andersonlaverde.com:BRIDGE_PASSWORD@host.docker.internal:1025` (the `@` of the user is written `%40`) |
+| `SMTP_URL` | `smtp://you%40example.com:BRIDGE_PASSWORD@host.docker.internal:1025`, with Bridge's username (the `@` is written `%40`) |
+| `MAIL_FROM` | `Lukitas <you@example.com>`, an address of that Proton account |
 | `TUNNEL_ID` | from step 3 |
 
 `up.sh` sets the file's mode to 600 each time it runs. Keep a copy of `.env` in your password manager: `BETTER_AUTH_SECRET` and the database passwords are
@@ -86,21 +105,25 @@ needed again when you move to a server.
 Run these yourself, once. They talk to your Cloudflare account. (`login` writes an origin
 certificate; if you already have a `~/.cloudflared/cert.pem` for another zone, keep the new one under
 another name and give it to the commands with `--origincert "$CLOUDFLARED_ORIGINCERT"`, for example
-`~/.cloudflared/andersonlaverde-cert.pem`. Nothing in this folder uses that certificate: the running
+`~/.cloudflared/<zone>-cert.pem`. Nothing in this folder uses that certificate: the running
 tunnel needs only the credentials `.json`.)
 
 ```sh
-cloudflared tunnel login                       # opens the browser: choose andersonlaverde.com
+cloudflared tunnel login                       # opens the browser: choose <your zone>
 cloudflared tunnel create lukitas-personal     # prints the tunnel id, writes ~/.cloudflared/<id>.json
-cloudflared tunnel route dns lukitas-personal app-lukas.andersonlaverde.com
+cloudflared tunnel route dns lukitas-personal <your PUBLIC_HOSTNAME>
 ```
 
-Put the id in `.env` as `TUNNEL_ID`. In the Cloudflare dashboard for andersonlaverde.com, switch on
-**SSL/TLS > Edge Certificates > Always Use HTTPS** and **HSTS** (Caddy sets no HSTS itself, because
-TLS ends at Cloudflare). The stack mounts `~/.cloudflared/<TUNNEL_ID>.json` read-only
-into the `cloudflared` container; it does not see `cert.pem` (the login certificate). Treat the
-`.json` as a secret: anyone with it can run your tunnel. `cloudflared.yml` already routes
-`app-lukas.andersonlaverde.com` to the web container.
+The tunnel is for an install at home. `app.wambito.com` is served directly by the server (see
+[Moving to a server](#moving-to-a-server)), so a home install uses a hostname of its own, in a zone
+you own, and sets it as `PUBLIC_HOSTNAME`.
+
+Put the id in `.env` as `TUNNEL_ID`. In the Cloudflare dashboard for your zone, switch on
+**SSL/TLS > Edge Certificates > Always Use HTTPS** and **HSTS** (through the tunnel Caddy sets no HSTS
+itself, because TLS ends at Cloudflare; in the direct way it does both). The stack mounts
+`~/.cloudflared/<TUNNEL_ID>.json` read-only into the `cloudflared` container; it does not see `cert.pem` (the login certificate). Treat the
+`.json` as a secret: anyone with it can run your tunnel. `cloudflared.yml` sends every hostname you
+routed to the tunnel to the web container; it has no hostname of its own to edit.
 
 ### 4. First start
 
@@ -118,8 +141,8 @@ service (it creates the `lukas_app` role the first time), then starts the API an
 ./up.sh --skip-web      # adds cloudflared; reuses the web build
 ```
 
-Open `https://app-lukas.andersonlaverde.com` on your phone and sign in with an allowlisted email:
-the code arrives from `hola@andersonlaverde.com`.
+Open `https://app.wambito.com` on your phone and sign in with an allowlisted email:
+the code arrives from `MAIL_FROM`.
 
 ### 5. The daily backup
 
@@ -132,18 +155,21 @@ See [Backup and restore](#backup-and-restore).
 
 ## Daily use
 
-Run these from `deploy/personal` (compose reads `.env` there):
+Run these from `deploy/personal` (compose reads `.env` there, `COMPOSE_FILE` included, so the
+direct way's settings apply too):
 
 ```sh
 docker compose ps                  # what is running
-docker compose logs -f api         # follow the API (also: web, cloudflared, postgres)
+docker compose logs -f api         # follow the API (also: web, mcp, cloudflared, postgres)
 docker compose logs web | tail     # access log: time, visitor address, path (no query string), status
 docker compose restart api
 docker compose stop                # stop everything, keep everything
 ./up.sh --skip-web                 # start it again
 ```
 
-Everything has `restart: unless-stopped`, so it comes back after a reboot once Docker Desktop is up.
+In the direct way `cloudflared` is switched off in the override, so a bare `docker compose up -d`
+starts everything else and no tunnel. Everything has `restart: unless-stopped`, so it comes back
+after a reboot once Docker (Desktop) is up.
 In Docker Desktop settings, turn on **Start Docker Desktop when you sign in to your computer**.
 
 **Never run `docker volume rm lukitas-personal-db`**: that deletes the database. The volume is
@@ -403,23 +429,71 @@ lost or empty there is nothing to compare with: check who deleted their account 
 
 ## Moving to a server
 
-The same files run on any Linux server with Docker. Keep the hostname: **passkeys are bound to
-`app-lukas.andersonlaverde.com`**, so a new hostname invalidates every passkey (email codes still
-work).
+The same files run on any Linux server with Docker. A server with its own public address serves the
+app itself: the **direct way**. Caddy answers on ports 80 and 443 with a Let's Encrypt certificate
+for `PUBLIC_HOSTNAME`, redirects HTTP to HTTPS and sends HSTS; there is no tunnel, so no one between
+the phone and the server reads the requests in clear. (A machine with no public address keeps the
+tunnel.)
 
-1. On the Mac: `./backup.sh`, and copy the newest dump and your `.env` to the server.
-2. On the server: clone the repository, put `.env` in `deploy/personal/` (same
-   `BETTER_AUTH_SECRET` so sessions survive; email by `RESEND_API_KEY` with `SMTP_URL` empty and
-   `SMTP_TLS_INSECURE=false`, since Bridge stays on the Mac), then `./up.sh --no-tunnel`.
-   (`up.sh` needs Node and pnpm for the web build; or copy `apps/web/build-personal` from the Mac
-   and use `--skip-web`.)
-3. `./restore.sh --yes lukitas-YYYY-MM-DD.dump` loads the data (the database is empty, so nothing is
-   lost; the empty one is kept as `lukitas_before_...`).
-4. Move the tunnel: copy `~/.cloudflared/<TUNNEL_ID>.json` to the server, then **stop the Mac's
-   stack first** (`docker compose stop cloudflared`) and run `./up.sh --skip-web` on the server. Or
-   create a new tunnel there and re-point the name with
-   `cloudflared tunnel route dns --overwrite-dns <new tunnel> app-lukas.andersonlaverde.com`.
-5. Check `./smoke.sh` and sign in. Keep the Mac's last dump until the server has its own.
+**Passkeys are bound to `PUBLIC_HOSTNAME`**: a passkey works only for the hostname it was made
+for. Moving to a new hostname invalidates every passkey; email codes still work, and each person
+registers a passkey again after signing in.
+
+1. **`.env`.** On the server (Docker with Compose 2.24.4 or newer, see `docker compose version`;
+   and Node 22 with pnpm for the web build), clone the repository and write
+   `deploy/personal/.env` from `.env.example`, with:
+   - `PUBLIC_HOSTNAME=app.wambito.com`;
+   - the same `BETTER_AUTH_SECRET` as the old install, so sessions survive;
+   - mail through Resend, since Bridge stays on the Mac: `RESEND_API_KEY`, with `SMTP_URL` empty and
+     `SMTP_TLS_INSECURE=false`. The domain of `MAIL_FROM` must be verified in Resend (its SPF and
+     DKIM records in the domain's DNS);
+   - the same `ANDROID_CERT_SHA256`;
+   - `COMPOSE_FILE=docker-compose.yml:docker-compose.direct.yml`, the direct way. No `TUNNEL_ID`.
+
+   Keep a copy in your password manager.
+2. **First start, on the server only.** DNS does not point at the server yet, so Caddy cannot get
+   its certificate (it keeps trying, which is harmless). Check it on the local listener:
+
+   ```sh
+   ./up.sh       # build, migrate, start (waits for web's healthcheck on its plain-HTTP listener)
+   ./smoke.sh    # checks http://127.0.0.1:8088 from the server
+   ```
+3. **Backups first.** Set up the copy in R2 ([above](#backups-in-cloudflare-r2)) and drill a full
+   restore from it, before real data arrives.
+4. **The data.** On the old machine, stop everything that writes and keep only the database up
+   (`docker compose stop cloudflared web api mcp`), so nothing is saved after the dump. Then
+   `./backup.sh`, copy the dump to the server, and there `./restore.sh --yes lukitas-YYYY-MM-DD.dump`
+   (the server's database is empty, so nothing is lost; the empty one is kept as
+   `lukitas_before_...`).
+5. **Expose it.**
+   - **Firewall, outside the machine:** in Hetzner, a Cloud Firewall attached to the server that lets
+     in only 22/tcp from your own address (SSH with keys only: `PasswordAuthentication no`), plus
+     80/tcp, 443/tcp and 443/udp (HTTP/3). Not `ufw`: Docker publishes ports around it.
+   - **DNS:** only an `A` record for `PUBLIC_HOSTNAME` to the server, **DNS only** (grey cloud).
+     Cloudflare's proxy (orange cloud) would end TLS at Cloudflare again. No `AAAA` record yet:
+     the compose network has no IPv6, so every IPv6 visitor would reach the API as the network's
+     gateway and share one sign-in limit. Phones on IPv6-only networks still reach an IPv4 address
+     through their carrier's NAT64/464XLAT. Native IPv6 (`enable_ipv6` with a ULA subnet and a fixed
+     IPv6 for `web` in the direct override, verified on the server with `curl -6`) is a later,
+     separate change.
+   - Once the `A` record resolves, `docker compose restart web` (in `deploy/personal`, where
+     Compose reads `COMPOSE_FILE`). `./up.sh --skip-web` would not do it: it does not recreate
+     `web`, and Caddy, started before DNS, is waiting out ACME's backoff. Watch
+     `docker compose logs -f web` until it says the certificate was obtained.
+   - `./smoke.sh` on the server, then from outside: `https://app.wambito.com/sign-in` answers with
+     `Strict-Transport-Security`, and `http://` redirects to it. Check that the API sees real client
+     addresses over IPv4 (`curl -4` from another network, then `docker compose logs web | tail`):
+     `visitor_ip` must be the address you came from, not a Docker address (172.x). Fix that
+     before the phones move: sign-in limits count by that address. (See
+     [How the client address gets to the API](#how-the-client-address-gets-to-the-api).)
+   - The rest of the outside checks: a request with a made-up `Cf-Connecting-Ip` or
+     `X-Forwarded-For` is logged under your real address, not the made-up one; the certificate's
+     issuer is Let's Encrypt (`openssl s_client -connect app.wambito.com:443 -servername app.wambito.com </dev/null 2>/dev/null | openssl x509 -noout -issuer`);
+     and a port scan from outside shows only 22, 80 and 443.
+   - Until the landing is deployed at `wambito.com`, `/` on the server redirects to an empty site.
+     It is harmless: the app's paths are not affected.
+
+Keep the old machine's last dump until the server has its own.
 
 On the server, `./install-backup.sh` installs the daily backup as a systemd timer at 08:00 UTC (03:00
 in Colombia; logs: `journalctl -u lukitas-backup.service`), and `./uninstall-backup.sh` removes it.
@@ -430,9 +504,12 @@ it. On the Mac, `./uninstall-backup.sh` removes the launchd agent once the serve
 
 | File | What |
 |---|---|
-| `docker-compose.yml` | The stack: postgres, migrate, api, web, cloudflared |
-| `Caddyfile` | Static app, SPA fallback, cache rules, `/api` proxy, blocked paths, access log |
-| `cloudflared.yml` | Tunnel ingress for `app-lukas.andersonlaverde.com` |
+| `docker-compose.yml` | The stack: postgres, migrate, api, mcp, web, cloudflared |
+| `docker-compose.direct.yml` | The direct way (`COMPOSE_FILE` in `.env`): web on 80 and 443 with its certificates in a volume, the plain-HTTP listener on `127.0.0.1`, no cloudflared |
+| `routes.caddy` | Every route, the same for both ways: static app, SPA fallback, cache rules, `/api` and `/mcp` proxies, blocked paths, landing redirects, access log |
+| `Caddyfile` | The tunnel's Caddy: plain HTTP behind cloudflared, the client's address from `Cf-Connecting-Ip` |
+| `Caddyfile.direct` | The direct way's Caddy: automatic HTTPS and HSTS for `PUBLIC_HOSTNAME`, the client's address from the TCP peer, no log of requests for other hosts |
+| `cloudflared.yml` | Tunnel ingress: everything the tunnel receives goes to `web`; no hostname in it |
 | `Dockerfile.web` | Caddy with the web build inside (the API image is `apps/api/Dockerfile.prod`) |
 | `web-entrypoint.sh` `assetlinks.json.template` | At start, write `/.well-known/assetlinks.json` from `ANDROID_CERT_SHA256` |
 | `.env.example` | Every setting, documented |
@@ -442,26 +519,45 @@ it. On the Mac, `./uninstall-backup.sh` removes the launchd agent once the serve
 | `com.lukitas.backup.plist` | The 03:00 launchd agent (macOS) |
 | `lukitas-backup.service` `lukitas-backup.timer` | The 08:00 UTC systemd timer (Linux) |
 | `test-retention.sh` `test-r2.sh` | The 14-day retention, and the R2 upload against a fake rclone |
+| `test-caddy.sh` | Both Caddy configs against real Caddy in Docker: client address, spoofed headers, HTTPS, routes |
+| `test-compose-files.sh` | Which compose files, ports, Caddy config and services each way uses (`docker compose config`, no daemon) |
 | `auto-deploy.sh` `install-auto-deploy.sh` `lukitas-deploy.service` `lukitas-deploy.timer` `test-auto-deploy.sh` | The server's automatic deploy of `main` once CI passed, and its test |
 
 ## How the client address gets to the API
 
-Sign-in limits (5 codes per 10 minutes per address) count by client address. Cloudflare puts the
-visitor's address in `CF-Connecting-IP` and overwrites any value the visitor sent; cloudflared hands
-it to Caddy; Caddy writes it as the only `X-Forwarded-For` entry (replacing anything the client
-sent). The API cannot see the TCP peer, so it relies on that: only Caddy can reach it, and Caddy
-always overwrites the header. `TRUSTED_PROXIES=172.28.77.10` (Caddy's fixed address) is the
-matching setting, but the guarantee is the network layout. Publishing the API's port or adding
-another proxy would make the header spoofable. A request that reaches Caddy
-without that header (curl on this Mac) is counted by the address Docker shows. Nothing from outside
-can reach the API without passing through Caddy. See `docs/deploy/api.md`.
+Sign-in limits (5 codes per 10 minutes per address) count by client address. Caddy writes it as
+the only `X-Forwarded-For` entry to the API and the MCP, replacing anything the client sent, and
+logs it as `visitor_ip`. The API cannot see the TCP peer, so it relies on that: only Caddy can reach
+it, and Caddy always overwrites the header. `TRUSTED_PROXIES=172.28.77.10` (Caddy's fixed address)
+is the matching setting, but the guarantee is the network layout. Publishing the API's port or
+adding another proxy would make the header spoofable. See `docs/deploy/api.md`.
+
+Where Caddy takes the address from depends on the way:
+
+- **Tunnel** (`Caddyfile`): Cloudflare puts the visitor's address in `CF-Connecting-IP` and
+  overwrites any value the visitor sent; cloudflared hands it to Caddy, which trusts it, because
+  nothing from outside reaches Caddy except through the tunnel. A request without that header (curl
+  on this machine) is counted by the address Docker shows.
+- **Direct** (`Caddyfile.direct`): anyone can reach Caddy, so it trusts no header. The address is the
+  TCP peer's; sending `CF-Connecting-IP` or `X-Forwarded-For` changes nothing (`./test-caddy.sh
+  direct` checks both). Docker keeps the real source address of IPv4 connections to published
+  ports; when it does not, every visitor shows up as one Docker address. IPv6 is different: the
+  compose network is IPv4-only, so connections to a published port over IPv6 go through
+  docker-proxy and arrive as the network's gateway. Keeping the real IPv6 address needs IPv6 on the
+  compose network itself, which this install does not enable yet. That is why the DNS has no `AAAA`
+  record. Check the IPv4 address after the move
+  ([Moving to a server](#moving-to-a-server), step 5).
 
 ## Troubleshooting
 
 - **Error 1033 / 530 on the phone**: the tunnel is down. Is the Mac awake, Docker running, and
   `docker compose ps` showing `cloudflared` up? `docker compose logs cloudflared`.
-- **No email arrives**: Bridge not running or not signed in; wrong password in `SMTP_URL`
-  (`docker compose logs api | tail`); the address is not in `SIGN_IN_ALLOWLIST` (the app says so).
+- **No email arrives**: on a Mac, Bridge not running or not signed in, or a wrong password in
+  `SMTP_URL`; on a server, a wrong `RESEND_API_KEY` or the domain not verified in Resend
+  (`docker compose logs api | tail`, either way); the address is not in `SIGN_IN_ALLOWLIST` (the
+  app says so).
+- **The certificate does not come (direct way)**: `docker compose logs web`. The `A` record
+  must point at this server, DNS only, and 80 and 443 must be open in the Cloud Firewall.
 - **`up.sh` says port or subnet in use**: change `WEB_PORT` or `NETWORK_PREFIX` in `.env`.
 - **API restarts at start**: `docker compose logs api` prints which variable is wrong.
 - **Backup fails with "Docker is not running"**: start Docker Desktop; the next run is tomorrow, or

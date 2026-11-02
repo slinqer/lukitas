@@ -18,7 +18,7 @@ No ads, no analytics, no automatic crash reports, no Google Play Services or Fir
 There are just two notices, both local and both optional: "Due today…" at 9:00 with the day's recurring payments, and a warning if 45 days pass without opening the app and your account has no email.
 
 <b>It needs a Lukitas server</b>
-The app keeps your data on a Lukitas server. By default it uses the author's (app-lukas.andersonlaverde.com), which for now is a personal install and may limit who can add an email. You can point it at your own in Settings: the server is free software too.
+The app keeps your data on a Lukitas server. By default it uses the author's (app.wambito.com), which for now is a personal install and may limit who can add an email. You can point it at your own in Settings: the server is free software too.
 
 <b>What stays on the web</b>
 Categories, recurring payments, reports, import and downloading your data are on the web; the app links you there.

@@ -12,8 +12,8 @@ Future<ProcessResult> _check(String dump) async {
 }
 
 const _receiver = '''
-permission: com.andersonlaverde.lukitas.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
-uses-permission: name='com.andersonlaverde.lukitas.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'
+permission: com.wambito.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+uses-permission: name='com.wambito.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'
 ''';
 
 /// The microphone, for quick capture's on-phone speech engine (Task 12).
@@ -32,21 +32,21 @@ const _vibrate =
 void main() {
   test('release permissions: INTERNET, RECORD_AUDIO, VIBRATE and the AndroidX receiver permission pass', () async {
     final result = await _check(
-      'package: com.andersonlaverde.lukitas\n'
+      'package: com.wambito.app\n'
       "uses-permission: name='android.permission.INTERNET'\n$_mic$_vibrate$_receiver",
     );
     expect(result.exitCode, 0, reason: '${result.stdout}${result.stderr}');
   });
 
   test('release permissions: no INTERNET fails (the app could not reach its server)', () async {
-    final result = await _check('package: com.andersonlaverde.lukitas\n$_mic$_vibrate$_receiver');
+    final result = await _check('package: com.wambito.app\n$_mic$_vibrate$_receiver');
     expect(result.exitCode, 1);
     expect(result.stdout, contains('android.permission.INTERNET'));
   });
 
   test('release permissions: no RECORD_AUDIO fails (quick capture could never listen)', () async {
     final result = await _check(
-      'package: com.andersonlaverde.lukitas\n'
+      'package: com.wambito.app\n'
       "uses-permission: name='android.permission.INTERNET'\n$_vibrate$_receiver",
     );
     expect(result.exitCode, 1);
@@ -55,7 +55,7 @@ void main() {
 
   test('release permissions: no VIBRATE fails (the haptics would be silent)', () async {
     final result = await _check(
-      'package: com.andersonlaverde.lukitas\n'
+      'package: com.wambito.app\n'
       "uses-permission: name='android.permission.INTERNET'\n$_mic$_receiver",
     );
     expect(result.exitCode, 1);
@@ -66,7 +66,7 @@ void main() {
     test('release permissions: no $needed fails (the widget refresh job needs it)', () async {
       final without = _vibrate.split('\n').where((line) => !line.contains(needed)).join('\n');
       final result = await _check(
-        'package: com.andersonlaverde.lukitas\n'
+        'package: com.wambito.app\n'
         "uses-permission: name='android.permission.INTERNET'\n$_mic$without\n$_receiver",
       );
       expect(result.exitCode, 1);
@@ -80,7 +80,7 @@ void main() {
         .where((line) => !line.contains('POST_NOTIFICATIONS'))
         .join('\n');
     final result = await _check(
-      'package: com.andersonlaverde.lukitas\n'
+      'package: com.wambito.app\n'
       "uses-permission: name='android.permission.INTERNET'\n$_mic$without\n$_receiver",
     );
     expect(result.exitCode, 1);
@@ -90,7 +90,7 @@ void main() {
   for (final unwanted in ['WAKE_LOCK', 'FOREGROUND_SERVICE']) {
     test("release permissions: WorkManager's $unwanted stays out", () async {
       final result = await _check(
-        'package: com.andersonlaverde.lukitas\n'
+        'package: com.wambito.app\n'
         "uses-permission: name='android.permission.INTERNET'\n"
         "uses-permission: name='android.permission.$unwanted'\n$_mic$_vibrate$_receiver",
       );
@@ -101,7 +101,7 @@ void main() {
 
   test('release permissions: an unexpected permission fails with its name', () async {
     final result = await _check(
-      'package: com.andersonlaverde.lukitas\n'
+      'package: com.wambito.app\n'
       "uses-permission: name='android.permission.INTERNET'\n"
       "uses-permission: name='com.google.android.gms.permission.AD_ID'\n$_mic$_vibrate$_receiver",
     );

@@ -8,7 +8,7 @@ set -euo pipefail
 . "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
 base="${1:-http://127.0.0.1:$(cfg WEB_PORT 8088)}"
-host="$(cfg PUBLIC_HOSTNAME app-lukas.andersonlaverde.com)"
+host="$(cfg PUBLIC_HOSTNAME app.wambito.com)"
 failed=0
 
 check() { # NAME EXPECTED ACTUAL
@@ -21,7 +21,7 @@ check() { # NAME EXPECTED ACTUAL
 }
 status() { curl -s -o /dev/null -w '%{http_code}' "$@"; }
 
-check "GET /                 to the landing" "302 ${LANDING_URL:-https://lukitas.andersonlaverde.com}/" "$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' "$base/")"
+check "GET /                 to the landing" "302 ${LANDING_URL:-https://wambito.com}/" "$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' "$base/")"
 check "GET /api/health       API" 200 "$(status "$base/api/health")"
 check "GET /app              app shell" 200 "$(status "$base/app")"
 check "GET /sign-in          app shell" 200 "$(status "$base/sign-in")"

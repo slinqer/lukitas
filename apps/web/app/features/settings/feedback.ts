@@ -2,7 +2,7 @@
  * Comments and ideas (Settings, "Comentarios e ideas"): for now an email to the founder. The address is
  * here and nowhere else; the app has its own copy of it (apps/mobile/lib/settings/feedback.dart).
  */
-export const FEEDBACK_EMAIL = "lukitas@andersonlaverde.com";
+export const FEEDBACK_EMAIL = "hola@wambito.com";
 
 /** Set at build time from package.json (vite.config.ts); "dev" where the build was not given one. */
 declare const __APP_VERSION__: string | undefined;

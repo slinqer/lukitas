@@ -18,7 +18,7 @@ void main() {
 
   group('which server URLs are accepted', () {
     test('https, with a port or a sub-path, and a trailing slash dropped', () {
-      expect(parseServerUrl('https://app-lukas.andersonlaverde.com'), isNotNull);
+      expect(parseServerUrl('https://app.wambito.com'), isNotNull);
       expect(parseServerUrl('https://app.example.com/')?.toString(), 'https://app.example.com');
       expect(
         parseServerUrl('https://app.example.com:8443/lukitas//')?.toString(),
@@ -101,7 +101,7 @@ void main() {
     test('it defaults to the Lukitas server', () {
       final container = containerWith();
       expect(container.read(serverUrlProvider), defaultServerUrl);
-      expect(defaultServerUrl.toString(), 'https://app-lukas.andersonlaverde.com');
+      expect(defaultServerUrl.toString(), 'https://app.wambito.com');
     });
 
     test('changing it signs out and points every call there', () async {
@@ -113,7 +113,7 @@ void main() {
       await container.read(sessionProvider.notifier).ready;
       expect(
         container.read(apiClientProvider).baseUrl,
-        'https://app-lukas.andersonlaverde.com/api',
+        'https://app.wambito.com/api',
       );
 
       final changed = await container
@@ -205,7 +205,7 @@ void main() {
       await container.read(sessionProvider.notifier).ready;
       final changed = await container
           .read(serverUrlProvider.notifier)
-          .change('https://app-lukas.andersonlaverde.com/');
+          .change('https://app.wambito.com/');
       expect(changed, isTrue);
       expect(container.read(sessionProvider).status, SessionStatus.signedIn);
     });

@@ -115,7 +115,7 @@ function softwarePasskey(rpId: string) {
         type,
         challenge,
         origin,
-        androidPackageName: "com.andersonlaverde.lukitas",
+        androidPackageName: "com.wambito.app",
       }),
     );
 

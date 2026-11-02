@@ -4,12 +4,12 @@
  * canonical, hreflang, Open Graph, sitemap and robots) is required; there is no placeholder to fall
  * back on for something you are about to publish.
  *
- *   VITE_SITE_URL=https://lukitas.andersonlaverde.com pnpm --filter @lukas/web build:landing
+ *   VITE_SITE_URL=https://wambito.com pnpm --filter @lukas/web build:landing
  *
  * VITE_APP_URL (the live app's origin) is optional. Without it the calls to action say "coming
  * soon" and lead to GitHub. With it they say "Empieza ahora" / "Entrar" and open the app's sign-in:
  *
- *   VITE_SITE_URL=https://lukitas.andersonlaverde.com VITE_APP_URL=https://app-lukas.andersonlaverde.com \
+ *   VITE_SITE_URL=https://wambito.com VITE_APP_URL=https://app.wambito.com \
  *     pnpm --filter @lukas/web build:landing
  *
  * The output stays in build/client.
@@ -24,7 +24,7 @@ const raw = env.siteUrl;
 if (!raw?.trim()) {
   console.error(
     "VITE_SITE_URL is not set (environment or apps/web/.env). Pass the site's public origin, e.g.\n" +
-      "  VITE_SITE_URL=https://lukitas.andersonlaverde.com pnpm --filter @lukas/web build:landing",
+      "  VITE_SITE_URL=https://wambito.com pnpm --filter @lukas/web build:landing",
   );
   process.exit(1);
 }

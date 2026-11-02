@@ -35,10 +35,10 @@ void main() {
   group('the link', () {
     // The web's tests pin the same strings (apps/web/app/features/settings/feedback.test.ts).
     test('is the founder\'s address with the subject and body percent-encoded', () {
-      expect(feedbackEmail, 'lukitas@andersonlaverde.com');
+      expect(feedbackEmail, 'hola@wambito.com');
       expect(
         feedbackMailto(subject: 'Lukitas: comentarios', body: '\n\nVersión: 1.2.3\nIdioma: es'),
-        'mailto:lukitas@andersonlaverde.com?subject=Lukitas%3A%20comentarios&body=%0A%0AVersi%C3%B3n%3A%201.2.3%0AIdioma%3A%20es',
+        'mailto:hola@wambito.com?subject=Lukitas%3A%20comentarios&body=%0A%0AVersi%C3%B3n%3A%201.2.3%0AIdioma%3A%20es',
       );
     });
 
@@ -46,7 +46,7 @@ void main() {
       final link = feedbackMailto(subject: 'a&b=c', body: 'x?y#z&cc=someone@else.com');
       expect(
         link,
-        'mailto:lukitas@andersonlaverde.com?subject=a%26b%3Dc&body=x%3Fy%23z%26cc%3Dsomeone%40else.com',
+        'mailto:hola@wambito.com?subject=a%26b%3Dc&body=x%3Fy%23z%26cc%3Dsomeone%40else.com',
       );
       expect(Uri.parse(link).queryParameters.containsKey('cc'), isFalse);
     });
@@ -64,7 +64,7 @@ void main() {
       );
       expect(find.text('ESCRIBIRNOS'), findsOneWidget);
       expect(
-        _said('Si no se abre tu correo, escribe a lukitas@andersonlaverde.com.'),
+        _said('Si no se abre tu correo, escribe a hola@wambito.com.'),
         findsOneWidget,
       );
       final data = t.getTopLeft(find.byKey(const Key('settings.card.data'))).dy;
@@ -102,7 +102,7 @@ void main() {
         await t.pumpAndSettle();
         expect(
           env.opener.opened.single.toString(),
-          'mailto:lukitas@andersonlaverde.com?subject=Lukitas%3A%20comentarios'
+          'mailto:hola@wambito.com?subject=Lukitas%3A%20comentarios'
           '&body=%0A%0AVersi%C3%B3n%20de%20Lukitas%3A%201.2.3%0AIdioma%3A%20es',
         );
         // Decoded, the body is those two lines and nothing of the account: no email, no token.
@@ -122,7 +122,7 @@ void main() {
       await t.pumpAndSettle();
       expect(
         env.opener.opened.single.toString(),
-        'mailto:lukitas@andersonlaverde.com?subject=Lukitas%3A%20feedback'
+        'mailto:hola@wambito.com?subject=Lukitas%3A%20feedback'
         '&body=%0A%0ALukitas%20version%3A%201.2.3%0ALanguage%3A%20en',
       );
     });
@@ -173,12 +173,12 @@ void main() {
       await t.pumpAndSettle();
       expect(find.byKey(const Key('settings.feedback.sheet')), findsOneWidget);
       expect(find.text('No encontramos una app de correo'), findsOneWidget);
-      expect(_said('Escríbenos a lukitas@andersonlaverde.com.'), findsOneWidget);
+      expect(_said('Escríbenos a hola@wambito.com.'), findsOneWidget);
       await t.tap(find.byKey(const Key('settings.feedback.copy')));
       await t.pumpAndSettle();
-      expect(clipboard, 'lukitas@andersonlaverde.com');
+      expect(clipboard, 'hola@wambito.com');
       expect(find.byKey(const Key('settings.feedback.sheet')), findsNothing);
-      expect(find.text('Copiamos lukitas@andersonlaverde.com.'), findsOneWidget);
+      expect(find.text('Copiamos hola@wambito.com.'), findsOneWidget);
       await t.pump(const Duration(seconds: 10));
       handle.dispose();
     });

@@ -6,7 +6,7 @@
  */
 
 /** The Android app's package (apps/mobile/android/app/build.gradle.kts, applicationId). */
-export const APP_PACKAGE = "com.andersonlaverde.lukitas";
+export const APP_PACKAGE = "com.wambito.app";
 
 /** The page the magic link opens. */
 const VERIFY_PATH = "/auth/verify";

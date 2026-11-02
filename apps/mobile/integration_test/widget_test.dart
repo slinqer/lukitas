@@ -7,7 +7,7 @@
 //
 // One test uses the real speech engine (🎤 twice, the first listen having ended by itself), and is
 // skipped unless the voice models are served as docs/mobile/setup.md describes (it also needs the
-// microphone granted: `adb shell pm grant com.andersonlaverde.lukitas android.permission.RECORD_AUDIO`):
+// microphone granted: `adb shell pm grant com.wambito.app android.permission.RECORD_AUDIO`):
 //
 //     --dart-define=VOICE_MODELS_URL=http://10.0.2.2:8765
 //

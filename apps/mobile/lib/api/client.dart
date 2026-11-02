@@ -19,7 +19,7 @@ class ApiClient {
   // No auth interceptors: the API declares no security scheme, and the token is a default header.
   ApiClient._(this.dio) : api = LukitasApi(dio: dio, interceptors: []);
 
-  /// A client for [server] (e.g. `https://app-lukas.andersonlaverde.com`). Any path on [server] is
+  /// A client for [server] (e.g. `https://app.wambito.com`). Any path on [server] is
   /// kept, so an API behind a sub-path works; a query or fragment is dropped.
   ///
   /// [clientIp] (else [debugClientIp]) is sent as `x-forwarded-for` only when [development] (debug builds: [kDebugMode]) is

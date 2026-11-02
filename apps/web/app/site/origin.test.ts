@@ -18,15 +18,11 @@ describe("resolveSiteOrigin", () => {
   });
 
   it("uses the configured origin", () => {
-    expect(resolveSiteOrigin("https://lukitas.andersonlaverde.com")).toBe(
-      "https://lukitas.andersonlaverde.com",
-    );
+    expect(resolveSiteOrigin("https://wambito.com")).toBe("https://wambito.com");
   });
 
   it("drops trailing slashes and surrounding whitespace", () => {
-    expect(resolveSiteOrigin("https://lukitas.andersonlaverde.com/")).toBe(
-      "https://lukitas.andersonlaverde.com",
-    );
+    expect(resolveSiteOrigin("https://wambito.com/")).toBe("https://wambito.com");
     expect(resolveSiteOrigin("  https://example.com//  ")).toBe("https://example.com");
   });
 
@@ -35,7 +31,7 @@ describe("resolveSiteOrigin", () => {
   });
 
   it("fails clearly on something that is not an http(s) origin", () => {
-    expect(() => resolveSiteOrigin("lukitas.andersonlaverde.com")).toThrow(/VITE_SITE_URL/);
+    expect(() => resolveSiteOrigin("wambito.com")).toThrow(/VITE_SITE_URL/);
     expect(() => resolveSiteOrigin("ftp://example.com")).toThrow(/VITE_SITE_URL/);
     expect(() => resolveSiteOrigin("https://example.com/some/path")).toThrow(/VITE_SITE_URL/);
   });
@@ -59,17 +55,13 @@ describe("resolveAppOrigin", () => {
   });
 
   it("uses the configured origin, without trailing slashes or whitespace", () => {
-    expect(resolveAppOrigin("https://app-lukas.andersonlaverde.com")).toBe(
-      "https://app-lukas.andersonlaverde.com",
-    );
-    expect(resolveAppOrigin("  https://app-lukas.andersonlaverde.com//  ")).toBe(
-      "https://app-lukas.andersonlaverde.com",
-    );
+    expect(resolveAppOrigin("https://app.wambito.com")).toBe("https://app.wambito.com");
+    expect(resolveAppOrigin("  https://app.wambito.com//  ")).toBe("https://app.wambito.com");
     expect(resolveAppOrigin("http://localhost:5173/")).toBe("http://localhost:5173");
   });
 
   it("fails clearly, naming VITE_APP_URL, on something that is not an http(s) origin", () => {
-    expect(() => resolveAppOrigin("app-lukas.andersonlaverde.com")).toThrow(/VITE_APP_URL/);
+    expect(() => resolveAppOrigin("app.wambito.com")).toThrow(/VITE_APP_URL/);
     expect(() => resolveAppOrigin("ftp://example.com")).toThrow(/VITE_APP_URL/);
     expect(() => resolveAppOrigin("https://example.com/sign-in")).toThrow(/VITE_APP_URL/);
     expect(() => resolveAppOrigin("https://example.com/?a=1")).toThrow(/VITE_APP_URL/);
@@ -92,10 +84,8 @@ describe("resolveLandingOrigin", () => {
   });
 
   it("uses the configured origin, and fails clearly naming VITE_LANDING_URL", () => {
-    expect(resolveLandingOrigin("https://lukitas.andersonlaverde.com/")).toBe(
-      "https://lukitas.andersonlaverde.com",
-    );
-    expect(() => resolveLandingOrigin("lukitas.andersonlaverde.com")).toThrow(/VITE_LANDING_URL/);
+    expect(resolveLandingOrigin("https://wambito.com/")).toBe("https://wambito.com");
+    expect(() => resolveLandingOrigin("wambito.com")).toThrow(/VITE_LANDING_URL/);
   });
 });
 
@@ -105,13 +95,13 @@ describe("landingTarget", () => {
   });
 
   it("leaves for the landing's site, a full page load, when it lives elsewhere", () => {
-    expect(landingTarget("https://lukitas.andersonlaverde.com", "/")).toEqual({
+    expect(landingTarget("https://wambito.com", "/")).toEqual({
       external: true,
-      href: "https://lukitas.andersonlaverde.com/",
+      href: "https://wambito.com/",
     });
-    expect(landingTarget("https://lukitas.andersonlaverde.com", "/en")).toEqual({
+    expect(landingTarget("https://wambito.com", "/en")).toEqual({
       external: true,
-      href: "https://lukitas.andersonlaverde.com/en",
+      href: "https://wambito.com/en",
     });
   });
 });

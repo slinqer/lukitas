@@ -49,7 +49,7 @@ void main() {
 
     test('mailto: goes to the channel exactly as it is, encoded subject and body included', () async {
       const mailto =
-          'mailto:lukitas@andersonlaverde.com?subject=Lukitas%3A%20comentarios&body=%0A%0AVersi%C3%B3n%3A%201.2.3';
+          'mailto:hola@wambito.com?subject=Lukitas%3A%20comentarios&body=%0A%0AVersi%C3%B3n%3A%201.2.3';
       expect(await open(mailto), isTrue);
       expect(calls.single.method, 'openUrl');
       expect(calls.single.arguments, mailto);
@@ -67,7 +67,7 @@ void main() {
         'JavaScript:alert(1)',
         'intent://scan/#Intent;scheme=zxing;package=com.google.zxing.client.android;end',
         'intent:#Intent;action=android.intent.action.CALL;end',
-        'file:///data/data/com.andersonlaverde.lukitas/databases/x',
+        'file:///data/data/com.wambito.app/databases/x',
         'content://com.android.contacts/contacts',
         'tel:+34600000000',
         'sms:+34600000000?body=hi',

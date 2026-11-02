@@ -64,7 +64,7 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="https"/>
-                <data android:host="app-lukas.andersonlaverde.com"/>
+                <data android:host="app.wambito.com"/>
                 <data android:path="/auth/verify"/>
             </intent-filter>
             <!-- Flutter hands an opened link to the router (go_router reads /auth/verify?...). -->

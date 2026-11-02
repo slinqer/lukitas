@@ -1,0 +1,34 @@
+# Caddy for the personal install served directly: a server with its own public address, no tunnel
+# (docker-compose.direct.yml runs this file instead of Caddyfile). Caddy ends TLS itself, with a
+# Let's Encrypt certificate for PUBLIC_HOSTNAME, and redirects HTTP to HTTPS. This file sets the
+# client's address; the routes, the same for every way of serving, are in routes.caddy.
+{
+	admin off
+	# Requests that name no site of this file (scanners asking for the server's address, other
+	# names) are not logged: Caddy's default access log would keep their headers and query strings.
+	# The sites below keep their own minimal log (routes.caddy).
+	log default {
+		exclude http.log.access
+	}
+}
+
+{$PUBLIC_HOSTNAME} {
+	# The client's address, which routes.caddy logs and sends to the API and the MCP as the only
+	# X-Forwarded-For entry (the API trusts just this hop). Here anyone can reach Caddy, so it is
+	# always the TCP peer: a Cf-Connecting-Ip or X-Forwarded-For the client sends changes nothing.
+	# (Caddy starts each request with client_ip set to the peer already, as no trusted_proxies is
+	# configured; this line keeps it so even if that changes.) The one `vars` of the site, so Caddy
+	# runs it before routes.caddy's handle blocks.
+	vars client_ip {remote_host}
+	# Browsers that have been here once use HTTPS only, for a year.
+	header Strict-Transport-Security "max-age=31536000"
+	import /etc/caddy/routes.caddy
+}
+
+# Plain HTTP for this machine only: docker-compose.direct.yml publishes it on 127.0.0.1, for the
+# container's healthcheck and smoke.sh. A request from outside that names 127.0.0.1 as its host
+# arrives on 80 or 443, never here. No HSTS: it is not HTTPS.
+http://:8080 {
+	vars client_ip {remote_host}
+	import /etc/caddy/routes.caddy
+}

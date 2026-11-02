@@ -14,7 +14,7 @@
 # Exit codes: 0 as expected, 1 missing or unexpected permission, 2 no APK, aapt2 or dump.
 set -euo pipefail
 
-PACKAGE="com.andersonlaverde.lukitas"
+PACKAGE="com.wambito.app"
 REQUIRED=(
   "android.permission.INTERNET"
   "android.permission.RECORD_AUDIO"

@@ -182,7 +182,7 @@ test("a link from a sign-in started in the Android app offers the app, and spend
     const href = (await open.getAttribute("href")) ?? "";
     const link = new URL(mail.link);
     expect(href.startsWith(`intent://${link.host}/auth/verify${link.search}#Intent;`)).toBe(true);
-    expect(href).toContain("scheme=https;package=com.andersonlaverde.lukitas;");
+    expect(href).toContain("scheme=https;package=com.wambito.app;");
     await expect(page.getByRole("button", { name: "Continuar" })).toHaveCount(0);
     await page.waitForTimeout(500);
     expect(await sessionUser(page)).toBeNull();

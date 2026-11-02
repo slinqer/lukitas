@@ -21,7 +21,7 @@ import 'url_opener.dart';
 
 /// Where comments and ideas go (the founder's choice, 2026-10-24). Here and nowhere else in the app;
 /// the web has its own copy of it (apps/web/app/features/settings/feedback.ts).
-const feedbackEmail = 'lukitas@andersonlaverde.com';
+const feedbackEmail = 'hola@wambito.com';
 
 /// The `mailto:` link for a message to [feedbackEmail]: the subject and the body percent-encoded (a
 /// `&`, `=`, `#` or `?` in either must not end the query, nor start another header). The web builds

@@ -3,6 +3,10 @@
 # Run deploy/personal/up.sh instead of building by hand: it makes apps/web/build-personal first.
 FROM caddy:2.11-alpine
 COPY deploy/personal/Caddyfile /etc/caddy/Caddyfile
+# The direct way (a server with its own public address): docker-compose.direct.yml runs this one.
+COPY deploy/personal/Caddyfile.direct /etc/caddy/Caddyfile.direct
+# The routes, imported by both.
+COPY deploy/personal/routes.caddy /etc/caddy/routes.caddy
 # /.well-known/assetlinks.json is filled from ANDROID_CERT_SHA256 each time the container starts.
 COPY deploy/personal/assetlinks.json.template /etc/caddy/assetlinks.json.template
 COPY deploy/personal/web-entrypoint.sh /usr/local/bin/web-entrypoint.sh

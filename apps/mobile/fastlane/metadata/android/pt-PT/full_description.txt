@@ -18,7 +18,7 @@ Sem anúncios, sem análises nem relatórios automáticos de falhas, sem Google 
 Os avisos são apenas dois, ambos locais e que podes desligar: «Vence hoje…» às 9:00 com os pagamentos recorrentes do dia, e um aviso se passarem 45 dias sem abrir a app e a tua conta não tiver email.
 
 <b>Precisa de um servidor de Lukitas</b>
-A app guarda os teus dados num servidor de Lukitas. Por defeito usa o do autor (app-lukas.andersonlaverde.com), que por agora é uma instalação pessoal e pode limitar quem adiciona um email. Podes indicar o teu nas Definições: o servidor também é software livre.
+A app guarda os teus dados num servidor de Lukitas. Por defeito usa o do autor (app.wambito.com), que por agora é uma instalação pessoal e pode limitar quem adiciona um email. Podes indicar o teu nas Definições: o servidor também é software livre.
 
 <b>O que fica na web</b>
 Categorias, pagamentos recorrentes, relatórios, importar e descarregar os teus dados estão na web; a app leva-te até lá.

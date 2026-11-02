@@ -15,13 +15,13 @@ app, when there is one, runs on its own origin, and the build says so with `VITE
 ## Build
 
 ```sh
-VITE_SITE_URL=https://lukitas.andersonlaverde.com pnpm --filter @lukas/web build:landing
+VITE_SITE_URL=https://wambito.com pnpm --filter @lukas/web build:landing
 ```
 
 The release, with the calls to action opening the live app:
 
 ```sh
-VITE_SITE_URL=https://lukitas.andersonlaverde.com VITE_APP_URL=https://app-lukas.andersonlaverde.com pnpm --filter @lukas/web build:landing
+VITE_SITE_URL=https://wambito.com VITE_APP_URL=https://app.wambito.com pnpm --filter @lukas/web build:landing
 ```
 
 - `VITE_SITE_URL` is the site's public origin (no path). Set it in the environment or in `apps/web/.env`: both are read the same way, for the generated files and for the app code. It is required: the script stops with a
@@ -51,7 +51,7 @@ It needs two repository secrets (GitHub → the repo → Settings → Secrets an
 
 1. **`CLOUDFLARE_API_TOKEN`.** In Cloudflare: My Profile → API Tokens → Create Token → template
    "Edit Cloudflare Workers". Under Account Resources choose only the account that holds
-   `andersonlaverde.com`, and under Zone Resources only that zone. Copy the token once; Cloudflare
+   `wambito.com`, and under Zone Resources only that zone. Copy the token once; Cloudflare
    does not show it again.
 2. **`CLOUDFLARE_ACCOUNT_ID`.** On that account's home page in Cloudflare (Account details → Account
    ID).
@@ -80,10 +80,10 @@ version of the `lukitas-landing` Worker.
 
 ## Custom domain
 
-`routes` in the config attaches `lukitas.andersonlaverde.com` as a custom domain on deploy. The
-zone is on the same Cloudflare account, so Cloudflare creates the DNS record and certificate. For
-the real domain later, add it to `routes` and rebuild with `VITE_SITE_URL` set to it, so the
-canonical links and the sitemap point to the new origin.
+`routes` in the config attaches `wambito.com` as a custom domain on deploy. The
+zone is on the same Cloudflare account, so Cloudflare creates the DNS record and certificate. To
+serve the landing from another domain, change `routes` and rebuild with `VITE_SITE_URL` set to it,
+so the canonical links and the sitemap point to the new origin.
 
 ## Switching back once the app exists
 
