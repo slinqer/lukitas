@@ -3,7 +3,7 @@
 # read-only and starts `cloudflared tunnel run <TUNNEL_ID>`.
 # The hostname here must be the PUBLIC_HOSTNAME of .env and the DNS route you created.
 ingress:
-  - hostname: app-lukas.andersonlaverde.com
+  - hostname: app.wambito.com
     service: http://web:80
   # Anything else that reaches the tunnel is refused.
   - service: http_status:404

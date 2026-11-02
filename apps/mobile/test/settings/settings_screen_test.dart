@@ -445,7 +445,7 @@ void main() {
     ) async {
       final env = await pumpSettingsApp(tester, location: '/settings');
       await _scrollTo(tester, 'settings.server');
-      expect(find.text('https://app-lukas.andersonlaverde.com'), findsOneWidget);
+      expect(find.text('https://app.wambito.com'), findsOneWidget);
 
       await _tap(tester, 'settings.server');
       await tester.enterText(find.byKey(const Key('settings.server.field')), 'http://example.com');

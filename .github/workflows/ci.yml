@@ -80,11 +80,11 @@ jobs:
           path: apps/web/test-results
           retention-days: 7
 
-  # Publishes the landing (lukitas.andersonlaverde.com, docs/deploy/landing.md) after every merge
+  # Publishes the landing (wambito.com, docs/deploy/landing.md) after every merge
   # into main, once both jobs above pass: what is on main is what the site shows. Pull requests
   # never get here, so they never touch the live site. Needs two repository secrets, set by the
   # owner: CLOUDFLARE_API_TOKEN (Cloudflare template "Edit Cloudflare Workers", limited to the
-  # account that holds andersonlaverde.com) and CLOUDFLARE_ACCOUNT_ID.
+  # account that holds wambito.com) and CLOUDFLARE_ACCOUNT_ID.
   deploy-landing:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [check, e2e]
@@ -113,8 +113,8 @@ jobs:
       # The landing-only release, built as docs/deploy/landing.md says.
       - run: pnpm --filter @lukas/web build:landing
         env:
-          VITE_SITE_URL: https://lukitas.andersonlaverde.com
-          VITE_APP_URL: https://app-lukas.andersonlaverde.com
+          VITE_SITE_URL: https://wambito.com
+          VITE_APP_URL: https://app.wambito.com
       # From deploy/landing, so wrangler reads its config there and does not auto-configure the app.
       - run: npx --yes wrangler@4.151.3 deploy
         working-directory: deploy/landing

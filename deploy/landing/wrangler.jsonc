@@ -10,5 +10,5 @@
     "html_handling": "drop-trailing-slash"
   },
   "workers_dev": false,
-  "routes": [{ "pattern": "lukitas.andersonlaverde.com", "custom_domain": true }]
+  "routes": [{ "pattern": "wambito.com", "custom_domain": true }]
 }

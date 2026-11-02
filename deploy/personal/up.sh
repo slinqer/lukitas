@@ -31,7 +31,7 @@ need_env_file
 chmod 600 "$ENV_FILE" # it holds passwords and the auth secret
 need_docker
 guard_checkout "$force"
-host="$(cfg PUBLIC_HOSTNAME app-lukas.andersonlaverde.com)"
+host="$(cfg PUBLIC_HOSTNAME app.wambito.com)"
 web_port="$(cfg WEB_PORT 8088)"
 
 if [ "$with_tunnel" = 1 ]; then
@@ -42,7 +42,7 @@ if [ "$with_tunnel" = 1 ]; then
 fi
 
 if [ "$build_web" = 1 ]; then
-  landing_url="$(cfg LANDING_URL https://lukitas.andersonlaverde.com)"
+  landing_url="$(cfg LANDING_URL https://wambito.com)"
   say "Building the web app for https://$host"
   command -v pnpm >/dev/null 2>&1 || die "pnpm is not installed (corepack enable)"
   (

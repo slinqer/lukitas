@@ -68,11 +68,11 @@ services:
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?Set BETTER_AUTH_SECRET in .env}
       # One hostname for the app and the API, so the session cookie is first-party. The API serves
       # every route under /api. The passkey rpID is this hostname: keep it if you move the install.
-      API_URL: https://${PUBLIC_HOSTNAME:-app-lukas.andersonlaverde.com}/api
-      WEB_URL: https://${PUBLIC_HOSTNAME:-app-lukas.andersonlaverde.com}
+      API_URL: https://${PUBLIC_HOSTNAME:-app.wambito.com}/api
+      WEB_URL: https://${PUBLIC_HOSTNAME:-app.wambito.com}
       # The MCP's public URL: the audience of assistants' access tokens.
-      MCP_URL: https://${PUBLIC_HOSTNAME:-app-lukas.andersonlaverde.com}/mcp
-      MAIL_FROM: ${MAIL_FROM:-Lukitas <hola@andersonlaverde.com>}
+      MCP_URL: https://${PUBLIC_HOSTNAME:-app.wambito.com}/mcp
+      MAIL_FROM: ${MAIL_FROM:-Lukitas <hola@wambito.com>}
       # Exactly one of these two (the API refuses to start otherwise): Proton Bridge on this Mac,
       # or Resend on a server.
       SMTP_URL: ${SMTP_URL:-}
@@ -116,8 +116,8 @@ services:
     restart: unless-stopped
     logging: *logging
     environment:
-      MCP_URL: https://${PUBLIC_HOSTNAME:-app-lukas.andersonlaverde.com}/mcp
-      AUTH_ISSUER: https://${PUBLIC_HOSTNAME:-app-lukas.andersonlaverde.com}/api/auth
+      MCP_URL: https://${PUBLIC_HOSTNAME:-app.wambito.com}/mcp
+      AUTH_ISSUER: https://${PUBLIC_HOSTNAME:-app.wambito.com}/api/auth
       MCP_API_URL: http://api:3000/api
       MCP_PORT: "3001"
     depends_on:
@@ -141,7 +141,7 @@ services:
     logging: *logging
     environment:
       # Where `/`, `/en`, `/it`, `/pt` and the roadmaps redirect: the public landing site.
-      LANDING_URL: ${LANDING_URL:-https://lukitas.andersonlaverde.com}
+      LANDING_URL: ${LANDING_URL:-https://wambito.com}
       # The SHA-256 fingerprints (comma-separated) of the certificates the Android app is signed with,
       # written into /.well-known/assetlinks.json at start. Empty: the file is `[]`.
       ANDROID_CERT_SHA256: ${ANDROID_CERT_SHA256:-}

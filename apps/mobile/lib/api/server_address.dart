@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 final defaultServerUrl = Uri.parse(
   const String.fromEnvironment(
     'LUKITAS_SERVER',
-    defaultValue: 'https://app-lukas.andersonlaverde.com',
+    defaultValue: 'https://app.wambito.com',
   ),
 );
 

@@ -142,12 +142,12 @@ void main() {
   group('the MCP\'s address', () {
     test('is the server\'s origin with /mcp', () {
       expect(
-        mcpUrl(Uri.parse('https://app-lukas.andersonlaverde.com')).toString(),
-        'https://app-lukas.andersonlaverde.com/mcp',
+        mcpUrl(Uri.parse('https://app.wambito.com')).toString(),
+        'https://app.wambito.com/mcp',
       );
       expect(
-        mcpUrl(Uri.parse('https://app-lukas.andersonlaverde.com/')).toString(),
-        'https://app-lukas.andersonlaverde.com/mcp',
+        mcpUrl(Uri.parse('https://app.wambito.com/')).toString(),
+        'https://app.wambito.com/mcp',
       );
     });
 

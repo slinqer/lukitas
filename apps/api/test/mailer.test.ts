@@ -19,14 +19,14 @@ describe("SMTP transport TLS", () => {
 
   test("tlsInsecure accepts a self-signed certificate, and still insists on STARTTLS", () => {
     expect(
-      smtpTransport("smtp://hola%40andersonlaverde.com:p%40ss%2Fword@host.docker.internal:1025", {
+      smtpTransport("smtp://hola%40wambito.com:p%40ss%2Fword@host.docker.internal:1025", {
         tlsInsecure: true,
       }),
     ).toEqual({
       host: "host.docker.internal",
       port: 1025,
       secure: false,
-      auth: { user: "hola@andersonlaverde.com", pass: "p@ss/word" },
+      auth: { user: "hola@wambito.com", pass: "p@ss/word" },
       requireTLS: true,
       tls: { rejectUnauthorized: false },
     });

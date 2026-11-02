@@ -13,7 +13,7 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class ExternalLinksTest {
     private val mailto =
-        "mailto:lukitas@andersonlaverde.com?subject=Lukitas%3A%20comentarios" +
+        "mailto:hola@wambito.com?subject=Lukitas%3A%20comentarios" +
             "&body=%0A%0AVersi%C3%B3n%20de%20Lukitas%3A%201.2.3%0AIdioma%3A%20es"
 
     @Test
@@ -22,7 +22,7 @@ class ExternalLinksTest {
         assertEquals(Intent.ACTION_SENDTO, intent.action)
         // Only email apps answer a bare mailto: data.
         assertEquals("mailto:", intent.dataString)
-        assertArrayEquals(arrayOf("lukitas@andersonlaverde.com"), intent.getStringArrayExtra(Intent.EXTRA_EMAIL))
+        assertArrayEquals(arrayOf("hola@wambito.com"), intent.getStringArrayExtra(Intent.EXTRA_EMAIL))
         assertEquals("Lukitas: comentarios", intent.getStringExtra(Intent.EXTRA_SUBJECT))
         assertEquals("\n\nVersión de Lukitas: 1.2.3\nIdioma: es", intent.getStringExtra(Intent.EXTRA_TEXT))
     }

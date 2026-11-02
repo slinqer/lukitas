@@ -49,7 +49,7 @@ android {
         resValue(
             "string",
             "default_server",
-            dartDefines["LUKITAS_SERVER"] ?: "https://app-lukas.andersonlaverde.com",
+            dartDefines["LUKITAS_SERVER"] ?: "https://app.wambito.com",
         )
 
         // Phones only: 64- and 32-bit ARM. A split build (--split-per-abi, which release.sh gives

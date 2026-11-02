@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { appLinkProps, demoLinkProps, GITHUB_HREF } from "./links.ts";
 
-const APP = "https://app-lukas.andersonlaverde.com";
+const APP = "https://app.wambito.com";
 
 describe("appLinkProps", () => {
   it("leads to sign-in in the visitor's language when the app exists", () => {

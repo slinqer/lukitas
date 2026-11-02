@@ -76,7 +76,7 @@ void main() {
       expect(launchActionOf('lukitas://home'), LaunchAction.home);
       expect(launchActionOf('lukitas://settings'), isNull);
       expect(launchActionOf('https://add'), isNull);
-      expect(launchActionOf('https://app-lukas.andersonlaverde.com/auth/verify?code=1'), isNull);
+      expect(launchActionOf('https://app.wambito.com/auth/verify?code=1'), isNull);
       expect(launchActionOf(''), isNull);
       expect(launchActionOf(null), isNull);
     });

@@ -32,8 +32,8 @@ class _RecordingAdapter implements HttpClientAdapter {
 void main() {
   test('forServer sends API calls to <server>/api', () {
     expect(
-      ApiClient.forServer(Uri.parse('https://app-lukas.andersonlaverde.com')).baseUrl,
-      'https://app-lukas.andersonlaverde.com/api',
+      ApiClient.forServer(Uri.parse('https://app.wambito.com')).baseUrl,
+      'https://app.wambito.com/api',
     );
     expect(
       ApiClient.forServer(Uri.parse('https://example.test/lukas/')).baseUrl,

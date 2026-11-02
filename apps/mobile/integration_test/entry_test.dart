@@ -25,7 +25,7 @@ const _mailpit = String.fromEnvironment('MAILPIT_URL', defaultValue: 'http://10.
 
 /// The host App Links are declared for in the manifest: a link there is dropped while the app talks
 /// to another server (the dev stack), since only the configured server's links are taken.
-const _appLinkHost = 'app-lukas.andersonlaverde.com';
+const _appLinkHost = 'app.wambito.com';
 
 final _http = Dio(BaseOptions(validateStatus: (_) => true));
 

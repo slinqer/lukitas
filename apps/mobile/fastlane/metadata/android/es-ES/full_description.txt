@@ -18,7 +18,7 @@ Sin anuncios, sin analíticas ni reportes automáticos de fallos, sin Google Pla
 Los avisos son solo dos, ambos locales y que puedes apagar: «Hoy vence…» a las 9:00 con los pagos recurrentes del día, y un aviso si pasan 45 días sin abrir la app y tu cuenta no tiene correo.
 
 <b>Necesita un servidor de Lukitas</b>
-La app guarda tus datos en un servidor de Lukitas. Por defecto usa el del autor (app-lukas.andersonlaverde.com), que por ahora es una instalación personal y puede limitar quién agrega un correo. Puedes poner el tuyo en Ajustes: el servidor también es software libre.
+La app guarda tus datos en un servidor de Lukitas. Por defecto usa el del autor (app.wambito.com), que por ahora es una instalación personal y puede limitar quién agrega un correo. Puedes poner el tuyo en Ajustes: el servidor también es software libre.
 
 <b>Lo que sigue en la web</b>
 Categorías, pagos recurrentes, informes, importar y descargar tus datos están en la web; la app te lleva hasta allí.

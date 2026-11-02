@@ -49,7 +49,7 @@ void main() {
 
     test('mailto: goes to the channel exactly as it is, encoded subject and body included', () async {
       const mailto =
-          'mailto:lukitas@andersonlaverde.com?subject=Lukitas%3A%20comentarios&body=%0A%0AVersi%C3%B3n%3A%201.2.3';
+          'mailto:hola@wambito.com?subject=Lukitas%3A%20comentarios&body=%0A%0AVersi%C3%B3n%3A%201.2.3';
       expect(await open(mailto), isTrue);
       expect(calls.single.method, 'openUrl');
       expect(calls.single.arguments, mailto);

@@ -18,7 +18,7 @@ Niente pubblicità, niente analisi né segnalazioni automatiche di errori, nient
 Gli avvisi sono solo due, entrambi locali e che puoi spegnere: «Scade oggi…» alle 9:00 con i pagamenti ricorrenti del giorno, e un avviso se passano 45 giorni senza aprire l'app e il tuo account non ha un'email.
 
 <b>Serve un server di Lukitas</b>
-L'app salva i tuoi dati su un server di Lukitas. Di default usa quello dell'autore (app-lukas.andersonlaverde.com), che per ora è un'installazione personale e può limitare chi aggiunge un'email. Puoi indicare il tuo nelle Impostazioni: anche il server è software libero.
+L'app salva i tuoi dati su un server di Lukitas. Di default usa quello dell'autore (app.wambito.com), che per ora è un'installazione personale e può limitare chi aggiunge un'email. Puoi indicare il tuo nelle Impostazioni: anche il server è software libero.
 
 <b>Cosa resta sul web</b>
 Categorie, pagamenti ricorrenti, report, importazione e download dei tuoi dati sono sul web; l'app ti ci porta.

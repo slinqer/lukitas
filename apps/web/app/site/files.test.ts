@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { robotsTxt, sitemapXml } from "./files.ts";
 
-const ORIGIN = "https://lukitas.andersonlaverde.com";
+const ORIGIN = "https://wambito.com";
 
 describe("sitemapXml", () => {
   const xml = sitemapXml(ORIGIN);

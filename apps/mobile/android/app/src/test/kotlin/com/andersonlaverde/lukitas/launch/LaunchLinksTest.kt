@@ -40,7 +40,7 @@ class LaunchLinksTest {
         // And the guest warning opens "Guarda tu progreso".
         assertEquals("lukitas://progress", LaunchLinks.linkOf(LaunchLinks.intent(context, LaunchLinks.PROGRESS)))
         assertNull(LaunchLinks.linkOf(viaAlias("lukitas://settings")))
-        assertNull(LaunchLinks.linkOf(viaAlias("https://app-lukas.andersonlaverde.com/auth/verify")))
+        assertNull(LaunchLinks.linkOf(viaAlias("https://app.wambito.com/auth/verify")))
         assertNull(LaunchLinks.linkOf(Intent(Intent.ACTION_MAIN)))
         assertNull(LaunchLinks.linkOf(null))
     }
@@ -64,11 +64,11 @@ class LaunchLinksTest {
 
     private fun view(link: String) = Intent(Intent.ACTION_VIEW, Uri.parse(link)).setClass(context, MainActivity::class.java)
 
-    private val verify = "https://app-lukas.andersonlaverde.com/auth/verify?email=ana%40correo.com&code=123456"
+    private val verify = "https://app.wambito.com/auth/verify?email=ana%40correo.com&code=123456"
 
     @Test
     fun `a web link to the configured server's host goes on to the app`() {
-        assertFalse(LaunchLinks.isForeignWebLink(view(verify), "app-lukas.andersonlaverde.com"))
+        assertFalse(LaunchLinks.isForeignWebLink(view(verify), "app.wambito.com"))
         // Hosts are not case-sensitive.
         assertFalse(LaunchLinks.isForeignWebLink(view(verify), "App-Lukas.AndersonLaverde.com"))
         // The dev stack, from the emulator.
@@ -77,11 +77,11 @@ class LaunchLinksTest {
 
     @Test
     fun `a web link to any other host is dropped, so no app can sign the person into its account`() {
-        assertTrue(LaunchLinks.isForeignWebLink(view("https://evil.example/auth/verify?email=x%40y.z&code=1"), "app-lukas.andersonlaverde.com"))
+        assertTrue(LaunchLinks.isForeignWebLink(view("https://evil.example/auth/verify?email=x%40y.z&code=1"), "app.wambito.com"))
         assertTrue(LaunchLinks.isForeignWebLink(view(verify), "lukitas.example.org"))
         // A server setting that cannot be read is no host at all: nothing goes on.
         assertTrue(LaunchLinks.isForeignWebLink(view(verify), null))
-        assertTrue(LaunchLinks.isForeignWebLink(view("https:///auth/verify"), "app-lukas.andersonlaverde.com"))
+        assertTrue(LaunchLinks.isForeignWebLink(view("https:///auth/verify"), "app.wambito.com"))
     }
 
     @Test
@@ -93,8 +93,8 @@ class LaunchLinksTest {
 
     @Test
     fun `the configured server is the one chosen in Settings, else the build's default`() {
-        val default = "https://app-lukas.andersonlaverde.com"
-        assertEquals("app-lukas.andersonlaverde.com", LaunchLinks.serverHost(ServerSetting.Default, default))
+        val default = "https://app.wambito.com"
+        assertEquals("app.wambito.com", LaunchLinks.serverHost(ServerSetting.Default, default))
         assertEquals("lukitas.example.org", LaunchLinks.serverHost(ServerSetting.Chosen("https://lukitas.example.org/"), default))
         assertNull(LaunchLinks.serverHost(ServerSetting.Unreadable, default))
     }
@@ -116,13 +116,13 @@ class LaunchLinksTest {
     @Test
     fun `the router never reads the data Glance puts on a widget tap, with or without an action`() {
         // Read as a route it was "Page Not Found: no routes for location: glance-action:/CALLBACK?...".
-        assertFalse(LaunchLinks.routerMayRead(glanceTap, "app-lukas.andersonlaverde.com"))
-        assertFalse(LaunchLinks.routerMayRead(Intent(glanceTap).setAction(Intent.ACTION_VIEW), "app-lukas.andersonlaverde.com"))
+        assertFalse(LaunchLinks.routerMayRead(glanceTap, "app.wambito.com"))
+        assertFalse(LaunchLinks.routerMayRead(Intent(glanceTap).setAction(Intent.ACTION_VIEW), "app.wambito.com"))
     }
 
     @Test
     fun `the router reads only the magic link of the configured server`() {
-        val host = "app-lukas.andersonlaverde.com"
+        val host = "app.wambito.com"
         assertTrue(LaunchLinks.routerMayRead(view(verify), host))
         assertFalse(LaunchLinks.routerMayRead(view(verify), "lukitas.example.org"))
         assertFalse(LaunchLinks.routerMayRead(view(verify), null))
@@ -139,10 +139,10 @@ class LaunchLinksTest {
 
     /** What the web page's button links to, character for character (open-in-app.test.ts). */
     private val intentLink =
-        "intent://app-lukas.andersonlaverde.com/auth/verify" +
+        "intent://app.wambito.com/auth/verify" +
             "?email=ana%40example.com&code=424242&lang=es&next=%2Fapp%2Finsights&from=app" +
             "#Intent;scheme=https;package=com.andersonlaverde.lukitas;" +
-            "S.browser_fallback_url=https%3A%2F%2Fapp-lukas.andersonlaverde.com%2Fauth%2Fverify" +
+            "S.browser_fallback_url=https%3A%2F%2Fapp.wambito.com%2Fauth%2Fverify" +
             "%3Femail%3Dana%2540example.com%26code%3D424242%26lang%3Des%26next%3D%252Fapp%252Finsights;end"
 
     /** The intent Chrome starts for [intentLink]: it parses it, and may start only a browsable view. */
@@ -159,12 +159,12 @@ class LaunchLinksTest {
         assertEquals(Intent.ACTION_VIEW, intent.action)
         assertEquals("com.andersonlaverde.lukitas", intent.`package`)
         assertEquals(
-            "https://app-lukas.andersonlaverde.com/auth/verify" +
+            "https://app.wambito.com/auth/verify" +
                 "?email=ana%40example.com&code=424242&lang=es&next=%2Fapp%2Finsights&from=app",
             intent.dataString,
         )
         assertEquals(
-            "https://app-lukas.andersonlaverde.com/auth/verify?email=ana%40example.com&code=424242&lang=es&next=%2Fapp%2Finsights",
+            "https://app.wambito.com/auth/verify?email=ana%40example.com&code=424242&lang=es&next=%2Fapp%2Finsights",
             intent.getStringExtra("browser_fallback_url"),
         )
     }
@@ -172,7 +172,7 @@ class LaunchLinksTest {
     @Test
     fun `MainActivity keeps that intent's link for the router, and takes no lukitas link from it`() {
         val intent = fromBrowser()
-        assertTrue(LaunchLinks.routerMayRead(intent, "app-lukas.andersonlaverde.com"))
+        assertTrue(LaunchLinks.routerMayRead(intent, "app.wambito.com"))
         assertNull(LaunchLinks.linkOf(intent))
         // On another server the same link is dropped, as any web link is.
         assertFalse(LaunchLinks.routerMayRead(intent, "lukitas.example.org"))

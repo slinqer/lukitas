@@ -1,7 +1,7 @@
 # Personal install
 
 Run your own Lukitas on one machine (a Mac, to start), reach it from your phone through a Cloudflare
-tunnel at `https://app-lukas.andersonlaverde.com`, and keep your real data safe with a daily backup.
+tunnel at `https://app.wambito.com`, and keep your real data safe with a daily backup.
 Later the same files move to a server and the data comes with them (see
 [Moving to a server](#moving-to-a-server)).
 
@@ -17,12 +17,12 @@ with `docker compose up` in the root (ports 5433, 3000, 5173, 8025, 1026), so bo
                                                              (this Mac only)
 ```
 
-- **One origin.** The app and the API share `app-lukas.andersonlaverde.com` (the API is under
+- **One origin.** The app and the API share `app.wambito.com` (the API is under
   `/api`), so the session cookie is first-party and secure. No CORS.
 - **Allowlist.** Only the emails in `SIGN_IN_ALLOWLIST` can ask for a sign-in code. Anyone else
   gets "Lukitas todavía no está abierto al público" and no email is sent.
 - **The landing lives elsewhere.** `/`, `/en`, `/it`, `/pt` and the roadmaps redirect (302, same path and query)
-  to the public landing at `LANDING_URL` (default `https://lukitas.andersonlaverde.com`), whose
+  to the public landing at `LANDING_URL` (default `https://wambito.com`), whose
   buttons come back here to `/sign-in` and `/demo`. The web build gets the same value
   (`VITE_LANDING_URL`), so the sign-in screen's logo and the end of "delete my account" leave
   for the landing too.
@@ -36,14 +36,14 @@ with `docker compose up` in the root (ports 5433, 3000, 5173, 8025, 1026), so bo
   developers.
 - **No open ports.** Postgres and the API publish nothing. Caddy publishes `127.0.0.1:8088` for
   checking on this Mac. The tunnel is outbound only.
-- **Mail** goes out as `hola@andersonlaverde.com` through Proton Bridge on the host.
+- **Mail** goes out as `hola@wambito.com` through Proton Bridge on the host.
 - **The API never holds the owner password.** A one-shot `migrate` service creates the `lukas_app`
   role and applies the migrations; the API connects as `lukas_app` only.
 
 ## First-time setup
 
 You need Docker Desktop, Node 22 with pnpm (`corepack enable`), `cloudflared`
-(`brew install cloudflared`) and Proton Bridge, signed in to the `hola@andersonlaverde.com` account.
+(`brew install cloudflared`) and Proton Bridge, signed in to the `hola@wambito.com` account.
 
 ### 1. Proton Bridge credentials
 
@@ -75,7 +75,7 @@ Fill it in (every variable is explained in the file; `.env` is ignored by git an
 | `APP_DB_PASSWORD` | `openssl rand -hex 24` |
 | `BETTER_AUTH_SECRET` | `openssl rand -hex 32` |
 | `SIGN_IN_ALLOWLIST` | your email(s), comma-separated |
-| `SMTP_URL` | `smtp://hola%40andersonlaverde.com:BRIDGE_PASSWORD@host.docker.internal:1025` (the `@` of the user is written `%40`) |
+| `SMTP_URL` | `smtp://hola%40wambito.com:BRIDGE_PASSWORD@host.docker.internal:1025` (the `@` of the user is written `%40`) |
 | `TUNNEL_ID` | from step 3 |
 
 `up.sh` sets the file's mode to 600 each time it runs. Keep a copy of `.env` in your password manager: `BETTER_AUTH_SECRET` and the database passwords are
@@ -90,17 +90,17 @@ another name and give it to the commands with `--origincert "$CLOUDFLARED_ORIGIN
 tunnel needs only the credentials `.json`.)
 
 ```sh
-cloudflared tunnel login                       # opens the browser: choose andersonlaverde.com
+cloudflared tunnel login                       # opens the browser: choose wambito.com
 cloudflared tunnel create lukitas-personal     # prints the tunnel id, writes ~/.cloudflared/<id>.json
-cloudflared tunnel route dns lukitas-personal app-lukas.andersonlaverde.com
+cloudflared tunnel route dns lukitas-personal app.wambito.com
 ```
 
-Put the id in `.env` as `TUNNEL_ID`. In the Cloudflare dashboard for andersonlaverde.com, switch on
+Put the id in `.env` as `TUNNEL_ID`. In the Cloudflare dashboard for wambito.com, switch on
 **SSL/TLS > Edge Certificates > Always Use HTTPS** and **HSTS** (Caddy sets no HSTS itself, because
 TLS ends at Cloudflare). The stack mounts `~/.cloudflared/<TUNNEL_ID>.json` read-only
 into the `cloudflared` container; it does not see `cert.pem` (the login certificate). Treat the
 `.json` as a secret: anyone with it can run your tunnel. `cloudflared.yml` already routes
-`app-lukas.andersonlaverde.com` to the web container.
+`app.wambito.com` to the web container.
 
 ### 4. First start
 
@@ -118,8 +118,8 @@ service (it creates the `lukas_app` role the first time), then starts the API an
 ./up.sh --skip-web      # adds cloudflared; reuses the web build
 ```
 
-Open `https://app-lukas.andersonlaverde.com` on your phone and sign in with an allowlisted email:
-the code arrives from `hola@andersonlaverde.com`.
+Open `https://app.wambito.com` on your phone and sign in with an allowlisted email:
+the code arrives from `hola@wambito.com`.
 
 ### 5. The daily backup
 
@@ -404,7 +404,7 @@ lost or empty there is nothing to compare with: check who deleted their account 
 ## Moving to a server
 
 The same files run on any Linux server with Docker. Keep the hostname: **passkeys are bound to
-`app-lukas.andersonlaverde.com`**, so a new hostname invalidates every passkey (email codes still
+`app.wambito.com`**, so a new hostname invalidates every passkey (email codes still
 work).
 
 1. On the Mac: `./backup.sh`, and copy the newest dump and your `.env` to the server.
@@ -418,7 +418,7 @@ work).
 4. Move the tunnel: copy `~/.cloudflared/<TUNNEL_ID>.json` to the server, then **stop the Mac's
    stack first** (`docker compose stop cloudflared`) and run `./up.sh --skip-web` on the server. Or
    create a new tunnel there and re-point the name with
-   `cloudflared tunnel route dns --overwrite-dns <new tunnel> app-lukas.andersonlaverde.com`.
+   `cloudflared tunnel route dns --overwrite-dns <new tunnel> app.wambito.com`.
 5. Check `./smoke.sh` and sign in. Keep the Mac's last dump until the server has its own.
 
 On the server, `./install-backup.sh` installs the daily backup as a systemd timer at 08:00 UTC (03:00
@@ -432,7 +432,7 @@ it. On the Mac, `./uninstall-backup.sh` removes the launchd agent once the serve
 |---|---|
 | `docker-compose.yml` | The stack: postgres, migrate, api, web, cloudflared |
 | `Caddyfile` | Static app, SPA fallback, cache rules, `/api` proxy, blocked paths, access log |
-| `cloudflared.yml` | Tunnel ingress for `app-lukas.andersonlaverde.com` |
+| `cloudflared.yml` | Tunnel ingress for `app.wambito.com` |
 | `Dockerfile.web` | Caddy with the web build inside (the API image is `apps/api/Dockerfile.prod`) |
 | `web-entrypoint.sh` `assetlinks.json.template` | At start, write `/.well-known/assetlinks.json` from `ANDROID_CERT_SHA256` |
 | `.env.example` | Every setting, documented |
