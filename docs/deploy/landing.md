@@ -81,9 +81,9 @@ version of the `lukitas-landing` Worker.
 ## Custom domain
 
 `routes` in the config attaches `wambito.com` as a custom domain on deploy. The
-zone is on the same Cloudflare account, so Cloudflare creates the DNS record and certificate. For
-the real domain later, add it to `routes` and rebuild with `VITE_SITE_URL` set to it, so the
-canonical links and the sitemap point to the new origin.
+zone is on the same Cloudflare account, so Cloudflare creates the DNS record and certificate. To
+serve the landing from another domain, change `routes` and rebuild with `VITE_SITE_URL` set to it,
+so the canonical links and the sitemap point to the new origin.
 
 ## Switching back once the app exists
 

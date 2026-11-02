@@ -18,15 +18,11 @@ describe("resolveSiteOrigin", () => {
   });
 
   it("uses the configured origin", () => {
-    expect(resolveSiteOrigin("https://wambito.com")).toBe(
-      "https://wambito.com",
-    );
+    expect(resolveSiteOrigin("https://wambito.com")).toBe("https://wambito.com");
   });
 
   it("drops trailing slashes and surrounding whitespace", () => {
-    expect(resolveSiteOrigin("https://wambito.com/")).toBe(
-      "https://wambito.com",
-    );
+    expect(resolveSiteOrigin("https://wambito.com/")).toBe("https://wambito.com");
     expect(resolveSiteOrigin("  https://example.com//  ")).toBe("https://example.com");
   });
 
@@ -59,12 +55,8 @@ describe("resolveAppOrigin", () => {
   });
 
   it("uses the configured origin, without trailing slashes or whitespace", () => {
-    expect(resolveAppOrigin("https://app.wambito.com")).toBe(
-      "https://app.wambito.com",
-    );
-    expect(resolveAppOrigin("  https://app.wambito.com//  ")).toBe(
-      "https://app.wambito.com",
-    );
+    expect(resolveAppOrigin("https://app.wambito.com")).toBe("https://app.wambito.com");
+    expect(resolveAppOrigin("  https://app.wambito.com//  ")).toBe("https://app.wambito.com");
     expect(resolveAppOrigin("http://localhost:5173/")).toBe("http://localhost:5173");
   });
 
@@ -92,9 +84,7 @@ describe("resolveLandingOrigin", () => {
   });
 
   it("uses the configured origin, and fails clearly naming VITE_LANDING_URL", () => {
-    expect(resolveLandingOrigin("https://wambito.com/")).toBe(
-      "https://wambito.com",
-    );
+    expect(resolveLandingOrigin("https://wambito.com/")).toBe("https://wambito.com");
     expect(() => resolveLandingOrigin("wambito.com")).toThrow(/VITE_LANDING_URL/);
   });
 });
