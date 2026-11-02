@@ -7,11 +7,23 @@
 #                GitHub URLs, key and emulator labels).
 #   2b: remove   transition code that carries the old name over; part 2b deletes it.
 #   history      the plans and specs, which keep the names they were written with.
-# Prefer file-level pathspecs. A file marked `money` holds only slang, a history link or a 2b label.
+# A file holding more than one kind may list them comma-joined (`money, 2b`). Directory globs are
+# only for whole folders that part 2b rewrites; everything else lists the files that have a hit.
+# A file lists every reason for what remains in it.
 
 # --- money: capture (the Colombian phrase parser), money format, the hint, and the copy ---
-apps/mobile/lib/capture/**                                  # money
-apps/mobile/test/capture/**                                 # money
+apps/mobile/lib/capture/engine/grammar.dart  # money
+apps/mobile/lib/capture/parser/amounts.dart  # money
+apps/mobile/lib/capture/parser/parse.dart  # money
+apps/mobile/lib/capture/parser/words.dart  # money
+apps/mobile/lib/capture/models_download.dart  # 2b
+apps/mobile/test/capture/capture_golden_test.dart  # money
+apps/mobile/test/capture/capture_layout_test.dart  # money
+apps/mobile/test/capture/capture_preview_test.dart  # money
+apps/mobile/test/capture/capture_sheet_test.dart  # money
+apps/mobile/test/capture/grammar_test.dart  # money
+apps/mobile/test/capture/parser_helpers_test.dart  # money
+apps/mobile/test/capture/models_download_test.dart  # 2b
 apps/mobile/lib/money/format.dart                           # money
 apps/mobile/test/money/format_test.dart                     # money
 apps/mobile/lib/budgets/budget_sheet.dart                   # money
@@ -19,27 +31,27 @@ apps/mobile/lib/import/budgets_form.dart                    # money
 apps/mobile/lib/settings/time_money_section.dart            # money
 apps/mobile/lib/ui/amount_field.dart                        # money
 apps/mobile/lib/welcome/budgets_step.dart                   # money
-apps/mobile/lib/l10n/app_en.arb                             # money
-apps/mobile/lib/l10n/app_es.arb                             # money
-apps/mobile/lib/l10n/app_it.arb                             # money
-apps/mobile/lib/l10n/app_pt.arb                             # money
+apps/mobile/lib/l10n/app_en.arb  # 2b
+apps/mobile/lib/l10n/app_es.arb  # money, 2b
+apps/mobile/lib/l10n/app_it.arb  # 2b
+apps/mobile/lib/l10n/app_pt.arb  # 2b
 apps/mobile/test/add/add_sheet_test.dart                    # money
 apps/mobile/test/budgets/budgets_test.dart                  # money
 apps/mobile/test/insights/insights_test.dart                # money
-apps/mobile/test/l10n/arb_parity_test.dart                  # money
+apps/mobile/test/l10n/arb_parity_test.dart  # money, 2b: remove (slang regex; title and a comment name the old app and repo)
 apps/mobile/test/parity/add_sheet_parity_test.dart          # money
 apps/mobile/test/settings/assistants_section_test.dart      # money
 apps/mobile/test/settings/time_money_test.dart              # money
 apps/mobile/test/tooling/android_strings_test.dart          # money
 apps/mobile/test/ui/amount_field_test.dart                  # money
 apps/mobile/fastlane/metadata/android/es-ES/changelogs/*    # money
-apps/mobile/fastlane/metadata/android/es-ES/full_description.txt  # money
+apps/mobile/fastlane/metadata/android/es-ES/full_description.txt  # money, 2b
 apps/web/app/features/landing/money-words.ts               # money
 apps/web/app/features/landing/money-words.test.ts          # money
 apps/web/app/features/landing/MoneyHeadline.tsx            # money
 apps/web/app/features/landing/Hero.tsx                     # money
 apps/web/app/features/landing/landing.css                  # money
-apps/web/app/features/landing/Landing.stories.tsx          # money
+apps/web/app/features/landing/Landing.stories.tsx  # money, 2b
 apps/web/app/demo/Demo.stories.tsx                         # money
 apps/web/app/demo/demo-data.ts                             # money
 apps/web/app/features/add-transaction/AddTransactionSheet.tsx   # money
@@ -63,9 +75,9 @@ apps/web/e2e/a11y.spec.ts                                  # money
 apps/web/e2e/demo.spec.ts                                  # money
 apps/web/e2e/feel.spec.ts                                  # money
 apps/web/e2e/onboarding.spec.ts                            # money
-apps/web/e2e/landing.spec.ts                               # money
+apps/web/e2e/landing.spec.ts  # money, 2b, 2b: remove
 apps/web/scripts/og/render.ts                              # money
-apps/api/test/sign-in-email.test.ts                        # money
+apps/api/test/sign-in-email.test.ts  # 2b: remove (asserts the old mascot name is absent, so it names it; drop with the rename's transition)
 apps/mcp/test/mcp.test.ts                                  # money
 packages/ai-assistant-tools/src/instructions.ts            # money
 packages/ai-assistant-tools/src/prompts.ts                 # money
@@ -73,9 +85,10 @@ packages/ai-assistant-tools/src/tools/shared.ts            # money
 packages/ai-assistant-tools/src/tools/write.ts             # money
 packages/ai-assistant-tools/test/phrases.json              # money
 packages/ai-assistant-tools/test/prompts.test.ts           # money
-packages/core/quick-capture/**                             # money
+packages/core/quick-capture/README.md  # money
+packages/core/quick-capture/cases.json  # money
 packages/core/src/quick-capture-cases.test.ts              # money
-README.md                                                  # money
+README.md  # money, 2b, history
 docs/design/stage-2-mockups/landing.html                   # money
 docs/design/system/project/README.md                       # money
 docs/design/system/project/components/Cover/preview.html   # money
@@ -85,7 +98,7 @@ docs/i18n/it-pt-sample.md                                  # money
 docs/mobile/parity.md                                      # money
 
 # --- 2b: infrastructure ---
-deploy/personal/**                                         # 2b
+deploy/personal/**  # 2b (whole folder: rewritten in part 2b)
 deploy/landing/wrangler.jsonc                              # 2b
 docker-compose.yml                                         # 2b
 .env.example                                               # 2b
