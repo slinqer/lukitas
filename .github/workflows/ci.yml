@@ -18,6 +18,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       # The Storybook tests in `pnpm test` run in Vitest browser mode on Playwright Chromium.
       - run: pnpm --filter @lukas/web exec playwright install --with-deps chromium
+      # Wambito depends on nothing at the founder's personal domain (docs/superpowers keeps history).
+      - run: "! git grep -n -I -e 'anderson''laverde' -- . ':!docs/superpowers'"
       - run: pnpm lint
       # Generated files must be committed as generated. tokens.css comes from the design system's
       # tokens.json: run `pnpm --filter @lukas/web tokens` and commit it.
