@@ -9,9 +9,11 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.wambito.app.notices.NoticeScheduler
 import com.wambito.app.notices.NoticeSettings
-import com.wambito.app.voice.WarmHint
+import androidx.annotation.VisibleForTesting
 import com.google.common.util.concurrent.ListenableFuture
+import com.wambito.app.voice.WarmHint
 import com.wambito.app.widget.RefreshScheduler
+import java.util.concurrent.atomic.AtomicBoolean
 import java.time.Duration
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
@@ -33,12 +35,18 @@ import java.util.concurrent.atomic.AtomicReference
  *     receivers take placed widgets away (spec section 4.4), and the first widget added again
  *     schedules them under the new names.
  *  3. The notification channels keep their ids (`payments_due`, `guest_warning`): nothing to do.
- *  4. A flag records that it ran; until every step succeeded it runs again at the next start.
+ *  4. A flag records that it ran; until every step succeeded, and while an old-name notice job was
+ *     still running, it runs again at the next start.
  *
- * Moved jobs are ones found waiting when WorkManager answers; a job of the old name that was
- * running then and asks to be retried is found waiting by the next run (no flag yet) or, after the
- * flag, runs once more under the old name and hands over to the new one: "Hoy vence…" posts once
- * per local day whatever runs it (NoticeSettings.lastDueDay).
+ * Moved jobs are ones found waiting when WorkManager answers. A job of the old name that was running
+ * then keeps the flag unset: if it asks to be retried (Result.retry() puts it back under the old
+ * name), the next entry finds it waiting and moves it; once it has ended, the next entry finds
+ * nothing under the old names and writes the flag.
+ *
+ * Jobs under the new names (a widget's onEnabled, Dart's scheduleDue) may be enqueued a few
+ * milliseconds before the old names' cancels land, since those run asynchronously; the names
+ * differ, and if the process dies in between the flag is still unset and the next start finishes
+ * the move, so it converges.
  *
  * The widget snapshot (`lukitas.widget.snapshot`) is not moved here: it lives in home_widget's
  * SharedPreferences, under a key Dart's lib/storage/migrate_keys.dart moves at the app's start.
@@ -70,6 +78,15 @@ object Migration {
     /** Whether the WorkManager half is under way in this process (it finishes asynchronously). */
     private var movingWork = false
 
+    /** Run where each old name's jobs are read, before they are moved; tests make it throw. */
+    @VisibleForTesting
+    internal var beforeCarry: (() -> Unit)? = null
+
+    /** Whether no WorkManager half is under way (tests wait on it). */
+    @VisibleForTesting
+    @Synchronized
+    internal fun idle(): Boolean = !movingWork
+
     /**
      * Runs the move once; after that, a read of one flag. Process-wide one at a time. The files are
      * moved before it returns, so whatever runs next reads the new ones. The jobs are moved without
@@ -93,12 +110,15 @@ object Migration {
     }
 
     @Synchronized
-    private fun workMoved(app: Context, error: Exception?) {
+    private fun workMoved(app: Context, error: Exception?, stillRunning: Boolean) {
         movingWork = false
         if (error != null) {
             Log.w(TAG, "jobs not moved, tried again later", error)
             return
         }
+        // An old-name notice job is running: looked at again at the next entry (it may come back
+        // under the old name to be retried).
+        if (stillRunning) return
         flags(app).edit().putBoolean(DONE, true).commit()
     }
 
@@ -137,10 +157,12 @@ object Migration {
         val guest = workManager.getWorkInfosForUniqueWork(OLD_GUEST)
         val left = AtomicInteger(2)
         val failed = AtomicReference<Exception?>(null)
+        val running = AtomicBoolean(false)
         val step = { future: ListenableFuture<List<WorkInfo>>, again: (Duration) -> Unit ->
             future.addListener({
                 try {
-                    carry(workManager, future.get(), again)
+                    beforeCarry?.invoke()
+                    if (carry(workManager, future.get(), again)) running.set(true)
                 } catch (e: Exception) {
                     failed.compareAndSet(null, e)
                 }
@@ -152,7 +174,7 @@ object Migration {
                     } catch (e: Exception) {
                         failed.compareAndSet(null, e)
                     }
-                    workMoved(app, failed.get())
+                    workMoved(app, failed.get(), running.get())
                 }
             }, Runnable::run)
         }
@@ -166,16 +188,20 @@ object Migration {
 
     /**
      * Each job of [infos] (an old unique name's) that is waiting: [again] under the new name, as far
-     * from now as it was due, then cancelled. A running one is left to finish (see the class comment).
+     * from now as it was due, then cancelled. A running one is left to finish (see the class
+     * comment); true when there was one.
      */
-    private fun carry(workManager: WorkManager, infos: List<WorkInfo>, again: (Duration) -> Unit) {
+    private fun carry(workManager: WorkManager, infos: List<WorkInfo>, again: (Duration) -> Unit): Boolean {
         val now = System.currentTimeMillis()
+        var running = false
         for (info in infos) {
+            if (info.state == WorkInfo.State.RUNNING) running = true
             if (info.state != WorkInfo.State.ENQUEUED && info.state != WorkInfo.State.BLOCKED) continue
             val at = info.nextScheduleTimeMillis
             val delay = if (at == Long.MAX_VALUE) 0L else (at - now).coerceAtLeast(0L)
             again(Duration.ofMillis(delay))
             workManager.cancelWorkById(info.id)
         }
+        return running
     }
 }

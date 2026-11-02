@@ -5,4 +5,4 @@ Primera versión.
 - Widget y mosaico de ajustes rápidos.
 - Prueba sin correo y agrégalo después.
 - En español e inglés, de noche o de día.
-- Ahora se llama Wambito: vuelve a poner el widget y el mosaico.
+- Ahora se llama Wambito: vuelve a poner el widget de inicio.

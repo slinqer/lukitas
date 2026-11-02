@@ -5,4 +5,4 @@ Primeira versão.
 - Widget e mosaico das definições rápidas.
 - Experimenta sem email e adiciona-o depois.
 - Em espanhol e em inglês, de noite ou de dia.
-- Agora chama-se Wambito: volta a pôr o widget e o mosaico.
+- Agora chama-se Wambito: volta a pôr o widget no ecrã.

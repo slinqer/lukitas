@@ -5,4 +5,4 @@ Prima versione.
 - Widget e riquadro delle impostazioni rapide.
 - Prova senza email e aggiungila dopo.
 - In spagnolo e in inglese, di notte o di giorno.
-- Ora si chiama Wambito: rimetti il widget e il riquadro.
+- Ora si chiama Wambito: rimetti il widget nella home.

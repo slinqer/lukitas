@@ -2,7 +2,10 @@
 package com.wambito.app
 
 import android.content.Context
+import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
+import androidx.work.BackoffPolicy
+import androidx.work.Configuration
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
@@ -11,6 +14,8 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import androidx.work.Worker
+import androidx.work.WorkerParameters
 import androidx.work.testing.WorkManagerTestInitHelper
 import com.wambito.app.notices.DueWorker
 import com.wambito.app.notices.GuestWorker
@@ -31,8 +36,12 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 import java.io.File
 import java.time.Duration
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 @RunWith(RobolectricTestRunner::class)
 class MigrationTest {
@@ -47,6 +56,7 @@ class MigrationTest {
     @After
     fun tearDown() {
         NoticeHooks.dependencies = null
+        Migration.beforeCarry = null
     }
 
     private fun old(name: String) = context.getSharedPreferences(name, Context.MODE_PRIVATE)
@@ -194,6 +204,30 @@ class MigrationTest {
     }
 
     @Test
+    fun `moving the jobs fails - the flag stays unset, the old job stays, and the next start finishes it`() {
+        NoticeSettings(context).guestEnabled = true
+        workManager.enqueueUniqueWork(
+            "lukitas.notice.guest",
+            ExistingWorkPolicy.REPLACE,
+            OneTimeWorkRequestBuilder<GuestWorker>().setInitialDelay(Duration.ofDays(3)).build(),
+        )
+        Migration.beforeCarry = { throw IllegalStateException("WorkManager said no") }
+
+        Migration.run(context)
+
+        assertFalse(Migration.isDone(context))
+        assertEquals(1, active("lukitas.notice.guest").size)
+        assertEquals(emptyList<WorkInfo>(), active(NoticeScheduler.GUEST))
+
+        Migration.beforeCarry = null
+        Migration.run(context)
+
+        assertTrue(Migration.isDone(context))
+        assertEquals(emptyList<WorkInfo>(), active("lukitas.notice.guest"))
+        assertEquals(1, active(NoticeScheduler.GUEST).size)
+    }
+
+    @Test
     fun `runs once`() {
         Migration.run(context)
         assertTrue(Migration.isDone(context))
@@ -223,5 +257,88 @@ class MigrationTest {
         override fun token(): String? = null
         override fun mark(): String? = null
         override fun server(): ServerSetting = ServerSetting.Default
+    }
+}
+
+/**
+ * A job still running under an old name when Migration looks, on WorkManager's real threads (the
+ * synchronous test executors only answer once the job has ended, so they never show one running).
+ */
+@RunWith(RobolectricTestRunner::class)
+class MigrationRunningJobTest {
+    private val context: Context = ApplicationProvider.getApplicationContext()
+    private val workManager get() = WorkManager.getInstance(context)
+
+    @Before
+    fun setUp() {
+        WorkManagerTestInitHelper.initializeTestWorkManager(
+            context,
+            Configuration.Builder().setExecutor(Executors.newSingleThreadExecutor()).build(),
+            WorkManagerTestInitHelper.ExecutorsMode.PRESERVE_EXECUTORS,
+        )
+        HeldWorker.started = CountDownLatch(1)
+        HeldWorker.release = CountDownLatch(1)
+    }
+
+    @After
+    fun tearDown() {
+        HeldWorker.release.countDown()
+    }
+
+    private fun waitUntil(what: String, check: () -> Boolean) {
+        val until = System.currentTimeMillis() + 10_000
+        while (!check()) {
+            assertTrue("timed out waiting for $what", System.currentTimeMillis() < until)
+            // Robolectric's main looper is paused: whatever WorkManager posts to it runs here.
+            shadowOf(Looper.getMainLooper()).idle()
+            Thread.sleep(20)
+        }
+    }
+
+    private fun state(id: java.util.UUID) = workManager.getWorkInfoById(id).get()?.state
+
+    private fun active(name: String) = workManager.getWorkInfosForUniqueWork(name).get().filter { !it.state.isFinished }
+
+    @Test
+    fun `an old job running keeps the flag unset, and once it is back for a retry the next run moves it`() {
+        NoticeSettings(context).dueEnabled = true
+        val request = OneTimeWorkRequestBuilder<HeldWorker>()
+            .setBackoffCriteria(BackoffPolicy.LINEAR, Duration.ofMinutes(10))
+            .build()
+        workManager.enqueueUniqueWork("lukitas.notice.due", ExistingWorkPolicy.REPLACE, request)
+        waitUntil("the job to start") { HeldWorker.started.count == 0L }
+        assertEquals(WorkInfo.State.RUNNING, state(request.id))
+
+        Migration.run(context)
+        waitUntil("the jobs half") { Migration.idle() }
+
+        assertFalse("looked at again while it runs", Migration.isDone(context))
+        assertEquals(WorkInfo.State.RUNNING, state(request.id))
+        assertEquals(emptyList<WorkInfo>(), active(NoticeScheduler.DUE))
+
+        // It asks to be retried: back under the old name, waiting.
+        HeldWorker.release.countDown()
+        waitUntil("the retry") { state(request.id) == WorkInfo.State.ENQUEUED }
+
+        Migration.run(context)
+        waitUntil("the jobs half") { Migration.idle() }
+
+        assertTrue(Migration.isDone(context))
+        assertEquals(emptyList<WorkInfo>(), active("lukitas.notice.due"))
+        assertEquals(1, active(NoticeScheduler.DUE).size)
+    }
+}
+
+/** A job that runs until the test lets it go, then asks to be retried. */
+class HeldWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
+    override fun doWork(): Result {
+        started.countDown()
+        release.await(10, TimeUnit.SECONDS)
+        return Result.retry()
+    }
+
+    companion object {
+        lateinit var started: CountDownLatch
+        lateinit var release: CountDownLatch
     }
 }

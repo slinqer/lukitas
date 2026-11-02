@@ -17,8 +17,9 @@ const _newPrefix = 'wambito.';
 /// A second run finds nothing to move. It runs once at startup, before anything reads the store
 /// (main.dart); a store that cannot be reached (no plugin, a storage error) is left as it is.
 ///
-/// Android's own Migration (Kotlin) moves the same key when a widget or a job runs first; both
-/// follow the same rule, so whichever runs first wins and the other finds nothing.
+/// This is the only move of the widget snapshot: Android's Migration (Kotlin) moves its own
+/// SharedPreferences files and jobs, never this key. Until the app's first start after the update,
+/// a widget reads as signed out.
 Future<void> migrateStoredKeys(WidgetStore store, {Iterable<String> keys = oldStoredKeys}) async {
   for (final old in keys) {
     final prefix = _oldPrefixes.where(old.startsWith).firstOrNull;
