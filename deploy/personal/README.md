@@ -575,7 +575,12 @@ Then as `wambito`, edit `~/wambito/deploy/personal/.env`:
   `~/Backups/wambito-encrypted`;
 - `DB_VOLUME_NAME`, if set: delete the line (the default is `wambito-personal-db`). Never point it
   at `lukitas-personal-db`: the new stack would write the old volume, and there would be no way
-  back.
+  back;
+- `NETWORK_PREFIX=172.28.78` (add it, or change the line). The old stack's network, which `stop`
+  keeps, holds `172.28.77.0/24`, and two networks cannot share a subnet: with the same prefix
+  `./up.sh` fails at the end ("Pool overlaps"). The old network is untouched, so the rollback's
+  `start` still works. Caddy's fixed address and `TRUSTED_PROXIES` follow the prefix by
+  themselves.
 
 Everything else stays as it was: the passwords, `BETTER_AUTH_SECRET` (sessions survive),
 `PUBLIC_HOSTNAME`, `COMPOSE_FILE`, mail, and `BACKUP_AGE_RECIPIENT`. **The age key is not
@@ -732,6 +737,7 @@ the old tunnel, if one exists (`cloudflared tunnel delete lukitas-personal`).
 | `test-retention.sh` `test-r2.sh` | The 14-day retention, and the R2 upload against a fake rclone |
 | `test-caddy.sh` | Both Caddy configs against real Caddy in Docker: client address, spoofed headers, HTTPS, routes |
 | `test-compose-files.sh` | Which compose files, ports, Caddy config and services each way uses (`docker compose config`, no daemon) |
+| `test-install-units.sh` | The install scripts against stubbed systemctl and launchctl: the wambito units, and the old ones removed (waiting for a running one) |
 | `auto-deploy.sh` `install-auto-deploy.sh` `wambito-deploy.service` `wambito-deploy.timer` `test-auto-deploy.sh` | The server's automatic deploy of `main` once CI passed, and its test |
 
 ## How the client address gets to the API
@@ -739,7 +745,7 @@ the old tunnel, if one exists (`cloudflared tunnel delete lukitas-personal`).
 Sign-in limits (5 codes per 10 minutes per address) count by client address. Caddy writes it as
 the only `X-Forwarded-For` entry to the API and the MCP, replacing anything the client sent, and
 logs it as `visitor_ip`. The API cannot see the TCP peer, so it relies on that: only Caddy can reach
-it, and Caddy always overwrites the header. `TRUSTED_PROXIES=172.28.77.10` (Caddy's fixed address)
+it, and Caddy always overwrites the header. `TRUSTED_PROXIES=<NETWORK_PREFIX>.10` (Caddy's fixed address, `172.28.77.10` by default)
 is the matching setting, but the guarantee is the network layout. Publishing the API's port or
 adding another proxy would make the header spoofable. See `docs/deploy/api.md`.
 
