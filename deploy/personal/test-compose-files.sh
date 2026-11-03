@@ -10,7 +10,7 @@
 # on 127.0.0.1 only; tunnel: 127.0.0.1 only, as before); which Caddy config web runs; which services
 # up.sh starts (cloudflared only in the tunnel way, and not with --no-tunnel); that a bare
 # `docker compose up` in the direct way has no cloudflared either; the commands restore.sh prints;
-# the role the API connects as (restore.sh grants it).
+# the names of the stack (project, volume, images) and the role and database the API connects to.
 set -euo pipefail
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Settings from the shell would win over the test's .env (as they do for docker compose).
@@ -65,10 +65,19 @@ check "services: tunnel" "api mcp web cloudflared" "$(up_services 1)"
 check "services: tunnel, --no-tunnel" "api mcp web" "$(up_services 0)"
 check "tunnel: compose knows cloudflared" cloudflared "$(compose config --services | grep -x cloudflared || true)"
 check "tunnel: printed command" "docker compose --env-file $ENV_FILE -f $DIR/docker-compose.yml" "$(compose_command)"
-check "the API's database role (restore.sh grants it)" lukas_app "$(api_db_role)"
+check "the compose project" wambito-personal "$(compose config --format json | jq -r .name)"
+check "the database volume" wambito-personal-db "$(compose config --format json | jq -r .volumes.db.name)"
+api_url="$(compose config --format json | jq -r .services.api.environment.DATABASE_URL)"
+api_user="${api_url#postgres://}"
+check "the API's DATABASE_URL user" wambito_app "${api_user%%:*}"
+check "the API's database" wambito "${api_url##*/}"
+check "the images" "wambito-api:personal wambito-mcp:personal wambito-web:personal" \
+  "$(compose config --format json | jq -r '[.services.api.image, .services.mcp.image, .services.web.image] | join(" ")')"
+check "the postgres user and database" "wambito wambito" \
+  "$(compose config --format json | jq -r '[.services.postgres.environment.POSTGRES_USER, .services.postgres.environment.POSTGRES_DB] | join(" ")')"
 expected_back="To put the previous database back and start the app on it:
-  $(compose_command) exec postgres psql -U lukitas -d postgres -c 'alter database lukitas rename to lukitas_restore_X'
-  $(compose_command) exec postgres psql -U lukitas -d postgres -c 'alter database lukitas_before_X rename to lukitas'
+  $(compose_command) exec postgres psql -U wambito -d postgres -c 'alter database wambito rename to lukitas_restore_X'
+  $(compose_command) exec postgres psql -U wambito -d postgres -c 'alter database lukitas_before_X rename to wambito'
   $(compose_command) up -d --wait api mcp web"
 check "restore: how to go back" "$expected_back" "$(restore_go_back lukitas_before_X lukitas_restore_X "api mcp web")"
 

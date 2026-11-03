@@ -1,4 +1,4 @@
-# Ingress for the named tunnel `lukitas-personal`. The tunnel id and its credentials file
+# Ingress for the named tunnel `wambito-personal`. The tunnel id and its credentials file
 # (~/.cloudflared/<TUNNEL_ID>.json on the host) come from docker-compose.yml, which mounts the file
 # read-only and starts `cloudflared tunnel run <TUNNEL_ID>`.
 # No `hostname:` here on purpose. A tunnel only receives the names whose DNS route you pointed at it

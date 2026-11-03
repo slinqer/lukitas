@@ -111,10 +111,10 @@ if [ ! -d "$backup_dir" ]; then
 fi
 
 say "Counting rows in the live database"
-live="$(table_counts lukitas)" || fail "could not read the live database"
+live="$(table_counts wambito)" || fail "could not read the live database"
 
 say "Dumping (pg_dump -Fc, as the database owner)"
-compose exec -T postgres pg_dump -U lukitas -d lukitas -Fc >"$partial" || fail "pg_dump failed"
+compose exec -T postgres pg_dump -U wambito -d wambito -Fc >"$partial" || fail "pg_dump failed"
 [ -s "$partial" ] || fail "the dump is empty"
 
 say "Checking the dump lists"
@@ -130,7 +130,7 @@ say "Checking the dump restores (scratch database $scratch)"
 psql_db postgres -qc "drop database if exists $scratch with (force)" >/dev/null 2>&1
 psql_db postgres -qc "create database $scratch" >/dev/null
 # Same flags as restore.sh (and RESTORE_FLAGS in packages/db/src/testing.ts): no owner, no grants.
-compose exec -T postgres pg_restore -U lukitas -d "$scratch" --no-owner --no-acl --exit-on-error --single-transaction <"$partial" ||
+compose exec -T postgres pg_restore -U wambito -d "$scratch" --no-owner --no-acl --exit-on-error --single-transaction <"$partial" ||
   fail "the dump does not restore"
 restored="$(table_counts "$scratch")" || fail "could not read the restored copy"
 

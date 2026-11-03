@@ -71,7 +71,7 @@ ci_state() {
   if [ -z "$slug" ]; then
     slug="$(git -C "$repo" remote get-url origin | sed -E 's#^(https://github.com/|git@github.com:)##; s#\.git$##')"
   fi
-  json="$(curl -fsS -H "Accept: application/vnd.github+json" \
+  json="$(curl -fsSL -H "Accept: application/vnd.github+json" \
     "$api/repos/$slug/commits/$1/check-runs?per_page=100")" || {
     echo pending
     return

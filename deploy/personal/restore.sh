@@ -116,22 +116,18 @@ psql_db postgres -qc "create database $scratch" >/dev/null
 # No owner and no grants from the dump (they name the roles of the server it came from); the
 # bootstrap grants the app role below. Same flags as backup.sh and RESTORE_FLAGS in
 # packages/db/src/testing.ts.
-compose exec -T postgres pg_restore -U lukitas -d "$scratch" --no-owner --no-acl --exit-on-error --single-transaction <"$file" ||
+compose exec -T postgres pg_restore -U wambito -d "$scratch" --no-owner --no-acl --exit-on-error --single-transaction <"$file" ||
   die "the restore failed; the live database was not touched"
 
 say "Rows in the restored copy"
 table_counts "$scratch" | awk '{ printf "%-18s %8s\n", $1, $2 }'
 
-# The role the API connects as gets the grants too while it is not the bootstrap's role yet.
-# 2b: remove (and the --also-role arguments below) once the API connects as wambito_app.
-api_role="$(api_db_role)"
-
 if [ "$drill" = 1 ]; then
-  say "Granting the app role (and $api_role, the API's) on $scratch"
-  compose run --rm migrate node dist/bootstrap.js --grant-only "$scratch" --also-role "$api_role" ||
+  say "Granting the app role on $scratch"
+  compose run --rm migrate node dist/bootstrap.js --grant-only "$scratch" ||
     die "could not grant the app role on $scratch"
   if [ "$keep" = 1 ]; then
-    say "Drill done. Kept database $scratch (psql -U lukitas -d $scratch inside the postgres container)"
+    say "Drill done. Kept database $scratch (psql -U wambito -d $scratch inside the postgres container)"
   else
     say "Drill done. The dump restores. Scratch database dropped."
   fi
@@ -142,7 +138,7 @@ fi
 accounts() { psql_db "$1" -At -F ' ' -c 'select id, email from "user"' 2>/dev/null || true; }
 # Accounts in the dump that the live database does not have: deleted after the dump was taken. Only
 # when the live database has accounts to compare with (not on a new server, or after losing it).
-live_accounts="$(accounts lukitas)"
+live_accounts="$(accounts wambito)"
 deleted_since=""
 if [ -n "$live_accounts" ]; then
   deleted_since="$(accounts "$scratch" | awk 'NR == FNR { live[$1] = 1; next } !($1 in live)' <(printf '%s\n' "$live_accounts") -)"
@@ -157,7 +153,7 @@ deleted_warning() {
     echo "In the dump but not in the live database, so deleted since the dump (delete each again;"
     echo "its data goes with it):"
     printf '%s\n' "$deleted_since" | while read -r id email; do
-      printf '  %s\n    %s exec postgres psql -U lukitas -d lukitas -c "delete from \\"user\\" where id = %s"\n' \
+      printf '  %s\n    %s exec postgres psql -U wambito -d wambito -c "delete from \\"user\\" where id = %s"\n' \
         "$email" "$(compose_command)" "'$id'"
     done
   elif [ -z "$live_accounts" ]; then
@@ -183,9 +179,9 @@ say "Stopping the API and the tunnel"
 compose stop cloudflared web api 2>/dev/null || true
 
 say "Swapping databases (old one kept as $before)"
-psql_db postgres -qc "select pg_terminate_backend(pid) from pg_stat_activity where datname in ('lukitas', '$scratch') and pid <> pg_backend_pid()" >/dev/null
-psql_db postgres -qc "alter database lukitas rename to $before" >/dev/null
-psql_db postgres -qc "alter database $scratch rename to lukitas" >/dev/null
+psql_db postgres -qc "select pg_terminate_backend(pid) from pg_stat_activity where datname in ('wambito', '$scratch') and pid <> pg_backend_pid()" >/dev/null
+psql_db postgres -qc "alter database wambito rename to $before" >/dev/null
+psql_db postgres -qc "alter database $scratch rename to wambito" >/dev/null
 keep_scratch=1 # it is the live database now
 
 # The tunnel again if this install has one; never in the direct way (lib.sh, up_services).
@@ -193,8 +189,8 @@ with_tunnel=0
 [ -n "$(cfg TUNNEL_ID)" ] && with_tunnel=1
 services="$(up_services "$with_tunnel")"
 
-say "Applying migrations the dump may not have yet, and granting the app role (and $api_role)"
-if ! compose run --rm migrate node dist/bootstrap.js --also-role "$api_role"; then
+say "Applying migrations the dump may not have yet, and granting the app role"
+if ! compose run --rm migrate node dist/bootstrap.js; then
   say "The migrations or the grants failed on the restored database. The app is stopped."
   restore_go_back "$before" "$scratch" "$services"
   die "the restore is not finished; the previous database is $before"
@@ -207,4 +203,4 @@ compose up -d --wait $services
 say "Restored from $file"
 deleted_warning
 echo "The previous database is still there as $before. When you are sure, drop it:"
-echo "  $(compose_command) exec postgres psql -U lukitas -d postgres -c 'drop database $before'"
+echo "  $(compose_command) exec postgres psql -U wambito -d postgres -c 'drop database $before'"

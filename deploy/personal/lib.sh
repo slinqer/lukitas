@@ -98,25 +98,14 @@ EOF
   printf '%s' "$line"
 }
 
-# api_db_role: the role the API connects as (the user in the api service's DATABASE_URL), or
-# lukas_app when the compose config does not say. A restore grants it as well as the bootstrap's
-# role. 2b: remove once the API connects as wambito_app.
-api_db_role() {
-  local role
-  role="$(compose config api 2>/dev/null |
-    sed -n 's#^[[:space:]]*DATABASE_URL:[[:space:]]*"\{0,1\}postgres://\([^:@/"]*\).*#\1#p' |
-    awk 'NR == 1')" || role=""
-  printf '%s' "${role:-lukas_app}"
-}
-
 # restore_go_back BEFORE RESTORED SERVICES: how to put the previous database back after a live
 # restore swapped it out (restore.sh prints it if a step after the swap fails).
 restore_go_back() {
   local cmd
   cmd="$(compose_command)"
   echo "To put the previous database back and start the app on it:"
-  echo "  $cmd exec postgres psql -U lukitas -d postgres -c 'alter database lukitas rename to $2'"
-  echo "  $cmd exec postgres psql -U lukitas -d postgres -c 'alter database $1 rename to lukitas'"
+  echo "  $cmd exec postgres psql -U wambito -d postgres -c 'alter database wambito rename to $2'"
+  echo "  $cmd exec postgres psql -U wambito -d postgres -c 'alter database $1 rename to wambito'"
   echo "  $cmd up -d --wait $3"
 }
 
@@ -151,7 +140,7 @@ db_running() {
 psql_db() {
   local db="$1"
   shift
-  compose exec -T postgres psql -v ON_ERROR_STOP=1 -U lukitas -d "$db" "$@"
+  compose exec -T postgres psql -v ON_ERROR_STOP=1 -U wambito -d "$db" "$@"
 }
 
 # The tables whose rows backups are checked by (name as SQL writes it).
@@ -200,7 +189,7 @@ $(printf '%s\n' "$dirty" | head -n 8 | sed 's/^/      /')
 # delete it); create it on first use.
 ensure_volume() {
   local name
-  name="$(cfg DB_VOLUME_NAME lukitas-personal-db)"
+  name="$(cfg DB_VOLUME_NAME wambito-personal-db)"
   docker volume inspect "$name" >/dev/null 2>&1 || {
     say "Creating the database volume $name"
     docker volume create "$name" >/dev/null
