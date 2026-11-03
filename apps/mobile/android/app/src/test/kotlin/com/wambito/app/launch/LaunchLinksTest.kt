@@ -46,19 +46,17 @@ class LaunchLinksTest {
     }
 
     @Test
-    fun `links pinned before the rename (lukitas) are still taken, and the app builds only wambito`() {
-        // 2b: remove the lukitas half: a notice already on the shade, or a shortcut, carries it.
+    fun `lukitasLinkIsIgnored, and the app builds only wambito`() {
         assertEquals("wambito", LaunchLinks.SCHEME)
         for (host in listOf("add", "capture", "due", "progress", "home")) {
-            assertEquals("lukitas://$host", LaunchLinks.linkOf(viaAlias("lukitas://$host")))
+            assertNull(LaunchLinks.linkOf(viaAlias("lukitas://$host")))
             assertEquals("wambito://$host", LaunchLinks.linkOf(viaAlias("wambito://$host")))
         }
         for (link in listOf(LaunchLinks.ADD, LaunchLinks.CAPTURE, LaunchLinks.DUE, LaunchLinks.PROGRESS, LaunchLinks.HOME)) {
             assertEquals("wambito", link.scheme)
         }
         assertNull(LaunchLinks.linkOf(viaAlias("lukas://add")))
-        // Neither is a web link for the router.
-        assertFalse(LaunchLinks.isWebLink(viaAlias("lukitas://capture")))
+        // A wambito:// link is not a web link for the router.
         assertFalse(LaunchLinks.isWebLink(viaAlias("wambito://capture")))
     }
 

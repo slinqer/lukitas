@@ -45,9 +45,6 @@ class MainActivity : FlutterActivity() {
     private var pendingLink: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // What an older build kept under the old name moves first, before anything reads it
-        // (the voice hint just below). 2b: remove.
-        Migration.run(this)
         // Taken before Flutter starts, so its router never sees it (it would read "wambito://add"
         // as "/"). An activity recreated from saved state gets its first link again: not reopened.
         takeLink(intent, act = savedInstanceState == null)

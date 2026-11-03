@@ -5,7 +5,6 @@ import androidx.annotation.VisibleForTesting
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import com.wambito.app.Migration
 import com.wambito.app.R
 import com.wambito.app.widget.SecureStorageSession
 import com.wambito.app.widget.ServerSetting
@@ -69,7 +68,6 @@ const val NOTICE_OUTCOME = "outcome"
 class DueWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
         val context = applicationContext
-        Migration.run(context) // 2b: remove
         val dependencies = NoticeHooks.of(context)
         val settings = NoticeSettings(context)
         var zone = NoticeTimes.zoneOr(settings.zone, ZoneId.systemDefault())
@@ -153,7 +151,6 @@ class DueWorker(context: Context, params: WorkerParameters) : CoroutineWorker(co
 class GuestWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
         val context = applicationContext
-        Migration.run(context) // 2b: remove
         val dependencies = NoticeHooks.of(context)
         val settings = NoticeSettings(context)
         val outcome = when {
