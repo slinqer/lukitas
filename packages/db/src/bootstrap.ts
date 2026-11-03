@@ -6,6 +6,13 @@ export const APP_ROLE = "wambito_app";
 
 const MIN_PASSWORD_LENGTH = 16;
 
+/** `url` pointed at the database `name` on the same server, as the same user. */
+export function databaseUrl(url: string, name: string): string {
+  const next = new URL(url);
+  next.pathname = `/${encodeURIComponent(name)}`;
+  return next.toString();
+}
+
 function checkPassword(appPassword: string): void {
   if (appPassword.length < MIN_PASSWORD_LENGTH || appPassword === APP_ROLE) {
     throw new Error(

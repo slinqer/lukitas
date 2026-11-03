@@ -9,8 +9,9 @@
 # The live restore: restores into a new database first (if that fails nothing has changed), then
 # stops the API and the tunnel, renames the old database to lukitas_before_<time> (kept, so you can
 # go back; drop it yourself once you are happy), puts the new one in its place, applies any newer
-# migrations and starts everything again. It also works on a new server: bring the stack's
-# database up (docker compose up -d postgres), then run this with the dump.
+# migrations, grants the app role and starts everything again. The dump's own grants are skipped,
+# so a dump restores whatever the app role was called when it was taken. It also works on a new
+# server: bring the stack's database up (docker compose up -d postgres), then run this with the dump.
 #
 # A restore brings back every account in the dump, including accounts deleted after it was taken
 # (with their data; they can sign in again). The live restore says so, lists those accounts (in
@@ -45,7 +46,7 @@ for arg in "$@"; do
     --from-r2) from_r2=1 ;;
     --identity=*) identity="${arg#--identity=}" ;;
     -h | --help)
-      sed -n '2,29p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+      sed -n '2,30p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
       exit 0
       ;;
     -*) die "unknown option: $arg" ;;
@@ -100,7 +101,7 @@ compose up -d --wait postgres
 say "Checking the dump"
 compose exec -T postgres pg_restore -l <"$file" >/dev/null || die "pg_restore cannot read $file"
 
-say "Making sure the lukas_app role exists (a dump's grants need it)"
+say "Making sure the app role exists (the bootstrap grants it the restored tables)"
 compose run --rm migrate node dist/bootstrap.js --role-only
 
 # The scratch database goes away on any exit, unless it became the live one or --keep says to keep it.
@@ -112,13 +113,19 @@ trap '[ "$keep_scratch" = 1 ] || drop_scratch; [ -z "$fetched" ] || rm -rf "$fet
 
 say "Restoring into $scratch"
 psql_db postgres -qc "create database $scratch" >/dev/null
-compose exec -T postgres pg_restore -U lukitas -d "$scratch" --no-owner --exit-on-error --single-transaction <"$file" ||
+# No owner and no grants from the dump (they name the roles of the server it came from); the
+# bootstrap grants the app role below. Same flags as backup.sh and RESTORE_FLAGS in
+# packages/db/src/testing.ts.
+compose exec -T postgres pg_restore -U lukitas -d "$scratch" --no-owner --no-acl --exit-on-error --single-transaction <"$file" ||
   die "the restore failed; the live database was not touched"
 
 say "Rows in the restored copy"
 table_counts "$scratch" | awk '{ printf "%-18s %8s\n", $1, $2 }'
 
 if [ "$drill" = 1 ]; then
+  say "Granting the app role on $scratch"
+  compose run --rm migrate node dist/bootstrap.js --grant-only "$scratch" ||
+    die "could not grant the app role on $scratch"
   if [ "$keep" = 1 ]; then
     say "Drill done. Kept database $scratch (psql -U lukitas -d $scratch inside the postgres container)"
   else
@@ -177,7 +184,7 @@ psql_db postgres -qc "alter database lukitas rename to $before" >/dev/null
 psql_db postgres -qc "alter database $scratch rename to lukitas" >/dev/null
 keep_scratch=1 # it is the live database now
 
-say "Applying migrations the dump may not have yet"
+say "Applying migrations the dump may not have yet, and granting the app role"
 compose run --rm migrate
 
 say "Starting the app again"

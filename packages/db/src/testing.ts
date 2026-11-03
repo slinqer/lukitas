@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { createServer } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -21,8 +21,25 @@ interface TestDatabase {
   stop(): Promise<void>;
 }
 
+/**
+ * The pg_restore flags of a restore. `deploy/personal/restore.sh` and `deploy/personal/backup.sh`
+ * use the same list (keep them in step): no owner and no grants from the dump, so a dump restores
+ * whatever the app role was called when it was taken; the bootstrap grants afterwards.
+ */
+export const RESTORE_FLAGS = ["--no-owner", "--no-acl", "--exit-on-error", "--single-transaction"];
+
+/** A server with nothing in it, plus a way to run the Postgres command-line tools next to it. */
+interface BareDatabase extends Pick<TestDatabase, "adminUrl" | "stop"> {
+  /** The admin URL as the tools run by `exec` reach the server. */
+  toolsUrl: string;
+  /** Runs a command where the server's tools are (inside the container); returns its stdout. */
+  exec(cmd: string[]): Promise<string>;
+  readFile(path: string): Promise<Buffer>;
+  writeFile(path: string, content: Buffer): Promise<void>;
+}
+
 /** A throwaway Postgres with nothing in it: no `wambito_app` role, no tables. */
-export async function startBareDatabase(): Promise<Pick<TestDatabase, "adminUrl" | "stop">> {
+export async function startBareDatabase(): Promise<BareDatabase> {
   return process.env.WAMBITO_TEST_DB === "local" ? startLocalCluster() : startContainer();
 }
 
@@ -45,10 +62,23 @@ export async function startTestDatabase(): Promise<TestDatabase> {
   return { adminUrl, appUrl: app.toString(), stop };
 }
 
-async function startContainer() {
+async function startContainer(): Promise<BareDatabase> {
   const container = await new PostgreSqlContainer("postgres:17-alpine").start();
+  const exec = async (cmd: string[]) => {
+    const { exitCode, stdout, stderr } = await container.exec(cmd);
+    if (exitCode !== 0) throw new Error(`${cmd[0]} exited ${exitCode}: ${stderr}`);
+    return stdout;
+  };
+  const tools = new URL(container.getConnectionUri());
+  tools.hostname = "127.0.0.1";
+  tools.port = "5432";
   return {
     adminUrl: container.getConnectionUri(),
+    toolsUrl: tools.toString(),
+    exec,
+    // base64 keeps the bytes of a binary file intact through the exec output.
+    readFile: async (path) => Buffer.from(await exec(["base64", path]), "base64"),
+    writeFile: (path, content) => container.copyContentToContainer([{ content, target: path }]),
     stop: async () => {
       await container.stop();
     },
@@ -66,7 +96,7 @@ async function freePort(): Promise<number> {
   });
 }
 
-async function startLocalCluster() {
+async function startLocalCluster(): Promise<BareDatabase> {
   const dir = await mkdtemp(join(tmpdir(), "wambito-pg-"));
   const data = join(dir, "data");
   const port = await freePort();
@@ -81,8 +111,13 @@ async function startLocalCluster() {
     "-w",
     "start",
   ]);
+  const adminUrl = `postgres://postgres@127.0.0.1:${port}/postgres`;
   return {
-    adminUrl: `postgres://postgres@127.0.0.1:${port}/postgres`,
+    adminUrl,
+    toolsUrl: adminUrl,
+    exec: async ([cmd = "", ...args]) => (await run(cmd, args)).stdout,
+    readFile: (path) => readFile(path),
+    writeFile: (path, content) => writeFile(path, content),
     stop: async () => {
       await run("pg_ctl", ["-D", data, "-m", "immediate", "-w", "stop"]);
       await rm(dir, { recursive: true, force: true });

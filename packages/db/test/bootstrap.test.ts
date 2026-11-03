@@ -1,6 +1,6 @@
 import postgres from "postgres";
 import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
-import { APP_ROLE, ensureAppRole, prepareDatabase } from "../src/bootstrap.ts";
+import { APP_ROLE, databaseUrl, ensureAppRole, prepareDatabase } from "../src/bootstrap.ts";
 import { runMigrations } from "../src/migrate.ts";
 import { startBareDatabase } from "../src/testing.ts";
 
@@ -124,6 +124,17 @@ describe("prepareDatabase", () => {
     const app = asApp(odd);
     expect(await app`select 1 as one`).toEqual([{ one: 1 }]);
     await app.end();
+  });
+});
+
+describe("databaseUrl", () => {
+  test("points the URL at another database, keeping the server, user and password", () => {
+    expect(
+      databaseUrl("postgres://owner:p%40ss@postgres:5432/live", "live_restore_20261103_101500"),
+    ).toBe("postgres://owner:p%40ss@postgres:5432/live_restore_20261103_101500");
+    expect(databaseUrl("postgres://u@127.0.0.1:5433/postgres?sslmode=disable", "restored")).toBe(
+      "postgres://u@127.0.0.1:5433/restored?sslmode=disable",
+    );
   });
 });
 

@@ -290,7 +290,8 @@ The checks:
 1. `pg_dump -Fc` as the database owner, which bypasses row-level security. (Every table here is
    `FORCE ROW LEVEL SECURITY`; a dump as `lukas_app` fails, as it should. Do not change the role.)
 2. `pg_restore -l` lists it and has a data section for every main table.
-3. It restores into a scratch database and compares row counts with the live one for `user`,
+3. It restores into a scratch database (without the dump's owners and grants, as `restore.sh`
+   does) and compares row counts with the live one for `user`,
    `passkey`, `accounts`, `categories`, `category_budgets`, `recurrences`, `imports` and
    `transactions`: a table with rows that restores empty fails the backup.
 
@@ -404,7 +405,7 @@ key file on the server for the restore and delete it after:
 private temporary folder that is removed when it ends.
 
 **Restore drill** (do it after the first backup and every month or two): restores the dump into a
-scratch database next to the real one, prints the row counts, drops it. Nothing live changes.
+scratch database next to the real one, grants the app role on it, prints the row counts, drops it. Nothing live changes.
 
 ```sh
 ./restore.sh --drill ~/Backups/lukitas/lukitas-2026-10-21.dump
@@ -418,8 +419,10 @@ scratch database next to the real one, prints the row counts, drops it. Nothing 
 
 It restores into a new database first (if that fails nothing has changed), asks you to type
 `restore`, stops the API and the tunnel, renames the old database to `lukitas_before_<time>` (kept:
-drop it yourself when you are sure), puts the new one in its place, applies newer migrations, and
-starts everything. `--yes` skips the question.
+drop it yourself when you are sure), puts the new one in its place, applies newer migrations,
+grants the app role, and starts everything. `--yes` skips the question. A restore skips the dump's
+own grants (`--no-acl`) and grants the app role afresh, so a dump restores whatever the role was
+called when it was taken.
 
 **A restore brings back accounts deleted after the dump was taken**, with all their data, and they
 can sign in again. Those people were told their data was gone, so delete each of them again right
