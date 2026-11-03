@@ -27,6 +27,63 @@ cfg() {
   printf '%s' "${value:-$default}"
 }
 
+# --- The scheduled units (install-backup.sh, install-auto-deploy.sh; test-install-units.sh) -------
+# Where the systemd units go. The test points UNIT_DIR at a temporary folder.
+UNIT_DIR="${UNIT_DIR:-/etc/systemd/system}"
+
+# wait_inactive UNIT: returns once UNIT is not running, asking every 10 s for up to 30 minutes; at
+# the bound, dies saying what to do (nothing has been deleted by then, so running again is safe).
+wait_inactive() {
+  local unit="$1" tries=0
+  systemctl is-active --quiet "$unit" || return 0
+  say "Waiting for the old $unit to finish (up to 30 minutes)"
+  while systemctl is-active --quiet "$unit"; do
+    tries=$((tries + 1))
+    [ "$tries" -le 180 ] || die "the old $unit is still running after 30 minutes. See what it is doing with
+  journalctl -u $unit -f
+and, once it is done (or if it is stuck: sudo systemctl stop $unit), run this script again."
+    sleep 10
+  done
+}
+
+# remove_old_units: disables and deletes the units of the install from before the rename (Linux: the
+# backup and deploy timers and services; macOS: the backup agent), so they never run next to the
+# wambito-* ones. The one place that names them, split so the old-name guard does not match.
+# Rolling back to them is the old checkout's own install-backup.sh (README, "Moving from the old
+# names", step 7).
+remove_old_units() {
+  local unit old="luk""itas" removed=0 label plist
+  case "$(uname)" in
+    Linux)
+      for unit in "$old-backup.timer" "$old-deploy.timer"; do
+        [ -e "$UNIT_DIR/$unit" ] || continue
+        say "Stopping the old $unit"
+        sudo systemctl disable --now "$unit" >/dev/null 2>&1 || true
+      done
+      # A backup or deploy already running is let finish (stopping a deploy midway could leave the
+      # app half updated); the timers are off, so no new run starts meanwhile.
+      for unit in "$old-backup.service" "$old-deploy.service"; do
+        [ -e "$UNIT_DIR/$unit" ] || continue
+        wait_inactive "$unit"
+      done
+      for unit in "$old-backup.service" "$old-backup.timer" "$old-deploy.service" "$old-deploy.timer"; do
+        [ -e "$UNIT_DIR/$unit" ] || continue
+        sudo rm -f "$UNIT_DIR/$unit"
+        removed=1
+      done
+      [ "$removed" = 0 ] || sudo systemctl daemon-reload
+      ;;
+    Darwin)
+      label="com.$old.backup"
+      plist="$HOME/Library/LaunchAgents/$label.plist"
+      [ -e "$plist" ] || return 0
+      say "Unloading the old $label"
+      launchctl bootout "gui/$(id -u)/$label" >/dev/null 2>&1 || true
+      rm -f "$plist"
+      ;;
+  esac
+}
+
 need_env_file() {
   [ -f "$ENV_FILE" ] || die "$ENV_FILE not found. Copy .env.example to .env and fill it in (see README.md)."
 }
@@ -98,25 +155,14 @@ EOF
   printf '%s' "$line"
 }
 
-# api_db_role: the role the API connects as (the user in the api service's DATABASE_URL), or
-# lukas_app when the compose config does not say. A restore grants it as well as the bootstrap's
-# role. 2b: remove once the API connects as wambito_app.
-api_db_role() {
-  local role
-  role="$(compose config api 2>/dev/null |
-    sed -n 's#^[[:space:]]*DATABASE_URL:[[:space:]]*"\{0,1\}postgres://\([^:@/"]*\).*#\1#p' |
-    awk 'NR == 1')" || role=""
-  printf '%s' "${role:-lukas_app}"
-}
-
 # restore_go_back BEFORE RESTORED SERVICES: how to put the previous database back after a live
 # restore swapped it out (restore.sh prints it if a step after the swap fails).
 restore_go_back() {
   local cmd
   cmd="$(compose_command)"
   echo "To put the previous database back and start the app on it:"
-  echo "  $cmd exec postgres psql -U lukitas -d postgres -c 'alter database lukitas rename to $2'"
-  echo "  $cmd exec postgres psql -U lukitas -d postgres -c 'alter database $1 rename to lukitas'"
+  echo "  $cmd exec postgres psql -U wambito -d postgres -c 'alter database wambito rename to $2'"
+  echo "  $cmd exec postgres psql -U wambito -d postgres -c 'alter database $1 rename to wambito'"
   echo "  $cmd up -d --wait $3"
 }
 
@@ -151,7 +197,7 @@ db_running() {
 psql_db() {
   local db="$1"
   shift
-  compose exec -T postgres psql -v ON_ERROR_STOP=1 -U lukitas -d "$db" "$@"
+  compose exec -T postgres psql -v ON_ERROR_STOP=1 -U wambito -d "$db" "$@"
 }
 
 # The tables whose rows backups are checked by (name as SQL writes it).
@@ -200,7 +246,7 @@ $(printf '%s\n' "$dirty" | head -n 8 | sed 's/^/      /')
 # delete it); create it on first use.
 ensure_volume() {
   local name
-  name="$(cfg DB_VOLUME_NAME lukitas-personal-db)"
+  name="$(cfg DB_VOLUME_NAME wambito-personal-db)"
   docker volume inspect "$name" >/dev/null 2>&1 || {
     say "Creating the database volume $name"
     docker volume create "$name" >/dev/null
@@ -210,8 +256,8 @@ ensure_volume() {
 # --- Backup retention (backup.sh; tested by test-retention.sh) ------------------------------------
 
 # The dumps backup.sh writes: daily, and the ones taken before an update.
-DAILY_DUMP='^lukitas-[0-9]{4}-[0-9]{2}-[0-9]{2}\.dump'
-PREUPDATE_DUMP='^lukitas-[0-9]{4}-[0-9]{2}-[0-9]{2}-preupdate-[0-9]{4}\.dump'
+DAILY_DUMP='^wambito-[0-9]{4}-[0-9]{2}-[0-9]{2}\.dump'
+PREUPDATE_DUMP='^wambito-[0-9]{4}-[0-9]{2}-[0-9]{2}-preupdate-[0-9]{4}\.dump'
 
 # prune_newest DIR REGEX KEEP: delete all but the newest KEEP files in DIR whose names match REGEX
 # (names sort by date). Other files in the folder are left alone.

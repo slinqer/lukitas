@@ -43,6 +43,7 @@ expect() {
 expect pass 'foo.txt  # money'
 expect pass 'foo.txt  # money, key-alias'
 expect fail 'foo.txt  # 2b: remove' 'unknown reason'
+expect fail 'foo.txt  # 2b' 'unknown reason' # 2b is no longer a reason
 expect fail 'foo.txt' 'unknown reason'
 expect fail 'foo.txt  # money, nonsense' 'unknown reason'
 expect fail '' 'Luk''itas'

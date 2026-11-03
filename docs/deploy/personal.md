@@ -8,7 +8,8 @@ it moves to a server with its data later.
 Everything is in [`deploy/personal/`](../../deploy/personal/README.md): the compose stack (Postgres,
 a one-shot migration step, the API, Caddy, cloudflared), the scripts (`up.sh`, `update.sh`,
 `backup.sh`, `restore.sh`, `smoke.sh`) and the README with the setup, daily use, backup and restore,
-and the move to a server.
+the move to a server, and the one-time move of the server from the old names ("Moving from the old
+names").
 
 What the API gained for it (also useful for any deployment):
 

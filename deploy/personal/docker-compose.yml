@@ -10,7 +10,7 @@
 #
 # Only web publishes a port, on 127.0.0.1, for checking from this machine. Postgres and the API are
 # reachable from inside this stack's network only.
-name: lukitas-personal
+name: wambito-personal
 
 # Container logs stay small: three files of 10 MB per service.
 x-logging: &logging
@@ -25,18 +25,18 @@ services:
     restart: unless-stopped
     logging: *logging
     environment:
-      POSTGRES_USER: lukitas
+      POSTGRES_USER: wambito
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
-      POSTGRES_DB: lukitas
+      POSTGRES_DB: wambito
     volumes:
       - db:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U lukitas -d lukitas"]
+      test: ["CMD-SHELL", "pg_isready -U wambito -d wambito"]
       interval: 5s
       timeout: 5s
       retries: 20
 
-  # One-shot: creates the lukas_app role (password from .env) and applies the migrations as the
+  # One-shot: creates the wambito_app role (password from .env) and applies the migrations as the
   # database owner. Safe to run again. The API starts only after it exits 0.
   migrate: &api-image
     build:
@@ -45,12 +45,12 @@ services:
       # The version /health reports: up.sh sets it from the commit being built.
       args:
         WAMBITO_VERSION: ${WAMBITO_VERSION:-}
-    image: lukitas-api:personal
+    image: wambito-api:personal
     command: ["node", "dist/bootstrap.js"]
     restart: "no"
     logging: *logging
     environment:
-      DATABASE_ADMIN_URL: postgres://lukitas:${POSTGRES_PASSWORD}@postgres:5432/lukitas
+      DATABASE_ADMIN_URL: postgres://wambito:${POSTGRES_PASSWORD}@postgres:5432/wambito
       APP_DB_PASSWORD: ${APP_DB_PASSWORD:?Set APP_DB_PASSWORD in .env}
     depends_on:
       postgres:
@@ -64,7 +64,7 @@ services:
       NODE_ENV: production
       PORT: "3000"
       # The runtime role: subject to row-level security. The owner credential stays in `migrate`.
-      DATABASE_URL: postgres://lukas_app:${APP_DB_PASSWORD}@postgres:5432/lukitas
+      DATABASE_URL: postgres://wambito_app:${APP_DB_PASSWORD}@postgres:5432/wambito
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?Set BETTER_AUTH_SECRET in .env}
       # One hostname for the app and the API, so the session cookie is first-party. The API serves
       # every route under /api. The passkey rpID is this hostname: keep it if you move the install.
@@ -112,7 +112,7 @@ services:
       dockerfile: apps/mcp/Dockerfile.prod
       args:
         WAMBITO_VERSION: ${WAMBITO_VERSION:-}
-    image: lukitas-mcp:personal
+    image: wambito-mcp:personal
     restart: unless-stopped
     logging: *logging
     environment:
@@ -136,7 +136,7 @@ services:
     build:
       context: ../..
       dockerfile: deploy/personal/Dockerfile.web
-    image: lukitas-web:personal
+    image: wambito-web:personal
     restart: unless-stopped
     logging: *logging
     environment:
@@ -196,4 +196,4 @@ volumes:
     # delete it. A fixed name, so the data does not depend on the project name. (Docker Desktop's
     # "Clean / Purge data" would still delete every volume: see README, Backup.)
     external: true
-    name: ${DB_VOLUME_NAME:-lukitas-personal-db}
+    name: ${DB_VOLUME_NAME:-wambito-personal-db}

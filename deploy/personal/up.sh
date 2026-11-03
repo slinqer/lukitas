@@ -76,7 +76,7 @@ compose build
 say "Starting the database"
 compose up -d --wait postgres
 
-say "Applying migrations (creates the lukas_app role the first time)"
+say "Applying migrations (creates the wambito_app role the first time)"
 compose run --rm migrate
 
 say "Starting: $services"

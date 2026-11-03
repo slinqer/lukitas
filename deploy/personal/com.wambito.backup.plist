@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <!--
-  launchd agent: backs up the Lukitas database every day at 03:00. If the Mac is asleep then, launchd
+  launchd agent: backs up the Wambito database every day at 03:00. If the Mac is asleep then, launchd
   runs it as soon as the Mac wakes. (If the Mac is switched off, the run is skipped until tomorrow.)
 
   This is a template: install-backup.sh fills in the repository path, your home folder and the path to bash, then loads
@@ -10,7 +10,7 @@
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>com.lukitas.backup</string>
+  <string>com.wambito.backup</string>
 
   <key>ProgramArguments</key>
   <array>
@@ -39,9 +39,9 @@
   <string>@REPO_DIR@/deploy/personal</string>
 
   <key>StandardOutPath</key>
-  <string>@HOME@/Library/Logs/lukitas-backup.log</string>
+  <string>@HOME@/Library/Logs/wambito-backup.log</string>
   <key>StandardErrorPath</key>
-  <string>@HOME@/Library/Logs/lukitas-backup.log</string>
+  <string>@HOME@/Library/Logs/wambito-backup.log</string>
 
   <!-- Low priority: it should never slow the Mac down while you use it. -->
   <key>ProcessType</key>

@@ -1,13 +1,7 @@
 import { rm } from "node:fs/promises";
 import postgres from "postgres";
 import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
-import {
-  APP_ROLE,
-  databaseUrl,
-  ensureAppRole,
-  grantAppRole,
-  prepareDatabase,
-} from "../src/bootstrap.ts";
+import { APP_ROLE, databaseUrl, ensureAppRole, prepareDatabase } from "../src/bootstrap.ts";
 import { runMigrations } from "../src/migrate.ts";
 import { RESTORE_FLAGS, startBareDatabase } from "../src/testing.ts";
 
@@ -100,28 +94,5 @@ describe("restore", () => {
     await prepareDatabase(restoredUrl, PASSWORD);
 
     expect(await visibleAs(restoredUrl, APP_ROLE, PASSWORD)).toEqual({ owner: 1, other: 0 });
-  });
-
-  test("granted with the API's role too, the restored copy is readable by both roles", async () => {
-    // While the API still connects as lukas_app (2b: remove once it connects as wambito_app).
-    await ensureAppRole(fresh.adminUrl, PASSWORD);
-    const b = postgres(fresh.adminUrl, { max: 1, onnotice: () => {} });
-    await b.unsafe(
-      `DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'lukas_app') THEN
-         CREATE ROLE lukas_app LOGIN PASSWORD '${OLD_PASSWORD}' NOSUPERUSER NOBYPASSRLS;
-       END IF; END $$`,
-    );
-    await b.end();
-
-    // The drill's grant (--grant-only --also-role) and the live path's bootstrap (--also-role).
-    const drillUrl = await restoreInto("drill_copy");
-    await grantAppRole(drillUrl, ["lukas_app"]);
-    const liveUrl = await restoreInto("live_copy");
-    await prepareDatabase(liveUrl, PASSWORD, ["lukas_app"]);
-
-    for (const url of [drillUrl, liveUrl]) {
-      expect(await visibleAs(url, "lukas_app", OLD_PASSWORD)).toEqual({ owner: 1, other: 0 });
-      expect(await visibleAs(url, APP_ROLE, PASSWORD)).toEqual({ owner: 1, other: 0 });
-    }
   });
 });

@@ -6,8 +6,8 @@
 # What it checks: nothing happens while main has not moved, while CI is still running or has not
 # started; a commit whose required checks pass is deployed exactly (not a newer one pushed
 # meanwhile), and a failed one never is, nor asked about again; other checks (mobile, the landing)
-# do not count; a deploy that fails, or whose smoke test fails, goes back to the commit before; a
-# main that was rewritten is refused.
+# do not count; curl follows the redirect of a renamed repository; a deploy that fails, or whose
+# smoke test fails, goes back to the commit before; a main that was rewritten is refused.
 set -euo pipefail
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=lib.sh
@@ -38,9 +38,11 @@ git_in "$tmp/install" pull -q --ff-only origin main
 mkdir "$tmp/bin" "$tmp/state"
 export FAKE_LOG="$tmp/calls.log" FAKE_CHECKS="$tmp/checks.json"
 : >"$FAKE_LOG"
-# curl: logs the URL, prints the check runs from FAKE_CHECKS, and runs FAKE_CURL_HOOK if set.
+# curl: logs the URL and its arguments, prints the check runs from FAKE_CHECKS, and runs
+# FAKE_CURL_HOOK if set.
 cat >"$tmp/bin/curl" <<'EOF'
 #!/usr/bin/env bash
+printf 'args %s\n' "$*" >>"$FAKE_LOG"
 for a in "$@"; do case "$a" in http*) printf 'api %s\n' "$a" >>"$FAKE_LOG" ;; esac; done
 [ -z "${FAKE_CURL_HOOK:-}" ] || eval "$FAKE_CURL_HOOK"
 cat "$FAKE_CHECKS"
@@ -48,21 +50,21 @@ EOF
 # update.sh and smoke.sh: log their arguments and the commit checked out; fail on request.
 cat >"$tmp/bin/fake-update" <<'EOF'
 #!/usr/bin/env bash
-printf 'update %s at %s\n' "$*" "$(git -C "$LUKITAS_DEPLOY_REPO" rev-parse HEAD)" >>"$FAKE_LOG"
-[ "${FAKE_UPDATE_FAILS_AT:-}" != "$(git -C "$LUKITAS_DEPLOY_REPO" rev-parse HEAD)" ]
+printf 'update %s at %s\n' "$*" "$(git -C "$WAMBITO_DEPLOY_REPO" rev-parse HEAD)" >>"$FAKE_LOG"
+[ "${FAKE_UPDATE_FAILS_AT:-}" != "$(git -C "$WAMBITO_DEPLOY_REPO" rev-parse HEAD)" ]
 EOF
 cat >"$tmp/bin/fake-smoke" <<'EOF'
 #!/usr/bin/env bash
-printf 'smoke at %s\n' "$(git -C "$LUKITAS_DEPLOY_REPO" rev-parse HEAD)" >>"$FAKE_LOG"
-[ "${FAKE_SMOKE_FAILS_AT:-}" != "$(git -C "$LUKITAS_DEPLOY_REPO" rev-parse HEAD)" ]
+printf 'smoke at %s\n' "$(git -C "$WAMBITO_DEPLOY_REPO" rev-parse HEAD)" >>"$FAKE_LOG"
+[ "${FAKE_SMOKE_FAILS_AT:-}" != "$(git -C "$WAMBITO_DEPLOY_REPO" rev-parse HEAD)" ]
 EOF
 chmod +x "$tmp/bin/"*
 PATH="$tmp/bin:$PATH"
 
-export LUKITAS_DEPLOY_REPO="$tmp/install" LUKITAS_STATE_DIR="$tmp/state"
-export LUKITAS_DEPLOY_UPDATE="$tmp/bin/fake-update" LUKITAS_DEPLOY_SMOKE="$tmp/bin/fake-smoke"
+export WAMBITO_DEPLOY_REPO="$tmp/install" WAMBITO_STATE_DIR="$tmp/state"
+export WAMBITO_DEPLOY_UPDATE="$tmp/bin/fake-update" WAMBITO_DEPLOY_SMOKE="$tmp/bin/fake-smoke"
 export ENV_FILE="$tmp/.env"
-printf 'PERSONAL_BRANCH=main\nDEPLOY_GITHUB_REPO=slinqer/lukitas\n' >"$ENV_FILE"
+printf 'PERSONAL_BRANCH=main\nDEPLOY_GITHUB_REPO=slinqer/wambito\n' >"$ENV_FILE"
 
 # checks NAME=STATUS:CONCLUSION...: what the fake API answers.
 checks() {
@@ -106,6 +108,9 @@ check "CI running: it succeeds" deploy
 check "CI running: nothing deployed" head_is "$first"
 check "CI running: update.sh not run" log_lacks "update"
 check "CI running: it asked about that commit" log_has "commits/$second/check-runs"
+# A renamed repository answers 301: curl must follow it (-L, as in -fsSL).
+follows_redirects() { grep '^args ' "$FAKE_LOG" | grep -qE '(^| )-([a-zA-Z]*L[a-zA-Z]*|-location)( |$)'; }
+check "CI running: curl follows redirects (-L)" follows_redirects
 
 # 3. CI has not started: no check runs yet. Wait too.
 checks
