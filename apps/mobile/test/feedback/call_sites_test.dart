@@ -57,6 +57,7 @@ Future<_Env> _pump(
   FakeHomeRepository? server,
   bool withAdd = false,
   bool withCapture = false,
+  Size size = const Size(390, 844),
 }) async {
   final repo =
       server ??
@@ -65,6 +66,7 @@ Future<_Env> _pump(
   final harness = await pumpHome(
     tester,
     repo,
+    size: size,
     overrides: [
       feedbackPlatformProvider.overrideWithValue(platform),
       soundSettingStoreProvider.overrideWithValue(FakeSoundStore()),
@@ -152,7 +154,7 @@ void main() {
     });
 
     testWidgets('paying a pending row plays the paid sound and haptic', (tester) async {
-      final env = await _pump(tester);
+      final env = await _pump(tester, size: tallPhone);
       await swipe(tester, find.text('Arriendo'), 250);
       expect(env.platform.sounds, [FeedbackSound.paid]);
       expect(env.waveforms.last, [10, 30, 10, 30, 24]);

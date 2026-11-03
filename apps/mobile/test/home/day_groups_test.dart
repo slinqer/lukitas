@@ -6,7 +6,7 @@ import 'fixtures.dart';
 void main() {
   group('groupByDay', () {
     test(
-      'puts today first, then the upcoming days (nearest first), then the past (newest first)',
+      'puts today first, then the past (newest first), then the upcoming days (nearest first)',
       () {
         // The API sends the month newest first.
         final items = [
@@ -20,14 +20,34 @@ void main() {
         final groups = groupByDay(items, '2026-10-21');
         expect(groups.map((g) => (g.date, g.when)).toList(), [
           ('2026-10-21', DayWhen.today),
-          ('2026-10-23', DayWhen.upcoming),
-          ('2026-10-28', DayWhen.upcoming),
           ('2026-10-08', DayWhen.past),
           ('2026-10-01', DayWhen.past),
+          ('2026-10-23', DayWhen.upcoming),
+          ('2026-10-28', DayWhen.upcoming),
         ]);
         expect(groups[0].items.map((t) => t.id).toList(), ['coffee', 'lunch']);
         expect(groups[0].total, -1360);
-        expect(groups[4].total, 300000);
+        expect(groups[2].total, 300000);
+      },
+    );
+
+    test(
+      'keeps the pending days still to come after yesterday, not between today and yesterday',
+      () {
+        final items = [
+          tx('internet', '2026-11-28', -3990, status: 'pending'),
+          tx('plan', '2026-11-26', -1039, status: 'pending'),
+          tx('gym', '2026-11-02', -3200),
+          tx('uber', '2026-11-02', -316),
+          tx('sushi', '2026-11-01', -1093),
+        ];
+        final groups = groupByDay(items, '2026-11-02');
+        expect(groups.map((g) => (g.date, g.when, g.total)).toList(), [
+          ('2026-11-02', DayWhen.today, -3516),
+          ('2026-11-01', DayWhen.yesterday, -1093),
+          ('2026-11-26', DayWhen.upcoming, -1039),
+          ('2026-11-28', DayWhen.upcoming, -3990),
+        ]);
       },
     );
 

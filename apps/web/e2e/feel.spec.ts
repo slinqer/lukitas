@@ -319,6 +319,8 @@ test.describe("in Madrid, on 21 October 2026", () => {
       .first();
     const row = upcoming.locator("[data-swipe-row]").first();
     await expect(row).toContainText("video streaming");
+    // The days still to come sit at the bottom of the list, below the fold.
+    await row.evaluate((element) => element.scrollIntoView({ block: "center" }));
     const box = await row.boundingBox();
     if (!box) throw new Error("no row");
     await swipe(page, await edgeOf(row, "left"), { dx: box.width * 0.6, steps: 16 });
