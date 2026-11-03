@@ -122,9 +122,13 @@ compose exec -T postgres pg_restore -U lukitas -d "$scratch" --no-owner --no-acl
 say "Rows in the restored copy"
 table_counts "$scratch" | awk '{ printf "%-18s %8s\n", $1, $2 }'
 
+# The role the API connects as gets the grants too while it is not the bootstrap's role yet.
+# 2b: remove (and the --also-role arguments below) once the API connects as wambito_app.
+api_role="$(api_db_role)"
+
 if [ "$drill" = 1 ]; then
-  say "Granting the app role on $scratch"
-  compose run --rm migrate node dist/bootstrap.js --grant-only "$scratch" ||
+  say "Granting the app role (and $api_role, the API's) on $scratch"
+  compose run --rm migrate node dist/bootstrap.js --grant-only "$scratch" --also-role "$api_role" ||
     die "could not grant the app role on $scratch"
   if [ "$keep" = 1 ]; then
     say "Drill done. Kept database $scratch (psql -U lukitas -d $scratch inside the postgres container)"
@@ -184,14 +188,19 @@ psql_db postgres -qc "alter database lukitas rename to $before" >/dev/null
 psql_db postgres -qc "alter database $scratch rename to lukitas" >/dev/null
 keep_scratch=1 # it is the live database now
 
-say "Applying migrations the dump may not have yet, and granting the app role"
-compose run --rm migrate
-
-say "Starting the app again"
 # The tunnel again if this install has one; never in the direct way (lib.sh, up_services).
 with_tunnel=0
 [ -n "$(cfg TUNNEL_ID)" ] && with_tunnel=1
 services="$(up_services "$with_tunnel")"
+
+say "Applying migrations the dump may not have yet, and granting the app role (and $api_role)"
+if ! compose run --rm migrate node dist/bootstrap.js --also-role "$api_role"; then
+  say "The migrations or the grants failed on the restored database. The app is stopped."
+  restore_go_back "$before" "$scratch" "$services"
+  die "the restore is not finished; the previous database is $before"
+fi
+
+say "Starting the app again"
 # shellcheck disable=SC2086
 compose up -d --wait $services
 

@@ -10,7 +10,8 @@ Drizzle schema, SQL migrations and row-level security for Postgres.
 - `src/migrate.ts` (`runMigrations`), `src/bootstrap.ts` (`ensureAppRole`, `grantAppRole`, `prepareDatabase`, `APP_ROLE`, `databaseUrl`),
   `src/client.ts`, `src/orm.ts`, `src/testing.ts` (test Postgres).
 - Scripts: `pnpm --filter @wambito/db generate` (drizzle-kit), `migrate`, `bootstrap` (`--role-only`;
-  `--grant-only DB` grants the app role on another database, for a restore drill).
+  `--grant-only DB` grants the app role on another database, for a restore drill; `--also-role
+  NAME` grants NAME too, the role the API still connects as until 2b).
 - `testing.ts` `RESTORE_FLAGS`: the pg_restore flags `deploy/personal/restore.sh` and `backup.sh` use.
 
 ## Rules

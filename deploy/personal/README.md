@@ -422,7 +422,9 @@ It restores into a new database first (if that fails nothing has changed), asks 
 drop it yourself when you are sure), puts the new one in its place, applies newer migrations,
 grants the app role, and starts everything. `--yes` skips the question. A restore skips the dump's
 own grants (`--no-acl`) and grants the app role afresh, so a dump restores whatever the role was
-called when it was taken.
+called when it was taken. Until the API connects as the new role, the restore grants the role
+the API uses (from its `DATABASE_URL`) as well. If a step after the swap fails, it prints the
+commands that put the previous database back.
 
 **A restore brings back accounts deleted after the dump was taken**, with all their data, and they
 can sign in again. Those people were told their data was gone, so delete each of them again right
