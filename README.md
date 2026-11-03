@@ -70,7 +70,7 @@ To run the API outside Docker, start only the services with `docker compose up -
 docker compose stop
 ```
 
-Run it from the repository root. It stops only this dev stack (`lukas-api`, `lukas-postgres`, `lukas-mailpit`, named after the checkout folder; renamed in part 2b) and keeps its data; `docker compose up -d` brings it back. The personal install (`lukitas-personal-*`, see [deploy/personal](deploy/personal/README.md)) is a separate stack and keeps running. Never use `docker compose down -v` here: `-v` deletes the dev database volume.
+Run it from the repository root. It stops only this dev stack (`wambito-api`, `wambito-postgres`, `wambito-mailpit`, the compose project `wambito`) and keeps its data; `docker compose up -d` brings it back. The personal install (`lukitas-personal-*`, see [deploy/personal](deploy/personal/README.md)) is a separate stack and keeps running. The stack started under the old name used another volume, so `wambito` starts empty: list the old one with `docker volume ls --filter name=lukas` and remove it with `docker volume rm <name>` once you do not need it. Never use `docker compose down -v` here: `-v` deletes the dev database volume.
 
 ### Web app
 

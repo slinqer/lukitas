@@ -1,4 +1,4 @@
-import { ensureAppRole, prepareDatabase } from "../bootstrap.ts";
+import { APP_ROLE, ensureAppRole, prepareDatabase } from "../bootstrap.ts";
 
 // With --role-only: just the role and its password (a restore creates the tables from a dump).
 const roleOnly = process.argv.includes("--role-only");
@@ -10,8 +10,8 @@ if (!appPassword) throw new Error("APP_DB_PASSWORD is required");
 
 if (roleOnly) {
   await ensureAppRole(adminUrl, appPassword);
-  console.log("Role lukas_app ready");
+  console.log(`Role ${APP_ROLE} ready`);
 } else {
   await prepareDatabase(adminUrl, appPassword);
-  console.log("Database ready: lukas_app role set, migrations applied");
+  console.log(`Database ready: ${APP_ROLE} role set, migrations applied`);
 }

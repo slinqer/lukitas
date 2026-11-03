@@ -37,7 +37,7 @@ describe("the Android app's passkey origin", () => {
 
 describe("ANDROID_CERT_SHA256 in the config", () => {
   const dev = {
-    DATABASE_URL: "postgres://lukas_app:x@db:5432/lukas",
+    DATABASE_URL: "postgres://wambito_app:x@db:5432/wambito",
     DATABASE_ADMIN_URL: "postgres://lukas:x@db:5432/lukas",
     BETTER_AUTH_SECRET: "s".repeat(40),
     API_URL: "https://wambito.test/api",

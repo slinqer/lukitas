@@ -6,6 +6,7 @@ import { join } from "node:path";
 import { promisify } from "node:util";
 import { PostgreSqlContainer } from "@testcontainers/postgresql";
 import postgres from "postgres";
+import { grantAppRole } from "./bootstrap.ts";
 import { runMigrations } from "./migrate.ts";
 
 const exec = promisify(execFile);
@@ -20,13 +21,13 @@ interface TestDatabase {
   stop(): Promise<void>;
 }
 
-/** A throwaway Postgres with nothing in it: no `lukas_app` role, no tables. */
+/** A throwaway Postgres with nothing in it: no `wambito_app` role, no tables. */
 export async function startBareDatabase(): Promise<Pick<TestDatabase, "adminUrl" | "stop">> {
   return process.env.WAMBITO_TEST_DB === "local" ? startLocalCluster() : startContainer();
 }
 
 /**
- * Starts a throwaway Postgres with the `lukas_app` role and all migrations applied.
+ * Starts a throwaway Postgres with the `wambito_app` role and all migrations applied and granted.
  * Uses a Docker container by default; set WAMBITO_TEST_DB=local to use the `initdb`/`pg_ctl`
  * binaries on PATH instead (handy when Docker is not running).
  */
@@ -37,9 +38,10 @@ export async function startTestDatabase(): Promise<TestDatabase> {
   await admin.unsafe(await readFile(INIT_SQL, "utf8"));
   await admin.end();
   await runMigrations(adminUrl);
+  await grantAppRole(adminUrl);
   const app = new URL(adminUrl);
-  app.username = "lukas_app";
-  app.password = "lukas_app";
+  app.username = "wambito_app";
+  app.password = "wambito_app";
   return { adminUrl, appUrl: app.toString(), stop };
 }
 

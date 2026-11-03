@@ -1,8 +1,8 @@
 import postgres from "postgres";
 import { runMigrations } from "./migrate.ts";
 
-/** The role the API connects as. Migration 0001 grants to it by this name. */
-export const APP_ROLE = "lukas_app";
+/** The role the API connects as. `grantAppRole` grants it its table privileges by this name. */
+export const APP_ROLE = "wambito_app";
 
 const MIN_PASSWORD_LENGTH = 16;
 
@@ -47,13 +47,34 @@ export async function ensureAppRole(adminUrl: string, appPassword: string): Prom
 }
 
 /**
+ * Grants the runtime role read and write on every table and use of every sequence in `public`,
+ * and the same on tables and sequences created later. Idempotent. The grants live here, not in a
+ * migration, so the role's name is not frozen into the migration history.
+ */
+export async function grantAppRole(adminUrl: string): Promise<void> {
+  const admin = postgres(adminUrl, { max: 1, onnotice: () => {} });
+  try {
+    const statements = await admin<{ sql: string }[]>`
+      select format(t, ${APP_ROLE}::text) as sql from unnest(array[
+        'GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO %I',
+        'GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO %I',
+        'ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO %I',
+        'ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO %I'
+      ]) as t`;
+    for (const { sql } of statements) await admin.unsafe(sql);
+  } finally {
+    await admin.end();
+  }
+}
+
+/**
  * Makes a database ready for the API: the runtime role exists with the given password, then every
- * pending migration is applied. Safe to run on every deploy: nothing is dropped, a role that
+ * pending migration is applied, then the role is granted its table privileges. Safe to run on every deploy: nothing is dropped, a role that
  * exists keeps its data and only has its password set again.
  *
  * This is the production counterpart of `docker/postgres/init.sql` (development only, with a
  * well-known password). It must run as the database owner, before the API starts, because
- * migration 0001 grants table privileges to the role.
+ * the grants come after the migrations.
  */
 export async function prepareDatabase(adminUrl: string, appPassword: string): Promise<void> {
   await ensureAppRole(adminUrl, appPassword);
@@ -64,4 +85,5 @@ export async function prepareDatabase(adminUrl: string, appPassword: string): Pr
     await admin.end();
   }
   await runMigrations(adminUrl);
+  await grantAppRole(adminUrl);
 }
