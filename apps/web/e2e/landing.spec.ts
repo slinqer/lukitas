@@ -1309,29 +1309,6 @@ test.describe("landing with JavaScript", () => {
       expect(await page.evaluate(() => localStorage.getItem("wambito.theme"))).toBe("night");
     });
   }
-
-  // 2b: remove, with the lukas.* migration in lib/stored.ts and the theme bootstrap.
-  test("a theme kept under the old lukas.theme still applies, and moves to wambito.theme", async ({
-    page,
-  }) => {
-    await page.addInitScript(() => {
-      if (!sessionStorage.getItem("planted")) {
-        localStorage.setItem("lukas.theme", "day");
-        sessionStorage.setItem("planted", "1");
-      }
-    });
-    await page.goto("/");
-    await expect(page.locator("html")).toHaveAttribute("data-theme", "day");
-    await page.waitForLoadState("networkidle");
-    expect(
-      await page.evaluate(() => [
-        localStorage.getItem("wambito.theme"),
-        localStorage.getItem("lukas.theme"),
-      ]),
-    ).toEqual(["day", null]);
-    await page.reload();
-    await expect(page.locator("html")).toHaveAttribute("data-theme", "day");
-  });
 });
 
 for (const l of LOCALES) {

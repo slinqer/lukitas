@@ -72,18 +72,11 @@ describe("THEME_BOOTSTRAP_SCRIPT (theme flash)", () => {
     expect(run({ storageThrows: true, prefersDark: true }).theme).toBe("night");
   });
 
-  // 2b: remove, with the lukas.* migration.
-  it("applies a theme kept under the old lukas.theme, and moves it to wambito.theme", () => {
+  it("an old lukas.theme is neither read nor removed", () => {
     const { theme, data } = run({ oldStored: "day", prefersDark: true });
-    expect(theme).toBe("day");
-    expect(data.get("wambito.theme")).toBe("day");
-    expect(data.has("lukas.theme")).toBe(false);
-  });
-
-  it("prefers wambito.theme over the old key, and drops the old one", () => {
-    const { theme, data } = run({ stored: "night", oldStored: "day", prefersDark: false });
     expect(theme).toBe("night");
-    expect(data.has("lukas.theme")).toBe(false);
+    expect(data.get("lukas.theme")).toBe("day");
+    expect(data.has("wambito.theme")).toBe(false);
   });
 
   it("defaults to night without matchMedia", () => {
