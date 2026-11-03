@@ -20,7 +20,7 @@ What the API gained for it (also useful for any deployment):
   `[::1]`, `host.docker.internal`).
 - **`DATABASE_ADMIN_URL` is optional outside development**, so a running production API never holds
   the owner credential. Migrations are a separate step: `apps/api/Dockerfile.prod` also builds
-  `dist/bootstrap.js`, which creates the `lukas_app` role (renamed in part 2b; password from `APP_DB_PASSWORD`; the role
+  `dist/bootstrap.js`, which creates the `wambito_app` runtime role (password from `APP_DB_PASSWORD`; the role
   exists only in the development `docker/postgres/init.sql` otherwise) and applies the migrations.
   It is idempotent. Locally: `DATABASE_ADMIN_URL=... APP_DB_PASSWORD=... pnpm --filter @wambito/db bootstrap`.
 - **A production image**: `apps/api/Dockerfile.prod` (multi-stage, `node:22-alpine`, one esbuild

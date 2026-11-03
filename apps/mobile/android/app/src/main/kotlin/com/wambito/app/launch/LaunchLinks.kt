@@ -21,13 +21,6 @@ object LaunchLinks {
     /** The scheme of the links the app builds. */
     const val SCHEME = "wambito"
 
-    /**
-     * The scheme before the rename, still taken: a notice already on the shade, or anything else
-     * pinned by an older build, carries it. 2b: remove (and its entries in AndroidManifest.xml).
-     */
-    private const val OLD_SCHEME = "lukitas"
-    private val SCHEMES = setOf(SCHEME, OLD_SCHEME)
-
     val ADD: Uri = Uri.parse("wambito://add")
     val CAPTURE: Uri = Uri.parse("wambito://capture")
 
@@ -51,8 +44,7 @@ object LaunchLinks {
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
 
     /**
-     * The `wambito://add`, `capture`, `due`, `progress` or `home` link [intent] carries (or its
-     * `lukitas://` twin, 2b: remove), or null. An activity reopened from recents gets its first
+     * The `wambito://add`, `capture`, `due`, `progress` or `home` link [intent] carries, or null. An activity reopened from recents gets its first
      * intent again: that one is not acted on twice.
      */
     fun linkOf(intent: Intent?): String? {
@@ -60,7 +52,7 @@ object LaunchLinks {
         if (intent.component?.className != ALIAS) return null
         if (intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY != 0) return null
         val data = intent.data ?: return null
-        if (data.scheme !in SCHEMES || data.host !in HOSTS) return null
+        if (data.scheme != SCHEME || data.host !in HOSTS) return null
         val path = data.path.orEmpty()
         if (path.isNotEmpty() && path != "/") return null
         return data.toString()
@@ -94,11 +86,11 @@ object LaunchLinks {
         return !isForeignWebLink(intent, serverHost)
     }
 
-    /** Whether [intent] opens a link that is not one of the app's own (`wambito://`, `lukitas://` until 2b). */
+    /** Whether [intent] opens a link in any scheme that is not `wambito://` (the app's own). */
     fun isWebLink(intent: Intent?): Boolean {
         if (intent == null || intent.action != Intent.ACTION_VIEW) return false
         val data = intent.data ?: return false
-        return data.scheme !in SCHEMES
+        return data.scheme != SCHEME
     }
 
     /** The host of the server the app talks to: the one chosen in Settings, else [defaultServer]. */

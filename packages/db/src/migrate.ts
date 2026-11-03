@@ -5,7 +5,7 @@ import postgres from "postgres";
 
 export const MIGRATIONS_FOLDER = fileURLToPath(new URL("../drizzle", import.meta.url));
 
-/** Applies pending migrations. Must run as the admin role, not `lukas_app`. */
+/** Applies pending migrations. Must run as the admin role, not `wambito_app`. */
 export async function runMigrations(adminUrl: string): Promise<void> {
   const client = postgres(adminUrl, { max: 1, onnotice: () => {} });
   try {

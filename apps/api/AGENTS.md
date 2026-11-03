@@ -20,9 +20,8 @@ Hono + Better Auth + Drizzle (`@wambito/db`), OpenAPI document "Wambito API". Ev
 - Mounted under API_URL's path (`/api` behind the web origin / Caddy, so auth cookies are
   first-party). Web and mobile call it; the MCP forwards the assistant's OAuth token.
 - Client headers `x-wambito-{locale,next,timezone,client,background}`, always read via
-  `clientHeader`, never `headers.get("x-…")`. It also accepts `x-lukas-*` from installed APKs
-  (`2b: remove`). A timezone header means "from the device"; `background: 1` reads the session
-  with `disableRefresh` (not counted as activity).
+  `clientHeader`, never `headers.get("x-…")`. A timezone header means "from the device"; `background: 1` reads the
+  session with `disableRefresh` (not counted as activity).
 - DB: connects as the runtime role (RLS); migrations run as admin (`packages/db`).
 
 ## Run and test (repo root)
@@ -36,7 +35,7 @@ Hono + Better Auth + Drizzle (`@wambito/db`), OpenAPI document "Wambito API". Ev
 
 ## Traps
 
-- See root `AGENTS.md`: 2b names (DB role and name, guests' email domain), secrets.
+- See root `AGENTS.md`: secrets.
 - Better Auth tables: `pnpm --filter @wambito/api auth:generate` writes
   `packages/db/src/schema/auth.ts`; then add a migration in `packages/db`.
 - Rate limits trust one X-Forwarded-For hop set by Caddy: `docs/deploy/api.md`.

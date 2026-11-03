@@ -34,19 +34,11 @@ describe("readStored", () => {
     expect(readStored("theme", storage)).toBe("night");
   });
 
-  it("migrates once: the old lukas.<name> moves to wambito.<name>", () => {
-    const storage = memoryStorage({ "lukas.theme": "day" });
-    expect(readStored("theme", storage)).toBe("day");
-    expect(storage.data.get("wambito.theme")).toBe("day");
-    expect(storage.data.has("lukas.theme")).toBe(false);
-    expect(readStored("theme", storage)).toBe("day");
-  });
-
-  it("new wins: with both set it returns the new value and removes the old one", () => {
-    const storage = memoryStorage({ "wambito.theme": "night", "lukas.theme": "day" });
-    expect(readStored("theme", storage)).toBe("night");
-    expect(storage.data.get("wambito.theme")).toBe("night");
-    expect(storage.data.has("lukas.theme")).toBe(false);
+  it("a key under another prefix is neither read nor removed", () => {
+    const storage = memoryStorage({ "other.theme": "night" });
+    expect(readStored("theme", storage)).toBeNull();
+    expect(storage.data.get("other.theme")).toBe("night");
+    expect(storage.data.has("wambito.theme")).toBe(false);
   });
 
   it("returns null when nothing is stored", () => {
@@ -59,10 +51,9 @@ describe("readStored", () => {
   });
 
   it("uses localStorage by default, and a missing one is null", () => {
-    const storage = memoryStorage({ "lukas.sound": "off" });
+    const storage = memoryStorage({ "wambito.sound": "off" });
     vi.stubGlobal("localStorage", storage);
     expect(readStored("sound")).toBe("off");
-    expect(storage.data.get("wambito.sound")).toBe("off");
     vi.stubGlobal("localStorage", undefined);
     expect(readStored("sound")).toBeNull();
   });
@@ -70,12 +61,11 @@ describe("readStored", () => {
 
 describe("writeStored and removeStored", () => {
   it("write and remove wambito.<name>", () => {
-    const storage = memoryStorage({ "lukas.sound": "off" });
+    const storage = memoryStorage();
     writeStored("sound", "off", storage);
     expect(storage.data.get("wambito.sound")).toBe("off");
     removeStored("sound", storage);
     expect(storage.data.has("wambito.sound")).toBe(false);
-    // Removing also drops the old key, so a later read cannot bring it back.
     expect(readStored("sound", storage)).toBeNull();
   });
 

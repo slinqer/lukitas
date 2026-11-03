@@ -2,8 +2,8 @@ import { describe, expect, test } from "vitest";
 import { loadConfig } from "../src/config.ts";
 
 const base = {
-  DATABASE_URL: "postgres://lukas_app:x@db:5432/lukas",
-  DATABASE_ADMIN_URL: "postgres://lukas:x@db:5432/lukas",
+  DATABASE_URL: "postgres://wambito_app:x@db:5432/wambito",
+  DATABASE_ADMIN_URL: "postgres://wambito:x@db:5432/wambito",
   BETTER_AUTH_SECRET: "s".repeat(40),
   API_URL: "https://api.wambito.test",
   WEB_URL: "https://wambito.test",
@@ -130,9 +130,9 @@ describe("DATABASE_ADMIN_URL", () => {
       loadConfig({
         ...prod,
         NODE_ENV: "development",
-        DATABASE_ADMIN_URL: "postgres://lukas:x@db:5432/lukas",
+        DATABASE_ADMIN_URL: "postgres://wambito:x@db:5432/wambito",
       }).DATABASE_ADMIN_URL,
-    ).toBe("postgres://lukas:x@db:5432/lukas");
+    ).toBe("postgres://wambito:x@db:5432/wambito");
   });
 });
 

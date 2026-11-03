@@ -89,7 +89,7 @@ void main() {
     }
   });
 
-  test('the deep links: wambito:// (and lukitas:// until 2b), only through a not-exported alias', () {
+  test('the deep links: wambito://, only through a not-exported alias', () {
     final alias = RegExp(
       r'<activity-alias((?:(?!</activity-alias>).)*)</activity-alias>',
       dotAll: true,
@@ -99,18 +99,16 @@ void main() {
     expect(alias, contains('android:targetActivity=".MainActivity"'));
     for (final host in ['add', 'capture', 'due', 'progress', 'home']) {
       expect(alias, contains('android:scheme="wambito" android:host="$host"'));
-      // Links pinned before the rename (a notice on the shade): 2b: remove.
-      expect(alias, contains('android:scheme="lukitas" android:host="$host"'));
     }
-    expect(alias, contains('2b: remove'));
+    final aliasSchemes = RegExp(r'android:scheme="([^"]+)"').allMatches(alias).map((m) => m[1]);
+    expect(aliasSchemes.toSet(), {'wambito'});
     expect(alias, isNot(contains('BROWSABLE')));
-    // The exported launcher activity takes no app link of either scheme: other apps can start it.
+    // The exported launcher activity takes no wambito:// link: other apps can start it.
     final main = RegExp(
       r'<activity\s((?:(?!</activity>).)*)</activity>',
       dotAll: true,
     ).firstMatch(_manifest)!.group(1)!;
     expect(main, contains('android:name=".MainActivity"'));
-    expect(main, isNot(contains('lukitas')));
     expect(main, isNot(contains('android:scheme="wambito"')));
   });
 

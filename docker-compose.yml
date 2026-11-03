@@ -1,17 +1,19 @@
+name: wambito
+
 services:
   postgres:
     image: postgres:17-alpine
     environment:
-      POSTGRES_USER: lukas
-      POSTGRES_PASSWORD: lukas
-      POSTGRES_DB: lukas
+      POSTGRES_USER: wambito
+      POSTGRES_PASSWORD: wambito
+      POSTGRES_DB: wambito
     ports:
       - "5433:5432" # 5433 on the host: 5432 is often taken by a local Postgres
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U lukas -d lukas"]
+      test: ["CMD-SHELL", "pg_isready -U wambito -d wambito"]
       interval: 2s
       timeout: 5s
       retries: 20
@@ -28,8 +30,8 @@ services:
       dockerfile: apps/api/Dockerfile
     env_file: .env
     environment:
-      DATABASE_URL: postgres://lukas_app:lukas_app@postgres:5432/lukas
-      DATABASE_ADMIN_URL: postgres://lukas:lukas@postgres:5432/lukas
+      DATABASE_URL: postgres://wambito_app:wambito_app@postgres:5432/wambito
+      DATABASE_ADMIN_URL: postgres://wambito:wambito@postgres:5432/wambito
       SMTP_URL: smtp://mailpit:1025
       # The browser reaches the API through the web's dev server (Vite proxies /api), so both URLs
       # are the web origin: the same values as .env.example, set here so the stack runs without

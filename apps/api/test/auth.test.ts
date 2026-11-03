@@ -203,22 +203,6 @@ describe("email code + magic link", () => {
     expect(mail?.text).toContain("&lang=es");
   });
 
-  // 2b: remove. The installed APK still sends the old x-lukas-* names; each behaves as the new one.
-  test("the old x-lukas-locale, -next and -client behave as the x-wambito-* ones", async () => {
-    await sendCode("old-locale@wambito.test", { "x-lukas-locale": "en", "accept-language": "es" });
-    const mail = t.mailer.lastTo("old-locale@wambito.test");
-    expect(mail?.subject).toMatch(/^Your Wambito code/);
-    expect(mail?.text).toContain("&lang=en");
-
-    await sendCode("old-next@wambito.test", { "x-lukas-next": "/app/insights?month=2026-10" });
-    const next = /http\S+/.exec(t.mailer.lastTo("old-next@wambito.test")?.text ?? "")?.[0] ?? "";
-    expect(new URL(next).searchParams.get("next")).toBe("/app/insights?month=2026-10");
-
-    await sendCode("old-client@wambito.test", { "x-lukas-client": "android" });
-    const app = /http\S+/.exec(t.mailer.lastTo("old-client@wambito.test")?.text ?? "")?.[0] ?? "";
-    expect(new URL(app).searchParams.get("from")).toBe("app");
-  });
-
   test("the magic link carries a same-origin next, and never an off-site one", async () => {
     await sendCode("next@wambito.test", { "x-wambito-next": "/app/insights?month=2026-10" });
     const link = /http\S+/.exec(t.mailer.lastTo("next@wambito.test")?.text ?? "")?.[0] ?? "";

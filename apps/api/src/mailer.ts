@@ -15,7 +15,7 @@ export interface Mailer {
 
 /**
  * Refuses an address under the `.invalid` TLD (RFC 2606: it never resolves). Guests have placeholder
- * emails under guest.lukitas.invalid, and nothing may ever be mailed there; every mailer checks
+ * emails under guest.wambito.invalid, and nothing may ever be mailed there; every mailer checks
  * this before it touches the network.
  */
 export function assertDeliverable(to: string): void {

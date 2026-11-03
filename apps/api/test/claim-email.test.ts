@@ -153,7 +153,7 @@ describe("a guest claims an email in place", () => {
   test("a non-allowlisted email gets sign_in_not_allowed and no mail is sent", async () => {
     const g = await guest(t);
     const before = t.mailer.sent.length;
-    for (const email of ["stranger@wambito.test", "temp-x@guest.lukitas.invalid"]) {
+    for (const email of ["stranger@wambito.test", "temp-x@guest.wambito.invalid"]) {
       const res = await send(t, g, email);
       expect(res.status).toBe(403);
       expect(await res.json()).toMatchObject({ code: "sign_in_not_allowed" });

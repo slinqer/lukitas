@@ -1,9 +1,9 @@
 # Production image for the API and its one-shot database step. Build from the repository root:
-#   docker build -f apps/api/Dockerfile.prod -t lukitas-api .
+#   docker build -f apps/api/Dockerfile.prod -t wambito-api .
 #
 # The same image runs two commands:
 #   node dist/server.js     the API (the default)
-#   node dist/bootstrap.js  creates the lukas_app role and applies the migrations, then exits
+#   node dist/bootstrap.js  creates the wambito_app role and applies the migrations, then exits
 #
 # `apps/api/Dockerfile` is the development image (tsx, source files, no health check).
 

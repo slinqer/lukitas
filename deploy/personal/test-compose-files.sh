@@ -9,7 +9,8 @@
 # what web publishes in each way (direct: 80, 443 and 443/udp to the world, the plain-HTTP listener
 # on 127.0.0.1 only; tunnel: 127.0.0.1 only, as before); which Caddy config web runs; which services
 # up.sh starts (cloudflared only in the tunnel way, and not with --no-tunnel); that a bare
-# `docker compose up` in the direct way has no cloudflared either; the command restore.sh prints.
+# `docker compose up` in the direct way has no cloudflared either; the commands restore.sh prints;
+# the role the API connects as (restore.sh grants it).
 set -euo pipefail
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Settings from the shell would win over the test's .env (as they do for docker compose).
@@ -64,6 +65,12 @@ check "services: tunnel" "api mcp web cloudflared" "$(up_services 1)"
 check "services: tunnel, --no-tunnel" "api mcp web" "$(up_services 0)"
 check "tunnel: compose knows cloudflared" cloudflared "$(compose config --services | grep -x cloudflared || true)"
 check "tunnel: printed command" "docker compose --env-file $ENV_FILE -f $DIR/docker-compose.yml" "$(compose_command)"
+check "the API's database role (restore.sh grants it)" lukas_app "$(api_db_role)"
+expected_back="To put the previous database back and start the app on it:
+  $(compose_command) exec postgres psql -U lukitas -d postgres -c 'alter database lukitas rename to lukitas_restore_X'
+  $(compose_command) exec postgres psql -U lukitas -d postgres -c 'alter database lukitas_before_X rename to lukitas'
+  $(compose_command) up -d --wait api mcp web"
+check "restore: how to go back" "$expected_back" "$(restore_go_back lukitas_before_X lukitas_restore_X "api mcp web")"
 
 # The plain default, written out, is the same.
 with_env written COMPOSE_FILE=docker-compose.yml

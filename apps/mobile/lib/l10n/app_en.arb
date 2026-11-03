@@ -973,8 +973,8 @@
   },
   "licenseNoticeFontRoleDisplay": "titles and amounts",
   "licenseNoticeFontRoleText": "the rest of the text",
-  "licenseNoticeSounds": "The sounds Wambito plays when you add, pay, undo, or come near a limit are original work made for Wambito: a few plain tones, with no third-party samples. They are released under the licence of the app itself, the GNU Affero General Public License 3.0 (https://github.com/slinqer/lukitas).",
-  "licenseNoticeApp": "Wambito is free software, under the GNU Affero General Public License 3.0. Its source code is at https://github.com/slinqer/lukitas.",
+  "licenseNoticeSounds": "The sounds Wambito plays when you add, pay, undo, or come near a limit are original work made for Wambito: a few plain tones, with no third-party samples. They are released under the licence of the app itself, the GNU Affero General Public License 3.0 (https://github.com/slinqer/wambito).",
+  "licenseNoticeApp": "Wambito is free software, under the GNU Affero General Public License 3.0. Its source code is at https://github.com/slinqer/wambito.",
   "aboutLegalese": "Free software, AGPL-3.0",
   "close": "Close",
   "@close": {

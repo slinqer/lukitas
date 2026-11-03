@@ -28,5 +28,5 @@ Human docs. Live docs are kept current; `superpowers/` is history.
 
 ## Rules
 
-- `docs/mobile/release.md` keeps the keystore path and alias, `docs/mobile/setup.md` the AVD name:
-  2b names (see root `AGENTS.md`).
+- `docs/mobile/release.md` keeps the signing key's alias (see root `AGENTS.md`), and the old key
+  folder only in the steps that move it; `docs/mobile/setup.md` names the old AVD only to delete it.

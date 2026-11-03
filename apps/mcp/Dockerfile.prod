@@ -1,5 +1,5 @@
 # Production image for the MCP server. Build from the repository root:
-#   docker build -f apps/mcp/Dockerfile.prod -t lukitas-mcp .
+#   docker build -f apps/mcp/Dockerfile.prod -t wambito-mcp .
 
 FROM node:22-alpine AS build
 WORKDIR /repo

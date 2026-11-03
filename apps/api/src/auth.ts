@@ -39,7 +39,7 @@ const PASSKEY_ALGORITHMS = [
 ] as const;
 
 /** Where guests' placeholder emails live: the `.invalid` TLD never resolves, and nothing is mailed there. */
-export const GUEST_EMAIL_DOMAIN = "guest.lukitas.invalid";
+export const GUEST_EMAIL_DOMAIN = "guest.wambito.invalid";
 
 /**
  * Whether `email` may ask for a sign-in code: always, unless an allowlist is configured; never for

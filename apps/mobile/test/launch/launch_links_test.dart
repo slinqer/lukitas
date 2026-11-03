@@ -81,14 +81,10 @@ void main() {
       expect(launchActionOf(null), isNull);
     });
 
-    // 2b: remove: links pinned before the rename (a widget, the tile, a shortcut) say lukitas://.
-    test('lukitas:// links still open what they did', () {
-      expect(launchActionOf('lukitas://add'), LaunchAction.add);
-      expect(launchActionOf('lukitas://capture'), LaunchAction.capture);
-      expect(launchActionOf('lukitas://due'), LaunchAction.due);
-      expect(launchActionOf('lukitas://progress'), LaunchAction.progress);
-      expect(launchActionOf('lukitas://home'), LaunchAction.home);
-      expect(launchActionOf('lukitas://settings'), isNull);
+    test('a link in another scheme is not a launch link', () {
+      expect(launchActionOf('other://add'), isNull);
+      expect(launchActionOf('other://capture'), isNull);
+      expect(launchActionOf('other://due'), isNull);
     });
 
     test('the links the app builds say wambito://', () {

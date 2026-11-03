@@ -82,7 +82,7 @@ export const HeroSection: Story = {
     await expect(headline.querySelector(".lk-landing-flag")).toHaveTextContent("🇨🇴");
     await expect(
       canvas.getByRole("link", { name: "Código abierto (se abre en una pestaña nueva)" }),
-    ).toHaveAttribute("href", "https://github.com/slinqer/lukitas");
+    ).toHaveAttribute("href", "https://github.com/slinqer/wambito");
     await expect(canvas.getByRole("link", { name: "Pruébalo sin cuenta" })).toHaveAttribute(
       "href",
       "/demo?lang=es",
@@ -206,7 +206,7 @@ export const OpenSourceSection: Story = {
     const code = canvas.getByRole("link", {
       name: "Ver el código en GitHub (se abre en una pestaña nueva)",
     });
-    await expect(code).toHaveAttribute("href", "https://github.com/slinqer/lukitas");
+    await expect(code).toHaveAttribute("href", "https://github.com/slinqer/wambito");
     await expect(code).toHaveAttribute("target", "_blank");
     await expectEdge(code, 3);
     await expectTarget(code);

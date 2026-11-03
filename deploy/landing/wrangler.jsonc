@@ -2,7 +2,7 @@
   // The landing alone, as Cloudflare Workers static assets (no Worker code): the prerendered
   // `build:landing` output, its 404 page and `_headers`. Deploy from this folder so wrangler does
   // not try to auto-configure the web app. See docs/deploy/landing.md.
-  "name": "lukitas-landing",
+  "name": "wambito-landing",
   "compatibility_date": "2026-10-01",
   "assets": {
     "directory": "../../apps/web/build/client",

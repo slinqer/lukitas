@@ -92,17 +92,6 @@
                 <!-- A tap on the widget itself: home. -->
                 <data android:scheme="wambito" android:host="home"/>
             </intent-filter>
-            <!-- The same links under the old name, from a notice an older build put on the shade.
-                 2b: remove (with LaunchLinks.OLD_SCHEME). -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:scheme="lukitas" android:host="add"/>
-                <data android:scheme="lukitas" android:host="capture"/>
-                <data android:scheme="lukitas" android:host="due"/>
-                <data android:scheme="lukitas" android:host="progress"/>
-                <data android:scheme="lukitas" android:host="home"/>
-            </intent-filter>
         </activity-alias>
         <!-- The home-screen widget, small (2×1) and medium (4×2), drawn with Jetpack Glance
              (widget/). The app and the refresh job ask them to redraw. -->

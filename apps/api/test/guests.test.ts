@@ -60,7 +60,7 @@ describe("guest sign-up, open (with an allowlist set)", () => {
     // No email was sent, and the placeholder address never resolves.
     expect(t.mailer.sent).toHaveLength(0);
     const [stored] = await t.admin.select().from(user).where(eq(user.id, created.id));
-    expect(stored?.email).toMatch(/@guest\.lukitas\.invalid$/);
+    expect(stored?.email).toMatch(/@guest\.wambito\.invalid$/);
   });
 
   test("an email user is not anonymous", async () => {
@@ -106,16 +106,6 @@ describe("guests", () => {
       const g = await guest(t, { "x-wambito-timezone": timezone, "x-wambito-locale": "en" });
       expect(await me(t, g.headers)).toMatchObject({ timezone, locale: "en", currency });
     }
-  });
-
-  // 2b: remove. The installed APK still sends the old x-lukas-* names.
-  test("the old x-lukas-timezone and -locale set the new profile as the new ones do", async () => {
-    const g = await guest(t, { "x-lukas-timezone": "Europe/Lisbon", "x-lukas-locale": "pt-PT" });
-    expect(await me(t, g.headers)).toMatchObject({
-      timezone: "Europe/Lisbon",
-      locale: "pt",
-      currency: "EUR",
-    });
   });
 
   test("x-wambito-locale sets the locale; without it, Spanish", async () => {

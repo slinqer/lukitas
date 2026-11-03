@@ -193,7 +193,7 @@ describe("batches", () => {
     const row = (i: number, guest: boolean) => ({
       id: `bulk-${String(i).padStart(4, "0")}`,
       name: `Bulk ${i}`,
-      email: guest ? `bulk-${i}@guest.lukitas.invalid` : "member-in-the-middle@wambito.test",
+      email: guest ? `bulk-${i}@guest.wambito.invalid` : "member-in-the-middle@wambito.test",
       isAnonymous: guest,
       createdAt: old,
       updatedAt: old,
@@ -283,20 +283,6 @@ describe("guest session lifetime", () => {
     expect(row?.updatedAt).toEqual(aged.updatedAt);
     expect(row?.expiresAt).toEqual(aged.expiresAt);
     // It sets no new cookie either: nothing about the session changes.
-    expect(res.headers.get("set-cookie")).toBeNull();
-  });
-
-  // 2b: remove. The installed APK's widget and notices still send x-lukas-background.
-  test("the old x-lukas-background: 1 does not slide the session either", async () => {
-    const g = await newGuest();
-    const aged = await ageSession(g.userId);
-    const res = await t.request("GET", "/v1/me", {
-      headers: { ...g.headers, "x-lukas-background": "1" },
-    });
-    expect(res.status).toBe(200);
-    const [row] = await t.admin.select().from(session).where(eq(session.userId, g.userId));
-    expect(row?.updatedAt).toEqual(aged.updatedAt);
-    expect(row?.expiresAt).toEqual(aged.expiresAt);
     expect(res.headers.get("set-cookie")).toBeNull();
   });
 

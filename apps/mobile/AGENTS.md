@@ -6,7 +6,7 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
 
 ## Dart entry points (`lib/`)
 
-- `lib/main.dart` `bootstrap()`: `migrateStoredKeys` (`2b: remove`), `DeviceHints.read()`,
+- `lib/main.dart` `bootstrap()`: `DeviceHints.read()`,
   settings, then `WambitoApp` (`lib/app.dart`). Router: `lib/router.dart` (go_router).
 - One folder per feature (`lib/home/`, `lib/capture/`, `lib/budgets/`, …); Riverpod 3 providers
   sit next to their feature; tests override them.
@@ -19,7 +19,7 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
 
 ## Android (`android/app/src/main/kotlin/com/wambito/app/`)
 
-- `MainActivity.kt`: runs `Migration.kt` (`2b: remove`), takes the launch link. Channels:
+- `MainActivity.kt`: takes the launch link. Channels:
   `wambito/*`, registered in `MainActivity.kt`; names match the Dart constants (rename both at once).
 - `widget/`: Glance widgets via home_widget; `notices/`: WorkManager `DueWorker`/`GuestWorker`,
   local notices only. Voice: Vosk, never Android's SpeechRecognizer. Passkeys: androidx.credentials.
@@ -44,14 +44,13 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
 
 ## Traps
 
-- See root `AGENTS.md`: money slang, 2b names, secrets (the signing keystore too). Here the slang
-  lives in `lib/capture/parser/`, `lib/capture/engine/`, `lib/money/format.dart` and the ARBs.
+- See root `AGENTS.md`: money slang, the signing key's alias, secrets (the keystore too). Here
+  the slang lives in `lib/capture/parser/`, `lib/capture/engine/`, `lib/money/format.dart` and the ARBs.
 - Persistent state on phones: prefs file names, WorkManager unique names (`wambito.widget.refresh`,
   `wambito.widget.midnight`, `wambito.notice.due`, `wambito.notice.guest`), widget receiver classes
   (renaming removes placed widgets), the snapshot key. Changing any needs a migration.
 - Never block on a WorkManager future (`.get()`) in code a Worker runs: deadlocks in tests.
 - `test/tooling/*` reads Android files; `widget_android_test.dart` there pins Dart = Kotlin.
-- Old-scheme deep links and their manifest filter stay (`2b: remove`); so `manifest_test` counts
-  `android:host="due"` twice until 2b, then once.
+- `manifest_test` counts `android:host="due"` once (only `wambito://` links).
 - About 55 goldens already fail on the founder's Mac: compare with the base first. Regenerated
   parity fixtures change millisecond timestamps: keep only the intended diff.

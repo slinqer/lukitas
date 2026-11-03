@@ -5,7 +5,6 @@ import android.content.Intent
 import androidx.glance.GlanceId
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.provideContent
-import com.wambito.app.Migration
 import es.antonborri.home_widget.HomeWidgetGlanceStateDefinition
 import es.antonborri.home_widget.HomeWidgetGlanceWidgetReceiver
 
@@ -27,7 +26,6 @@ class WambitoSmallWidgetReceiver : HomeWidgetGlanceWidgetReceiver<WambitoSmallWi
     override val glanceAppWidget = WambitoSmallWidget()
 
     override fun onReceive(context: Context, intent: Intent) {
-        Migration.run(context) // 2b: remove
         super.onReceive(context, intent)
     }
 

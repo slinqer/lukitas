@@ -60,7 +60,7 @@ object NoticeScheduler {
     private fun enqueueDue(context: Context, zone: ZoneId, now: Instant, policy: ExistingWorkPolicy) =
         enqueueDueIn(context, Duration.between(now, NoticeTimes.nextDueRun(now, zone).toInstant()), policy)
 
-    /** The "Hoy vence…" job [delay] from now, on a network (also Migration's, for the old name's). */
+    /** The "Hoy vence…" job [delay] from now, on a network. */
     internal fun enqueueDueIn(context: Context, delay: Duration, policy: ExistingWorkPolicy) {
         val request = OneTimeWorkRequestBuilder<DueWorker>()
             .setInitialDelay(delay)
@@ -88,7 +88,7 @@ object NoticeScheduler {
         enqueueGuestIn(context, GUEST_AFTER, ExistingWorkPolicy.REPLACE)
     }
 
-    /** The guest warning's job [delay] from now (also Migration's, for the old name's). */
+    /** The guest warning's job [delay] from now. */
     internal fun enqueueGuestIn(context: Context, delay: Duration, policy: ExistingWorkPolicy) {
         val request = OneTimeWorkRequestBuilder<GuestWorker>()
             .setInitialDelay(delay)

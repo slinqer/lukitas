@@ -98,6 +98,28 @@ EOF
   printf '%s' "$line"
 }
 
+# api_db_role: the role the API connects as (the user in the api service's DATABASE_URL), or
+# lukas_app when the compose config does not say. A restore grants it as well as the bootstrap's
+# role. 2b: remove once the API connects as wambito_app.
+api_db_role() {
+  local role
+  role="$(compose config api 2>/dev/null |
+    sed -n 's#^[[:space:]]*DATABASE_URL:[[:space:]]*"\{0,1\}postgres://\([^:@/"]*\).*#\1#p' |
+    awk 'NR == 1')" || role=""
+  printf '%s' "${role:-lukas_app}"
+}
+
+# restore_go_back BEFORE RESTORED SERVICES: how to put the previous database back after a live
+# restore swapped it out (restore.sh prints it if a step after the swap fails).
+restore_go_back() {
+  local cmd
+  cmd="$(compose_command)"
+  echo "To put the previous database back and start the app on it:"
+  echo "  $cmd exec postgres psql -U lukitas -d postgres -c 'alter database lukitas rename to $2'"
+  echo "  $cmd exec postgres psql -U lukitas -d postgres -c 'alter database $1 rename to lukitas'"
+  echo "  $cmd up -d --wait $3"
+}
+
 # compose ARGS...: docker compose for this install, with its compose files (compose_files).
 # Refuses `down -v` (and `rm -v`): the database lives in a volume, and nothing here should ever
 # remove it.

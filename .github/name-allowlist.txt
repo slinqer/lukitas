@@ -1,15 +1,16 @@
 # Paths where the old names may still appear, checked by scripts/check-old-name.sh.
-# One entry per line: `<git pathspec>  # <reason>`. Lines starting with # are comments.
+# One entry per line: `<git pathspec>  # <reason>[, <reason>] [(note)]`. Lines starting with # are
+# comments. The guard fails on a line with no reason or one not listed here.
 #
 # Reasons:
 #   money        "lukas"/"luka" is Colombian slang for money and stays (never the app or mascot name).
-#   2b           infrastructure renamed in part 2b (deploy, database role and name, guest domain,
-#                GitHub URLs, key and emulator labels).
-#   2b: remove   transition code that carries the old name over; part 2b deletes it.
-#   history      the plans and specs, which keep the names they were written with.
+#   history      the plans and specs, and records of a move from an old name (a migration, the
+#                one-time steps that move or delete something made under it).
 #   docs-rule    agent maps (AGENTS.md) that name the old words in order to say they stay.
-# A file holding more than one kind may list them comma-joined (`money, 2b`). Directory globs are
-# only for whole folders that part 2b rewrites; everything else lists the files that have a hit.
+#   key-alias    the signing key's alias, which lives inside the key and cannot change.
+#   2b           deploy/personal only, until the VPS's own rename (part 2b, PR B).
+# A file holding more than one kind lists them comma-joined (`money, history`). Directory globs are
+# only for whole folders; everything else lists the files that have a hit.
 # A file lists every reason for what remains in it.
 
 # --- money: capture (the Colombian phrase parser), money format, the hint, and the copy ---
@@ -17,14 +18,12 @@ apps/mobile/lib/capture/engine/grammar.dart  # money
 apps/mobile/lib/capture/parser/amounts.dart  # money
 apps/mobile/lib/capture/parser/parse.dart  # money
 apps/mobile/lib/capture/parser/words.dart  # money
-apps/mobile/lib/capture/models_download.dart  # 2b
 apps/mobile/test/capture/capture_golden_test.dart  # money
 apps/mobile/test/capture/capture_layout_test.dart  # money
 apps/mobile/test/capture/capture_preview_test.dart  # money
 apps/mobile/test/capture/capture_sheet_test.dart  # money
 apps/mobile/test/capture/grammar_test.dart  # money
 apps/mobile/test/capture/parser_helpers_test.dart  # money
-apps/mobile/test/capture/models_download_test.dart  # 2b
 apps/mobile/lib/money/format.dart                           # money
 apps/mobile/test/money/format_test.dart                     # money
 apps/mobile/lib/budgets/budget_sheet.dart                   # money
@@ -32,27 +31,24 @@ apps/mobile/lib/import/budgets_form.dart                    # money
 apps/mobile/lib/settings/time_money_section.dart            # money
 apps/mobile/lib/ui/amount_field.dart                        # money
 apps/mobile/lib/welcome/budgets_step.dart                   # money
-apps/mobile/lib/l10n/app_en.arb  # 2b
-apps/mobile/lib/l10n/app_es.arb  # money, 2b
-apps/mobile/lib/l10n/app_it.arb  # 2b
-apps/mobile/lib/l10n/app_pt.arb  # 2b
+apps/mobile/lib/l10n/app_es.arb  # money
 apps/mobile/test/add/add_sheet_test.dart                    # money
 apps/mobile/test/budgets/budgets_test.dart                  # money
 apps/mobile/test/insights/insights_test.dart                # money
-apps/mobile/test/l10n/arb_parity_test.dart  # money, 2b: remove (slang regex; title and a comment name the old app and repo)
+apps/mobile/test/l10n/arb_parity_test.dart  # money
 apps/mobile/test/parity/add_sheet_parity_test.dart          # money
 apps/mobile/test/settings/assistants_section_test.dart      # money
 apps/mobile/test/settings/time_money_test.dart              # money
 apps/mobile/test/tooling/android_strings_test.dart          # money
 apps/mobile/test/ui/amount_field_test.dart                  # money
 apps/mobile/fastlane/metadata/android/es-ES/changelogs/*    # money
-apps/mobile/fastlane/metadata/android/es-ES/full_description.txt  # money, 2b
+apps/mobile/fastlane/metadata/android/es-ES/full_description.txt  # money
 apps/web/app/features/landing/money-words.ts               # money
 apps/web/app/features/landing/money-words.test.ts          # money
 apps/web/app/features/landing/MoneyHeadline.tsx            # money
 apps/web/app/features/landing/Hero.tsx                     # money
 apps/web/app/features/landing/landing.css                  # money
-apps/web/app/features/landing/Landing.stories.tsx  # money, 2b
+apps/web/app/features/landing/Landing.stories.tsx  # money
 apps/web/app/demo/Demo.stories.tsx                         # money
 apps/web/app/demo/demo-data.ts                             # money
 apps/web/app/features/add-transaction/AddTransactionSheet.tsx   # money
@@ -76,9 +72,8 @@ apps/web/e2e/a11y.spec.ts                                  # money
 apps/web/e2e/demo.spec.ts                                  # money
 apps/web/e2e/feel.spec.ts                                  # money
 apps/web/e2e/onboarding.spec.ts                            # money
-apps/web/e2e/landing.spec.ts  # money, 2b, 2b: remove
+apps/web/e2e/landing.spec.ts  # money
 apps/web/scripts/og/render.ts                              # money
-apps/api/test/sign-in-email.test.ts  # 2b: remove (asserts the old mascot name is absent, so it names it; drop with the rename's transition)
 apps/mcp/test/mcp.test.ts                                  # money
 packages/ai-assistant-tools/src/instructions.ts            # money
 packages/ai-assistant-tools/src/prompts.ts                 # money
@@ -89,7 +84,7 @@ packages/ai-assistant-tools/test/prompts.test.ts           # money
 packages/core/quick-capture/README.md  # money
 packages/core/quick-capture/cases.json  # money
 packages/core/src/quick-capture-cases.test.ts              # money
-README.md  # money, 2b, history
+README.md  # money, history
 docs/design/stage-2-mockups/landing.html                   # money
 docs/design/system/project/README.md                       # money
 docs/design/system/project/components/Cover/preview.html   # money
@@ -98,58 +93,19 @@ docs/design/system/project/tokens.json                     # money
 docs/i18n/it-pt-sample.md                                  # money
 docs/mobile/parity.md                                      # money
 
-# --- 2b: infrastructure ---
-deploy/personal/**  # 2b (whole folder: rewritten in part 2b)
-deploy/landing/wrangler.jsonc                              # 2b
-docker-compose.yml                                         # 2b
-.env.example                                               # 2b
-apps/api/Dockerfile.prod                                   # 2b
-apps/mcp/Dockerfile.prod                                   # 2b
-apps/api/src/auth.ts                                       # 2b
-apps/api/src/mailer.ts                                     # 2b
-apps/api/test/allowlist.test.ts                            # 2b
-apps/api/test/claim-email.test.ts                          # 2b
-apps/api/test/config.test.ts                               # 2b
-apps/api/test/guests.test.ts                               # 2b
-apps/api/test/mailer.test.ts                               # 2b
-apps/api/test/passkey-origin.test.ts                       # 2b
-apps/mobile/test/api/auth_api_test.dart                    # 2b
-apps/mobile/fastlane/metadata/android/en-US/full_description.txt  # 2b
-apps/mobile/fastlane/metadata/android/it-IT/full_description.txt  # 2b
-apps/mobile/fastlane/metadata/android/pt-PT/full_description.txt  # 2b
-apps/web/app/features/landing/links.ts                     # 2b
-apps/web/e2e/landing-only.spec.ts                          # 2b
-docs/deploy/landing.md                                     # 2b
-docs/mobile/release.md                                     # 2b
-docs/mobile/setup.md                                       # 2b
-
-# --- 2b: remove (transition code from the rename) ---
-apps/api/src/http/client-headers.ts                        # 2b: remove
-apps/api/src/http/session.ts                               # 2b: remove
-apps/api/test/client-headers.test.ts                       # 2b: remove
-apps/api/test/auth.test.ts                                 # 2b: remove
-apps/api/test/guest-cleanup.test.ts                        # 2b: remove
-apps/web/app/lib/stored.ts                                 # 2b: remove
-apps/web/app/lib/stored.test.ts                            # 2b: remove
-apps/web/app/theme/theme-bootstrap.ts                      # 2b: remove
-apps/web/app/theme/theme-bootstrap.test.ts                 # 2b: remove
-apps/mobile/lib/storage/migrate_keys.dart                  # 2b: remove
-apps/mobile/test/storage/migrate_keys_test.dart            # 2b: remove
-apps/mobile/lib/launch/launch_links.dart                   # 2b: remove
-apps/mobile/test/launch/launch_links_test.dart             # 2b: remove
-apps/mobile/test/tooling/manifest_test.dart                # 2b: remove
-apps/mobile/test/tooling/widget_android_test.dart          # 2b: remove
-apps/mobile/android/app/src/main/AndroidManifest.xml       # 2b: remove
-apps/mobile/android/app/src/main/kotlin/com/wambito/app/Migration.kt  # 2b: remove
-apps/mobile/android/app/src/main/kotlin/com/wambito/app/launch/LaunchLinks.kt  # 2b: remove
-apps/mobile/android/app/src/main/kotlin/com/wambito/app/notices/NoticeSettings.kt  # 2b: remove
-apps/mobile/android/app/src/test/kotlin/com/wambito/app/MigrationTest.kt  # 2b: remove
-apps/mobile/android/app/src/test/kotlin/com/wambito/app/launch/LaunchLinksTest.kt  # 2b: remove
+# --- 2b: the VPS names, until PR B ---
+deploy/personal/**  # 2b (whole folder: rewritten in PR B)
 
 # --- history ---
 docs/superpowers/**                                        # history
 CONTRIBUTING.md                                            # history
+packages/db/drizzle/0007_guest_domain.sql                  # history
+packages/db/test/guest-domain.test.ts                      # history
+docs/deploy/landing.md  # history (the one-time steps that delete the old Worker)
+docs/mobile/setup.md  # history (the command that deletes the AVD made under the old name)
 
-# --- docs-rule: the agent maps, which name the money slang and the 2b names as rules ---
+# --- key-alias: the signing key's alias ---
+docs/mobile/release.md  # key-alias, history (and the steps that move the key from its old folder)
+
+# --- docs-rule: the agent maps, which name the money slang and the key alias as rules ---
 AGENTS.md  # docs-rule
-apps/api/AGENTS.md  # docs-rule
