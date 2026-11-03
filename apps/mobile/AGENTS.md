@@ -6,7 +6,7 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
 
 ## Dart entry points (`lib/`)
 
-- `lib/main.dart` `bootstrap()`: `migrateStoredKeys` (`2b: remove`), `DeviceHints.read()`,
+- `lib/main.dart` `bootstrap()`: `DeviceHints.read()`,
   settings, then `WambitoApp` (`lib/app.dart`). Router: `lib/router.dart` (go_router).
 - One folder per feature (`lib/home/`, `lib/capture/`, `lib/budgets/`, …); Riverpod 3 providers
   sit next to their feature; tests override them.

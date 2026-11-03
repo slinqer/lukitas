@@ -21,18 +21,13 @@ enum LaunchAction { add, capture, due, progress, home }
 /// The scheme of the links the app builds.
 const launchScheme = 'wambito';
 
-/// The scheme of links pinned before the rename (a widget, the tile, a shortcut), still read.
-/// 2b: remove.
-const _oldLaunchScheme = 'lukitas';
-
 /// The link that asks for [action]: `wambito://<action>`.
 Uri launchLinkOf(LaunchAction action) => Uri(scheme: launchScheme, host: action.name);
 
-/// The action [link] asks for, or null for any other link. Both `wambito://` and the old
-/// `lukitas://` are read (2b: remove the old one).
+/// The action [link] asks for, or null for any other link.
 LaunchAction? launchActionOf(String? link) {
   final uri = Uri.tryParse(link ?? '');
-  if (uri == null || (uri.scheme != launchScheme && uri.scheme != _oldLaunchScheme)) return null;
+  if (uri == null || uri.scheme != launchScheme) return null;
   if (uri.path.isNotEmpty && uri.path != '/') return null;
   return switch (uri.host) {
     'add' => LaunchAction.add,
