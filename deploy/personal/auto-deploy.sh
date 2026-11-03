@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Deploys PERSONAL_BRANCH (main) on its own when it moves and CI has passed for the new commit. The
 # server asks; nothing outside it can reach in: GitHub holds no key to this machine. Run by
-# lukitas-deploy.timer every 5 minutes (install-auto-deploy.sh); by hand it does the same once.
+# wambito-deploy.timer every 5 minutes (install-auto-deploy.sh); by hand it does the same once.
 #
 #   1. `git ls-remote`: the branch's newest commit. The same one checked out: done, quietly.
 #   2. A commit that failed before (CI, the deploy or its smoke test) is skipped from then on.
@@ -13,18 +13,18 @@
 #   6. If either fails: back to the commit before, rebuilt without a backup, and the commit is
 #      marked failed. The pre-update backup is still there in case a migration had run.
 #
-# Logs: journalctl -u lukitas-deploy.service. Settings (.env): PERSONAL_BRANCH,
+# Logs: journalctl -u wambito-deploy.service. Settings (.env): PERSONAL_BRANCH,
 # DEPLOY_REQUIRED_CHECKS, DEPLOY_GITHUB_REPO (default: from the origin URL). State (failed commits,
-# the lock): ~/.local/state/lukitas.
+# the lock): ~/.local/state/wambito.
 set -euo pipefail
 # shellcheck source=lib.sh
 . "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
-repo="${LUKITAS_DEPLOY_REPO:-$REPO_DIR}"
-state="${LUKITAS_STATE_DIR:-$HOME/.local/state/lukitas}"
-update="${LUKITAS_DEPLOY_UPDATE:-$DIR/update.sh}"
-smoke="${LUKITAS_DEPLOY_SMOKE:-$DIR/smoke.sh}"
-api="${LUKITAS_GITHUB_API:-https://api.github.com}"
+repo="${WAMBITO_DEPLOY_REPO:-$REPO_DIR}"
+state="${WAMBITO_STATE_DIR:-$HOME/.local/state/wambito}"
+update="${WAMBITO_DEPLOY_UPDATE:-$DIR/update.sh}"
+smoke="${WAMBITO_DEPLOY_SMOKE:-$DIR/smoke.sh}"
+api="${WAMBITO_GITHUB_API:-https://api.github.com}"
 branch="$(cfg PERSONAL_BRANCH main)"
 required="$(cfg DEPLOY_REQUIRED_CHECKS "check e2e")"
 failed_list="$state/failed-commits"

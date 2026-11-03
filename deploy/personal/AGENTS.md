@@ -20,12 +20,14 @@ app and proxying), optional cloudflared. Full runbook: `README.md` here; short v
   first, rolls back on a failed smoke test. Installed by `install-auto-deploy.sh`.
 - `backup.sh` / `restore.sh` / `install-backup.sh` / `uninstall-backup.sh`: age-encrypted dumps to
   Cloudflare R2, 14-day retention. `lib.sh`: shared helpers.
-- Units `lukitas-*.service|timer` (Linux), `com.lukitas.backup.plist` (macOS).
+- Units `wambito-*.service|timer` (Linux, in `UNIT_DIR`, default `/etc/systemd/system`),
+  `com.wambito.backup.plist` (macOS). Both install scripts first stop and delete the units from
+  before the rename (`remove_old_units` in `lib.sh`, the only place that names them).
 
-## Test (CI runs all five)
+## Test (CI runs all six)
 
-- `./test-retention.sh`, `./test-r2.sh`, `./test-auto-deploy.sh`, `./test-caddy.sh`,
-  `./test-compose-files.sh` (from this folder).
+- `./test-retention.sh`, `./test-r2.sh`, `./test-auto-deploy.sh`, `./test-install-units.sh`,
+  `./test-caddy.sh`, `./test-compose-files.sh` (from this folder).
 
 ## Traps
 

@@ -27,6 +27,45 @@ cfg() {
   printf '%s' "${value:-$default}"
 }
 
+# --- The scheduled units (install-backup.sh, install-auto-deploy.sh; test-install-units.sh) -------
+# Where the systemd units go. The test points UNIT_DIR at a temporary folder.
+UNIT_DIR="${UNIT_DIR:-/etc/systemd/system}"
+
+# remove_old_units: stops and deletes the units of the install from before the rename (Linux: the
+# backup and deploy timers and services; macOS: the backup agent), so they never run next to the
+# wambito-* ones. The one place that names them, split so the old-name guard does not match.
+# Rolling back to them is the old checkout's own install scripts (part 2b spec, cutover step 7).
+remove_old_units() {
+  local unit old="luk""itas" removed=0 label plist
+  case "$(uname)" in
+    Linux)
+      for unit in "$old-backup.timer" "$old-deploy.timer"; do
+        [ -e "$UNIT_DIR/$unit" ] || continue
+        say "Stopping the old $unit"
+        sudo systemctl disable --now "$unit" >/dev/null 2>&1 || true
+      done
+      for unit in "$old-backup.service" "$old-deploy.service"; do
+        [ -e "$UNIT_DIR/$unit" ] || continue
+        sudo systemctl stop "$unit" >/dev/null 2>&1 || true
+      done
+      for unit in "$old-backup.service" "$old-backup.timer" "$old-deploy.service" "$old-deploy.timer"; do
+        [ -e "$UNIT_DIR/$unit" ] || continue
+        sudo rm -f "$UNIT_DIR/$unit"
+        removed=1
+      done
+      [ "$removed" = 0 ] || sudo systemctl daemon-reload
+      ;;
+    Darwin)
+      label="com.$old.backup"
+      plist="$HOME/Library/LaunchAgents/$label.plist"
+      [ -e "$plist" ] || return 0
+      say "Unloading the old $label"
+      launchctl bootout "gui/$(id -u)/$label" >/dev/null 2>&1 || true
+      rm -f "$plist"
+      ;;
+  esac
+}
+
 need_env_file() {
   [ -f "$ENV_FILE" ] || die "$ENV_FILE not found. Copy .env.example to .env and fill it in (see README.md)."
 }

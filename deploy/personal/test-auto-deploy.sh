@@ -50,19 +50,19 @@ EOF
 # update.sh and smoke.sh: log their arguments and the commit checked out; fail on request.
 cat >"$tmp/bin/fake-update" <<'EOF'
 #!/usr/bin/env bash
-printf 'update %s at %s\n' "$*" "$(git -C "$LUKITAS_DEPLOY_REPO" rev-parse HEAD)" >>"$FAKE_LOG"
-[ "${FAKE_UPDATE_FAILS_AT:-}" != "$(git -C "$LUKITAS_DEPLOY_REPO" rev-parse HEAD)" ]
+printf 'update %s at %s\n' "$*" "$(git -C "$WAMBITO_DEPLOY_REPO" rev-parse HEAD)" >>"$FAKE_LOG"
+[ "${FAKE_UPDATE_FAILS_AT:-}" != "$(git -C "$WAMBITO_DEPLOY_REPO" rev-parse HEAD)" ]
 EOF
 cat >"$tmp/bin/fake-smoke" <<'EOF'
 #!/usr/bin/env bash
-printf 'smoke at %s\n' "$(git -C "$LUKITAS_DEPLOY_REPO" rev-parse HEAD)" >>"$FAKE_LOG"
-[ "${FAKE_SMOKE_FAILS_AT:-}" != "$(git -C "$LUKITAS_DEPLOY_REPO" rev-parse HEAD)" ]
+printf 'smoke at %s\n' "$(git -C "$WAMBITO_DEPLOY_REPO" rev-parse HEAD)" >>"$FAKE_LOG"
+[ "${FAKE_SMOKE_FAILS_AT:-}" != "$(git -C "$WAMBITO_DEPLOY_REPO" rev-parse HEAD)" ]
 EOF
 chmod +x "$tmp/bin/"*
 PATH="$tmp/bin:$PATH"
 
-export LUKITAS_DEPLOY_REPO="$tmp/install" LUKITAS_STATE_DIR="$tmp/state"
-export LUKITAS_DEPLOY_UPDATE="$tmp/bin/fake-update" LUKITAS_DEPLOY_SMOKE="$tmp/bin/fake-smoke"
+export WAMBITO_DEPLOY_REPO="$tmp/install" WAMBITO_STATE_DIR="$tmp/state"
+export WAMBITO_DEPLOY_UPDATE="$tmp/bin/fake-update" WAMBITO_DEPLOY_SMOKE="$tmp/bin/fake-smoke"
 export ENV_FILE="$tmp/.env"
 printf 'PERSONAL_BRANCH=main\nDEPLOY_GITHUB_REPO=slinqer/wambito\n' >"$ENV_FILE"
 

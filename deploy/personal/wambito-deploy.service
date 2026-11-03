@@ -1,8 +1,8 @@
-# Deploys main on its own when CI has passed (auto-deploy.sh), run by lukitas-deploy.timer.
+# Deploys main on its own when CI has passed (auto-deploy.sh), run by wambito-deploy.timer.
 # install-auto-deploy.sh fills in the user, the home folder, bash and the repository, and installs it in
-# /etc/systemd/system. Logs: journalctl -u lukitas-deploy.service
+# /etc/systemd/system. Logs: journalctl -u wambito-deploy.service
 [Unit]
-Description=Lukitas: deploy main when CI has passed (deploy/personal/auto-deploy.sh)
+Description=Wambito: deploy main when CI has passed (deploy/personal/auto-deploy.sh)
 Requires=docker.service
 After=docker.service network-online.target
 Wants=network-online.target

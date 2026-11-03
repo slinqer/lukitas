@@ -1,8 +1,8 @@
-# The daily backup on a Linux server, as a systemd service run by lukitas-backup.timer.
+# The daily backup on a Linux server, as a systemd service run by wambito-backup.timer.
 # install-backup.sh fills in @USER@ and @REPO_DIR@ and installs it in /etc/systemd/system.
-# Logs: journalctl -u lukitas-backup.service
+# Logs: journalctl -u wambito-backup.service
 [Unit]
-Description=Lukitas daily database backup (deploy/personal/backup.sh)
+Description=Wambito: daily database backup (deploy/personal/backup.sh)
 Requires=docker.service
 After=docker.service
 
