@@ -10,14 +10,14 @@ your real data safe with a daily backup. Two ways to be reached, chosen in `.env
   [Moving to a server](#moving-to-a-server)).
 
 It is a separate stack from the development one in the repository root: its own Docker project
-(`lukitas-personal`), database volume (`lukitas-personal-db`) and private network. These infrastructure names, like the `lukas_app` role, the backup files and the systemd units below, keep the old name until part 2b renames them. Nothing is shared
+(`wambito-personal`), database volume (`wambito-personal-db`) and private network. Nothing is shared
 with `docker compose up` in the root (ports 5433, 3000, 5173, 8025, 1026), so both can run together.
 
 ```
  phone ──https──> Cloudflare ──tunnel──> cloudflared ──> web (Caddy) ──/api/*──> api ──> postgres
-                  (TLS, DNS)             (outbound only)   │ static app                │ role lukas_app,
+                  (TLS, DNS)             (outbound only)   │ static app                │ role wambito_app,
                                                            │                           │ row-level security
-                                                           └ http://127.0.0.1:8088     └ the volume lukitas-personal-db
+                                                           └ http://127.0.0.1:8088     └ the volume wambito-personal-db
                                                              (this Mac only)
 ```
 
@@ -53,8 +53,8 @@ The direct way (`COMPOSE_FILE` in `.env`, see [Moving to a server](#moving-to-a-
   Caddy also publishes 80 and 443 (TCP, and UDP for HTTP/3), and nothing else is added.
 - **Mail** goes out from `MAIL_FROM` (default `hola@wambito.com`): through Resend on a server, or
   through Proton Bridge on a Mac, signed in to the Proton account that owns that address.
-- **The API never holds the owner password.** A one-shot `migrate` service creates the `lukas_app`
-  role and applies the migrations; the API connects as `lukas_app` only.
+- **The API never holds the owner password.** A one-shot `migrate` service creates the `wambito_app`
+  role and applies the migrations; the API connects as `wambito_app` only.
 
 ## First-time setup
 
@@ -110,8 +110,8 @@ tunnel needs only the credentials `.json`.)
 
 ```sh
 cloudflared tunnel login                       # opens the browser: choose <your zone>
-cloudflared tunnel create lukitas-personal     # prints the tunnel id, writes ~/.cloudflared/<id>.json
-cloudflared tunnel route dns lukitas-personal <your PUBLIC_HOSTNAME>
+cloudflared tunnel create wambito-personal     # prints the tunnel id, writes ~/.cloudflared/<id>.json
+cloudflared tunnel route dns wambito-personal <your PUBLIC_HOSTNAME>
 ```
 
 The tunnel is for an install at home. `app.wambito.com` is served directly by the server (see
@@ -134,7 +134,7 @@ routed to the tunnel to the web container; it has no hostname of its own to edit
 
 `up.sh` builds the web app for your hostname into `apps/web/build-personal` (the landing release in
 `apps/web/build` is not touched), builds the images, starts Postgres, runs the one-shot `migrate`
-service (it creates the `lukas_app` role the first time), then starts the API and Caddy. If
+service (it creates the `wambito_app` role the first time), then starts the API and Caddy. If
 `smoke.sh` passes, start the tunnel too:
 
 ```sh
@@ -172,7 +172,7 @@ starts everything else and no tunnel. Everything has `restart: unless-stopped`, 
 after a reboot once Docker (Desktop) is up.
 In Docker Desktop settings, turn on **Start Docker Desktop when you sign in to your computer**.
 
-**Never run `docker volume rm lukitas-personal-db`**: that deletes the database. The volume is
+**Never run `docker volume rm wambito-personal-db`**: that deletes the database. The volume is
 external to the compose project (`up.sh` creates it), so `docker compose down -v` cannot delete it
 either, and the scripts here refuse `down -v` anyway. `docker compose down` is safe.
 
@@ -259,19 +259,19 @@ it and nothing new is open in the firewall.
   `update.sh --no-pull` (backup, rebuild, restart) and `smoke.sh`.
 - If either fails, it goes back to the commit before and rebuilds it. A commit whose CI, deploy or
   smoke test failed is never tried again; to retry one, delete its line from
-  `~/.local/state/lukitas/failed-commits`.
+  `~/.local/state/wambito/failed-commits`.
 - A rewritten branch (force-pushed) is refused: it logs an error every run until a person looks.
 - The same rule as above holds: a migration runs before the new API starts, so going back to the
   old code leaves the new schema. Keep migrations backward compatible; the pre-update backup is
   there if not.
 
-There is no email yet, so a failed deploy only shows in `journalctl -u lukitas-deploy.service`
+There is no email yet, so a failed deploy only shows in `journalctl -u wambito-deploy.service`
 (the app keeps running the version before). `./install-auto-deploy.sh --remove` turns it off.
 `./test-auto-deploy.sh` checks all of this against a local repository and a fake GitHub API.
 
 ## Backup and restore
 
-`backup.sh` writes `~/Backups/lukitas/lukitas-YYYY-MM-DD.dump` (`BACKUP_DIR` in `.env` changes the
+`backup.sh` writes `~/Backups/wambito/wambito-YYYY-MM-DD.dump` (`BACKUP_DIR` in `.env` changes the
 folder; give it a folder of its own), keeps the newest 14 daily dumps, and checks every dump before
 keeping it (below).
 
@@ -288,7 +288,7 @@ covered: see [Keep a copy that is not on this Mac](#keep-a-copy-that-is-not-on-t
 The checks:
 
 1. `pg_dump -Fc` as the database owner, which bypasses row-level security. (Every table here is
-   `FORCE ROW LEVEL SECURITY`; a dump as `lukas_app` fails, as it should. Do not change the role.)
+   `FORCE ROW LEVEL SECURITY`; a dump as `wambito_app` fails, as it should. Do not change the role.)
 2. `pg_restore -l` lists it and has a data section for every main table.
 3. It restores into a scratch database (without the dump's owners and grants, as `restore.sh`
    does) and compares row counts with the live one for `user`,
@@ -296,18 +296,18 @@ The checks:
    `transactions`: a table with rows that restores empty fails the backup.
 
 If a check fails, the new file is deleted, the older dumps stay (up to 14 days, and the newest always), the script exits non-zero and (from
-the scheduled run) macOS shows a notification "Lukitas backup failed". Log of the scheduled run:
-`~/Library/Logs/lukitas-backup.log`.
+the scheduled run) macOS shows a notification "Wambito backup failed". Log of the scheduled run:
+`~/Library/Logs/wambito-backup.log`.
 
 **Before an update** `update.sh` runs `backup.sh --pre-update`, which writes
-`lukitas-YYYY-MM-DD-preupdate-HHMM.dump`: its own file, so it never replaces that day's 03:00 dump,
+`wambito-YYYY-MM-DD-preupdate-HHMM.dump`: its own file, so it never replaces that day's 03:00 dump,
 and it does not count against the 14 daily dumps (the newest 10 pre-update dumps are kept, none
 older than 14 days).
 
-**Schedule.** `./install-backup.sh` installs `com.lukitas.backup` for your user (check what it
+**Schedule.** `./install-backup.sh` installs `com.wambito.backup` for your user (check what it
 installs first with `./install-backup.sh --render`; remove it with `./uninstall-backup.sh`). Runs at
 03:00, or on wake if the Mac was asleep. If the Mac is switched off at 03:00 that day is skipped.
-Docker Desktop must be running. `launchctl kickstart gui/$(id -u)/com.lukitas.backup` runs it now.
+Docker Desktop must be running. `launchctl kickstart gui/$(id -u)/com.wambito.backup` runs it now.
 
 ### Keep a copy that is not on this Mac
 
@@ -319,7 +319,7 @@ file says) would take both. So:
 1. **Time Machine.** Keep **FileVault** on, and the Time Machine disk encrypted (Time Machine >
    Select Disk > Encrypt Backup). Time Machine keeps old versions of files for months, so a dump
    deleted at 14 days would live on there, holding accounts people deleted. Leave the backup folder
-   out of it (`tmutil addexclusion ~/Backups/lukitas`) and use the encrypted copy below as the copy
+   out of it (`tmutil addexclusion ~/Backups/wambito`) and use the encrypted copy below as the copy
    off this Mac.
 2. **An encrypted copy of every backup**, written by `backup.sh` itself, with
    [`age`](https://github.com/FiloSottile/age). It needs no password at backup time, only a public
@@ -327,15 +327,15 @@ file says) would take both. So:
 
    ```sh
    brew install age
-   age-keygen -o ~/lukitas-backup.key
+   age-keygen -o ~/wambito-backup.key
    # prints: Public key: age1....   <- this goes in .env
    ```
 
-   Store the **whole key file** (`~/lukitas-backup.key`) in your password manager, then delete it
+   Store the **whole key file** (`~/wambito-backup.key`) in your password manager, then delete it
    from disk. Without it the copies cannot be opened; anyone with it can open them. Then in `.env`:
 
    ```sh
-   BACKUP_COPY_DIR=~/Library/Mobile Documents/com~apple~CloudDocs/Lukitas   # iCloud Drive, or an external disk
+   BACKUP_COPY_DIR=~/Library/Mobile Documents/com~apple~CloudDocs/Wambito   # iCloud Drive, or an external disk
    BACKUP_AGE_RECIPIENT=age1....
    ```
 
@@ -348,8 +348,8 @@ file says) would take both. So:
    **Restore from a copy:** put the key in a file, decrypt, then restore as usual.
 
    ```sh
-   age -d -i lukitas-backup.key -o lukitas-2026-10-21.dump lukitas-2026-10-21.dump.age
-   ./restore.sh --drill lukitas-2026-10-21.dump     # then ./restore.sh <dump> for real
+   age -d -i wambito-backup.key -o wambito-2026-10-21.dump wambito-2026-10-21.dump.age
+   ./restore.sh --drill wambito-2026-10-21.dump     # then ./restore.sh <dump> for real
    ```
 
 ### Backups in Cloudflare R2
@@ -362,7 +362,7 @@ any of them.
 
 Once, in the Cloudflare dashboard:
 
-1. **R2 > Create bucket**, e.g. `lukitas-backups`, no public access.
+1. **R2 > Create bucket**, e.g. `wambito-backups`, no public access.
 2. **The bucket > Settings > Object lifecycle rules > Add rule:** delete objects 14 days after they
    are uploaded, for the whole bucket. This is what keeps the 14-day promise in R2, even if the
    server is gone. `backup.sh` deletes nothing there.
@@ -380,15 +380,15 @@ sudo apt install -y age rclone
 and in `.env`:
 
 ```sh
-BACKUP_COPY_DIR=~/Backups/lukitas-encrypted
+BACKUP_COPY_DIR=~/Backups/wambito-encrypted
 BACKUP_AGE_RECIPIENT=age1....
-BACKUP_R2_BUCKET=lukitas-backups
+BACKUP_R2_BUCKET=wambito-backups
 BACKUP_R2_ENDPOINT=https://<account id>.r2.cloudflarestorage.com
 BACKUP_R2_ACCESS_KEY_ID=...
 BACKUP_R2_SECRET_ACCESS_KEY=...
 ```
 
-Then `./backup.sh` once by hand: it ends with `In R2: lukitas-backups/lukitas-YYYY-MM-DD.dump.age`.
+Then `./backup.sh` once by hand: it ends with `In R2: wambito-backups/wambito-YYYY-MM-DD.dump.age`.
 The keys reach rclone through its environment, never its command line. `./test-r2.sh` checks that
 logic against a fake rclone.
 
@@ -397,8 +397,8 @@ your Mac (with `age` and `rclone` installed and the same `BACKUP_R2_*` in its `.
 key file on the server for the restore and delete it after:
 
 ```sh
-./restore.sh --drill --from-r2 --identity=lukitas-backup.key lukitas-2026-10-21.dump.age
-./restore.sh --from-r2 --identity=lukitas-backup.key lukitas-2026-10-21.dump.age    # for real
+./restore.sh --drill --from-r2 --identity=wambito-backup.key wambito-2026-10-21.dump.age
+./restore.sh --from-r2 --identity=wambito-backup.key wambito-2026-10-21.dump.age    # for real
 ```
 
 `restore.sh` also takes a local `.age` file with `--identity=KEY`. Either way it decrypts into a
@@ -408,17 +408,17 @@ private temporary folder that is removed when it ends.
 scratch database next to the real one, grants the app role on it, prints the row counts, drops it. Nothing live changes.
 
 ```sh
-./restore.sh --drill ~/Backups/lukitas/lukitas-2026-10-21.dump
+./restore.sh --drill ~/Backups/wambito/wambito-2026-10-21.dump
 ```
 
 **Restore for real** (the data in the dump replaces the live data):
 
 ```sh
-./restore.sh ~/Backups/lukitas/lukitas-2026-10-21.dump
+./restore.sh ~/Backups/wambito/wambito-2026-10-21.dump
 ```
 
 It restores into a new database first (if that fails nothing has changed), asks you to type
-`restore`, stops the API and the tunnel, renames the old database to `lukitas_before_<time>` (kept:
+`restore`, stops the API and the tunnel, renames the old database to `wambito_before_<time>` (kept:
 drop it yourself when you are sure), puts the new one in its place, applies newer migrations,
 grants the app role, and starts everything. `--yes` skips the question. A restore skips the dump's
 own grants (`--no-acl`) and grants the app role afresh, so a dump restores whatever the role was
@@ -467,9 +467,9 @@ registers a passkey again after signing in.
    restore from it, before real data arrives.
 4. **The data.** On the old machine, stop everything that writes and keep only the database up
    (`docker compose stop cloudflared web api mcp`), so nothing is saved after the dump. Then
-   `./backup.sh`, copy the dump to the server, and there `./restore.sh --yes lukitas-YYYY-MM-DD.dump`
+   `./backup.sh`, copy the dump to the server, and there `./restore.sh --yes wambito-YYYY-MM-DD.dump`
    (the server's database is empty, so nothing is lost; the empty one is kept as
-   `lukitas_before_...`).
+   `wambito_before_...`).
 5. **Expose it.**
    - **Firewall, outside the machine:** in Hetzner, a Cloud Firewall attached to the server that lets
      in only 22/tcp from your own address (SSH with keys only: `PasswordAuthentication no`), plus
@@ -501,9 +501,207 @@ registers a passkey again after signing in.
 Keep the old machine's last dump until the server has its own.
 
 On the server, `./install-backup.sh` installs the daily backup as a systemd timer at 08:00 UTC (03:00
-in Colombia; logs: `journalctl -u lukitas-backup.service`), and `./uninstall-backup.sh` removes it.
+in Colombia; logs: `journalctl -u wambito-backup.service`), and `./uninstall-backup.sh` removes it.
 Set up the copy in R2 (above) before real data lives there: a backup on the same disk is lost with
 it. On the Mac, `./uninstall-backup.sh` removes the launchd agent once the server has taken over.
+
+## Moving from the old names (part 2b)
+
+Once, on the server that ran the install under the app's old name. The old install: a user of its
+own with the checkout `~/lukitas`, the compose project `lukitas-personal`, the volumes
+`lukitas-personal-db` and `lukitas-personal_web-caddy-data`, the images
+`lukitas-{api,mcp,web}:personal`, the database and owner `lukitas` with the role `lukas_app`, dumps
+`lukitas-*.dump` in `~/Backups/lukitas`, the bucket `lukitas-backups` and the units
+`lukitas-backup.*` and `lukitas-deploy.*`. The new one is built next to it under a new user,
+`wambito`, so the old install is never written to and stays the way back until the last step.
+
+Below, `<old>` is the old user's name and `<host>` the server. A command marked **as `<old>`** runs
+in an SSH session of the old user, **as `wambito`** in one of the new user. Do not start the
+cutover (step 5) close to 08:00 UTC, when the old daily backup runs.
+
+**1. Before merging PR B.**
+
+- PR A is merged, deployed and working, and the repository is `slinqer/wambito`; the old checkout
+  already points there (`git -C ~/lukitas remote -v`).
+- As `<old>`: switch the old automatic deploy off, so merging PR B deploys nothing:
+
+  ```sh
+  sudo systemctl disable --now lukitas-deploy.timer
+  systemctl is-enabled lukitas-deploy.timer    # disabled
+  systemctl is-active lukitas-deploy.service   # inactive (if active, a deploy is running: wait)
+  ```
+
+**2. Merge PR B.** Nothing deploys: the timer is off. The old install keeps running PR A, and its
+daily backup goes on.
+
+**3. The user `wambito`.** As `<old>` (`adduser` asks for a password: `wambito` needs it for
+`sudo`, which the install scripts use):
+
+```sh
+sudo adduser wambito
+sudo usermod -aG docker,sudo wambito
+sudo install -d -o wambito -g wambito -m 700 ~wambito/.ssh
+sudo install -o wambito -g wambito -m 600 ~/.ssh/authorized_keys ~wambito/.ssh/authorized_keys
+```
+
+From a second terminal on your Mac, `ssh wambito@<host>` must log in, and `docker ps` must work
+there, before you go on (keep the first session open until it does).
+
+As `wambito`, GitHub read access of its own: the old user's deploy key stays with it. Make a key,
+add `~/.ssh/id_ed25519.pub` to `slinqer/wambito` (**Settings > Deploy keys**, read-only), then
+clone:
+
+```sh
+ssh-keygen -t ed25519 -N '' -C wambito-deploy -f ~/.ssh/id_ed25519
+cat ~/.ssh/id_ed25519.pub        # paste it as the deploy key
+git clone git@github.com:slinqer/wambito.git ~/wambito
+node -v && pnpm -v               # Node 22 and pnpm, for up.sh's web build
+```
+
+If Node was installed in the old user's home (nvm, for example), install it for `wambito` the same
+way. `jq`, `age` and `rclone` are system packages and are already there.
+
+The settings: as `<old>`, copy the old `.env`:
+
+```sh
+sudo install -o wambito -g wambito -m 600 ~/lukitas/deploy/personal/.env ~wambito/wambito/deploy/personal/.env
+```
+
+Then as `wambito`, edit `~/wambito/deploy/personal/.env`:
+
+- `DEPLOY_GITHUB_REPO=slinqer/wambito` (if the line is there);
+- `BACKUP_R2_BUCKET=wambito-backups` and the new token's keys (step 4);
+- `BACKUP_DIR` and `BACKUP_COPY_DIR`, if set: `~/Backups/wambito` and
+  `~/Backups/wambito-encrypted`;
+- `DB_VOLUME_NAME`, if set: delete the line (the default is `wambito-personal-db`). Never point it
+  at `lukitas-personal-db`: the new stack would write the old volume, and there would be no way
+  back.
+
+Everything else stays as it was: the passwords, `BETTER_AUTH_SECRET` (sessions survive),
+`PUBLIC_HOSTNAME`, `COMPOSE_FILE`, mail, and `BACKUP_AGE_RECIPIENT`. **The age key is not
+regenerated**: the same private key opens the old `lukitas-*.dump.age` copies and the new
+`wambito-*.dump.age` ones. When you need it in a file, save it as `wambito-backup.key`; its entry
+in the password manager can keep its old name. `grep -n -i luk ~/wambito/deploy/personal/.env`
+should print nothing left to change.
+
+**4. R2.** In the Cloudflare dashboard, as in [Backups in Cloudflare R2](#backups-in-cloudflare-r2):
+a bucket `wambito-backups` with the same 14-day lifecycle rule, and an API token with **Object Read
+& Write** on that bucket only. Its keys go in the new `.env` (`BACKUP_R2_ACCESS_KEY_ID`,
+`BACKUP_R2_SECRET_ACCESS_KEY`; the endpoint is the account's, unchanged). The old bucket stays as an
+archive; its own lifecycle rule empties it. The new stack's retention counts only `wambito-*`
+names, so it never prunes a `lukitas-*` file, here or anywhere.
+
+**5. The cutover** (the app is down from 5.1 to 5.5, a few minutes plus the web build).
+
+1. As `<old>`, stop what writes, then take the final, verified dump (it goes to the old bucket
+   too):
+
+   ```sh
+   cd ~/lukitas/deploy/personal
+   docker compose -p lukitas-personal stop web api mcp
+   ./backup.sh       # note the dump it writes: ~/Backups/lukitas/lukitas-YYYY-MM-DD.dump
+   ```
+2. Stop the rest. Never `down -v`; `stop` removes nothing, and `start` brings it all back:
+
+   ```sh
+   docker compose -p lukitas-personal stop
+   ```
+3. Copy Caddy's certificates into the new project's volume, so Let's Encrypt is not asked again.
+   The volume is made first, with the labels compose gives its own volumes, so compose takes it
+   as its own:
+
+   ```sh
+   docker volume create --label com.docker.compose.project=wambito-personal \
+     --label com.docker.compose.volume=web-caddy-data wambito-personal_web-caddy-data
+   docker run --rm -v lukitas-personal_web-caddy-data:/from -v wambito-personal_web-caddy-data:/to alpine cp -a /from/. /to/
+   docker run --rm -v wambito-personal_web-caddy-data:/to alpine ls /to/caddy/certificates   # an acme folder
+   ```
+4. Still as `<old>`, give the final dump to `wambito` (the date from 5.1):
+
+   ```sh
+   sudo -u wambito mkdir -p -m 700 ~wambito/Backups/wambito
+   sudo install -o wambito -g wambito -m 600 ~/Backups/lukitas/lukitas-YYYY-MM-DD.dump ~wambito/Backups/wambito/
+   ```
+5. As `wambito`, bring up the new stack (it builds the web app, makes the empty volume
+   `wambito-personal-db`, migrates and creates the role `wambito_app`), then restore the dump into
+   it (type `restore` when asked):
+
+   ```sh
+   cd ~/wambito/deploy/personal
+   ./up.sh
+   ./restore.sh ~/Backups/wambito/lukitas-YYYY-MM-DD.dump
+   ```
+
+   `./up.sh --skip-web` does not work here: the new checkout has no web build yet. The restore
+   keeps the empty database it replaces as `wambito_before_<time>` (drop it later, step 8).
+6. Check it: `./smoke.sh`; sign in at `https://app.wambito.com` (the phone should still be signed
+   in, and your data is there); ask a connected assistant something through the MCP (for example,
+   this month's spending).
+
+**6. The new units**, as `wambito`, in `~/wambito/deploy/personal`, back to back:
+
+```sh
+./install-backup.sh
+./install-auto-deploy.sh
+./backup.sh
+```
+
+Either install removes **all** the old units (both timers and services), so between the two the
+server has no automatic deploy; run the second right after the first. If an old backup or deploy is
+running, the install waits for it to finish (up to 30 minutes) instead of stopping it. The backup by
+hand must end with `In R2: wambito-backups/wambito-YYYY-MM-DD.dump.age`. Then
+`systemctl list-timers 'wambito-*'` lists both timers, and `systemctl list-timers 'lukitas-*'`
+none.
+
+**7. Rollback**, if step 5 or 6 fails. Nothing is lost: the old volume was never written (only what
+was saved in the new install after the restore stays behind, in `wambito-personal-db`). As
+`wambito`, remove the new units and the new stack (`down` without `-v` keeps the volumes):
+
+```sh
+cd ~/wambito/deploy/personal
+./uninstall-backup.sh
+./install-auto-deploy.sh --remove
+docker compose -p wambito-personal down
+```
+
+As `<old>`, start the old install again and reinstall its daily backup with its own script (the
+new install deleted the old unit files):
+
+```sh
+cd ~/lukitas/deploy/personal
+docker compose -p lukitas-personal start
+./smoke.sh
+./install-backup.sh
+```
+
+Leave the old automatic deploy off: `main` now holds PR B, and the old checkout's deploy (or
+`./update.sh`, which pulls) would build it under the old user. Find what failed, then start again
+from step 5.
+
+**8. After a week without problems** (you decide when). As `<old>`, the old stack and its data:
+
+```sh
+cd ~/lukitas/deploy/personal
+docker compose -p lukitas-personal down
+docker volume rm lukitas-personal-db lukitas-personal_web-caddy-data
+docker image rm lukitas-api:personal lukitas-mcp:personal lukitas-web:personal
+```
+
+The `lukitas` database and the `lukas_app` role lived in that volume, so they are gone with it.
+Then log out, and as `wambito`:
+
+```sh
+sudo deluser --remove-home <old>      # its checkout, .env, ~/Backups/lukitas
+rm ~/Backups/wambito/lukitas-*.dump   # the dump from 5.4: retention never prunes it
+cd ~/wambito/deploy/personal
+docker compose exec postgres psql -U wambito -d postgres -c '\l'    # shows wambito_before_<time>
+docker compose exec postgres psql -U wambito -d postgres -c 'drop database "wambito_before_<time>"'
+```
+
+The last line drops the empty database the restore kept in 5.5 (its name from the line before).
+Remove the old user's deploy key from the repository's settings. Delete the bucket
+`lukitas-backups` once its lifecycle rule has emptied it (14 days after the last old upload), and
+the old tunnel, if one exists (`cloudflared tunnel delete lukitas-personal`).
 
 ## Files
 
@@ -521,12 +719,12 @@ it. On the Mac, `./uninstall-backup.sh` removes the launchd agent once the serve
 | `up.sh` `update.sh` `smoke.sh` | Start, update, check |
 | `backup.sh` `restore.sh` | Verified backups; restore and drill |
 | `install-backup.sh` `uninstall-backup.sh` | The daily backup: launchd on the Mac, systemd on Linux |
-| `com.lukitas.backup.plist` | The 03:00 launchd agent (macOS) |
-| `lukitas-backup.service` `lukitas-backup.timer` | The 08:00 UTC systemd timer (Linux) |
+| `com.wambito.backup.plist` | The 03:00 launchd agent (macOS) |
+| `wambito-backup.service` `wambito-backup.timer` | The 08:00 UTC systemd timer (Linux) |
 | `test-retention.sh` `test-r2.sh` | The 14-day retention, and the R2 upload against a fake rclone |
 | `test-caddy.sh` | Both Caddy configs against real Caddy in Docker: client address, spoofed headers, HTTPS, routes |
 | `test-compose-files.sh` | Which compose files, ports, Caddy config and services each way uses (`docker compose config`, no daemon) |
-| `auto-deploy.sh` `install-auto-deploy.sh` `lukitas-deploy.service` `lukitas-deploy.timer` `test-auto-deploy.sh` | The server's automatic deploy of `main` once CI passed, and its test |
+| `auto-deploy.sh` `install-auto-deploy.sh` `wambito-deploy.service` `wambito-deploy.timer` `test-auto-deploy.sh` | The server's automatic deploy of `main` once CI passed, and its test |
 
 ## How the client address gets to the API
 

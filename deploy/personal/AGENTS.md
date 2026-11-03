@@ -21,8 +21,9 @@ app and proxying), optional cloudflared. Full runbook: `README.md` here; short v
 - `backup.sh` / `restore.sh` / `install-backup.sh` / `uninstall-backup.sh`: age-encrypted dumps to
   Cloudflare R2, 14-day retention. `lib.sh`: shared helpers.
 - Units `wambito-*.service|timer` (Linux, in `UNIT_DIR`, default `/etc/systemd/system`),
-  `com.wambito.backup.plist` (macOS). Both install scripts first stop and delete the units from
-  before the rename (`remove_old_units` in `lib.sh`, the only place that names them).
+  `com.wambito.backup.plist` (macOS). Both install scripts first disable and delete the units from
+  before the rename, waiting (up to 30 min) for a running old backup or deploy instead of stopping
+  it (`remove_old_units` in `lib.sh`, the only script that names them, split as `"luk""itas"`).
 
 ## Test (CI runs all six)
 
@@ -38,6 +39,7 @@ app and proxying), optional cloudflared. Full runbook: `README.md` here; short v
   does not recreate containers after a compose-file change.
 - The API trusts exactly one X-Forwarded-For hop, set by Caddy (`docs/deploy/api.md`).
 - Migrations run in `migrate` as the owner; the api runs as the runtime role (RLS).
-- See root `AGENTS.md`: 2b names, secrets (`.env` here and on the VPS). Part 2b rewrites this
-  whole folder, so its old-name texts (unit descriptions, backup notifications) stay too.
+- Nothing here names the old app, except the README's "Moving from the old names (part 2b)" (the
+  one-time cutover runbook, allowlisted as `history`); scripts and tests split the old name
+  (`"luk""itas"`) so the old-name guard does not match. Secrets: see root `AGENTS.md`.
 - Merging to `main` deploys production by itself.

@@ -49,7 +49,8 @@ and, once it is done (or if it is stuck: sudo systemctl stop $unit), run this sc
 # remove_old_units: disables and deletes the units of the install from before the rename (Linux: the
 # backup and deploy timers and services; macOS: the backup agent), so they never run next to the
 # wambito-* ones. The one place that names them, split so the old-name guard does not match.
-# Rolling back to them is the old checkout's own install scripts (part 2b spec, cutover step 7).
+# Rolling back to them is the old checkout's own install-backup.sh (README, "Moving from the old
+# names", step 7).
 remove_old_units() {
   local unit old="luk""itas" removed=0 label plist
   case "$(uname)" in

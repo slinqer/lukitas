@@ -53,9 +53,9 @@ phone. Read the `AGENTS.md` of the area you work in; read code only to confirm.
 
 - Old name: `scripts/check-old-name.sh` fails on the old app or mascot name outside
   `.github/name-allowlist.txt` (`<pathspec>  # <reason>[, <reason>]`; reasons `money`, `history`,
-  `docs-rule`, `key-alias`, and `2b` for `deploy/personal/**` only). It also fails on a line with
-  no reason or another one (tested by `scripts/test-check-old-name.sh`). A new legit hit: add the
-  file there with its reason, never a folder glob.
+  `docs-rule`, `key-alias`). It also fails on a line with no reason or another one (tested by
+  `scripts/test-check-old-name.sh`). A new legit hit: add the file there with its reason, never a
+  folder glob.
 - Personal-name guard (`ci.yml`): a `git grep` for the founder's name outside `docs/superpowers`.
   Never write personal names, emails or paths into the repo.
 
@@ -68,7 +68,6 @@ phone. Read the `AGENTS.md` of the area you work in; read code only to confirm.
   them; check each hit.
 - The signing key's alias stays `lukitas` (reason `key-alias`): it is inside the key, and
   re-keying breaks every update (`docs/mobile/release.md`).
-- `deploy/personal` keeps the VPS's old names until its own rename (part 2b, PR B); leave them.
 - Persistent names on phones (prefs files, WorkManager unique names, widget receivers, snapshot
   key) need a migration to change.
 - Never read `deploy/personal/.env`, the root `.env`, `~/.cloudflared/*.json`, the signing keystore

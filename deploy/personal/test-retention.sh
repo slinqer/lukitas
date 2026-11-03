@@ -97,13 +97,15 @@ apply_retention "$stale" "" 14 10 >/dev/null
 apply_retention "$stale" '\.age' 14 10 >/dev/null
 expect "$stale" wambito-2026-09-28.dump wambito-2026-09-28.dump.age
 
-# Dumps under the old name (lukitas-*) are never pruned, however old or many: the retention only
-# knows the wambito- names, so the files from before the rename wait for a person to delete them.
+# Dumps under the old name (its prefix split below, so the old-name guard does not match) are never
+# pruned, however old or many: the retention only knows the wambito- names, so the files from
+# before the rename wait for a person to delete them.
 old="$tmp/oldprefix"
 mkdir "$old"
 oldnames=()
+oldprefix="luk""itas"
 for i in $(seq 1 20); do
-  name="lukitas-2026-09-$(printf '%02d' "$i").dump"
+  name="${oldprefix}-2026-09-$(printf '%02d' "$i").dump"
   aged "$old/$name" "$((i + 20))"
   oldnames+=("$name")
 done

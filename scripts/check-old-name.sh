@@ -9,7 +9,7 @@ set -euo pipefail
 
 cd "$(git rev-parse --show-toplevel)"
 allowlist="${NAME_ALLOWLIST:-.github/name-allowlist.txt}"
-known_reasons=(money history docs-rule key-alias 2b)
+known_reasons=(money history docs-rule key-alias)
 
 trim() {
   local s="$1"

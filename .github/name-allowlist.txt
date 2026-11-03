@@ -8,7 +8,6 @@
 #                one-time steps that move or delete something made under it).
 #   docs-rule    agent maps (AGENTS.md) that name the old words in order to say they stay.
 #   key-alias    the signing key's alias, which lives inside the key and cannot change.
-#   2b           deploy/personal only, until the VPS's own rename (part 2b, PR B).
 # A file holding more than one kind lists them comma-joined (`money, history`). Directory globs are
 # only for whole folders; everything else lists the files that have a hit.
 # A file lists every reason for what remains in it.
@@ -93,9 +92,6 @@ docs/design/system/project/tokens.json                     # money
 docs/i18n/it-pt-sample.md                                  # money
 docs/mobile/parity.md                                      # money
 
-# --- 2b: the VPS names, until PR B ---
-deploy/personal/**  # 2b (whole folder: rewritten in PR B)
-
 # --- history ---
 docs/superpowers/**                                        # history
 CONTRIBUTING.md                                            # history
@@ -103,6 +99,7 @@ packages/db/drizzle/0007_guest_domain.sql                  # history
 packages/db/test/guest-domain.test.ts                      # history
 docs/deploy/landing.md  # history (the one-time steps that delete the old Worker)
 docs/mobile/setup.md  # history (the command that deletes the AVD made under the old name)
+deploy/personal/README.md  # history (the steps that move the VPS from the old names)
 
 # --- key-alias: the signing key's alias ---
 docs/mobile/release.md  # key-alias, history (and the steps that move the key from its old folder)
