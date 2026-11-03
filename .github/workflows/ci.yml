@@ -22,6 +22,8 @@ jobs:
       - run: "! git grep -n -I -i -e 'anderson''laverde' -- . ':!docs/superpowers'"
       # No old app name or old mascot name (see the guard script) outside .github/name-allowlist.txt.
       - run: scripts/check-old-name.sh
+      # The guard's own test: each allowlist reason must be one the guard knows.
+      - run: scripts/test-check-old-name.sh
       - run: pnpm lint
       # Generated files must be committed as generated. tokens.css comes from the design system's
       # tokens.json: run `pnpm --filter @wambito/web tokens` and commit it.
