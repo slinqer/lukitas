@@ -199,8 +199,8 @@ ensure_volume() {
 # --- Backup retention (backup.sh; tested by test-retention.sh) ------------------------------------
 
 # The dumps backup.sh writes: daily, and the ones taken before an update.
-DAILY_DUMP='^lukitas-[0-9]{4}-[0-9]{2}-[0-9]{2}\.dump'
-PREUPDATE_DUMP='^lukitas-[0-9]{4}-[0-9]{2}-[0-9]{2}-preupdate-[0-9]{4}\.dump'
+DAILY_DUMP='^wambito-[0-9]{4}-[0-9]{2}-[0-9]{2}\.dump'
+PREUPDATE_DUMP='^wambito-[0-9]{4}-[0-9]{2}-[0-9]{2}-preupdate-[0-9]{4}\.dump'
 
 # prune_newest DIR REGEX KEEP: delete all but the newest KEEP files in DIR whose names match REGEX
 # (names sort by date). Other files in the folder are left alone.

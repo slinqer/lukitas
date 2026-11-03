@@ -62,7 +62,7 @@ log_has() { grep -qF -- "$1" "$FAKE_RCLONE_LOG"; }
 log_lacks() { ! grep -qF -- "$1" "$FAKE_RCLONE_LOG"; }
 
 endpoint="https://abc123.r2.cloudflarestorage.com"
-dump="$tmp/lukitas-2026-10-29.dump"
+dump="$tmp/wambito-2026-10-29.dump"
 printf 'plain dump\n' >"$dump"
 printf 'encrypted dump\n' >"$dump.age"
 
@@ -72,12 +72,12 @@ check "no bucket: R2 is off" eval '! r2_enabled'
 check "no bucket: the settings are fine" eval '[ -z "$(r2_problem)" ]'
 
 # Half set up: a bucket but no keys is refused, not silently skipped.
-r2_env lukitas-backups "$endpoint" "" ""
+r2_env wambito-backups "$endpoint" "" ""
 check "a bucket without keys is a problem" eval '[ -n "$(r2_problem)" ]'
-r2_env lukitas-backups "" key-id secret-key
+r2_env wambito-backups "" key-id secret-key
 check "a bucket without an endpoint is a problem" eval '[ -n "$(r2_problem)" ]'
 
-r2_env lukitas-backups "$endpoint" key-id secret-key
+r2_env wambito-backups "$endpoint" key-id secret-key
 check "fully set up: R2 is on" r2_enabled
 check "fully set up: no problem" eval '[ -z "$(r2_problem)" ]'
 
@@ -89,8 +89,8 @@ check "a refused dump never reaches rclone" eval '[ ! -s "$FAKE_RCLONE_LOG" ]'
 # The upload, then the listing that proves it is there.
 : >"$FAKE_RCLONE_LOG"
 check "an encrypted copy uploads" r2_upload "$dump.age"
-check "it goes to the bucket under its own name" log_has "args: copyto $dump.age r2:lukitas-backups/lukitas-2026-10-29.dump.age"
-check "the upload is checked by listing it" log_has "args: lsf r2:lukitas-backups/lukitas-2026-10-29.dump.age"
+check "it goes to the bucket under its own name" log_has "args: copyto $dump.age r2:wambito-backups/wambito-2026-10-29.dump.age"
+check "the upload is checked by listing it" log_has "args: lsf r2:wambito-backups/wambito-2026-10-29.dump.age"
 check "rclone gets the R2 settings in its environment" log_has "env: s3 Cloudflare key-id secret-key $endpoint"
 check "the secret is never an argument" eval '! grep "^args:" "$FAKE_RCLONE_LOG" | grep -q secret-key'
 # A token for one bucket's objects cannot check or create the bucket, and R2 answers 501 to the
@@ -116,8 +116,8 @@ check "an upload that does not list fails" eval '(PATH="$tmp/bin-lost:$PATH"; ! 
 # The download asks for the named object and writes it where told.
 r2_upload "$dump.age" >/dev/null
 : >"$FAKE_RCLONE_LOG"
-check "a download works" r2_download lukitas-2026-10-29.dump.age "$tmp/fetched.age"
-check "it asks for the named object" log_has "args: copyto r2:lukitas-backups/lukitas-2026-10-29.dump.age $tmp/fetched.age"
+check "a download works" r2_download wambito-2026-10-29.dump.age "$tmp/fetched.age"
+check "it asks for the named object" log_has "args: copyto r2:wambito-backups/wambito-2026-10-29.dump.age $tmp/fetched.age"
 check "the file arrives" eval 'cmp -s "$dump.age" "$tmp/fetched.age"'
 
 [ "$failures" = 0 ] || die "$failures R2 check(s) failed"

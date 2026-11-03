@@ -40,7 +40,7 @@ daily="$tmp/daily"
 mkdir "$daily"
 kept=()
 for i in $(seq 0 20); do
-  name="lukitas-2026-10-$(printf '%02d' $((22 - i))).dump"
+  name="wambito-2026-10-$(printf '%02d' $((22 - i))).dump"
   aged "$daily/$name" "$i.01"
   [ "$i" -ge 14 ] || kept+=("$name")
 done
@@ -51,55 +51,74 @@ expect "$daily" "${kept[@]}"
 # there are fewer than 10.
 pre="$tmp/preupdate"
 mkdir "$pre"
-aged "$pre/lukitas-2026-10-21-preupdate-1200.dump" 1
-aged "$pre/lukitas-2026-10-09-preupdate-0900.dump" 13
-aged "$pre/lukitas-2026-10-08-preupdate-0900.dump" 14
-aged "$pre/lukitas-2026-09-22-preupdate-1830.dump" 30
+aged "$pre/wambito-2026-10-21-preupdate-1200.dump" 1
+aged "$pre/wambito-2026-10-09-preupdate-0900.dump" 13
+aged "$pre/wambito-2026-10-08-preupdate-0900.dump" 14
+aged "$pre/wambito-2026-09-22-preupdate-1830.dump" 30
 apply_retention "$pre" "" 14 10 >/dev/null
-expect "$pre" lukitas-2026-10-21-preupdate-1200.dump lukitas-2026-10-09-preupdate-0900.dump
+expect "$pre" wambito-2026-10-21-preupdate-1200.dump wambito-2026-10-09-preupdate-0900.dump
 
 # The count limits still apply to young dumps: KEEP daily, 10 pre-update (newest by name).
 counts="$tmp/counts"
 mkdir "$counts"
 young=()
 for d in 01 02 03 04 05 06 07 08 09 10 11 12; do
-  aged "$counts/lukitas-2026-10-$d.dump" 0.1
-  aged "$counts/lukitas-2026-10-$d-preupdate-1000.dump" 0.1
+  aged "$counts/wambito-2026-10-$d.dump" 0.1
+  aged "$counts/wambito-2026-10-$d-preupdate-1000.dump" 0.1
 done
 apply_retention "$counts" "" 5 10 >/dev/null
-for d in 08 09 10 11 12; do young+=("lukitas-2026-10-$d.dump"); done
-for d in 03 04 05 06 07 08 09 10 11 12; do young+=("lukitas-2026-10-$d-preupdate-1000.dump"); done
+for d in 08 09 10 11 12; do young+=("wambito-2026-10-$d.dump"); done
+for d in 03 04 05 06 07 08 09 10 11 12; do young+=("wambito-2026-10-$d-preupdate-1000.dump"); done
 expect "$counts" "${young[@]}"
 
 # The encrypted copies follow the same rules; other files in the folder are never touched.
 copies="$tmp/copies"
 mkdir "$copies"
-aged "$copies/lukitas-2026-10-21.dump.age" 1
-aged "$copies/lukitas-2026-10-01.dump.age" 21
-aged "$copies/lukitas-2026-09-01-preupdate-0800.dump.age" 51
-aged "$copies/lukitas-2026-09-01.dump" 51
+aged "$copies/wambito-2026-10-21.dump.age" 1
+aged "$copies/wambito-2026-10-01.dump.age" 21
+aged "$copies/wambito-2026-09-01-preupdate-0800.dump.age" 51
+aged "$copies/wambito-2026-09-01.dump" 51
 aged "$copies/notes.txt" 300
-aged "$copies/.lukitas-2026-09-01.dump.age.partial" 51
+aged "$copies/.wambito-2026-09-01.dump.age.partial" 51
 apply_retention "$copies" '\.age' 14 10 >/dev/null
-expect "$copies" lukitas-2026-10-21.dump.age lukitas-2026-09-01.dump notes.txt \
-  .lukitas-2026-09-01.dump.age.partial
+expect "$copies" wambito-2026-10-21.dump.age wambito-2026-09-01.dump notes.txt \
+  .wambito-2026-09-01.dump.age.partial
 
 # Backups failing for weeks: every dump is past 14 days. The newest one stays, so a long run of
 # failed backups never leaves none at all; the rest still go. Same for the encrypted copies.
 stale="$tmp/stale"
 mkdir "$stale"
-aged "$stale/lukitas-2026-09-20.dump" 32
-aged "$stale/lukitas-2026-09-25-preupdate-0800.dump" 27
-aged "$stale/lukitas-2026-09-28.dump" 24
-aged "$stale/lukitas-2026-09-28.dump.age" 24
-aged "$stale/lukitas-2026-09-20.dump.age" 32
+aged "$stale/wambito-2026-09-20.dump" 32
+aged "$stale/wambito-2026-09-25-preupdate-0800.dump" 27
+aged "$stale/wambito-2026-09-28.dump" 24
+aged "$stale/wambito-2026-09-28.dump.age" 24
+aged "$stale/wambito-2026-09-20.dump.age" 32
 apply_retention "$stale" "" 14 10 >/dev/null
 apply_retention "$stale" '\.age' 14 10 >/dev/null
-expect "$stale" lukitas-2026-09-28.dump lukitas-2026-09-28.dump.age
+expect "$stale" wambito-2026-09-28.dump wambito-2026-09-28.dump.age
+
+# Dumps under the old name (lukitas-*) are never pruned, however old or many: the retention only
+# knows the wambito- names, so the files from before the rename wait for a person to delete them.
+old="$tmp/oldprefix"
+mkdir "$old"
+oldnames=()
+for i in $(seq 1 20); do
+  name="lukitas-2026-09-$(printf '%02d' "$i").dump"
+  aged "$old/$name" "$((i + 20))"
+  oldnames+=("$name")
+done
+apply_retention "$old" "" 14 10 >/dev/null
+apply_retention "$old" '\.age' 14 10 >/dev/null
+expect "$old" "${oldnames[@]}"
+# Mixed with new dumps: only the wambito ones are pruned.
+aged "$old/wambito-2026-09-01.dump" 40
+aged "$old/wambito-2026-10-21.dump" 1
+apply_retention "$old" "" 14 10 >/dev/null
+expect "$old" "${oldnames[@]}" wambito-2026-10-21.dump
 
 # A folder that does not exist (no copies set up yet) is fine.
 apply_retention "$tmp/missing" "" 14 10 >/dev/null
-expect "$tmp" copies counts daily preupdate stale
+expect "$tmp" copies counts daily oldprefix preupdate stale
 
 [ "$failures" = 0 ] || die "$failures retention check(s) failed"
 say "Retention: all checks passed"

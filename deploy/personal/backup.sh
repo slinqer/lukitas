@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Backs up the database to $BACKUP_DIR/lukitas-YYYY-MM-DD.dump (default ~/Backups/lukitas). No dump
+# Backs up the database to $BACKUP_DIR/wambito-YYYY-MM-DD.dump (default ~/Backups/wambito). No dump
 # is kept longer than 14 days, daily or pre-update (the app promises that backups holding a deleted
 # account delete themselves within 14 days); under that, the newest 14 daily dumps.
 #
 #   ./backup.sh               the daily backup (what launchd runs)
-#   ./backup.sh --pre-update  a backup taken before an update: lukitas-YYYY-MM-DD-preupdate-HHMM.dump.
+#   ./backup.sh --pre-update  a backup taken before an update: wambito-YYYY-MM-DD-preupdate-HHMM.dump.
 #                             Its own name, so it never replaces the daily dump; not counted by the
 #                             14-daily rule (the newest 10 of them are kept, none past 14 days).
 #
@@ -54,20 +54,20 @@ done
 # A leading ~ in a value from .env is the home folder.
 expand_home() { case "$1" in "~"*) printf '%s' "$HOME${1#\~}" ;; *) printf '%s' "$1" ;; esac; }
 
-backup_dir="$(expand_home "$(cfg BACKUP_DIR "$HOME/Backups/lukitas")")"
+backup_dir="$(expand_home "$(cfg BACKUP_DIR "$HOME/Backups/wambito")")"
 copy_dir="$(expand_home "$(cfg BACKUP_COPY_DIR)")"
 age_recipient="$(cfg BACKUP_AGE_RECIPIENT)"
 keep="${KEEP:-14}"
 keep_preupdate=10
 stamp="$(date +%Y-%m-%d)"
 if [ "$pre_update" = 1 ]; then
-  name="lukitas-$stamp-preupdate-$(date +%H%M).dump"
+  name="wambito-$stamp-preupdate-$(date +%H%M).dump"
 else
-  name="lukitas-$stamp.dump"
+  name="wambito-$stamp.dump"
 fi
 final="$backup_dir/$name"
 partial="$backup_dir/.$name.partial"
-scratch="lukitas_verify"
+scratch="wambito_verify"
 
 case "$keep" in '' | *[!0-9]*) die "KEEP must be a number" ;; esac
 [ "$keep" -ge 1 ] || die "KEEP must be at least 1"
@@ -83,7 +83,7 @@ fail() {
   # Old dumps still age out (the 14-day promise does not wait for a good backup), all but the newest.
   retain || true
   # When launchd runs this nobody is watching the log; tell the person.
-  osascript -e "display notification \"$*\" with title \"Lukitas backup failed\"" >/dev/null 2>&1 || true
+  osascript -e "display notification \"$*\" with title \"Wambito backup failed\"" >/dev/null 2>&1 || true
   exit 1
 }
 

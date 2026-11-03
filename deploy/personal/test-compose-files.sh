@@ -76,10 +76,10 @@ check "the images" "wambito-api:personal wambito-mcp:personal wambito-web:person
 check "the postgres user and database" "wambito wambito" \
   "$(compose config --format json | jq -r '[.services.postgres.environment.POSTGRES_USER, .services.postgres.environment.POSTGRES_DB] | join(" ")')"
 expected_back="To put the previous database back and start the app on it:
-  $(compose_command) exec postgres psql -U wambito -d postgres -c 'alter database wambito rename to lukitas_restore_X'
-  $(compose_command) exec postgres psql -U wambito -d postgres -c 'alter database lukitas_before_X rename to wambito'
+  $(compose_command) exec postgres psql -U wambito -d postgres -c 'alter database wambito rename to wambito_restore_X'
+  $(compose_command) exec postgres psql -U wambito -d postgres -c 'alter database wambito_before_X rename to wambito'
   $(compose_command) up -d --wait api mcp web"
-check "restore: how to go back" "$expected_back" "$(restore_go_back lukitas_before_X lukitas_restore_X "api mcp web")"
+check "restore: how to go back" "$expected_back" "$(restore_go_back wambito_before_X wambito_restore_X "api mcp web")"
 
 # The plain default, written out, is the same.
 with_env written COMPOSE_FILE=docker-compose.yml

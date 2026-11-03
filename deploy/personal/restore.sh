@@ -7,7 +7,7 @@
 #   ./restore.sh FILE           Replace the live database with the dump (asks first; --yes skips).
 #
 # The live restore: restores into a new database first (if that fails nothing has changed), then
-# stops the API and the tunnel, renames the old database to lukitas_before_<time> (kept, so you can
+# stops the API and the tunnel, renames the old database to wambito_before_<time> (kept, so you can
 # go back; drop it yourself once you are happy), puts the new one in its place, applies any newer
 # migrations, grants the app role and starts everything again. The dump's own grants are skipped,
 # so a dump restores whatever the app role was called when it was taken. It also works on a new
@@ -62,7 +62,7 @@ if [ "$from_r2" = 1 ]; then
   problem="$(r2_problem)"
   [ -z "$problem" ] || die "$problem"
   [ -n "$(cfg BACKUP_R2_BUCKET)" ] || die "--from-r2 needs BACKUP_R2_BUCKET (and the rest of BACKUP_R2_*) in $ENV_FILE"
-  case "$file" in */*) die "--from-r2 takes the object's name (lukitas-YYYY-MM-DD.dump.age), not a path" ;; esac
+  case "$file" in */*) die "--from-r2 takes the object's name (wambito-YYYY-MM-DD.dump.age), not a path" ;; esac
 fi
 case "$file" in
   *.age)
@@ -93,7 +93,7 @@ need_env_file
 need_docker
 ensure_volume
 stamp="$(date +%Y%m%d_%H%M%S)"
-scratch="lukitas_restore_$stamp"
+scratch="wambito_restore_$stamp"
 
 say "Starting the database (it keeps running; the API is not needed for a restore)"
 compose up -d --wait postgres
@@ -174,7 +174,7 @@ if [ "$yes" != 1 ]; then
   fi
 fi
 
-before="lukitas_before_$stamp"
+before="wambito_before_$stamp"
 say "Stopping the API and the tunnel"
 compose stop cloudflared web api 2>/dev/null || true
 
