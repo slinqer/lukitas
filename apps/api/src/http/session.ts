@@ -31,7 +31,7 @@ export const authIssuer = (config: Pick<Config, "API_URL">) =>
  * issued by us, for the MCP (`aud` = MCP_URL, RFC 8707). A token for any other audience is
  * refused, so a token minted for something else cannot open the API.
  *
- * A request with `x-wambito-background: 1` (or the old `x-lukas-background`) reads the session without refreshing it (Better Auth's
+ * A request with `x-wambito-background: 1` reads the session without refreshing it (Better Auth's
  * `disableRefresh`), so background jobs never count as activity for the guest cleanup.
  */
 export function requireUser(auth: Auth, config: Pick<Config, "API_URL" | "MCP_URL">) {

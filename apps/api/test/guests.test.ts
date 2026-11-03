@@ -108,16 +108,6 @@ describe("guests", () => {
     }
   });
 
-  // 2b: remove. The installed APK still sends the old x-lukas-* names.
-  test("the old x-lukas-timezone and -locale set the new profile as the new ones do", async () => {
-    const g = await guest(t, { "x-lukas-timezone": "Europe/Lisbon", "x-lukas-locale": "pt-PT" });
-    expect(await me(t, g.headers)).toMatchObject({
-      timezone: "Europe/Lisbon",
-      locale: "pt",
-      currency: "EUR",
-    });
-  });
-
   test("x-wambito-locale sets the locale; without it, Spanish", async () => {
     const es = await guest(t, { "x-wambito-timezone": "America/Bogota", "x-wambito-locale": "es" });
     expect((await me(t, es.headers)).locale).toBe("es");

@@ -286,20 +286,6 @@ describe("guest session lifetime", () => {
     expect(res.headers.get("set-cookie")).toBeNull();
   });
 
-  // 2b: remove. The installed APK's widget and notices still send x-lukas-background.
-  test("the old x-lukas-background: 1 does not slide the session either", async () => {
-    const g = await newGuest();
-    const aged = await ageSession(g.userId);
-    const res = await t.request("GET", "/v1/me", {
-      headers: { ...g.headers, "x-lukas-background": "1" },
-    });
-    expect(res.status).toBe(200);
-    const [row] = await t.admin.select().from(session).where(eq(session.userId, g.userId));
-    expect(row?.updatedAt).toEqual(aged.updatedAt);
-    expect(row?.expiresAt).toEqual(aged.expiresAt);
-    expect(res.headers.get("set-cookie")).toBeNull();
-  });
-
   test("only the value 1 marks a background request; a normal request still slides", async () => {
     const g = await newGuest();
     await ageSession(g.userId);

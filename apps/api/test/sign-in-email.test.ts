@@ -201,11 +201,11 @@ describe("sign-in email", () => {
     expect(mail.html).toContain("&lt;b&gt;&quot;&amp;&lt;/b&gt;");
   });
 
-  test("no language names the product Lukas, or calls it a game", () => {
+  test("every language names the product Wambi, and none calls it a game", () => {
     for (const locale of ["es", "en", "it", "pt"] as const) {
       const mail = signInEmail({ ...input, locale });
       const all = `${mail.subject}\n${mail.text}\n${visibleText(mail.html)}`;
-      expect(all).not.toMatch(/\bLukas\b/);
+      expect(all).toMatch(/Wambi/);
       expect(all).not.toMatch(/\b(game|juego|gioco|jogo)\b/i);
     }
   });
