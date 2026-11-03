@@ -31,7 +31,22 @@ cfg() {
 # Where the systemd units go. The test points UNIT_DIR at a temporary folder.
 UNIT_DIR="${UNIT_DIR:-/etc/systemd/system}"
 
-# remove_old_units: stops and deletes the units of the install from before the rename (Linux: the
+# wait_inactive UNIT: returns once UNIT is not running, asking every 10 s for up to 30 minutes; at
+# the bound, dies saying what to do (nothing has been deleted by then, so running again is safe).
+wait_inactive() {
+  local unit="$1" tries=0
+  systemctl is-active --quiet "$unit" || return 0
+  say "Waiting for the old $unit to finish (up to 30 minutes)"
+  while systemctl is-active --quiet "$unit"; do
+    tries=$((tries + 1))
+    [ "$tries" -le 180 ] || die "the old $unit is still running after 30 minutes. See what it is doing with
+  journalctl -u $unit -f
+and, once it is done (or if it is stuck: sudo systemctl stop $unit), run this script again."
+    sleep 10
+  done
+}
+
+# remove_old_units: disables and deletes the units of the install from before the rename (Linux: the
 # backup and deploy timers and services; macOS: the backup agent), so they never run next to the
 # wambito-* ones. The one place that names them, split so the old-name guard does not match.
 # Rolling back to them is the old checkout's own install scripts (part 2b spec, cutover step 7).
@@ -44,9 +59,11 @@ remove_old_units() {
         say "Stopping the old $unit"
         sudo systemctl disable --now "$unit" >/dev/null 2>&1 || true
       done
+      # A backup or deploy already running is let finish (stopping a deploy midway could leave the
+      # app half updated); the timers are off, so no new run starts meanwhile.
       for unit in "$old-backup.service" "$old-deploy.service"; do
         [ -e "$UNIT_DIR/$unit" ] || continue
-        sudo systemctl stop "$unit" >/dev/null 2>&1 || true
+        wait_inactive "$unit"
       done
       for unit in "$old-backup.service" "$old-backup.timer" "$old-deploy.service" "$old-deploy.timer"; do
         [ -e "$UNIT_DIR/$unit" ] || continue

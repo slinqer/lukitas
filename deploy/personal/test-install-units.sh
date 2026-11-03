@@ -6,8 +6,9 @@
 #
 # What it checks: the units installed are wambito-* (Linux) and com.wambito.backup (macOS), with
 # their placeholders filled in; the old units of the install before the rename are stopped before
-# the new ones start, and their files deleted, so two timers never run; with no old units, nothing
-# is stopped.
+# the new ones start, and their files deleted, so two timers never run; a running old service is
+# waited for, never stopped mid-deploy, and the install gives up with an error when it runs past the
+# bound; with no old units, nothing is stopped.
 set -euo pipefail
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -36,7 +37,25 @@ cat >"$tmp/bin/sudo" <<'EOF'
 #!/usr/bin/env bash
 exec "$@"
 EOF
-for tool in systemctl launchctl plutil; do
+# systemctl is-active: the unit is active as many times as the number in $FAKE_ACTIVE/<unit> says
+# (one less on each ask), then inactive. sleep does nothing, so the wait's bound costs no time.
+export FAKE_ACTIVE="$tmp/active"
+cat >"$tmp/bin/systemctl" <<'STUB'
+#!/usr/bin/env bash
+printf 'systemctl %s\n' "$*" >>"$FAKE_LOG"
+if [ "$1" = is-active ]; then
+  f="$FAKE_ACTIVE/${*: -1}"
+  n="$(cat "$f" 2>/dev/null || echo 0)"
+  [ "$n" -gt 0 ] || exit 3
+  echo $((n - 1)) >"$f"
+fi
+exit 0
+STUB
+cat >"$tmp/bin/sleep" <<'STUB'
+#!/usr/bin/env bash
+exit 0
+STUB
+for tool in launchctl plutil; do
   cat >"$tmp/bin/$tool" <<EOF
 #!/usr/bin/env bash
 printf '%s %s\n' "$tool" "\$*" >>"\$FAKE_LOG"
@@ -62,8 +81,8 @@ pass() { printf 'ok: %s\n' "$1"; }
 reset() {
   FAKE_UNAME="$1"
   shift
-  rm -rf "$UNIT_DIR" "$HOME"
-  mkdir -p "$UNIT_DIR" "$agents"
+  rm -rf "$UNIT_DIR" "$HOME" "$FAKE_ACTIVE"
+  mkdir -p "$UNIT_DIR" "$agents" "$FAKE_ACTIVE"
   : >"$FAKE_LOG"
   local f
   for f in "$@"; do printf '# old\n' >"$f"; done
@@ -71,6 +90,9 @@ reset() {
 
 # line_of TEXT: the number of the first log line that is exactly TEXT, or nothing.
 line_of() { grep -nxF "$1" "$FAKE_LOG" | head -n 1 | cut -d: -f1 || true; }
+
+# last_line_of TEXT: the number of the last log line that is exactly TEXT, or nothing.
+last_line_of() { grep -nxF "$1" "$FAKE_LOG" | tail -n 1 | cut -d: -f1 || true; }
 
 # before NAME FIRST THEN: FIRST is in the log, and before THEN.
 before() {
@@ -113,6 +135,56 @@ if run install-auto-deploy.sh; then
     pass "deploy: the timer says Wambito" || fail "deploy: the timer says Wambito"
 else
   fail "install-auto-deploy.sh succeeds"
+fi
+
+# --- Linux: an old deploy that is running is waited for, never stopped. --------------------------
+reset Linux "$UNIT_DIR/$old-deploy.service" "$UNIT_DIR/$old-deploy.timer"
+echo 2 >"$FAKE_ACTIVE/$old-deploy.service"
+if run install-auto-deploy.sh; then
+  before "wait: the old timer is disabled before the wait" \
+    "systemctl disable --now $old-deploy.timer" "systemctl is-active --quiet $old-deploy.service"
+  n="$(grep -cxF "systemctl is-active --quiet $old-deploy.service" "$FAKE_LOG" || true)"
+  [ "$n" = 3 ] && pass "wait: asks until the old deploy is done" || fail "wait: asks until the old deploy is done ($n asks)"
+  if grep -q "stop $old-deploy.service" "$FAKE_LOG"; then
+    fail "wait: the running old deploy is not stopped"
+  else
+    pass "wait: the running old deploy is not stopped"
+  fi
+  grep -q "Waiting for the old $old-deploy.service to finish" "$tmp/out.log" &&
+    pass "wait: says it is waiting" || fail "wait: says it is waiting"
+  a="$(last_line_of "systemctl is-active --quiet $old-deploy.service")"
+  b="$(last_line_of "systemctl daemon-reload")"
+  if [ -n "$a" ] && [ -n "$b" ] && [ "$a" -lt "$b" ]; then
+    pass "wait: daemon-reload follows the removal"
+  else
+    fail "wait: daemon-reload follows the removal"
+  fi
+  before "wait: the new timer starts after the old units are gone" \
+    "systemctl daemon-reload" "systemctl enable --now wambito-deploy.timer"
+  holds "wait: only the wambito-deploy units are left" "$UNIT_DIR" \
+    "wambito-deploy.service wambito-deploy.timer"
+else
+  fail "install-auto-deploy.sh succeeds once the old deploy finishes"
+fi
+
+# --- Linux: an old deploy still running at the bound: an error, nothing removed or installed. ----
+reset Linux "$UNIT_DIR/$old-deploy.service" "$UNIT_DIR/$old-deploy.timer"
+echo 100000 >"$FAKE_ACTIVE/$old-deploy.service"
+if run install-auto-deploy.sh; then
+  fail "stuck: install-auto-deploy.sh fails while the old deploy runs"
+else
+  pass "stuck: install-auto-deploy.sh fails while the old deploy runs"
+  grep -q "still running after 30 minutes" "$tmp/out.log" &&
+    pass "stuck: says why" || fail "stuck: says why"
+  grep -q "sudo systemctl stop $old-deploy.service" "$tmp/out.log" &&
+    pass "stuck: says what to do" || fail "stuck: says what to do"
+  holds "stuck: the old unit files stay, nothing new is installed" "$UNIT_DIR" \
+    "$old-deploy.service $old-deploy.timer"
+  if grep -q "stop $old-deploy.service" "$FAKE_LOG"; then
+    fail "stuck: the old deploy is not stopped"
+  else
+    pass "stuck: the old deploy is not stopped"
+  fi
 fi
 
 # --- Linux: the backup replaces the old one. -------------------------------------------------------
