@@ -219,11 +219,11 @@ repository; the redirect covers any APK that still has the old URL. Its test che
 
 - `deploy/landing/wrangler.jsonc`: `"name": "wambito-landing"`, same custom domain `wambito.com`.
   CI deploys it as a new Worker.
-- **Risk:** the domain is attached to `lukitas-landing`. The plan checks Cloudflare's docs for what
-  a non-interactive `wrangler deploy` does with a custom domain held by another Worker. If it
-  fails, the runbook says: right before merging PR A, detach the custom domain from
-  `lukitas-landing` in the dashboard (the landing is down only while CI deploys). The old Worker is
-  deleted afterwards.
+- The domain is attached to `lukitas-landing` today. Checked in wrangler 4.151.3 (the version CI
+  pins): without a TTY, `wrangler deploy` sets `override_existing_origin`, so CI moves
+  `wambito.com` to the new Worker with no gap. The founder deletes `lukitas-landing` afterwards.
+  If the move fails anyway, CI's deploy step fails and the old Worker keeps serving; the fix is to
+  detach the domain from `lukitas-landing` in the dashboard and re-run the job.
 
 ### 5.5 Docs
 
