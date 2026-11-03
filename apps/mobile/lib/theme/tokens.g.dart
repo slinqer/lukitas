@@ -31,6 +31,8 @@ class WambitoColors {
     required this.gold,
     required this.onGold,
     required this.candy,
+    required this.brandPlum,
+    required this.brandGold,
     required this.wambiShadow,
     required this.chartIncome,
     required this.chartExpense,
@@ -123,6 +125,12 @@ class WambitoColors {
   /// Logo gradient end and celebration confetti. Decorative only.
   final Color candy;
 
+  /// App icon background and logo tile, and the coin's features (docs/brand/wambito-icon.svg); never under body text.
+  final Color brandPlum;
+
+  /// The app icon's coin (docs/brand/wambito-icon.svg), sampled from the chosen concept; the UI's own gold is the gold token. Never under text.
+  final Color brandGold;
+
   /// The soft ground shadow under the landing's traveling Wambi: the center of a radial ellipse that fades to transparent. Decorative only.
   final Color wambiShadow;
 
@@ -194,6 +202,8 @@ class WambitoColors {
     gold: Color(0xFFFFE66D),
     onGold: Color(0xFF15122B),
     candy: Color(0xFFFF8FD8),
+    brandPlum: Color(0xFF422145),
+    brandGold: Color(0xFFFAC417),
     wambiShadow: Color(0xC7060414),
     chartIncome: Color(0xFF7CFFB2),
     chartExpense: Color(0xFFFF5C7A),
@@ -236,6 +246,8 @@ class WambitoColors {
     gold: Color(0xFFFFD23F),
     onGold: Color(0xFF221A47),
     candy: Color(0xFFE0408F),
+    brandPlum: Color(0xFF422145),
+    brandGold: Color(0xFFFAC417),
     wambiShadow: Color(0x384A2BBF),
     chartIncome: Color(0xFF22A268),
     chartExpense: Color(0xFF760E2D),

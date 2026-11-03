@@ -174,6 +174,33 @@ async function expectHeaderFits(
   ).toBeLessThanOrEqual(0);
 }
 
+test("the tab and home-screen icons are the Wambito coin, none named after the mascot", async ({
+  page,
+  request,
+}) => {
+  await page.goto("/");
+  const links = await page
+    .locator("head link[rel='icon'], head link[rel='apple-touch-icon']")
+    .evaluateAll((els) => els.map((el) => [el.getAttribute("rel"), el.getAttribute("href")]));
+  expect(links).toEqual([
+    ["icon", "/favicon.ico"],
+    ["icon", "/favicon.svg"],
+    ["apple-touch-icon", "/apple-touch-icon.png"],
+  ]);
+  const types = { ico: "image/", svg: "image/svg+xml", png: "image/png" } as const;
+  for (const [, href] of links) {
+    const response = await request.get(href ?? "");
+    expect(response.status(), href ?? "").toBe(200);
+    const ext = (href ?? "").split(".").pop() as keyof typeof types;
+    expect(response.headers()["content-type"]).toContain(types[ext]);
+  }
+  // The landing never links a file named after the mascot module (see vite.config.ts).
+  const hrefs = await page
+    .locator("head link[href]")
+    .evaluateAll((els) => els.map((el) => el.getAttribute("href") ?? ""));
+  expect(hrefs.filter((href) => /wambi/i.test(href.split("/").pop() ?? ""))).toEqual([]);
+});
+
 for (const l of LOCALES) {
   test.describe(`landing-only (${l.locale})`, () => {
     test("the calls to action are one coming-soon link to GitHub, hero and closing", async ({
@@ -490,10 +517,14 @@ test.describe("landing-only build output", () => {
       [
         "404.html",
         "_headers",
+        "apple-touch-icon.png",
         "assets",
         // The logo image of the sign-in email, linked from the mails themselves (public/email).
         "email",
         "en",
+        // The tab and home-screen icons (docs/brand/wambito-icon.svg).
+        "favicon.ico",
+        "favicon.svg",
         "index.html",
         "it",
         "wambi",
