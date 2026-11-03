@@ -35,7 +35,7 @@ mkdir -p ~/.wambito-signing && chmod 700 ~/.wambito-signing
 "$JAVA_HOME/bin/keytool" -genkeypair \
   -keystore ~/.wambito-signing/wambito-release.p12 -storetype PKCS12 \
   -alias lukitas -keyalg RSA -keysize 4096 -validity 10000 \
-  -dname "CN=Wambito, O=Anderson Laverde"
+  -dname "CN=Wambito, O=<your name>"
 chmod 600 ~/.wambito-signing/wambito-release.p12
 ```
 
