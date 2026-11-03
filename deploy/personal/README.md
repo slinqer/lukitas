@@ -581,8 +581,9 @@ Everything else stays as it was: the passwords, `BETTER_AUTH_SECRET` (sessions s
 `PUBLIC_HOSTNAME`, `COMPOSE_FILE`, mail, and `BACKUP_AGE_RECIPIENT`. **The age key is not
 regenerated**: the same private key opens the old `lukitas-*.dump.age` copies and the new
 `wambito-*.dump.age` ones. When you need it in a file, save it as `wambito-backup.key`; its entry
-in the password manager can keep its old name. `grep -n -i luk ~/wambito/deploy/personal/.env`
-should print nothing left to change.
+in the password manager can keep its old name.
+`grep -n -i '^[A-Z0-9_]*=.*luk' ~/wambito/deploy/personal/.env | cut -d= -f1` should print no
+variable left to change (it prints only the names, never the values).
 
 **4. R2.** In the Cloudflare dashboard, as in [Backups in Cloudflare R2](#backups-in-cloudflare-r2):
 a bucket `wambito-backups` with the same 14-day lifecycle rule, and an API token with **Object Read
@@ -623,16 +624,19 @@ names, so it never prunes a `lukitas-*` file, here or anywhere.
    sudo install -o wambito -g wambito -m 600 ~/Backups/lukitas/lukitas-YYYY-MM-DD.dump ~wambito/Backups/wambito/
    ```
 5. As `wambito`, bring up the new stack (it builds the web app, makes the empty volume
-   `wambito-personal-db`, migrates and creates the role `wambito_app`), then restore the dump into
-   it (type `restore` when asked):
+   `wambito-personal-db`, migrates and creates the role `wambito_app`), close the app again at
+   once, so no phone signs out against the empty database and nothing is saved into it, then
+   restore the dump (type `restore` when asked):
 
    ```sh
    cd ~/wambito/deploy/personal
    ./up.sh
+   docker compose stop web api mcp
    ./restore.sh ~/Backups/wambito/lukitas-YYYY-MM-DD.dump
    ```
 
-   `./up.sh --skip-web` does not work here: the new checkout has no web build yet. The restore
+   `./up.sh --skip-web` does not work here: the new checkout has no web build yet. `restore.sh`
+   starts the database itself, and starts `api`, `mcp` and `web` again once the dump is live. It
    keeps the empty database it replaces as `wambito_before_<time>` (drop it later, step 8).
 6. Check it: `./smoke.sh`; sign in at `https://app.wambito.com` (the phone should still be signed
    in, and your data is there); ask a connected assistant something through the MCP (for example,
@@ -678,7 +682,10 @@ Leave the old automatic deploy off: `main` now holds PR B, and the old checkout'
 `./update.sh`, which pulls) would build it under the old user. Find what failed, then start again
 from step 5.
 
-**8. After a week without problems** (you decide when). As `<old>`, the old stack and its data:
+**8. After a week without problems, and no later than 14 days after the cutover.** Since step 6
+nothing prunes the old dumps in `~/Backups/lukitas`, the copy from 5.4 or the old volume, and they
+still hold the accounts deleted since the cutover: past 14 days they break the promise that
+deleted accounts are gone from every backup. As `<old>`, the old stack and its data:
 
 ```sh
 cd ~/lukitas/deploy/personal
@@ -691,6 +698,7 @@ The `lukitas` database and the `lukas_app` role lived in that volume, so they ar
 Then log out, and as `wambito`:
 
 ```sh
+sudo loginctl terminate-user <old>    # ends its sessions and processes, or deluser refuses
 sudo deluser --remove-home <old>      # its checkout, .env, ~/Backups/lukitas
 rm ~/Backups/wambito/lukitas-*.dump   # the dump from 5.4: retention never prunes it
 cd ~/wambito/deploy/personal
