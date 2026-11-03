@@ -193,7 +193,7 @@ describe("batches", () => {
     const row = (i: number, guest: boolean) => ({
       id: `bulk-${String(i).padStart(4, "0")}`,
       name: `Bulk ${i}`,
-      email: guest ? `bulk-${i}@guest.lukitas.invalid` : "member-in-the-middle@wambito.test",
+      email: guest ? `bulk-${i}@guest.wambito.invalid` : "member-in-the-middle@wambito.test",
       isAnonymous: guest,
       createdAt: old,
       updatedAt: old,

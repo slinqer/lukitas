@@ -60,7 +60,7 @@ describe("guest sign-up, open (with an allowlist set)", () => {
     // No email was sent, and the placeholder address never resolves.
     expect(t.mailer.sent).toHaveLength(0);
     const [stored] = await t.admin.select().from(user).where(eq(user.id, created.id));
-    expect(stored?.email).toMatch(/@guest\.lukitas\.invalid$/);
+    expect(stored?.email).toMatch(/@guest\.wambito\.invalid$/);
   });
 
   test("an email user is not anonymous", async () => {

@@ -60,9 +60,9 @@ describe("SMTP transport TLS", () => {
 });
 
 describe("undeliverable addresses", () => {
-  // Guests get placeholder emails under guest.lukitas.invalid: the .invalid TLD never resolves, and
+  // Guests get placeholder emails under guest.wambito.invalid: the .invalid TLD never resolves, and
   // nothing may ever be mailed there.
-  const placeholder = "temp-abc123@guest.lukitas.invalid";
+  const placeholder = "temp-abc123@guest.wambito.invalid";
 
   test("every mailer refuses an address under .invalid, and records nothing", async () => {
     const memory = new MemoryMailer();

@@ -167,7 +167,7 @@ void main() {
   test('isGuest reads isAnonymous from /v1/me with the bearer token', () async {
     adapter.replies['GET /api/v1/me'] = const _Reply(200, {
       'id': 'u1',
-      'email': 'x@guest.lukitas.invalid',
+      'email': 'x@guest.wambito.invalid',
       'timezone': 'America/Bogota',
       'locale': 'es',
       'onboardingCompletedAt': null,

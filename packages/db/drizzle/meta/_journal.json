@@ -50,6 +50,13 @@
       "when": 1792733999251,
       "tag": "0006_guest_last_active",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793730342371,
+      "tag": "0007_guest_domain",
+      "breakpoints": true
     }
   ]
 }

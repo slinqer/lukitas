@@ -149,6 +149,8 @@ apps/mobile/android/app/src/test/kotlin/com/wambito/app/launch/LaunchLinksTest.k
 # --- history ---
 docs/superpowers/**                                        # history
 CONTRIBUTING.md                                            # history
+packages/db/drizzle/0007_guest_domain.sql                  # history
+packages/db/test/guest-domain.test.ts                      # history
 
 # --- docs-rule: the agent maps, which name the money slang and the 2b names as rules ---
 AGENTS.md  # docs-rule

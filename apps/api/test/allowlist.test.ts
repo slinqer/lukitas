@@ -19,12 +19,12 @@ describe("isSignInAllowed", () => {
   });
 
   test("never an address under .invalid (a guest's placeholder), list or no list", () => {
-    expect(isSignInAllowed({}, "temp-abc@guest.lukitas.invalid")).toBe(false);
+    expect(isSignInAllowed({}, "temp-abc@guest.wambito.invalid")).toBe(false);
     expect(isSignInAllowed({}, " Temp-ABC@Guest.Lukitas.INVALID. ")).toBe(false);
     expect(
       isSignInAllowed(
-        { SIGN_IN_ALLOWLIST: ["x@guest.lukitas.invalid"] },
-        "x@guest.lukitas.invalid",
+        { SIGN_IN_ALLOWLIST: ["x@guest.wambito.invalid"] },
+        "x@guest.wambito.invalid",
       ),
     ).toBe(false);
   });
