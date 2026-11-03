@@ -48,7 +48,8 @@ void main() {
     expect(alias, contains('android:host="due"'));
     expect(alias.split('android:host="due"').length - 1, 1);
     expect(manifest.split('android:host="due"').length - 1, 1);
-    expect(manifest, isNot(contains('android:scheme="lukitas"')));
+    final schemes = RegExp(r'android:scheme="([^"]+)"').allMatches(manifest).map((m) => m[1]);
+    expect(schemes.toSet(), {'wambito', 'https'});
     expect(alias, contains('android:scheme="wambito" android:host="due"'));
     // No Firebase, no push receiver: both notices are scheduled on the phone.
     expect(manifest, isNot(contains('firebase')));

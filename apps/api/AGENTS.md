@@ -35,7 +35,7 @@ Hono + Better Auth + Drizzle (`@wambito/db`), OpenAPI document "Wambito API". Ev
 
 ## Traps
 
-- See root `AGENTS.md`: 2b names (DB role and name, guests' email domain), secrets.
+- See root `AGENTS.md`: secrets.
 - Better Auth tables: `pnpm --filter @wambito/api auth:generate` writes
   `packages/db/src/schema/auth.ts`; then add a migration in `packages/db`.
 - Rate limits trust one X-Forwarded-For hop set by Caddy: `docs/deploy/api.md`.

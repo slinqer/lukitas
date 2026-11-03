@@ -81,10 +81,10 @@ void main() {
       expect(launchActionOf(null), isNull);
     });
 
-    test('a lukitas:// link is not a launch link', () {
-      expect(launchActionOf('lukitas://add'), isNull);
-      expect(launchActionOf('lukitas://capture'), isNull);
-      expect(launchActionOf('lukitas://due'), isNull);
+    test('a link in another scheme is not a launch link', () {
+      expect(launchActionOf('other://add'), isNull);
+      expect(launchActionOf('other://capture'), isNull);
+      expect(launchActionOf('other://due'), isNull);
     });
 
     test('the links the app builds say wambito://', () {

@@ -159,11 +159,11 @@ void main() {
     }
   });
 
-  test('Italian and Portuguese do not use the Colombian slang or call the app Lukas', () {
+  test('Italian and Portuguese do not use the Colombian slang', () {
     final slang = RegExp(r'(?<![\p{L}])(lukas?|lucas|palos?)(?![\p{L}])', unicode: true);
     for (final language in ['it', 'pt']) {
       for (final key in _messageKeys(arbs[language]!)) {
-        // A web address (the repository is named lukas) is not copy.
+        // A web address is not copy.
         final copy = (arbs[language]![key] as String).replaceAll(RegExp(r'https?://\S+'), '');
         expect(copy, isNot(matches(slang)), reason: '$language "$key"');
       }

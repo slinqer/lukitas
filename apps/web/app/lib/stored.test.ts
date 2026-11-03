@@ -34,10 +34,10 @@ describe("readStored", () => {
     expect(readStored("theme", storage)).toBe("night");
   });
 
-  it("an old lukas.* key is neither read nor removed", () => {
-    const storage = memoryStorage({ "lukas.theme": "night" });
+  it("a key under another prefix is neither read nor removed", () => {
+    const storage = memoryStorage({ "other.theme": "night" });
     expect(readStored("theme", storage)).toBeNull();
-    expect(storage.data.get("lukas.theme")).toBe("night");
+    expect(storage.data.get("other.theme")).toBe("night");
     expect(storage.data.has("wambito.theme")).toBe(false);
   });
 

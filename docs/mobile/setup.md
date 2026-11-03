@@ -104,21 +104,27 @@ It is pinned to Node 22 with ICU 78.2 (tz 2025c) and stops on any other, or if t
 update, change the versions at the top of the script and replace `tool/zone.tab` together. The app's clock reads every
 id: they must all be in the `timezone` package's `latest_all` database (the test checks).
 
-## Emulator (AVD `lukitas-api36`)
+## Emulator (AVD `wambito-api36`)
 
-Create it once. The AVD keeps the name `lukitas-api36` (it is a label on your machine, made before the rename; any name works if you change the commands below):
+Create it once (the name is a label on your machine; any name works if you change the commands below):
 
 ```sh
 export JAVA_HOME=~/development/jdk/jdk-17.0.21+9/Contents/Home
-echo no | avdmanager create avd -n lukitas-api36 \
+echo no | avdmanager create avd -n wambito-api36 \
   -k "system-images;android-36;default;arm64-v8a" -d pixel_8
+```
+
+An AVD made before the rename is named `lukitas-api36`. Once `wambito-api36` boots, delete the old one:
+
+```sh
+JAVA_HOME=~/development/jdk/jdk-17.0.21+9/Contents/Home avdmanager delete avd -n lukitas-api36
 ```
 
 Run it:
 
 ```sh
-emulator -avd lukitas-api36                                    # with a window
-emulator -avd lukitas-api36 -no-window -no-audio -gpu swiftshader_indirect   # headless, for integration tests
+emulator -avd wambito-api36                                    # with a window
+emulator -avd wambito-api36 -no-window -no-audio -gpu swiftshader_indirect   # headless, for integration tests
 adb wait-for-device shell 'while [ "$(getprop sys.boot_completed)" != 1 ]; do sleep 1; done'
 flutter devices
 adb emu kill                                                   # stop it
@@ -134,7 +140,7 @@ reaches the Mac at `10.0.2.2`; debug builds allow plain HTTP for it.
 
 ```sh
 docker compose up -d                                           # from the repo root
-emulator -avd lukitas-api36 -no-window -no-audio -gpu swiftshader_indirect &
+emulator -avd wambito-api36 -no-window -no-audio -gpu swiftshader_indirect &
 adb wait-for-device shell 'while [ "$(getprop sys.boot_completed)" != 1 ]; do sleep 1; done'
 cd apps/mobile
 flutter test integration_test -d emulator-5554 \

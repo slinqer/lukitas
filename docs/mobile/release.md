@@ -20,7 +20,7 @@ Pre-release suffixes (`-rc1`) are refused: tags are `mobile-vX.Y.Z` and nothing 
 
 ## The signing key (once)
 
-The key, its folder and its alias keep the name `lukitas` (`~/.lukitas-signing`, `lukitas-release.p12`, alias `lukitas`): they are labels on your disk and inside the key, and the key itself is what identifies the app, so they stay as they are (part 2b may move the folder).
+The keystore lives in `~/.wambito-signing/wambito-release.p12`. Its alias stays `lukitas`: the alias is written inside the key, and changing it means re-keying, which would stop every installed copy from updating.
 
 Use JDK 17's `keytool` (setup.md puts it in `~/development/jdk`). The keystore goes outside every repository; keytool asks for the password, so it never touches a shell history. 
 **Back it up before you hand out a single APK.** If the keystore or its password is lost, every installed copy of the app can never be updated: Android refuses an update signed with a different key, so people would have to uninstall (losing a guest's data on the phone's side) and install again, and `ANDROID_CERT_SHA256` and the passkeys tied to it would have to change. Nobody, including F-Droid, can recover it.
@@ -31,13 +31,27 @@ Use JDK 17's `keytool` (setup.md puts it in `~/development/jdk`). The keystore g
 
 ```sh
 export JAVA_HOME=~/development/jdk/jdk-17.0.21+9/Contents/Home
-mkdir -p ~/.lukitas-signing && chmod 700 ~/.lukitas-signing
+mkdir -p ~/.wambito-signing && chmod 700 ~/.wambito-signing
 "$JAVA_HOME/bin/keytool" -genkeypair \
-  -keystore ~/.lukitas-signing/lukitas-release.p12 -storetype PKCS12 \
+  -keystore ~/.wambito-signing/wambito-release.p12 -storetype PKCS12 \
   -alias lukitas -keyalg RSA -keysize 4096 -validity 10000 \
   -dname "CN=Wambito, O=Anderson Laverde"
-chmod 600 ~/.lukitas-signing/lukitas-release.p12
+chmod 600 ~/.wambito-signing/wambito-release.p12
 ```
+
+### Moving a key made under the old folder name
+
+A key made before the rename sits in `~/.lukitas-signing/lukitas-release.p12`. Move it once; it is the same key, so the backups in the password manager and offline stay as they are:
+
+```sh
+export JAVA_HOME=~/development/jdk/jdk-17.0.21+9/Contents/Home
+mkdir -p ~/.wambito-signing && chmod 700 ~/.wambito-signing
+cp ~/.lukitas-signing/lukitas-release.p12 ~/.wambito-signing/wambito-release.p12
+chmod 600 ~/.wambito-signing/wambito-release.p12
+"$JAVA_HOME/bin/keytool" -list -keystore ~/.wambito-signing/wambito-release.p12 -alias lukitas
+```
+
+Only when that prints the same `SHA256` fingerprint as the one written next to the backup, remove the old folder: `rm -r ~/.lukitas-signing`.
 
 ## Building the first APK
 
@@ -51,12 +65,12 @@ chmod 600 ~/.lukitas-signing/lukitas-release.p12
 | `WAMBITO_KEY_PASSWORD` | the key's password; leave it unset for a PKCS12 keystore like the one above (same as the keystore's) |
 
 ```sh
-cd ~/projects/lukas                  # the folder is renamed in part 2b
+cd ~/projects/wambito
 git checkout main && git pull
 git tag mobile-v1.0.0                  # the release; the script builds the commit the tag points at
                                        # (push the tag once the APK is checked: F-Droid reads tags)
 export PATH="$HOME/development/flutter/bin:$PATH"
-export WAMBITO_KEYSTORE=~/.lukitas-signing/lukitas-release.p12
+export WAMBITO_KEYSTORE=~/.wambito-signing/wambito-release.p12
 export WAMBITO_KEY_ALIAS=lukitas
 printf 'Keystore password: '; read -rs WAMBITO_KEYSTORE_PASSWORD; echo; export WAMBITO_KEYSTORE_PASSWORD
 apps/mobile/scripts/release.sh

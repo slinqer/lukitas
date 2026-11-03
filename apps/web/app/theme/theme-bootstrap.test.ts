@@ -3,8 +3,8 @@ import { resolveTheme, THEME_BOOTSTRAP_SCRIPT } from "./theme-bootstrap.ts";
 
 interface Env {
   stored?: string | null;
-  /** What is kept under the old key (`lukas.theme`), from before the rename. */
-  oldStored?: string;
+  /** What is kept under a key with another prefix (`other.theme`). */
+  otherStored?: string;
   prefersDark?: boolean;
   storageThrows?: boolean;
   noMatchMedia?: boolean;
@@ -16,7 +16,7 @@ function run(env: Env): { theme: string | undefined; data: Map<string, string> }
   const document = { documentElement: { dataset } };
   const data = new Map<string, string>();
   if (env.stored != null) data.set("wambito.theme", env.stored);
-  if (env.oldStored != null) data.set("lukas.theme", env.oldStored);
+  if (env.otherStored != null) data.set("other.theme", env.otherStored);
   const localStorage = {
     getItem(key: string) {
       if (env.storageThrows) throw new Error("storage blocked");
@@ -72,10 +72,10 @@ describe("THEME_BOOTSTRAP_SCRIPT (theme flash)", () => {
     expect(run({ storageThrows: true, prefersDark: true }).theme).toBe("night");
   });
 
-  it("an old lukas.theme is neither read nor removed", () => {
-    const { theme, data } = run({ oldStored: "day", prefersDark: true });
+  it("a theme under another prefix is neither read nor removed", () => {
+    const { theme, data } = run({ otherStored: "day", prefersDark: true });
     expect(theme).toBe("night");
-    expect(data.get("lukas.theme")).toBe("day");
+    expect(data.get("other.theme")).toBe("day");
     expect(data.has("wambito.theme")).toBe(false);
   });
 

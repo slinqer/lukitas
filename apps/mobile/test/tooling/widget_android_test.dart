@@ -100,15 +100,15 @@ void main() {
     for (final host in ['add', 'capture', 'due', 'progress', 'home']) {
       expect(alias, contains('android:scheme="wambito" android:host="$host"'));
     }
-    expect(alias, isNot(contains('lukitas')));
+    final aliasSchemes = RegExp(r'android:scheme="([^"]+)"').allMatches(alias).map((m) => m[1]);
+    expect(aliasSchemes.toSet(), {'wambito'});
     expect(alias, isNot(contains('BROWSABLE')));
-    // The exported launcher activity takes no app link of either scheme: other apps can start it.
+    // The exported launcher activity takes no wambito:// link: other apps can start it.
     final main = RegExp(
       r'<activity\s((?:(?!</activity>).)*)</activity>',
       dotAll: true,
     ).firstMatch(_manifest)!.group(1)!;
     expect(main, contains('android:name=".MainActivity"'));
-    expect(main, isNot(contains('lukitas')));
     expect(main, isNot(contains('android:scheme="wambito"')));
   });
 

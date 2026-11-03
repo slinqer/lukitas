@@ -8,7 +8,7 @@ import { expect, type Page, test } from "@playwright/test";
  */
 
 const ORIGIN = "https://wambito.test";
-const GITHUB = "https://github.com/slinqer/lukitas";
+const GITHUB = "https://github.com/slinqer/wambito";
 
 const LOCALES = [
   {

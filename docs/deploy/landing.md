@@ -71,7 +71,14 @@ cd deploy/landing && npx wrangler@4 deploy
 ```
 
 The first run asks you to sign in to Cloudflare (`npx wrangler@4 login`). Every run publishes a new
-version of the `lukitas-landing` Worker (renamed in part 2b).
+version of the `wambito-landing` Worker.
+
+The Worker was named `lukitas-landing` before the rename. A new name is a new Worker: the first
+deploy of `wambito-landing` (from CI, which has no TTY, so wrangler takes the custom domain over
+from the old Worker) moves `wambito.com` to it. Afterwards delete `lukitas-landing` by hand in the
+Cloudflare dashboard (Workers & Pages → `lukitas-landing` → Settings → Delete). If that first
+deploy fails because the domain is still attached to the old Worker, the old one keeps serving:
+detach `wambito.com` from `lukitas-landing` in the dashboard and re-run the `deploy-landing` job.
 
 - `not_found_handling: "404-page"` serves `404.html` with a 404 status for unknown paths.
 - `html_handling: "drop-trailing-slash"` serves `/en` directly (matching the canonical link) and

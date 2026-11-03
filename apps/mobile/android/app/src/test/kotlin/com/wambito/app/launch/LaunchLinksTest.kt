@@ -46,16 +46,16 @@ class LaunchLinksTest {
     }
 
     @Test
-    fun `lukitasLinkIsIgnored, and the app builds only wambito`() {
+    fun `anotherSchemeIsIgnored, and the app builds only wambito`() {
         assertEquals("wambito", LaunchLinks.SCHEME)
         for (host in listOf("add", "capture", "due", "progress", "home")) {
-            assertNull(LaunchLinks.linkOf(viaAlias("lukitas://$host")))
+            assertNull(LaunchLinks.linkOf(viaAlias("other://$host")))
             assertEquals("wambito://$host", LaunchLinks.linkOf(viaAlias("wambito://$host")))
         }
         for (link in listOf(LaunchLinks.ADD, LaunchLinks.CAPTURE, LaunchLinks.DUE, LaunchLinks.PROGRESS, LaunchLinks.HOME)) {
             assertEquals("wambito", link.scheme)
         }
-        assertNull(LaunchLinks.linkOf(viaAlias("lukas://add")))
+        assertNull(LaunchLinks.linkOf(viaAlias("wambi://add")))
         // A wambito:// link is not a web link for the router.
         assertFalse(LaunchLinks.isWebLink(viaAlias("wambito://capture")))
     }

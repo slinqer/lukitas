@@ -86,7 +86,7 @@ object LaunchLinks {
         return !isForeignWebLink(intent, serverHost)
     }
 
-    /** Whether [intent] opens a link that is not one of the app's own (`wambito://`, `lukitas://` until 2b). */
+    /** Whether [intent] opens a link in any scheme that is not `wambito://` (the app's own). */
     fun isWebLink(intent: Intent?): Boolean {
         if (intent == null || intent.action != Intent.ACTION_VIEW) return false
         val data = intent.data ?: return false

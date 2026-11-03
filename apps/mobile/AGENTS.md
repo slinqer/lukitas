@@ -44,8 +44,8 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
 
 ## Traps
 
-- See root `AGENTS.md`: money slang, 2b names, secrets (the signing keystore too). Here the slang
-  lives in `lib/capture/parser/`, `lib/capture/engine/`, `lib/money/format.dart` and the ARBs.
+- See root `AGENTS.md`: money slang, the signing key's alias, secrets (the keystore too). Here
+  the slang lives in `lib/capture/parser/`, `lib/capture/engine/`, `lib/money/format.dart` and the ARBs.
 - Persistent state on phones: prefs file names, WorkManager unique names (`wambito.widget.refresh`,
   `wambito.widget.midnight`, `wambito.notice.due`, `wambito.notice.guest`), widget receiver classes
   (renaming removes placed widgets), the snapshot key. Changing any needs a migration.

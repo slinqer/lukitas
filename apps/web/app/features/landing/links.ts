@@ -5,7 +5,7 @@ import { APP_ORIGIN, LANDING_ONLY } from "../../site/config.ts";
 export const DEMO_PATH = "/demo";
 
 /** The source code: Wambito is open source (AGPL-3.0). Opened in a new tab. */
-export const GITHUB_HREF = "https://github.com/slinqer/lukitas";
+export const GITHUB_HREF = "https://github.com/slinqer/wambito";
 
 /**
  * Where "Empieza ahora" and "Entrar" go: sign-in, told which language the visitor came from
