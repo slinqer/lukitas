@@ -32,7 +32,7 @@
 
 ## PR A — code (branch `feat/part-2b-code`, from `main` after the spec branch is merged)
 
-Precondition (founder, before the PR is merged): the repository is renamed to `slinqer/wambito` on GitHub, and `git remote set-url origin git@github.com:slinqer/wambito.git` is run on the Mac.
+Precondition (founder, before the PR is merged): the repository is renamed to `slinqer/wambito` on GitHub, and `git remote set-url origin git@github.com:slinqer/wambito.git` is run on the Mac. On the VPS, right after the rename: `git -C ~/lukitas remote set-url origin <the new URL, in the form the VPS uses>`, and `DEPLOY_GITHUB_REPO=slinqer/wambito` in its `deploy/personal/.env` if that variable is set. Without it, `auto-deploy.sh` (curl without `-L`) gets a 301 from the GitHub API, reads the CI state as pending forever, and PR A never deploys.
 
 ### Task 1: Grants in the bootstrap, and the role named `wambito_app`
 
@@ -148,7 +148,7 @@ Precondition (founder, before the PR is merged): the repository is renamed to `s
 
 ### Task 9: Open PR A
 
-- [ ] **Step 1:** Push `feat/part-2b-code`, open the PR to `main`. The body lists the founder's steps: repository renamed **before** the merge; after the merge, check the landing at `wambito.com`, sign in at `app.wambito.com`, then build and install the APK (`docs/mobile/release.md`) and check the session survived and widgets and links open.
+- [ ] **Step 1:** Push `feat/part-2b-code`, open the PR to `main`. The body lists the founder's steps: repository renamed **before** the merge; right after the rename, on the VPS, `git -C ~/lukitas remote set-url origin <new URL>` and `DEPLOY_GITHUB_REPO=slinqer/wambito` in its `.env` if set; after the merge, check the landing at `wambito.com`, sign in at `app.wambito.com`, then build and install the APK (`docs/mobile/release.md`) and check the session survived and widgets and links open.
 - [ ] **Step 2:** CI green (`check`, `e2e`, `mobile`, `mobile-build`).
 
 ---
@@ -158,10 +158,10 @@ Precondition (founder, before the PR is merged): the repository is renamed to `s
 ### Task 10: Compose project, volume and images
 
 **Files:**
-- Modify: `deploy/personal/docker-compose.yml` (`name:`, `POSTGRES_USER`, `POSTGRES_DB`, the URLs, image names, `DB_VOLUME_NAME` default), `deploy/personal/docker-compose.direct.yml` (if it names any), `deploy/personal/lib.sh:132,181` (`psql -U wambito`, volume default), `deploy/personal/up.sh:79`, `deploy/personal/smoke.sh` (if it names any), `deploy/personal/.env.example` (`DB_VOLUME_NAME`, `DEPLOY_GITHUB_REPO=slinqer/wambito`, the role comment, the tunnel name, `age-keygen -o wambito-backup.key`, `BACKUP_R2_BUCKET` example), `deploy/personal/cloudflared.yml:1`
-- Test: `deploy/personal/test-compose-files.sh`
+- Modify: `deploy/personal/docker-compose.yml` (`name:`, `POSTGRES_USER`, `POSTGRES_DB`, the URLs, image names, `DB_VOLUME_NAME` default), `deploy/personal/docker-compose.direct.yml` (if it names any), `deploy/personal/lib.sh:132,181` (`psql -U wambito`, volume default), `deploy/personal/up.sh:79`, `deploy/personal/smoke.sh` (if it names any), `deploy/personal/auto-deploy.sh` (`curl -fsSL`, so a renamed repository's 301 is followed), `deploy/personal/.env.example` (`DB_VOLUME_NAME`, `DEPLOY_GITHUB_REPO=slinqer/wambito`, the role comment, the tunnel name, `age-keygen -o wambito-backup.key`, `BACKUP_R2_BUCKET` example), `deploy/personal/cloudflared.yml:1`
+- Test: `deploy/personal/test-compose-files.sh`, `deploy/personal/test-auto-deploy.sh`
 
-- [ ] **Step 1: Failing checks** in `test-compose-files.sh`: `docker compose config --format json | jq -r .name` is `wambito-personal`; the `db` volume's `name` is `wambito-personal-db`; the api's `DATABASE_URL` user is `wambito_app` and its database `wambito`; images are `wambito-api:personal`, `wambito-mcp:personal`, `wambito-web:personal`.
+- [ ] **Step 1: Failing checks** in `test-auto-deploy.sh`: the fake `curl` records its arguments (`args %s`) and a case asserts that `-L` (or `-fsSL`) is among them, so a 301 from the API is followed. In `test-compose-files.sh`: `docker compose config --format json | jq -r .name` is `wambito-personal`; the `db` volume's `name` is `wambito-personal-db`; the api's `DATABASE_URL` user is `wambito_app` and its database `wambito`; images are `wambito-api:personal`, `wambito-mcp:personal`, `wambito-web:personal`.
 - [ ] **Step 2: Run** `cd deploy/personal && ./test-compose-files.sh` → FAIL.
 - [ ] **Step 3: Implement**; update the command the test expects `restore.sh` to print.
 - [ ] **Step 4: Run** → PASS. **Commit** `feat(deploy): the personal stack is wambito-personal`.

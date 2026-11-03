@@ -70,7 +70,7 @@ To run the API outside Docker, start only the services with `docker compose up -
 docker compose stop
 ```
 
-Run it from the repository root. It stops only this dev stack (`wambito-api`, `wambito-postgres`, `wambito-mailpit`, the compose project `wambito`) and keeps its data; `docker compose up -d` brings it back. The personal install (see [deploy/personal](deploy/personal/README.md)) is a separate stack and keeps running. The stack started under the old name used another volume, so `wambito` starts empty: find the old one with `docker volume ls` and remove it with `docker volume rm <name>` once you do not need it. Never use `docker compose down -v` here: `-v` deletes the dev database volume.
+Run it from the repository root. It stops only this dev stack (`wambito-api`, `wambito-postgres`, `wambito-mailpit`, the compose project `wambito`) and keeps its data; `docker compose up -d` brings it back. The personal install (see [deploy/personal](deploy/personal/README.md)) is a separate stack and keeps running. The stack started under the old name used another volume, so `wambito` starts empty: find the old one with `docker volume ls` and remove it with `docker volume rm <name>` once you do not need it. If containers from the old project (`lukas-*`) are still running, they keep ports 5433, 3000 and 8025 and `docker compose up -d` fails: run `docker compose -p lukas stop` first. A root `.env` copied from the previous `.env.example` has `lukas_app` URLs that no longer work: copy `.env.example` to `.env` again. Never use `docker compose down -v` here: `-v` deletes the dev database volume.
 
 ### Web app
 

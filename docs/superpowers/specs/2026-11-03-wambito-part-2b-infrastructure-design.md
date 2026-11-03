@@ -139,6 +139,8 @@ The extra role disappears with the old volume (§4.2, step 8). After PR A every 
   never pruned by the new stack. `restore.sh` accepts a file with either prefix.
 - **`.env.example` and the README:** `DEPLOY_GITHUB_REPO=slinqer/wambito`; the tunnel name in the
   docs; the README loses every "until part 2b" note.
+- **`auto-deploy.sh`:** its `curl` gains `-L`, so a future repository rename cannot stall the
+  CI check with a 301.
 - **Allowlist:** `deploy/personal/**` leaves it. Nothing in the folder names the old app.
 
 ### 4.2 The runbook (the founder runs it; the README's new "Moving from the old names" section)
@@ -204,7 +206,12 @@ The extra role disappears with the old volume (§4.2, step 8). After PR A every 
 ### 5.2 The repository
 
 - **The founder renames it on GitHub (Settings → Rename) before merging PR A.** GitHub redirects
-  the old web URLs, git remotes and the API, so the VPS keeps deploying in between.
+  the old web URLs and git remotes, so `git fetch` on the VPS keeps working. It does not follow
+  the API: `auto-deploy.sh` asks for check runs with `curl -fsS` (no `-L`) and gets a 301, so the
+  CI state reads "pending" forever and PR A never deploys. The VPS runs the script it already
+  has, so the fix is a step on the VPS, right after the rename: `git -C ~/lukitas remote set-url
+  origin <the new URL, in the form the VPS uses, SSH or HTTPS>`, and `DEPLOY_GITHUB_REPO=
+  slinqer/wambito` in its `deploy/personal/.env` if that variable is set there.
 - PR A: `GITHUB_HREF`, the landing's e2e and stories, the four fastlane descriptions, the
   licence strings in the four ARB files, the README and the docs.
 - The Mac's remote: `git remote set-url origin git@github.com:slinqer/wambito.git`.
@@ -267,7 +274,9 @@ Create `wambito-api36` with the command in `setup.md`; `avdmanager delete avd -n
 
 ### 6.5 The order
 
-1. Rename the repository on GitHub; update the Mac's remote.
+1. Rename the repository on GitHub; update the Mac's remote, and the VPS's the same way
+   (`git -C ~/lukitas remote set-url origin <new URL>`, plus `DEPLOY_GITHUB_REPO` in its `.env`
+   if set), so auto-deploy can read the CI state.
 2. PR A: merge → auto-deploy; build and install the APK; check the landing (new Worker).
 3. PR B: switch the deploy timer off → merge → the cutover runbook (§4.2).
 4. Move the signing key; new AVD.

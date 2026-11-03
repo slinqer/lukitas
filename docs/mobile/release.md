@@ -64,6 +64,8 @@ Only when that prints the same `SHA256` fingerprint as the one written next to t
 | `WAMBITO_KEYSTORE_PASSWORD` | the keystore's password |
 | `WAMBITO_KEY_PASSWORD` | the key's password; leave it unset for a PKCS12 keystore like the one above (same as the keystore's) |
 
+Do the key move below (its own section) once, before the first build from these instructions. Until the Mac folder is moved, `cd` into the current checkout instead of `~/projects/wambito`.
+
 ```sh
 cd ~/projects/wambito
 git checkout main && git pull
