@@ -14,6 +14,7 @@ import androidx.work.WorkManager
 import com.wambito.app.files.FilesChannel
 import com.wambito.app.haptics.HapticsChannel
 import com.wambito.app.launch.LaunchLinks
+import com.wambito.app.capture.CaptureChannel
 import com.wambito.app.notices.DueWorker
 import com.wambito.app.notices.GuestWorker
 import com.wambito.app.notices.NOTICE_OUTCOME
@@ -38,6 +39,7 @@ class MainActivity : FlutterActivity() {
     private var haptics: HapticsChannel? = null
     private var sounds: SoundChannel? = null
     private var notices: NoticesChannel? = null
+    private var capture: CaptureChannel? = null
     private var files: FilesChannel? = null
     private var launch: MethodChannel? = null
 
@@ -121,6 +123,9 @@ class MainActivity : FlutterActivity() {
 
         // The two local notices (lib/notices): scheduling them, and the notification permission.
         notices = NoticesChannel(this, messenger)
+
+        // Automatic capture (lib/capture): access, enabled sources, the settings screens.
+        capture = CaptureChannel(this, messenger)
 
         // Files in and out (lib/files): the document picker and the share sheet, no storage permission.
         files = FilesChannel(this, messenger)
@@ -319,6 +324,8 @@ class MainActivity : FlutterActivity() {
         sounds = null
         notices?.dispose()
         notices = null
+        capture?.dispose()
+        capture = null
         files?.dispose()
         files = null
         super.cleanUpFlutterEngine(flutterEngine)

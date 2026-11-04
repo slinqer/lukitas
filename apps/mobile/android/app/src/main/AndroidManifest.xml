@@ -127,6 +127,18 @@
                 <action android:name="android.service.quicksettings.action.QS_TILE"/>
             </intent-filter>
         </service>
+        <!-- Automatic capture (capture/CaptureListener.kt): reads the notifications of the bank apps the
+             person enabled. Only the system may bind it; the person grants access in the phone's
+             settings. No uses-permission line goes with it. -->
+        <service
+            android:name=".capture.CaptureListener"
+            android:exported="true"
+            android:label="Wambito"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService"/>
+            </intent-filter>
+        </service>
         <!-- The share sheet (files/FilesChannel.kt): the file to hand to another app is served from the
              app's cache/shared folder through this provider, with a read grant for that one link. Not
              exported; it asks for no permission. -->

@@ -25,7 +25,10 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
   local notices only; `capture/`: the queue of captures parsed from bank notifications
   (`CaptureQueue`), `CaptureApi` (`POST /v1/captures`, confirm) and WorkManager `SendCapturesWorker`
   (`CaptureHooks` replaces the session and the notifier in tests). The notification text is never
-  queued, sent or logged. Voice: Vosk, never Android's SpeechRecognizer. Passkeys: androidx.credentials.
+  queued, sent or logged. `CaptureListener` (a `NotificationListenerService`) reads only the packages
+  enabled in `CaptureSettings` (prefs `wambito.capture.sources`), hands them to `BankParsers` (empty
+  until real samples exist) and queues the result; `CaptureChannel` is `wambito/capture`: `status`,
+  `setSource`, `openAccessSettings`, `openAppInfo`, `clearQueue` (on sign-out). Voice: Vosk, never Android's SpeechRecognizer. Passkeys: androidx.credentials.
 
 ## Generated
 
