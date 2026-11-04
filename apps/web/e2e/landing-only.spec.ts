@@ -60,7 +60,6 @@ const ROADMAP = {
     path: "/roadmap",
     title: "Lo que viene",
     columns: ["Ya está", "En construcción", "Próximo", "Más adelante"],
-    cta: "Ver el roadmap",
     navLink: "Lo que viene",
     toggleToDay: "Cambiar a modo día",
   },
@@ -68,7 +67,6 @@ const ROADMAP = {
     path: "/en/roadmap",
     title: "What's next",
     columns: ["Live", "Being built", "Next", "Later"],
-    cta: "See the roadmap",
     navLink: "What's next",
     toggleToDay: "Switch to day mode",
   },
@@ -491,11 +489,9 @@ for (const l of LOCALES) {
       await expect(nav.getByRole("button", { name: r.toggleToDay })).toBeVisible();
     });
 
-    test("the landing links to it from its section and from the footer", async ({ page }) => {
+    test("the landing links to it from the footer", async ({ page }) => {
       await page.goto(l.path);
-      await expect(
-        page.locator("#whats-next").getByRole("link", { name: r.cta, exact: true }),
-      ).toHaveAttribute("href", r.path);
+      await expect(page.locator("#whats-next")).toHaveCount(0);
       await expect(
         page.getByRole("contentinfo").getByRole("link", { name: r.navLink }),
       ).toHaveAttribute("href", r.path);

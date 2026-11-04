@@ -35,10 +35,6 @@
       "next": "Próximo",
       "later": "Más adelante"
     },
-    "landing": {
-      "title": "Lo que viene",
-      "cta": "Ver el roadmap"
-    },
     "items": {
       "web_app": {
         "title": "App web",
@@ -147,6 +143,26 @@
       "perks": "Gratis para siempre · <github>Código abierto</github> · Sin contraseñas",
       "mascot": "Wambi, una moneda de oro sonriente, te saluda"
     },
+    "spreadsheet": {
+      "title": "Chao al Excel de gastos.",
+      "image": "Wambi, contento, mete una hoja de cálculo en una trituradora de papel",
+      "before": "Con un Excel",
+      "after": "Con Wambito",
+      "rows": {
+        "open": {
+          "before": "Abres el computador, buscas el archivo y bajas hasta la última fila.",
+          "after": "Lo anotas en segundos, también desde el celular."
+        },
+        "formula": {
+          "before": "Una fórmula rota y el total ya no cuadra.",
+          "after": "Las cuentas se hacen solas."
+        },
+        "budget": {
+          "before": "Te enteras de que te pasaste cuando ya te pasaste.",
+          "after": "Tus presupuestos te avisan antes."
+        }
+      }
+    },
     "ways": {
       "title": "Úsalo como prefieras",
       "soon": "Pronto",
@@ -173,10 +189,11 @@
         "home": "Casa",
         "transport": "Transporte"
       },
-      "log": {
-        "title": "Anota en segundos",
-        "body": "Tocas ＋, escribes el monto y listo: menos de cinco segundos desde que abres la app. Wambi lo celebra contigo.",
-        "demo_name": "Café con pan",
+      "voice": {
+        "title": "Anota tus gastos por voz",
+        "body": "Dile a Wambi «Gasté 3 euros en café» y queda anotado, sin escribir nada. Desde el widget de la app para Android.",
+        "demo_said": "«Gasté 3 euros en café»",
+        "demo_name": "Café",
         "demo_saved": "¡Anotado!"
       },
       "spend": {

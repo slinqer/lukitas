@@ -35,10 +35,6 @@
       "next": "A seguir",
       "later": "Mais à frente"
     },
-    "landing": {
-      "title": "O que vem aí",
-      "cta": "Ver o roadmap"
-    },
     "items": {
       "web_app": {
         "title": "App web",
@@ -147,6 +143,26 @@
       "perks": "Grátis para sempre · <github>Código aberto</github> · Sem palavras-passe",
       "mascot": "Wambi, uma moeda de ouro sorridente, cumprimenta-te"
     },
+    "spreadsheet": {
+      "title": "Adeus ao Excel das despesas.",
+      "image": "O Wambi, satisfeito, põe uma folha de cálculo numa trituradora de papel",
+      "before": "Com um Excel",
+      "after": "Com o Wambito",
+      "rows": {
+        "open": {
+          "before": "Ligas o computador, procuras o ficheiro e desces até à última linha.",
+          "after": "Registas em segundos, também no telemóvel."
+        },
+        "formula": {
+          "before": "Uma fórmula partida e o total deixa de bater certo.",
+          "after": "As contas fazem-se sozinhas."
+        },
+        "budget": {
+          "before": "Descobres que gastaste demais quando já gastaste.",
+          "after": "Os teus orçamentos avisam-te antes."
+        }
+      }
+    },
     "ways": {
       "title": "Usa-o como preferires",
       "soon": "Em breve",
@@ -173,10 +189,11 @@
         "home": "Casa",
         "transport": "Transportes"
       },
-      "log": {
-        "title": "Regista em segundos",
-        "body": "Tocas em ＋, escreves o valor e já está: menos de cinco segundos desde que abres a app. Wambi celebra contigo.",
-        "demo_name": "Café e pastel de nata",
+      "voice": {
+        "title": "Regista as despesas por voz",
+        "body": "Diz ao Wambi «Gastei 3 euros num café» e fica registado, sem escrever nada. No widget da app para Android.",
+        "demo_said": "«Gastei 3 euros num café»",
+        "demo_name": "Café",
         "demo_saved": "Registado!"
       },
       "spend": {

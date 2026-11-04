@@ -1,7 +1,8 @@
 /**
- * The public roadmap: the single source for the roadmap page (`/roadmap`, `/en/roadmap`, `/it/roadmap`, `/pt/roadmap`) and the
- * landing's "what's next" section. Add, move or remove an item here (and its copy in every message
- * catalog under `roadmap.items`) and both places follow. No dates anywhere: only a status.
+ * The public roadmap: the single source for the roadmap page (`/roadmap`, `/en/roadmap`,
+ * `/it/roadmap`, `/pt/roadmap`), which the landing's header and footer link to. Add, move or remove
+ * an item here (and its copy in every message catalog under `roadmap.items`) and the page follows.
+ * No dates anywhere: only a status.
  */
 
 /** Left to right on a desktop, top to bottom on a phone. */
@@ -54,9 +55,6 @@ export const ROADMAP_ITEMS: readonly RoadmapItem[] = [
   item("no_central_server", "later", "🔗"),
   item("whatsapp", "later", "💬"),
 ];
-
-/** The three items the landing shows in "what's next", in order: never a done one. */
-export const LANDING_ROADMAP_IDS = ["connect_ai", "iphone_app", "e2e_encryption"] as const;
 
 export interface RoadmapColumn {
   status: RoadmapStatus;

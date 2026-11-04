@@ -3,13 +3,7 @@ import en from "../../i18n/messages/en.json" with { type: "json" };
 import es from "../../i18n/messages/es.json" with { type: "json" };
 import itMessages from "../../i18n/messages/it.json" with { type: "json" };
 import ptMessages from "../../i18n/messages/pt.json" with { type: "json" };
-import {
-  LANDING_ROADMAP_IDS,
-  ROADMAP_ITEMS,
-  ROADMAP_STATUSES,
-  roadmapColumns,
-  roadmapItem,
-} from "./roadmap.ts";
+import { ROADMAP_ITEMS, ROADMAP_STATUSES, roadmapColumns, roadmapItem } from "./roadmap.ts";
 
 type Tree = { [key: string]: string | Tree };
 
@@ -53,8 +47,6 @@ describe("roadmap items", () => {
       "roadmap.intro",
       "roadmap.meta.title",
       "roadmap.meta.description",
-      "roadmap.landing.title",
-      "roadmap.landing.cta",
     ];
     for (const locale of ["es", "en", "it", "pt"] as const) {
       for (const key of keys) expect(catalogs[locale], `${locale}:${key}`).toHaveProperty([key]);
@@ -105,17 +97,6 @@ describe("roadmapColumns", () => {
     expect(columns.length).toBeGreaterThan(0);
     for (const column of columns) expect(column.items.length).toBeGreaterThan(0);
     expect(columns.map((column) => column.status)).toEqual(["done", "building", "next", "later"]);
-  });
-});
-
-describe("the landing's what's-next items", () => {
-  it("are connecting your AI, the iPhone app, and end-to-end encryption", () => {
-    expect(LANDING_ROADMAP_IDS).toEqual(["connect_ai", "iphone_app", "e2e_encryption"]);
-    for (const id of LANDING_ROADMAP_IDS) expect(roadmapItem(id).id).toBe(id);
-  });
-
-  it("never shows a done item", () => {
-    for (const id of LANDING_ROADMAP_IDS) expect(roadmapItem(id).status, id).not.toBe("done");
   });
 });
 
