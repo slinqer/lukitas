@@ -31,8 +31,9 @@ The direct way (`COMPOSE_FILE` in `.env`, see [Moving to a server](#moving-to-a-
 
 - **One origin.** The app and the API share `app.wambito.com` (the API is under
   `/api`), so the session cookie is first-party and secure. No CORS.
-- **Allowlist.** Only the emails in `SIGN_IN_ALLOWLIST` can ask for a sign-in code. Anyone else
-  gets "Wambito todavía no está abierto al público" and no email is sent.
+- **Who can sign in.** Anyone, unless `SIGN_IN_ALLOWLIST` is set: then only those emails can ask
+  for a sign-in code. Anyone else gets "Wambito todavía no está abierto al público" and no email
+  is sent.
 - **The landing lives elsewhere.** `/`, `/en`, `/it`, `/pt` and the roadmaps redirect (302, same path and query)
   to the public landing at `LANDING_URL` (default `https://wambito.com`), whose
   buttons come back here to `/sign-in` and `/demo`. Until the landing is deployed at `wambito.com`
@@ -92,7 +93,7 @@ Fill it in (every variable is explained in the file; `.env` is ignored by git an
 | `POSTGRES_PASSWORD` | `openssl rand -hex 24` |
 | `APP_DB_PASSWORD` | `openssl rand -hex 24` |
 | `BETTER_AUTH_SECRET` | `openssl rand -hex 32` |
-| `SIGN_IN_ALLOWLIST` | your email(s), comma-separated |
+| `SIGN_IN_ALLOWLIST` | optional: your email(s), comma-separated, to keep sign-in closed; unset lets anyone in |
 | `SMTP_URL` | `smtp://you%40example.com:BRIDGE_PASSWORD@host.docker.internal:1025`, with Bridge's username (the `@` is written `%40`) |
 | `MAIL_FROM` | `Wambito <you@example.com>`, an address of that Proton account |
 | `TUNNEL_ID` | from step 3 |
@@ -178,7 +179,8 @@ either, and the scripts here refuse `down -v` anyway. `docker compose down` is s
 
 ### Who can sign in
 
-Edit `SIGN_IN_ALLOWLIST` in `.env`, then `docker compose up -d api`. Case does not matter. Passkeys
+Unset or empty, `SIGN_IN_ALLOWLIST` lets anyone create an account. To restrict it, list the emails
+in `.env`, then `docker compose up -d api`; to open it again, delete the line and do the same. Case does not matter. Passkeys
 of existing users keep working whatever the list says; the list only gates asking for a code. So
 taking an address off the list does **not** sign that person out or remove their passkeys: delete
 their sessions and passkeys in the database if you ever need to revoke access. A list that names no
@@ -198,8 +200,8 @@ The API reads the same value to accept passkeys made in the app (Android sends t
 the API from starting, so a typo shows up at once instead of as passkeys that never work.
 
 **`GUEST_SIGNUP`** (default `true`) lets the app create an account without an email (a guest),
-whatever `SIGN_IN_ALLOWLIST` says; the guest can save the account by claiming an allowlisted email
-later. Set `GUEST_SIGNUP=false` in `.env` and run `./up.sh` to stop new guests;
+whatever `SIGN_IN_ALLOWLIST` says; the guest can save the account by claiming an email later (an
+allowlisted one, if there is a list). Set `GUEST_SIGNUP=false` in `.env` and run `./up.sh` to stop new guests;
 existing ones keep working. Once a day the API deletes guests that have not used the app for 60
 days, with all their data. Accounts with an email are never deleted this way.
 

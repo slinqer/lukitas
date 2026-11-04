@@ -8,9 +8,8 @@ app, when there is one, runs on its own origin, and the build says so with `VITE
   GitHub" and links to the repository; nothing leads to the app.
 - **With `VITE_APP_URL`** (the release): the calls to action read "Empieza ahora" / "Get started"
   and "Entrar" / "Sign in" and open `${VITE_APP_URL}/sign-in?lang=<es|en>`. The "En la web" card
-  links to the app too, and the closing text says Wambito already works and is being tested with a
-  small group ("Si te invitaron, entra con tu correo"), because only allowlisted emails can sign
-  in there.
+  links to the app too, and the closing text invites the visitor to create an account with their
+  email ("Crea tu cuenta con tu correo en menos de un minuto"): sign-up is open to everyone.
 
 ## Build
 
