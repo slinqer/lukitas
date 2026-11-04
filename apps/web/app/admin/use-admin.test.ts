@@ -236,6 +236,34 @@ describe("verify", () => {
     });
   });
 
+  it("back to idle when the API still asks for verification after a passkey it accepted", async () => {
+    const { admin } = session({
+      ...needsVerification,
+      "POST /v1/admin/verify/options": () => json(200, OPTIONS),
+      "POST /v1/admin/verify": () => new Response(null, { status: 204 }),
+    });
+    await admin.load();
+    await admin.verify();
+    expect(admin.getSnapshot()).toMatchObject({
+      state: "needs_verification",
+      verification: "idle",
+    });
+  });
+
+  it("a failed session check after the passkey: verify() resolves, the error is kept, not busy", async () => {
+    let me = 0;
+    const { admin } = session({
+      "GET /v1/admin/me": () =>
+        ++me === 1 ? problem(401, "admin_verification_required") : problem(500, "internal_error"),
+      "POST /v1/admin/verify/options": () => json(200, OPTIONS),
+      "POST /v1/admin/verify": () => new Response(null, { status: 204 }),
+    });
+    await admin.load();
+    await expect(admin.verify()).resolves.toBeUndefined();
+    expect(admin.getSnapshot().error).toMatchObject({ code: "internal_error" });
+    expect(admin.getSnapshot().verification).toBe("idle");
+  });
+
   it("is busy while the passkey is asked for, and ignores a second tap", async () => {
     let finish: (value: typeof ASSERTION) => void = () => {};
     const authenticate = vi.fn(

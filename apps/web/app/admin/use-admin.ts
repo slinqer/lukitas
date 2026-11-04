@@ -58,7 +58,10 @@ export interface AdminSession {
    * succeeds (resolving with that retry's answer), or rejected by `cancel()`.
    */
   adminFetch<T>(call: () => Promise<T>): Promise<T>;
-  /** Confirms with a passkey: options, the browser's prompt, the assertion. */
+  /**
+   * Confirms with a passkey: options, the browser's prompt, the assertion. It never rejects: a
+   * failure shows as `verification` or as the snapshot's `error`.
+   */
   verify(): Promise<void>;
   /** Gives up on the verification: every waiting call rejects with its 401. */
   cancel(): void;
@@ -157,8 +160,14 @@ export function createAdminSession({ client, authenticate }: AdminDeps): AdminSe
       set({ verification: "failed" });
       return;
     }
-    await load();
+    try {
+      await load();
+    } catch {
+      // `load` kept the failure as the snapshot's error: the route's error boundary shows it.
+    }
     if (snapshot.state === "ready") retryWaiting();
+    // The API still asks for a verification (or the check failed): the button is usable again.
+    else if (snapshot.verification === "busy") set({ verification: "idle" });
   }
 
   function verify(): Promise<void> {

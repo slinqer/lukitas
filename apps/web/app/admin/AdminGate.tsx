@@ -17,7 +17,13 @@ export function AdminGate() {
   return (
     <>
       {verifying && (
-        <VerifyScreen verification={admin.verification} onVerify={() => void admin.verify()} />
+        <VerifyScreen
+          verification={admin.verification}
+          onVerify={() => {
+            // A failure already shows (the screen's state, or the error boundary): never unhandled.
+            admin.verify().catch(() => {});
+          }}
+        />
       )}
       <div hidden={verifying}>
         <Outlet />
