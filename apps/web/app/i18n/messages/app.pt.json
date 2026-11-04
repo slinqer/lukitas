@@ -187,6 +187,7 @@
     "too_many_attempts": "Demasiadas tentativas com este código. Pede um novo.",
     "too_many_requests": "Pediste muitos códigos seguidos. Espera uns minutos e tenta outra vez.",
     "sign_in_not_allowed": "Wambito ainda não está aberta ao público. Se a quiseres experimentar, escreve a quem te convidou.",
+    "account_suspended": "A tua conta está suspensa. Escreve-nos para privacy@wambito.com.",
     "guest_signup_disabled": "Por agora não é possível criar contas de convidado.",
     "email_taken": "Esse email já tem uma conta. Entra com ele.",
     "not_a_guest": "A tua conta já tem email.",

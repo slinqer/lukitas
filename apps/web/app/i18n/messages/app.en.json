@@ -187,6 +187,7 @@
     "too_many_attempts": "Too many tries with this code. Ask for a new one.",
     "too_many_requests": "You asked for a lot of codes in a row. Wait a few minutes and try again.",
     "sign_in_not_allowed": "Wambito isn't open to the public yet. If you'd like to try it, message the person who invited you.",
+    "account_suspended": "Your account is suspended. Write to privacy@wambito.com.",
     "guest_signup_disabled": "Guest accounts are turned off for now.",
     "email_taken": "That email already has an account. Sign in with it.",
     "not_a_guest": "Your account already has an email.",

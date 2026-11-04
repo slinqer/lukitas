@@ -8,6 +8,7 @@ import {
   accounts,
   categories,
   emailThrottle,
+  oauthRefreshToken,
   schema,
   user as userTable,
   verification,
@@ -65,6 +66,36 @@ const guestSignupDisabled = () =>
     code: "guest_signup_disabled",
     message: "Guest sign-up is turned off on this install",
   });
+
+/** The refusal for a suspended account (spec §5.4): the web and the app show `errors.account_suspended`. */
+export const accountSuspended = () =>
+  new APIError("FORBIDDEN", {
+    code: "account_suspended",
+    message: "This account is suspended",
+  });
+
+/** Whether this user's account is suspended (an admin set `user.suspended_at`). */
+export async function isSuspended(deps: Pick<AppDeps, "db">, userId: string): Promise<boolean> {
+  const [row] = await deps.db
+    .select({ suspendedAt: userTable.suspendedAt })
+    .from(userTable)
+    .where(eq(userTable.id, userId));
+  return row?.suspendedAt != null;
+}
+
+/**
+ * The user a refresh token belongs to. The oauthProvider stores tokens as the SHA-256 of the
+ * token, base64url without padding (its default `storeTokens: "hashed"`, no prefix), so the lookup
+ * hashes it the same way; suspension.test.ts catches a change in that format.
+ */
+async function refreshTokenUser(deps: AppDeps, token: string): Promise<string | undefined> {
+  const hashed = createHash("sha256").update(token).digest("base64url");
+  const [row] = await deps.db
+    .select({ userId: oauthRefreshToken.userId })
+    .from(oauthRefreshToken)
+    .where(eq(oauthRefreshToken.token, hashed));
+  return row?.userId;
+}
 
 /** Counts sign-in emails per address in a 15-minute window; returns the count including this one. */
 export async function bumpEmailThrottle(deps: AppDeps, email: string): Promise<number> {
@@ -351,6 +382,8 @@ export function createAuth(deps: AppDeps) {
         // A guest's latest activity, kept on the user so it outlives a signed-out session; the
         // guest cleanup reads it (services/guest-cleanup.ts, `stampGuestActivity`).
         lastActiveAt: { type: "date", required: false, input: false, returned: false },
+        // Set by an admin's suspend (spec §5.4): no new session, no token works while it is set.
+        suspendedAt: { type: "date", required: false, input: false, returned: false },
       },
     },
     advanced: {
@@ -373,6 +406,15 @@ export function createAuth(deps: AppDeps) {
         // Guest sign-up is open whatever the allowlist says (spec §4.1); only GUEST_SIGNUP closes it.
         if (ctx.path === "/sign-in/anonymous") {
           if (config.GUEST_SIGNUP === false) throw guestSignupDisabled();
+          return;
+        }
+        // A refresh creates no Better Auth session, so the session hook below cannot see it: a
+        // suspended account's assistant is refused here, before a new access token is minted.
+        if (ctx.path === "/oauth2/token") {
+          const body = (ctx.body ?? {}) as Record<string, unknown>;
+          if (body.grant_type !== "refresh_token" || typeof body.refresh_token !== "string") return;
+          const userId = await refreshTokenUser(deps, body.refresh_token);
+          if (userId && (await isSuspended(deps, userId))) throw accountSuspended();
           return;
         }
         if (ctx.path !== "/email-otp/send-verification-otp") return;
@@ -416,6 +458,11 @@ export function createAuth(deps: AppDeps) {
       // A background request refreshes nothing, so it never stamps.
       session: {
         create: {
+          // Every sign-in (email code, magic link, passkey) creates a session: a suspended account
+          // gets none (spec §5.4).
+          before: async (data) => {
+            if (await isSuspended(deps, data.userId)) throw accountSuspended();
+          },
           after: async (created) => stampGuestActivity(deps.db, created.userId, created.updatedAt),
         },
         update: {

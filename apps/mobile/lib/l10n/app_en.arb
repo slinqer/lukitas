@@ -49,6 +49,7 @@
   "errorTooManyAttempts": "Too many tries with this code. Ask for a new one.",
   "errorTooManyRequests": "You asked for a lot of codes in a row. Wait a few minutes and try again.",
   "errorSignInNotAllowed": "Wambito isn't open to the public yet. If you'd like to try it, message the person who invited you.",
+  "errorAccountSuspended": "Your account is suspended. Write to privacy@wambito.com.",
   "errorGuestSignupDisabled": "Guest accounts are turned off for now.",
   "errorEmailTaken": "That email already has an account. Sign in with it.",
   "errorPasskeyFailed": "We couldn't sign you in with your fingerprint. Try again or use your email.",
