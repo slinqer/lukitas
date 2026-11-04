@@ -251,7 +251,7 @@
     "privacy": {
       "meta": {
         "title": "Wambito · Política de privacidade",
-        "description": "Como o Wambito trata os seus dados: o que guarda, onde, quem os vê e como pedir que os apaguemos."
+        "description": "Como o Wambito trata os teus dados: o que guarda, onde, quem os vê e como pedir que os apaguemos."
       },
       "title": "Política de privacidade",
       "version": "Versão de 4 de novembro de 2026",
@@ -270,7 +270,7 @@
         },
         "storage": {
           "title": "Onde fica guardado",
-          "body": "Num servidor na União Europeia. Os teus dados viajam cifrados entre o teu dispositivo e o servidor. Todos os dias fazemos uma cópia de segurança, ciframo-la com age e guardamos essa cópia cifrada no Cloudflare R2. Nenhuma cópia dura mais de 14 dias: depois apaga-se sozinha. Por isso, se apagares a tua conta, ela também sai das cópias em 14 dias, no máximo."
+          "body": "Num servidor na União Europeia. Os teus dados viajam cifrados entre o teu dispositivo e o servidor. Todos os dias fazemos uma cópia de segurança no servidor e guardamos outra cópia, cifrada com age, no Cloudflare R2. Nenhuma cópia dura mais de 14 dias: depois apaga-se sozinha. Por isso, se apagares a tua conta, ela também sai das cópias em 14 dias, no máximo."
         },
         "not_done": {
           "title": "O que não fazemos",
@@ -304,15 +304,15 @@
     },
     "delete_account": {
       "meta": {
-        "title": "Wambito · Apagar a sua conta",
-        "description": "Como apagar a sua conta do Wambito e os dados que guarda, a partir da app ou por email."
+        "title": "Wambito · Apagar a tua conta",
+        "description": "Como apagar a tua conta do Wambito e os dados que guarda, a partir da app ou por email."
       },
       "title": "Apagar a tua conta",
       "version": "Versão de 4 de novembro de 2026",
       "sections": {
         "in_app": {
           "title": "Na app",
-          "body": "Na web ou na app Android, vai às Definições e toca em «Eliminar a minha conta». Para confirmar, pedimos-te que escrevas o teu email. Se quiseres, descarrega antes os teus dados: o botão está mesmo aí. Se usas a app como convidado, guarda primeiro o teu progresso com um email; senão, a tua conta apaga-se sozinha após 60 dias sem uso."
+          "body": "Na web ou na app Android, vai às Definições e escolhe «Eliminar a minha conta». Para confirmar, pedimos-te que escrevas o teu email. Se quiseres, descarrega antes os teus dados: o botão está mesmo aí. Se usas a app como convidado, guarda primeiro o teu progresso com um email; senão, a tua conta apaga-se sozinha após 60 dias sem uso."
         },
         "by_email": {
           "title": "Por email",
@@ -320,11 +320,11 @@
         },
         "what_goes": {
           "title": "O que é apagado",
-          "body": "Tudo, de imediato: a tua conta, o teu email, as tuas passkeys e sessões, os teus movimentos, categorias, orçamentos e recorrentes, e as autorizações dos assistentes que ligaste. No telemóvel, a app também apaga o que guardava da tua conta."
+          "body": "Tudo o que está na tua conta, de imediato: a tua conta, o teu email, as tuas passkeys e sessões, os teus movimentos, categorias, orçamentos e recorrentes, e as autorizações dos assistentes que ligaste. No telemóvel, a app também apaga o que guardava da tua conta."
         },
         "backups": {
           "title": "As cópias de segurança",
-          "body": "As cópias de segurança que incluem a tua conta apagam-se sozinhas em 14 dias, no máximo. Até lá, continuam cifradas. Tens mais detalhes na <link>política de privacidade</link>."
+          "body": "As cópias de segurança que incluem a tua conta apagam-se sozinhas em 14 dias, no máximo. A cópia que sai do servidor vai cifrada. Tens mais detalhes na <link>política de privacidade</link>."
         }
       }
     }

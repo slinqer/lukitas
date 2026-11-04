@@ -270,7 +270,7 @@
         },
         "storage": {
           "title": "Dónde se guarda",
-          "body": "En un servidor en la Unión Europea. Tus datos viajan cifrados entre tu dispositivo y el servidor. Cada día hacemos una copia de seguridad, la ciframos con age y guardamos esa copia cifrada en Cloudflare R2. Ninguna copia dura más de 14 días: después se borra sola. Por eso, si borras tu cuenta, también sale de las copias en 14 días como mucho."
+          "body": "En un servidor en la Unión Europea. Tus datos viajan cifrados entre tu dispositivo y el servidor. Cada día hacemos una copia de seguridad en el servidor y guardamos otra copia, cifrada con age, en Cloudflare R2. Ninguna copia dura más de 14 días: después se borra sola. Por eso, si borras tu cuenta, también sale de las copias en 14 días como mucho."
         },
         "not_done": {
           "title": "Lo que no hacemos",
@@ -312,7 +312,7 @@
       "sections": {
         "in_app": {
           "title": "Desde la app",
-          "body": "En la web o en la app de Android, entra a Ajustes y toca «Eliminar mi cuenta». Para confirmar, te pedimos escribir tu correo. Si quieres, antes descarga tus datos: el botón está ahí mismo. Si usas la app como invitado, primero guarda tu progreso con un correo; si no, tu cuenta se borra sola tras 60 días sin uso."
+          "body": "En la web o en la app de Android, entra a Ajustes y elige «Eliminar mi cuenta». Para confirmar, te pedimos escribir tu correo. Si quieres, antes descarga tus datos: el botón está ahí mismo. Si usas la app como invitado, primero guarda tu progreso con un correo; si no, tu cuenta se borra sola tras 60 días sin uso."
         },
         "by_email": {
           "title": "Por correo",
@@ -320,11 +320,11 @@
         },
         "what_goes": {
           "title": "Qué se borra",
-          "body": "Todo, de inmediato: tu cuenta, tu correo, tus passkeys y sesiones, tus movimientos, categorías, presupuestos y recurrentes, y los permisos de los asistentes que conectaste. En el teléfono, la app también borra lo que guardaba de tu cuenta."
+          "body": "Todo lo de tu cuenta, de inmediato: tu cuenta, tu correo, tus passkeys y sesiones, tus movimientos, categorías, presupuestos y recurrentes, y los permisos de los asistentes que conectaste. En el teléfono, la app también borra lo que guardaba de tu cuenta."
         },
         "backups": {
           "title": "Las copias de seguridad",
-          "body": "Las copias de seguridad que incluyan tu cuenta se borran solas en 14 días como mucho. Mientras tanto siguen cifradas. Tienes más detalles en la <link>política de privacidad</link>."
+          "body": "Las copias de seguridad que incluyan tu cuenta se borran solas en 14 días como mucho. La copia que sale del servidor va cifrada. Tienes más detalles en la <link>política de privacidad</link>."
         }
       }
     }

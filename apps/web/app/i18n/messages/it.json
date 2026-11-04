@@ -270,7 +270,7 @@
         },
         "storage": {
           "title": "Dove si trova",
-          "body": "Su un server nell’Unione europea. I tuoi dati viaggiano cifrati tra il tuo dispositivo e il server. Ogni giorno facciamo una copia di sicurezza, la cifriamo con age e conserviamo quella copia cifrata su Cloudflare R2. Nessuna copia dura più di 14 giorni: dopo si cancella da sola. Così, se cancelli il tuo account, esce anche dalle copie entro 14 giorni al massimo."
+          "body": "Su un server nell’Unione europea. I tuoi dati viaggiano cifrati tra il tuo dispositivo e il server. Ogni giorno facciamo una copia di sicurezza sul server e ne conserviamo un’altra, cifrata con age, su Cloudflare R2. Nessuna copia dura più di 14 giorni: dopo si cancella da sola. Così, se cancelli il tuo account, esce anche dalle copie entro 14 giorni al massimo."
         },
         "not_done": {
           "title": "Cosa non facciamo",
@@ -307,12 +307,12 @@
         "title": "Wambito · Elimina il tuo account",
         "description": "Come eliminare il tuo account Wambito e i dati che conserva, dall'app o via email."
       },
-      "title": "Cancellare il tuo account",
+      "title": "Elimina il tuo account",
       "version": "Versione del 4 novembre 2026",
       "sections": {
         "in_app": {
           "title": "Dall’app",
-          "body": "Sul web o nell’app Android, vai nelle Impostazioni e tocca «Elimina il mio account». Per confermare, ti chiediamo di scrivere la tua email. Se vuoi, prima scarica i tuoi dati: il pulsante è proprio lì. Se usi l’app come ospite, prima salva i tuoi progressi con un’email; altrimenti il tuo account si cancella da solo dopo 60 giorni senza uso."
+          "body": "Sul web o nell’app Android, vai nelle Impostazioni e scegli «Elimina il mio account». Per confermare, ti chiediamo di scrivere la tua email. Se vuoi, prima scarica i tuoi dati: il pulsante è proprio lì. Se usi l’app come ospite, prima salva i tuoi progressi con un’email; altrimenti il tuo account si cancella da solo dopo 60 giorni senza uso."
         },
         "by_email": {
           "title": "Per email",
@@ -320,11 +320,11 @@
         },
         "what_goes": {
           "title": "Cosa si cancella",
-          "body": "Tutto, subito: il tuo account, la tua email, le tue passkey e sessioni, i tuoi movimenti, categorie, budget e ricorrenti, e i permessi degli assistenti che hai collegato. Sul telefono, l’app cancella anche quello che conservava del tuo account."
+          "body": "Tutto ciò che è nel tuo account, subito: il tuo account, la tua email, le tue passkey e sessioni, i tuoi movimenti, categorie, budget e ricorrenti, e i permessi degli assistenti che hai collegato. Sul telefono, l’app cancella anche quello che conservava del tuo account."
         },
         "backups": {
           "title": "Le copie di sicurezza",
-          "body": "Le copie di sicurezza che includono il tuo account si cancellano da sole entro 14 giorni al massimo. Nel frattempo restano cifrate. Trovi più dettagli nell’<link>informativa sulla privacy</link>."
+          "body": "Le copie di sicurezza che includono il tuo account si cancellano da sole entro 14 giorni al massimo. La copia che esce dal server è cifrata. Trovi più dettagli nell’<link>informativa sulla privacy</link>."
         }
       }
     }

@@ -270,7 +270,7 @@
         },
         "storage": {
           "title": "Where it is stored",
-          "body": "On a server in the European Union. Your data travels encrypted between your device and the server. Every day we make a backup, encrypt it with age and keep that encrypted copy in Cloudflare R2. No backup lasts more than 14 days: after that it deletes itself. So if you delete your account, it also leaves the backups within 14 days at most."
+          "body": "On a server in the European Union. Your data travels encrypted between your device and the server. Every day we make a backup on the server and keep another copy, encrypted with age, in Cloudflare R2. No backup lasts more than 14 days: after that it deletes itself. So if you delete your account, it also leaves the backups within 14 days at most."
         },
         "not_done": {
           "title": "What we don't do",
@@ -312,7 +312,7 @@
       "sections": {
         "in_app": {
           "title": "From the app",
-          "body": "On the web or in the Android app, go to Settings and tap “Delete my account”. To confirm, we ask you to type your email. If you like, download your data first: the button is right there. If you use the app as a guest, save your progress with an email first; otherwise your account deletes itself after 60 days unused."
+          "body": "On the web or in the Android app, go to Settings and choose “Delete my account”. To confirm, we ask you to type your email. If you like, download your data first: the button is right there. If you use the app as a guest, save your progress with an email first; otherwise your account deletes itself after 60 days unused."
         },
         "by_email": {
           "title": "By email",
@@ -320,11 +320,11 @@
         },
         "what_goes": {
           "title": "What is deleted",
-          "body": "Everything, right away: your account, your email, your passkeys and sessions, your transactions, categories, budgets and recurring items, and the permissions of the assistants you connected. On the phone, the app also clears what it kept of your account."
+          "body": "Everything in your account, right away: your account, your email, your passkeys and sessions, your transactions, categories, budgets and recurring items, and the permissions of the assistants you connected. On the phone, the app also clears what it kept of your account."
         },
         "backups": {
           "title": "Backups",
-          "body": "Backups that include your account delete themselves within 14 days at most. Until then they stay encrypted. There are more details in the <link>privacy policy</link>."
+          "body": "Backups that include your account delete themselves within 14 days at most. The copy that leaves the server is encrypted. There are more details in the <link>privacy policy</link>."
         }
       }
     }
