@@ -16,6 +16,11 @@ Hono + Better Auth + Drizzle (`@wambito/db`), OpenAPI document "Wambito API". Ev
 - `POST /v1/captures` (`src/routes/captures.ts`, `src/services/captures.ts`): saves a bank-notification
   capture to review; 10-minute duplicate merge, merchant → category memory, `system_key = other`
   fallback categories; the Idempotency-Key is required.
+- Reviewing captures: `PATCH /v1/transactions/{id}` with `needsReview: false` and `POST
+  /v1/transactions/review` (all or nothing, 404 on any foreign id) confirm them; list filter
+  `needsReview=true|false`. `learn` (`services/captures.ts`) upserts the merchant → category memory
+  only when a `capture` row flips to confirmed in that request, with an active, same-kind category
+  that has no `system_key`.
 - `src/scripts/seed.ts`: creates `dev@wambito.test`.
 
 ## Talks to

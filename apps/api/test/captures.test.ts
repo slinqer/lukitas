@@ -314,3 +314,164 @@ describe("idempotency", () => {
     expect((await rows(c)).length).toBe(1);
   });
 });
+
+describe("review", () => {
+  const mkCategory = async (
+    user: typeof a,
+    name: string,
+    kind: "expense" | "income" = "expense",
+  ) => {
+    const [cat] = await t.admin
+      .insert(categories)
+      .values({ userId: user.userId, name, kind, icon: "🛒", color: "#fff" })
+      .returning();
+    return cat?.id as string;
+  };
+  const patch = (user: typeof a, id: string, patchBody: object) =>
+    t.request("PATCH", `/v1/transactions/${id}`, { headers: user.headers, body: patchBody });
+  const review = (user: typeof a, ids: string[]) =>
+    t.request("POST", "/v1/transactions/review", { headers: user.headers, body: { ids } });
+  const memory = async (user: typeof a) =>
+    t.admin.select().from(merchantCategories).where(eq(merchantCategories.userId, user.userId));
+
+  test("confirming learns the merchant", async () => {
+    const u = await t.signIn("learn@wambito.test");
+    const comida = await mkCategory(u, "Comida");
+    const first = await json(await capture({ merchant: "MERCADONA 12" }, { user: u }));
+    const res = await patch(u, first.transaction.id, { categoryId: comida, needsReview: false });
+    expect(res.status).toBe(200);
+    expect(((await res.json()) as { needsReview: boolean }).needsReview).toBe(false);
+    const next = await json(
+      await capture({ merchant: "MERCADONA 77", ...at("2026-11-05T10:00:00Z") }, { user: u }),
+    );
+    expect(next.transaction.categoryId).toBe(comida);
+    expect(next.category).toEqual({ name: "Comida", fallback: false });
+  });
+
+  test("confirming a fallback learns nothing", async () => {
+    const u = await t.signIn("fallback@wambito.test");
+    const first = await json(await capture({}, { user: u }));
+    await patch(u, first.transaction.id, { needsReview: false });
+    expect(await memory(u)).toHaveLength(0);
+  });
+
+  test("editing without confirming learns nothing", async () => {
+    const u = await t.signIn("edit@wambito.test");
+    const comida = await mkCategory(u, "Comida");
+    const first = await json(await capture({}, { user: u }));
+    await patch(u, first.transaction.id, { categoryId: comida });
+    expect(await memory(u)).toHaveLength(0);
+  });
+
+  test("a hand-typed transaction never teaches", async () => {
+    const u = await t.signIn("hand@wambito.test");
+    const comida = await mkCategory(u, "Comida");
+    const made = await t.request("POST", "/v1/transactions", {
+      headers: u.headers,
+      body: { name: "Mercadona", amount: -500, categoryId: comida, date: "2026-11-04" },
+    });
+    const id = ((await made.json()) as { id: string }).id;
+    const res = await patch(u, id, { needsReview: false });
+    expect(res.status).toBe(200);
+    expect(await memory(u)).toHaveLength(0);
+  });
+
+  test("confirming again does not re-learn", async () => {
+    const u = await t.signIn("again@wambito.test");
+    const comida = await mkCategory(u, "Comida");
+    const ocio = await mkCategory(u, "Ocio");
+    const first = await json(await capture({ merchant: "Again Shop" }, { user: u }));
+    await patch(u, first.transaction.id, { categoryId: comida, needsReview: false });
+    await patch(u, first.transaction.id, { categoryId: ocio, needsReview: false });
+    const [m] = await memory(u);
+    expect(m?.categoryId).toBe(comida);
+  });
+
+  test("a category of the other kind is not learned", async () => {
+    const u = await t.signIn("kind@wambito.test");
+    const salary = await mkCategory(u, "Salary", "income");
+    const first = await json(await capture({ merchant: "Kind Shop" }, { user: u }));
+    await patch(u, first.transaction.id, { categoryId: salary, needsReview: false });
+    expect(await memory(u)).toHaveLength(0);
+  });
+
+  test("a merchant with nothing to remember is confirmed without error", async () => {
+    const u = await t.signIn("symbols@wambito.test");
+    const comida = await mkCategory(u, "Comida");
+    const first = await json(await capture({ merchant: "***" }, { user: u }));
+    const res = await patch(u, first.transaction.id, { categoryId: comida, needsReview: false });
+    expect(res.status).toBe(200);
+    expect(await memory(u)).toHaveLength(0);
+  });
+
+  test("review confirms several and learns each", async () => {
+    const u = await t.signIn("bulk@wambito.test");
+    const comida = await mkCategory(u, "Comida");
+    const ocio = await mkCategory(u, "Ocio");
+    const one = await json(await capture({ merchant: "Bulk One", amount: 100 }, { user: u }));
+    const two = await json(await capture({ merchant: "Bulk Two", amount: 200 }, { user: u }));
+    await patch(u, one.transaction.id, { categoryId: comida });
+    await patch(u, two.transaction.id, { categoryId: ocio });
+    const res = await review(u, [two.transaction.id, one.transaction.id]);
+    expect(res.status).toBe(200);
+    const out = (await res.json()) as { items: { id: string; needsReview: boolean }[] };
+    expect(out.items.map((i) => i.id)).toEqual([two.transaction.id, one.transaction.id]);
+    expect(out.items.every((i) => !i.needsReview)).toBe(true);
+    const learned = Object.fromEntries((await memory(u)).map((m) => [m.merchantKey, m.categoryId]));
+    expect(learned).toEqual({ "bulk one": comida, "bulk two": ocio });
+  });
+
+  test("review accepts ids that are already confirmed", async () => {
+    const u = await t.signIn("done@wambito.test");
+    const first = await json(await capture({}, { user: u }));
+    await patch(u, first.transaction.id, { needsReview: false });
+    const res = await review(u, [first.transaction.id]);
+    expect(res.status).toBe(200);
+  });
+
+  test("review with an unknown or foreign id changes nothing", async () => {
+    const u = await t.signIn("all-or-none@wambito.test");
+    const mine = await json(await capture({ amount: 31 }, { user: u }));
+    const theirs = await json(await capture({ amount: 32 }, { user: a }));
+    for (const bad of [theirs.transaction.id, crypto.randomUUID()]) {
+      const res = await review(u, [mine.transaction.id, bad]);
+      expect(res.status).toBe(404);
+      expect(res.headers.get("content-type")).toContain("problem+json");
+    }
+    const [row] = await t.admin
+      .select()
+      .from(transactions)
+      .where(eq(transactions.id, mine.transaction.id));
+    expect(row?.needsReview).toBe(true);
+    const [other] = await t.admin
+      .select()
+      .from(transactions)
+      .where(eq(transactions.id, theirs.transaction.id));
+    expect(other?.needsReview).toBe(true);
+  });
+
+  test("lists only pending review", async () => {
+    const u = await t.signIn("list@wambito.test");
+    const pending = await json(await capture({ amount: 41 }, { user: u }));
+    const done = await json(await capture({ amount: 42 }, { user: u }));
+    await patch(u, done.transaction.id, { needsReview: false });
+    const list = async (qs: string) =>
+      (
+        (await (
+          await t.request("GET", `/v1/transactions?${qs}`, { headers: u.headers })
+        ).json()) as { items: { id: string }[] }
+      ).items.map((i) => i.id);
+    expect(await list("needsReview=true")).toEqual([pending.transaction.id]);
+    expect(await list("needsReview=false")).toEqual([done.transaction.id]);
+    expect(await list("")).toHaveLength(2);
+  });
+
+  test("deleting a capture keeps the memory", async () => {
+    const u = await t.signIn("keep@wambito.test");
+    const comida = await mkCategory(u, "Comida");
+    const first = await json(await capture({ merchant: "Keep Shop" }, { user: u }));
+    await patch(u, first.transaction.id, { categoryId: comida, needsReview: false });
+    await t.request("DELETE", `/v1/transactions/${first.transaction.id}`, { headers: u.headers });
+    expect(await memory(u)).toHaveLength(1);
+  });
+});

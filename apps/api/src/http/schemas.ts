@@ -20,6 +20,7 @@ import {
   monthSummaryDto,
   problemDto,
   recurrenceDto,
+  reviewTransactionsSchema,
   setBudgetSchema,
   transactionDto,
   updateCategorySchema,
@@ -46,6 +47,7 @@ export const DeleteTransactionsBatch = deleteTransactionsBatchSchema.meta({
   id: "DeleteTransactionsBatch",
 });
 
+export const ReviewTransactions = reviewTransactionsSchema.meta({ id: "ReviewTransactions" });
 export const CreateCapture = createCaptureSchema.meta({ id: "CreateCapture" });
 export const CaptureResult = captureResultDto.meta({ id: "CaptureResult" });
 

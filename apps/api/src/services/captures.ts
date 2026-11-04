@@ -7,7 +7,7 @@ import {
 } from "@wambito/core";
 import { categories, merchantCategories, type Tx, transactions } from "@wambito/db";
 import { and, eq, gte, isNull, lte, sql } from "@wambito/db/orm";
-import { defaultAccount, toTransactionDto } from "./transactions.ts";
+import { defaultAccount, type TransactionRow, toTransactionDto } from "./transactions.ts";
 
 type Locale = keyof typeof FALLBACK_CATEGORY_NAMES;
 type Kind = CreateCapture["kind"];
@@ -175,4 +175,38 @@ function noteFor(input: CreateCapture, accountCurrency: string): string | null {
   return input.currency === accountCurrency
     ? null
     : `${(input.amount / 100).toFixed(2)} ${input.currency}`;
+}
+
+/**
+ * Remembers the category a person confirmed for a capture's merchant. Called when, in this
+ * request, a `capture` row goes from needing review to confirmed; `row` is the updated row. Only
+ * a category that is active, of the transaction's kind and not a fallback is remembered (RLS
+ * scopes the lookup to this person), and a merchant with nothing alphanumeric is skipped.
+ */
+export async function learn(tx: Tx, userId: string, row: TransactionRow): Promise<void> {
+  let key: string;
+  try {
+    key = merchantKey(row.name);
+  } catch {
+    return;
+  }
+  const [category] = await tx
+    .select({ id: categories.id })
+    .from(categories)
+    .where(
+      and(
+        eq(categories.id, row.categoryId),
+        eq(categories.kind, row.amount < 0 ? "expense" : "income"),
+        isNull(categories.archivedAt),
+        isNull(categories.systemKey),
+      ),
+    );
+  if (!category) return;
+  await tx
+    .insert(merchantCategories)
+    .values({ userId, merchantKey: key, categoryId: category.id })
+    .onConflictDoUpdate({
+      target: [merchantCategories.userId, merchantCategories.merchantKey],
+      set: { categoryId: category.id },
+    });
 }
