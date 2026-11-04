@@ -71,6 +71,8 @@ android {
     testOptions {
         // Robolectric (the widget's rendering tests, the refresh job's) reads the app's resources.
         unitTests.isIncludeAndroidResources = true
+        // The capture tests make the JDK's HttpURLConnection speak PATCH (Android's already does).
+        unitTests.all { it.jvmArgs("--add-opens=java.base/java.net=ALL-UNNAMED") }
     }
 
     buildTypes {

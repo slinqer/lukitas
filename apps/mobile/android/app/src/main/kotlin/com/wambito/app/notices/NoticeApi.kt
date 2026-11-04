@@ -17,6 +17,13 @@ sealed interface ApiResult<out T> {
 
     /** Offline, a timeout, a server error, an answer that cannot be read. */
     data object Failed : ApiResult<Nothing>
+
+    /**
+     * A 4xx other than 401: the server refuses this very request and always will. Only the capture
+     * send reads it (to drop the item instead of retrying forever); the notices' reads never make
+     * one the server can refuse, so they treat it as [Failed].
+     */
+    data object Rejected : ApiResult<Nothing>
 }
 
 /** What the notices need of `GET /v1/me`. */
@@ -52,7 +59,7 @@ class NoticeApi(
                 ApiResult.Failed
             }
             ApiResult.Unauthorized -> ApiResult.Unauthorized
-            ApiResult.Failed -> ApiResult.Failed
+            ApiResult.Failed, ApiResult.Rejected -> ApiResult.Failed
         }
 
     /**
@@ -70,7 +77,7 @@ class NoticeApi(
             val body = when (val answer = get(server, token, "/v1/transactions?$query")) {
                 is ApiResult.Ok -> answer.value
                 ApiResult.Unauthorized -> return ApiResult.Unauthorized
-                ApiResult.Failed -> return ApiResult.Failed
+                ApiResult.Failed, ApiResult.Rejected -> return ApiResult.Failed
             }
             try {
                 val doc = JSONObject(body)

@@ -22,7 +22,10 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
 - `MainActivity.kt`: takes the launch link. Channels:
   `wambito/*`, registered in `MainActivity.kt`; names match the Dart constants (rename both at once).
 - `widget/`: Glance widgets via home_widget; `notices/`: WorkManager `DueWorker`/`GuestWorker`,
-  local notices only. Voice: Vosk, never Android's SpeechRecognizer. Passkeys: androidx.credentials.
+  local notices only; `capture/`: the queue of captures parsed from bank notifications
+  (`CaptureQueue`), `CaptureApi` (`POST /v1/captures`, confirm) and WorkManager `SendCapturesWorker`
+  (`CaptureHooks` replaces the session and the notifier in tests). The notification text is never
+  queued, sent or logged. Voice: Vosk, never Android's SpeechRecognizer. Passkeys: androidx.credentials.
 
 ## Generated
 
@@ -47,8 +50,13 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
 - See root `AGENTS.md`: money slang, the signing key's alias, secrets (the keystore too). Here
   the slang lives in `lib/capture/parser/`, `lib/capture/engine/`, `lib/money/format.dart` and the ARBs.
 - Persistent state on phones: prefs file names, WorkManager unique names (`wambito.widget.refresh`,
-  `wambito.widget.midnight`, `wambito.notice.due`, `wambito.notice.guest`), widget receiver classes
+  `wambito.widget.midnight`, `wambito.notice.due`, `wambito.notice.guest`, `wambito.capture.send`,
+  `wambito.capture.confirm`; prefs `wambito.capture.queue`, `wambito.capture.sources`; channel
+  `wambito.capture`; listener class `com.wambito.app.capture.CaptureListener`), widget receiver classes
   (renaming removes placed widgets), the snapshot key. Changing any needs a migration.
+- Kotlin tests run on the JDK, whose HttpURLConnection refuses PATCH: `CaptureApi(setMethod=…)` and
+  `--add-opens java.base/java.net` in `app/build.gradle.kts`. `compileFlutterBuildDebug` can be
+  skipped with `-x` for Kotlin-only runs. No `gradlew` is tracked.
 - Never block on a WorkManager future (`.get()`) in code a Worker runs: deadlocks in tests.
 - `test/tooling/*` reads Android files; `widget_android_test.dart` there pins Dart = Kotlin.
 - `manifest_test` counts `android:host="due"` once (only `wambito://` links).
