@@ -1,5 +1,5 @@
 import { type Db, oauthClient, oauthConsent, passkey, type Tx, user } from "@wambito/db";
-import { and, eq, sql } from "@wambito/db/orm";
+import { and, eq, isNotNull, isNull, sql } from "@wambito/db/orm";
 import { type AdminMailExtra, type AdminMailKind, adminMail } from "../../emails/admin.ts";
 import { ApiError } from "../../http/problem.ts";
 import type { Mailer } from "../../mailer.ts";
@@ -152,39 +152,52 @@ export async function removePasskey(ctx: ActionContext, userId: string, passkeyI
 
 /**
  * Suspends the account (spec §5.4), in one transaction: `suspended_at`, every session, every
- * assistant, the audit entry.
+ * assistant, the audit entry. An account already suspended is a no-op: its sessions and
+ * assistants are cleared again (harmless), but nothing is audited or mailed.
  */
 export async function suspendUser(ctx: ActionContext, userId: string) {
   notSelf(ctx, userId);
   const who = await target(ctx.db, userId);
-  await ctx.db.transaction(async (tx) => {
-    await tx
+  const changed = await ctx.db.transaction(async (tx) => {
+    const rows = await tx
       .update(user)
-      .set({ suspendedAt: sql`coalesce(${user.suspendedAt}, now())` })
-      .where(eq(user.id, userId));
+      .set({ suspendedAt: sql`now()` })
+      .where(and(eq(user.id, userId), isNull(user.suspendedAt)))
+      .returning({ id: user.id });
     await revokeSessions(tx, userId);
     await revokeAllAssistants(tx, userId);
+    if (rows.length === 0) return false;
     await recordAudit(tx, {
       adminUserId: ctx.adminId,
       action: "account.suspend",
       targetUserId: userId,
       reason: ctx.reason,
     });
+    return true;
   });
-  await notify(ctx, who, "account_suspended");
+  if (changed) await notify(ctx, who, "account_suspended");
 }
 
-/** Lifts a suspension; the person signs in again as usual. */
+/**
+ * Lifts a suspension; the person signs in again as usual. An account that is not suspended is a
+ * no-op: nothing is audited or mailed.
+ */
 export async function reactivateUser(ctx: ActionContext, userId: string) {
   const who = await target(ctx.db, userId);
-  await ctx.db.transaction(async (tx) => {
-    await tx.update(user).set({ suspendedAt: null }).where(eq(user.id, userId));
+  const changed = await ctx.db.transaction(async (tx) => {
+    const rows = await tx
+      .update(user)
+      .set({ suspendedAt: null })
+      .where(and(eq(user.id, userId), isNotNull(user.suspendedAt)))
+      .returning({ id: user.id });
+    if (rows.length === 0) return false;
     await recordAudit(tx, {
       adminUserId: ctx.adminId,
       action: "account.reactivate",
       targetUserId: userId,
       reason: ctx.reason,
     });
+    return true;
   });
-  await notify(ctx, who, "account_reactivated");
+  if (changed) await notify(ctx, who, "account_reactivated");
 }

@@ -376,6 +376,21 @@ describe("suspend", () => {
     expect(left).toHaveLength(1);
   });
 
+  test("suspending twice sends one email and writes one audit row; the second is a no-op", async () => {
+    const { userId, email } = await person();
+    const sent = t.mailer.sent.length;
+    expect(
+      (await call("POST", `/v1/admin/users/${userId}/suspend`, { reason: REASON })).status,
+    ).toBe(204);
+    const first = (await userRow(userId))?.suspendedAt;
+    expect(
+      (await call("POST", `/v1/admin/users/${userId}/suspend`, { reason: REASON })).status,
+    ).toBe(204);
+    expect((await userRow(userId))?.suspendedAt).toEqual(first);
+    expect(await auditFor(userId)).toHaveLength(1);
+    expect(t.mailer.sent.slice(sent).filter((m) => m.to === email)).toHaveLength(1);
+  });
+
   test("an unknown user → 404 user_not_found", async () => {
     const res = await call("POST", "/v1/admin/users/nobody/suspend", { reason: REASON });
     expect(res.status).toBe(404);
@@ -394,6 +409,22 @@ describe("reactivate", () => {
     expect(rows).toHaveLength(1);
     expect(rows[0]).toMatchObject({ action: "account.reactivate", reason: REASON, detail: null });
     expectMail(email, "account_reactivated", "en");
+  });
+
+  test("an account that is not suspended: 204, no audit row, no email", async () => {
+    const { userId, email } = await person();
+    const sent = t.mailer.sent.length;
+    const res = await call("POST", `/v1/admin/users/${userId}/reactivate`, { reason: REASON });
+    expect(res.status).toBe(204);
+    expect((await userRow(userId))?.suspendedAt).toBeNull();
+    expect(await auditFor(userId)).toHaveLength(0);
+    expect(t.mailer.sent.slice(sent).filter((m) => m.to === email)).toHaveLength(0);
+  });
+
+  test("an unknown user → 404 user_not_found", async () => {
+    const res = await call("POST", "/v1/admin/users/nobody/reactivate", { reason: REASON });
+    expect(res.status).toBe(404);
+    expect(await code(res)).toBe("user_not_found");
   });
 
   test("a forced failure leaves the account suspended", async () => {
