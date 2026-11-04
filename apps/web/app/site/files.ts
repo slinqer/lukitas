@@ -2,8 +2,9 @@ import { LOCALES } from "../i18n/format.ts";
 import { PAGE_PATH, SITE_PAGES } from "./paths.ts";
 
 /**
- * `sitemap.xml`: the landing and the roadmap, each in every language, each entry listing every
- * language of its page (itself included) plus `x-default` → Spanish, all on `origin`.
+ * `sitemap.xml`: every public page (landing, roadmap, privacy policy, account deletion), each in
+ * every language, each entry listing every language of its page (itself included) plus
+ * `x-default` → Spanish, all on `origin`.
  */
 export function sitemapXml(origin: string): string {
   const urls = SITE_PAGES.flatMap((page) => {
