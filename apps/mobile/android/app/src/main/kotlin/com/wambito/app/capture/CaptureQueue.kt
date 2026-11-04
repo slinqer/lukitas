@@ -4,9 +4,6 @@ import android.content.Context
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import java.time.Instant
-import java.time.format.DateTimeParseException
-import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 /** A capture waiting to be sent, with the idempotency key every attempt of it carries. */
@@ -52,40 +49,12 @@ class CaptureQueue(context: Context) {
         preferences.edit().putString(ITEMS, array.toString()).commit()
     }
 
-    private fun encode(item: QueuedCapture) = JSONObject().apply {
-        val capture = item.capture
-        put("key", item.key)
-        put("kind", capture.kind.name.lowercase())
-        put("amount", capture.amountCents)
-        put("currency", capture.currency)
-        put("merchant", capture.merchant)
-        put("capturedAt", capture.capturedAt.truncatedTo(ChronoUnit.MILLIS).toString())
-        put("source", capture.source.wire)
-    }
+    private fun encode(item: QueuedCapture) = item.capture.toJson().put("key", item.key)
 
     /** An entry that cannot be read is skipped: it would only ever fail again. */
-    private fun decode(json: JSONObject): QueuedCapture? = try {
-        val source = CaptureSource.forWire(json.getString("source"))
-        val kind = Kind.entries.firstOrNull { it.name.lowercase() == json.getString("kind") }
-        if (source == null || kind == null) {
-            null
-        } else {
-            QueuedCapture(
-                key = json.getString("key"),
-                capture = ParsedCapture(
-                    kind = kind,
-                    amountCents = json.getLong("amount"),
-                    currency = json.getString("currency"),
-                    merchant = json.getString("merchant"),
-                    capturedAt = Instant.parse(json.getString("capturedAt")),
-                    source = source,
-                ),
-            )
-        }
-    } catch (_: JSONException) {
-        null
-    } catch (_: DateTimeParseException) {
-        null
+    private fun decode(json: JSONObject): QueuedCapture? {
+        val key = json.optString("key").takeIf { it.isNotEmpty() } ?: return null
+        return parsedCaptureFromJson(json)?.let { QueuedCapture(key, it) }
     }
 
     companion object {

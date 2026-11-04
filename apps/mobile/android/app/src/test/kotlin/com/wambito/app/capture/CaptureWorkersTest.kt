@@ -84,7 +84,7 @@ class CaptureWorkersTest {
                         else -> status to "{}"
                     }
                 }
-                request.method == "PATCH" && request.path.contains("/api/v1/transactions/") -> patchStatus to "{}"
+                request.method == "POST" && request.path.endsWith("/api/v1/transactions/review") -> patchStatus to "{}"
                 else -> 404 to "{}"
             }
         }
@@ -108,16 +108,6 @@ class CaptureWorkersTest {
     private fun runSend(): ListenableWorker.Result = runBlocking {
         TestListenableWorkerBuilder<SendCapturesWorker>(context).build().doWork()
     }
-
-    /** The JDK's connection refuses PATCH; Android's accepts it. */
-    private fun patchApi() = CaptureApi(setMethod = { connection, method ->
-        try {
-            connection.requestMethod = method
-        } catch (_: java.net.ProtocolException) {
-            java.net.HttpURLConnection::class.java.getDeclaredField("method").apply { isAccessible = true }
-                .set(connection, method)
-        }
-    })
 
     private fun posts() = requests.filter { it.method == "POST" }
 
@@ -183,12 +173,11 @@ class CaptureWorkersTest {
 
     @Test
     fun `unauthorized keeps the queue and asks for one sign-in notice with the count`() {
-        session.stored = "token-1"
         statusFor["Mercadona"] = 401
         queue.add(sampleCapture("Mercadona"))
         queue.add(sampleCapture("Café"))
 
-        runSend()
+        assertEquals(ListenableWorker.Result.success().javaClass, runSend().javaClass)
 
         assertEquals(2, queue.all().size)
         assertEquals(listOf(2), notifier.signIn)
@@ -200,7 +189,7 @@ class CaptureWorkersTest {
     fun `signed out sends nothing and asks for sign-in`() {
         session.stored = null
         queue.add(sampleCapture())
-        runSend()
+        assertEquals(ListenableWorker.Result.success().javaClass, runSend().javaClass)
         assertTrue(requests.isEmpty())
         assertEquals(listOf(1), notifier.signIn)
         assertEquals(1, queue.all().size)
@@ -237,6 +226,17 @@ class CaptureWorkersTest {
     }
 
     @Test
+    fun `retries when the server lacks the endpoint (404)`() {
+        statusFor["Mercadona"] = 404
+        queue.add(sampleCapture("Mercadona"))
+        assertEquals(ListenableWorker.Result.retry(), runSend())
+        assertEquals(1, queue.all().size)
+        statusFor["Mercadona"] = 403
+        assertEquals(ListenableWorker.Result.retry(), runSend())
+        assertEquals(1, queue.all().size)
+    }
+
+    @Test
     fun `an unreadable server setting sends nothing, never the token to the default server`() {
         session.serverUnreadable = true
         queue.add(sampleCapture())
@@ -247,10 +247,14 @@ class CaptureWorkersTest {
 
     @Test
     fun `a sign-out while the request is on its way saves nothing on the screen`() {
-        queue.add(sampleCapture())
+        queue.add(sampleCapture("Mercadona"))
+        val rest = queue.add(sampleCapture("Café"))
         whileAnswering = { session.stored = null }
         runSend()
         assertTrue(notifier.shown.isEmpty())
+        // The first was saved by the server, so it left the queue; the rest stayed for a sign-in.
+        assertEquals(listOf(rest), queue.all())
+        assertEquals(1, posts().size)
     }
 
     @Test
@@ -262,22 +266,22 @@ class CaptureWorkersTest {
     }
 
     @Test
-    fun `confirm patches needsReview false`() {
-        val result = patchApi().confirm("http://127.0.0.1:${server.port}", "token-1", "t-1")
+    fun `confirm posts the id to the review endpoint`() {
+        val result = CaptureApi().confirm("http://127.0.0.1:${server.port}", "token-1", "t-1")
         assertEquals(ApiResult.Ok(Unit), result)
         val request = requests.single()
-        assertEquals("PATCH", request.method)
-        assertEquals("/api/v1/transactions/t-1", request.path)
-        assertEquals("""{"needsReview":false}""", request.body)
+        assertEquals("POST", request.method)
+        assertEquals("/api/v1/transactions/review", request.path)
+        assertEquals("""{"ids":["t-1"]}""", request.body)
         assertEquals("1", request.headers["x-wambito-background"])
     }
 
     @Test
     fun `confirm tells a refused session apart`() {
         patchStatus = 401
-        assertEquals(ApiResult.Unauthorized, patchApi().confirm("http://127.0.0.1:${server.port}", "t", "t-1"))
+        assertEquals(ApiResult.Unauthorized, CaptureApi().confirm("http://127.0.0.1:${server.port}", "t", "t-1"))
         patchStatus = 500
-        assertEquals(ApiResult.Failed, patchApi().confirm("http://127.0.0.1:${server.port}", "t", "t-1"))
+        assertEquals(ApiResult.Failed, CaptureApi().confirm("http://127.0.0.1:${server.port}", "t", "t-1"))
     }
 
     @Test

@@ -54,9 +54,7 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
   `wambito.capture.confirm`; prefs `wambito.capture.queue`, `wambito.capture.sources`; channel
   `wambito.capture`; listener class `com.wambito.app.capture.CaptureListener`), widget receiver classes
   (renaming removes placed widgets), the snapshot key. Changing any needs a migration.
-- Kotlin tests run on the JDK, whose HttpURLConnection refuses PATCH: `CaptureApi(setMethod=…)` and
-  `--add-opens java.base/java.net` in `app/build.gradle.kts`. `compileFlutterBuildDebug` can be
-  skipped with `-x` for Kotlin-only runs. No `gradlew` is tracked.
+- No `gradlew` is tracked; Kotlin-only runs can skip the Flutter compile with `-x compileFlutterBuildDebug`.
 - Never block on a WorkManager future (`.get()`) in code a Worker runs: deadlocks in tests.
 - `test/tooling/*` reads Android files; `widget_android_test.dart` there pins Dart = Kotlin.
 - `manifest_test` counts `android:host="due"` once (only `wambito://` links).

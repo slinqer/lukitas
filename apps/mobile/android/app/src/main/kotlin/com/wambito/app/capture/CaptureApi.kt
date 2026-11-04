@@ -1,14 +1,13 @@
 package com.wambito.app.capture
 
 import com.wambito.app.notices.ApiResult
+import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
-import java.net.URLEncoder
 import java.time.ZoneId
-import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 /** What the API says of a capture (`captureResultDto`). */
@@ -33,11 +32,6 @@ data class CaptureAnswer(
 class CaptureApi(
     private val connectTimeoutMillis: Int = 10_000,
     private val readTimeoutMillis: Int = 20_000,
-    /**
-     * Sets the request method. The platform's connection (OkHttp inside Android) knows PATCH; the
-     * JDK's, which the unit tests run on, does not, so the tests pass their own.
-     */
-    private val setMethod: (HttpURLConnection, String) -> Unit = { connection, method -> connection.requestMethod = method },
 ) {
     /**
      * `POST /v1/captures` with the item's key as `Idempotency-Key`, so a send repeated after a
@@ -46,14 +40,7 @@ class CaptureApi(
      * itself, so sending it again can only fail again.
      */
     fun send(server: String, token: String, item: QueuedCapture): ApiResult<CaptureAnswer> {
-        val capture = item.capture
-        val body = JSONObject()
-            .put("kind", capture.kind.name.lowercase())
-            .put("amount", capture.amountCents)
-            .put("currency", capture.currency)
-            .put("merchant", capture.merchant)
-            .put("capturedAt", capture.capturedAt.truncatedTo(ChronoUnit.MILLIS).toString())
-            .put("source", capture.source.wire)
+        val body = item.capture.toJson()
         return when (val answer = call(server, token, "POST", "/v1/captures", body.toString(), item.key)) {
             is ApiResult.Ok -> try {
                 val doc = JSONObject(answer.value)
@@ -79,10 +66,10 @@ class CaptureApi(
         }
     }
 
-    /** "Bien": `PATCH /v1/transactions/{id}` with `{"needsReview": false}`. Setting it twice is harmless. */
+    /** "Bien": `POST /v1/transactions/review` with `{"ids":[id]}`. Confirming twice is harmless. */
     fun confirm(server: String, token: String, id: String): ApiResult<Unit> {
-        val path = "/v1/transactions/" + URLEncoder.encode(id, "UTF-8").replace("+", "%20")
-        return when (val answer = call(server, token, "PATCH", path, """{"needsReview":false}""", null)) {
+        val body = JSONObject().put("ids", JSONArray().put(id)).toString()
+        return when (call(server, token, "POST", "/v1/transactions/review", body, null)) {
             is ApiResult.Ok -> ApiResult.Ok(Unit)
             ApiResult.Unauthorized -> ApiResult.Unauthorized
             ApiResult.Failed -> ApiResult.Failed
@@ -113,7 +100,7 @@ class CaptureApi(
             connection.connectTimeout = connectTimeoutMillis
             connection.readTimeout = readTimeoutMillis
             connection.instanceFollowRedirects = false
-            setMethod(connection, method)
+            connection.requestMethod = method
             connection.setRequestProperty("Authorization", "Bearer $token")
             connection.setRequestProperty("Accept", "application/json")
             connection.setRequestProperty("Content-Type", "application/json")
@@ -126,8 +113,9 @@ class CaptureApi(
             when (connection.responseCode) {
                 200, 201 -> ApiResult.Ok(connection.inputStream.bufferedReader().use { it.readText() })
                 401 -> ApiResult.Unauthorized
-                // 408 and 429 are the server asking to be tried again, not refusing the capture.
-                408, 429 -> ApiResult.Failed
+                // 408 and 429 ask to be tried again; 403 and 404 are a server that lacks the endpoint
+                // (a phone updated before its server): the capture waits for it instead of being lost.
+                403, 404, 408, 429 -> ApiResult.Failed
                 in 400..499 -> ApiResult.Rejected
                 else -> ApiResult.Failed
             }
