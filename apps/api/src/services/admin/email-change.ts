@@ -14,6 +14,13 @@ export const EMAIL_CHANGE_TTL_MS = 24 * 60 * 60 * 1000;
 const tokenHash = (token: string) => createHash("sha256").update(token).digest("hex");
 
 const emailTaken = () => new ApiError(409, "email_taken", "That email already has an account");
+/** The new address could not sign in (SIGN_IN_ALLOWLIST is set and does not list it). */
+const signInNotAllowed = () =>
+  new ApiError(
+    409,
+    "sign_in_not_allowed",
+    "Sign-in is not open to that address; add it to SIGN_IN_ALLOWLIST first",
+  );
 const linkExpired = () =>
   new ApiError(410, "link_expired", "This link has expired or was already used");
 
@@ -30,10 +37,11 @@ async function takenByOther(db: Db | Tx, email: string, userId: string): Promise
 /**
  * Starts an email change (spec §5.2): a one-day link to `newEmail` (trimmed and lowercased by the
  * caller), replacing any pending one, and the `email.change_requested` audit entry, in one
- * transaction. The link is mailed after the commit.
+ * transaction. The link is mailed after the commit. An address sign-in refuses
+ * (`SIGN_IN_ALLOWLIST`): 409 `sign_in_not_allowed`, nothing written.
  */
 export async function requestEmailChange(
-  ctx: ActionContext & { now: Date },
+  ctx: ActionContext & { now: Date; signInAllowed: (email: string) => boolean },
   userId: string,
   newEmail: string,
 ) {
@@ -41,6 +49,8 @@ export async function requestEmailChange(
   if (who.isAnonymous) {
     throw new ApiError(409, "is_guest", "A guest has no email; they claim one in the app");
   }
+  // Before anything is stored or sent: an address that cannot sign in would strand the person.
+  if (!ctx.signInAllowed(newEmail)) throw signInNotAllowed();
   if (await takenByOther(ctx.db, newEmail, userId)) throw emailTaken();
   const token = randomBytes(32).toString("base64url");
   const values = {
@@ -73,10 +83,14 @@ export async function requestEmailChange(
  * The person confirms the link (spec §5.2), in one transaction: the pending row is deleted first
  * (so of two concurrent confirms only one gets it), the email changes and counts as verified,
  * every session ends, `email.change_confirmed` is written. Then the old address gets a notice.
- * An unknown, used or expired token: 410 `link_expired`; the email taken meanwhile: 409.
+ * An unknown, used or expired token: 410 `link_expired`; the email taken meanwhile: 409
+ * `email_taken`; taken off the allowlist meanwhile: 409 `sign_in_not_allowed` (the link stays).
  */
 export async function confirmEmailChange(
-  ctx: Pick<ActionContext, "db" | "mailer" | "webUrl"> & { now: Date },
+  ctx: Pick<ActionContext, "db" | "mailer" | "webUrl"> & {
+    now: Date;
+    signInAllowed: (email: string) => boolean;
+  },
   token: string,
 ) {
   const old = await ctx.db.transaction(async (tx) => {
@@ -85,6 +99,7 @@ export async function confirmEmailChange(
       .where(and(eq(emailChange.tokenHash, tokenHash(token)), gt(emailChange.expiresAt, ctx.now)))
       .returning();
     if (!change) throw linkExpired();
+    if (!ctx.signInAllowed(change.newEmail)) throw signInNotAllowed();
     const [row] = await tx
       .select({
         id: user.id,

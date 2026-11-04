@@ -4,7 +4,7 @@ import { count, eq } from "@wambito/db/orm";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { adminMail } from "../src/emails/admin.ts";
 import { emailHash } from "../src/services/admin/audit.ts";
-import { ADMIN_ID, seedAdmin, verifiedAdmin } from "./admin-helpers.ts";
+import { ADMIN_EMAIL, ADMIN_ID, seedAdmin, verifiedAdmin } from "./admin-helpers.ts";
 import { createTestApp, type TestApp } from "./harness.ts";
 
 const REASON = "Lost the mailbox; checked by video call";
@@ -171,6 +171,62 @@ describe("request an email change", () => {
     const { userId } = await person();
     expect((await request(userId, { newEmail: newAddress() })).status).toBe(422);
     expect((await request(userId, { newEmail: "not-an-email", reason: REASON })).status).toBe(422);
+  });
+
+  test("a new email under .invalid → 422, nothing written or sent", async () => {
+    const { userId } = await person();
+    for (const newEmail of ["someone@guest.wambito.invalid", "someone@example.invalid."]) {
+      const sent = t.mailer.sent.length;
+      const res = await request(userId, { newEmail, reason: REASON });
+      expect(res.status, newEmail).toBe(422);
+      expect(await code(res)).toBe("validation_failed");
+      expect(t.mailer.sent.length).toBe(sent);
+    }
+    expect(await pending(userId)).toHaveLength(0);
+    expect(await auditFor(userId)).toHaveLength(0);
+  });
+
+  test("with SIGN_IN_ALLOWLIST set, a new email outside it → 409, nothing written or sent", async () => {
+    const { userId, email } = await person();
+    const allowed = newAddress();
+    const outside = newAddress();
+    const saved = t.config.SIGN_IN_ALLOWLIST;
+    t.config.SIGN_IN_ALLOWLIST = [ADMIN_EMAIL, email, allowed];
+    try {
+      const sent = t.mailer.sent.length;
+      const res = await request(userId, { newEmail: outside, reason: REASON });
+      expect(res.status).toBe(409);
+      expect(await code(res)).toBe("sign_in_not_allowed");
+      expect(t.mailer.sent.length).toBe(sent);
+      expect(await pending(userId)).toHaveLength(0);
+      expect(await auditFor(userId)).toHaveLength(0);
+
+      // An address on the list still works, and the person can sign in with it afterwards.
+      expect((await request(userId, { newEmail: allowed, reason: REASON })).status).toBe(204);
+      expect((await confirm(tokenMailedTo(allowed))).status).toBe(204);
+      expect((await t.signIn(allowed)).userId).toBe(userId);
+    } finally {
+      t.config.SIGN_IN_ALLOWLIST = saved;
+    }
+  });
+
+  test("an address taken off the allowlist before the confirm → 409, nothing changed", async () => {
+    const { userId, email } = await person();
+    const to = newAddress();
+    const saved = t.config.SIGN_IN_ALLOWLIST;
+    t.config.SIGN_IN_ALLOWLIST = [ADMIN_EMAIL, email, to];
+    try {
+      expect((await request(userId, { newEmail: to, reason: REASON })).status).toBe(204);
+      const token = tokenMailedTo(to);
+      t.config.SIGN_IN_ALLOWLIST = [ADMIN_EMAIL, email];
+      const res = await confirm(token);
+      expect(res.status).toBe(409);
+      expect(await code(res)).toBe("sign_in_not_allowed");
+      expect((await userRow(userId))?.email).toBe(email);
+      expect(await pending(userId)).toHaveLength(1);
+    } finally {
+      t.config.SIGN_IN_ALLOWLIST = saved;
+    }
   });
 
   test("needs a verified admin: no session → 404", async () => {

@@ -13,14 +13,18 @@ export interface Mailer {
   send(mail: Mail): Promise<void>;
 }
 
+/** Whether `to` can receive mail at all: not under the `.invalid` TLD (see `assertDeliverable`). */
+export function isDeliverable(to: string): boolean {
+  return !to.trim().toLowerCase().replace(/\.+$/, "").endsWith(".invalid");
+}
+
 /**
  * Refuses an address under the `.invalid` TLD (RFC 2606: it never resolves). Guests have placeholder
  * emails under guest.wambito.invalid, and nothing may ever be mailed there; every mailer checks
  * this before it touches the network.
  */
 export function assertDeliverable(to: string): void {
-  const address = to.trim().toLowerCase().replace(/\.+$/, "");
-  if (address.endsWith(".invalid")) {
+  if (!isDeliverable(to)) {
     throw new Error("Refusing to mail an address under .invalid (a guest's placeholder email)");
   }
 }

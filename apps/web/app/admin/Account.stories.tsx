@@ -444,6 +444,24 @@ export const ChangeEmailTaken: Story = {
   },
 };
 
+/** The new email is not on SIGN_IN_ALLOWLIST: the panel's own text says to add it first. */
+export const ChangeEmailNotAllowed: Story = {
+  render: render(ANA, {
+    [`POST /v1/admin/users/${ANA_ID}/email-change`]: () => problem(409, "sign_in_not_allowed"),
+  }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(await canvas.findByRole("button", { name: "Cambiar el correo" }));
+    const sheet = within(await dialog());
+    await userEvent.type(sheet.getByRole("textbox", { name: "Nuevo correo" }), "ana@new.test");
+    await userEvent.type(sheet.getByRole("textbox", { name: "Motivo" }), "Lost mailbox, ID seen");
+    await userEvent.click(sheet.getByRole("button", { name: "Enviar el enlace" }));
+    await expect(await sheet.findByRole("alert")).toHaveTextContent(
+      "Añádelo primero a la lista de acceso (SIGN_IN_ALLOWLIST).",
+    );
+  },
+};
+
 /** Disconnecting one assistant and removing one passkey name what goes, then reload the view. */
 export const RevokeAssistantAndPasskey: Story = {
   render: render(ANA),

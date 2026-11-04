@@ -1,6 +1,7 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { type Db, rateLimit } from "@wambito/db";
 import { sql } from "@wambito/db/orm";
+import { isSignInAllowed } from "../auth.ts";
 import type { AppDeps } from "../deps.ts";
 import { clientIp } from "../http/client-ip.ts";
 import { jsonBody, problems } from "../http/openapi.ts";
@@ -62,7 +63,13 @@ export function emailChangeRoutes(deps: AppDeps) {
       }
       const { token } = c.req.valid("json");
       await confirmEmailChange(
-        { db: deps.db, mailer: deps.mailer, webUrl: deps.config.WEB_URL, now: nowOf(deps) },
+        {
+          db: deps.db,
+          mailer: deps.mailer,
+          webUrl: deps.config.WEB_URL,
+          now: nowOf(deps),
+          signInAllowed: (email) => isSignInAllowed(deps.config, email),
+        },
         token,
       );
       return c.body(null, 204);

@@ -19,7 +19,8 @@
       "user_not_found": "No account matches.",
       "is_guest": "This is a guest account: it has no email to change.",
       "cannot_target_self": "You can't do this to your own account. Use the app's settings, or ask another admin.",
-      "email_taken": "Another account already has that email."
+      "email_taken": "Another account already has that email.",
+      "sign_in_not_allowed": "That address can't sign in yet. Add it to the sign-in allowlist (SIGN_IN_ALLOWLIST) first."
     },
     "home": {
       "title": "Admin",

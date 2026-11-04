@@ -2,12 +2,14 @@ import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import type { AuthenticationResponseJSON } from "@simplewebauthn/server";
 import { adminAudit } from "@wambito/db";
 import { and, desc, eq, sql } from "@wambito/db/orm";
-import type { Auth } from "../auth.ts";
+import { type Auth, isSignInAllowed } from "../auth.ts";
 import type { AppDeps } from "../deps.ts";
 import type { AdminEnv } from "../env.ts";
 import { ADMIN_VERIFY_MS, requireAdmin } from "../http/admin.ts";
 import { jsonBody, jsonResponse, problems } from "../http/openapi.ts";
 import { ApiError, notFound, validationHook } from "../http/problem.ts";
+import { Problem } from "../http/schemas.ts";
+import { isDeliverable } from "../mailer.ts";
 import {
   type ActionContext,
   deleteUser,
@@ -40,7 +42,12 @@ const EmailChangeBody = z
   .object({
     reason: reasonField,
     /** Trimmed and lowercased, as sign-in reads an email. */
-    newEmail: z.string().trim().toLowerCase().pipe(z.email().max(254)),
+    newEmail: z
+      .string()
+      .trim()
+      .toLowerCase()
+      .pipe(z.email().max(254))
+      .refine(isDeliverable, { message: "An address under .invalid cannot receive mail" }),
   })
   .openapi("AdminEmailChange");
 const UserParam = z.object({ id: z.string().min(1) });
@@ -386,13 +393,26 @@ export function adminRoutes(deps: AppDeps, auth: Auth) {
       request: { params: UserParam, body: jsonBody(EmailChangeBody) },
       responses: {
         204: { description: "A confirmation link is on its way to the new email (valid 24 hours)" },
-        ...problems(401, 404, 409, 422),
+        ...problems(401, 404, 422),
+        409: {
+          content: { "application/problem+json": { schema: Problem } },
+          description:
+            "`email_taken`, `is_guest`, or `sign_in_not_allowed` (SIGN_IN_ALLOWLIST is set and does not list the new email)",
+        },
       },
     }),
     async (c) => {
       const { id } = c.req.valid("param");
       const { reason, newEmail } = c.req.valid("json");
-      await requestEmailChange({ ...ctx(c, reason), now: nowOf(deps) }, id, newEmail);
+      await requestEmailChange(
+        {
+          ...ctx(c, reason),
+          now: nowOf(deps),
+          signInAllowed: (email) => isSignInAllowed(deps.config, email),
+        },
+        id,
+        newEmail,
+      );
       return c.body(null, 204);
     },
   );

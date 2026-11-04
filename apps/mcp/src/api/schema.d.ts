@@ -1372,7 +1372,7 @@ export interface operations {
                     "application/problem+json": components["schemas"]["Problem"];
                 };
             };
-            /** @description Problem */
+            /** @description `email_taken`, `is_guest`, or `sign_in_not_allowed` (SIGN_IN_ALLOWLIST is set and does not list the new email) */
             409: {
                 headers: {
                     [name: string]: unknown;

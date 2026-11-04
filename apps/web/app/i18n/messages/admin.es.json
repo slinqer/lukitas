@@ -19,7 +19,8 @@
       "user_not_found": "Ninguna cuenta coincide.",
       "is_guest": "Es una cuenta de invitado: no tiene correo que cambiar.",
       "cannot_target_self": "No puedes hacer esto con tu propia cuenta. Usa los ajustes de la app o pídeselo a otra persona administradora.",
-      "email_taken": "Otra cuenta ya tiene ese correo."
+      "email_taken": "Otra cuenta ya tiene ese correo.",
+      "sign_in_not_allowed": "Ese correo todavía no puede entrar. Añádelo primero a la lista de acceso (SIGN_IN_ALLOWLIST)."
     },
     "home": {
       "title": "Administración",
