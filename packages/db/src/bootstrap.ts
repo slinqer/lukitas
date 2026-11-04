@@ -57,7 +57,8 @@ export async function ensureAppRole(adminUrl: string, appPassword: string): Prom
  * Grants the runtime role read and write on every table and use of every sequence in `public`,
  * and the same on tables and sequences created later. Idempotent. The grants live here, not in a
  * migration, so the role's name is not frozen into the migration history. `admin_audit` is
- * append-only: its UPDATE and DELETE are revoked again after the blanket grant.
+ * append-only: its UPDATE and DELETE are revoked again after the blanket grant, when the table
+ * exists (a restored dump from before migration 0008 has none).
  */
 export async function grantAppRole(adminUrl: string): Promise<void> {
   const admin = postgres(adminUrl, { max: 1, onnotice: () => {} });
@@ -69,7 +70,11 @@ export async function grantAppRole(adminUrl: string): Promise<void> {
         'GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO %I',
         'ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO %I',
         'ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO %I',
-        'REVOKE UPDATE, DELETE ON admin_audit FROM %I'
+        -- A dump from before migration 0008 (a restore drill) has no admin_audit: skip it there.
+        -- The role reaches the inner statement as a literal (%L), which quotes it again as %I.
+        'DO $grant$ BEGIN IF to_regclass(''public.admin_audit'') IS NOT NULL THEN '
+          'EXECUTE format(''REVOKE UPDATE, DELETE ON public.admin_audit FROM %%I'', %L); '
+          'END IF; END $grant$'
       ]) as t`;
     for (const { sql } of statements) await admin.unsafe(sql);
   } finally {
