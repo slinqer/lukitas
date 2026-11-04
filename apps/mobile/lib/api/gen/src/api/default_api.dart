@@ -12,12 +12,14 @@ import 'package:built_collection/built_collection.dart';
 import 'package:built_value/json_object.dart';
 import 'package:wambito/api/gen/src/api_util.dart';
 import 'package:wambito/api/gen/src/model/assistant_list.dart';
+import 'package:wambito/api/gen/src/model/capture_result.dart';
 import 'package:wambito/api/gen/src/model/category.dart';
 import 'package:wambito/api/gen/src/model/category_report.dart';
 import 'package:wambito/api/gen/src/model/claim_email_send.dart';
 import 'package:wambito/api/gen/src/model/claim_email_verify.dart';
 import 'package:wambito/api/gen/src/model/confirm_import.dart';
 import 'package:wambito/api/gen/src/model/cost_of_living_report.dart';
+import 'package:wambito/api/gen/src/model/create_capture.dart';
 import 'package:wambito/api/gen/src/model/create_category.dart';
 import 'package:wambito/api/gen/src/model/create_recurrence.dart';
 import 'package:wambito/api/gen/src/model/create_transaction.dart';
@@ -27,6 +29,7 @@ import 'package:wambito/api/gen/src/model/file_import.dart';
 import 'package:wambito/api/gen/src/model/problem.dart';
 import 'package:wambito/api/gen/src/model/profile.dart';
 import 'package:wambito/api/gen/src/model/recurrence.dart';
+import 'package:wambito/api/gen/src/model/review_transactions.dart';
 import 'package:wambito/api/gen/src/model/set_budget.dart';
 import 'package:wambito/api/gen/src/model/summary.dart';
 import 'package:wambito/api/gen/src/model/transaction.dart';
@@ -272,6 +275,93 @@ class DefaultApi {
     }
 
     return Response<FileImport>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
+  /// createCapture
+  /// Saves a purchase parsed from a bank notification, to review. The same purchase seen again (same kind, amount and currency within 10 minutes of &#x60;capturedAt&#x60;) is not saved twice: the answer is &#x60;merged&#x60;. &#x60;Idempotency-Key&#x60; is required.
+  ///
+  /// Parameters:
+  /// * [idempotencyKey] - A key that stays the same across retries of the same request (a UUID, say): a retry with the same key and body returns the first response instead of saving twice.
+  /// * [createCapture]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [CaptureResult] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<CaptureResult>> createCapture({
+    required String idempotencyKey,
+    required CreateCapture createCapture,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/v1/captures';
+    final _options = Options(
+      method: r'POST',
+      headers: <String, dynamic>{r'Idempotency-Key': idempotencyKey, ...?headers},
+      extra: <String, dynamic>{'secure': <Map<String, String>>[], ...?extra},
+      contentType: 'application/json',
+      validateStatus: validateStatus,
+    );
+
+    dynamic _bodyData;
+
+    try {
+      const _type = FullType(CreateCapture);
+      _bodyData = _serializers.serialize(createCapture, specifiedType: _type);
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _options.compose(_dio.options, _path),
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    final _response = await _dio.request<Object>(
+      _path,
+      data: _bodyData,
+      options: _options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    CaptureResult? _responseData;
+
+    try {
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(rawResponse, specifiedType: const FullType(CaptureResult))
+                as CaptureResult;
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<CaptureResult>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
@@ -1670,6 +1760,7 @@ class DefaultApi {
   /// * [q]
   /// * [category]
   /// * [status]
+  /// * [needsReview]
   /// * [cursor]
   /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -1688,6 +1779,7 @@ class DefaultApi {
     String? q,
     String? category,
     String? status,
+    String? needsReview,
     String? cursor,
     int? limit = 50,
     CancelToken? cancelToken,
@@ -1715,6 +1807,8 @@ class DefaultApi {
         r'category': encodeQueryParameter(_serializers, category, const FullType(String)),
       if (status != null)
         r'status': encodeQueryParameter(_serializers, status, const FullType(String)),
+      if (needsReview != null)
+        r'needsReview': encodeQueryParameter(_serializers, needsReview, const FullType(String)),
       if (cursor != null)
         r'cursor': encodeQueryParameter(_serializers, cursor, const FullType(String)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
@@ -1878,6 +1972,96 @@ class DefaultApi {
     );
 
     return _response;
+  }
+
+  /// reviewTransactions
+  /// Confirms detected transactions at once, learning the category of each. All or nothing: an id that is not the caller&#39;s, or was deleted, answers 404 and nothing changes. Ids already confirmed are left as they are.
+  ///
+  /// Parameters:
+  /// * [reviewTransactions]
+  /// * [idempotencyKey] - A key that stays the same across retries of the same request (a UUID, say): a retry with the same key and body returns the first response instead of saving twice.
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [TransactionList] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<TransactionList>> reviewTransactions({
+    required ReviewTransactions reviewTransactions,
+    String? idempotencyKey,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/v1/transactions/review';
+    final _options = Options(
+      method: r'POST',
+      headers: <String, dynamic>{
+        if (idempotencyKey != null) r'Idempotency-Key': idempotencyKey,
+        ...?headers,
+      },
+      extra: <String, dynamic>{'secure': <Map<String, String>>[], ...?extra},
+      contentType: 'application/json',
+      validateStatus: validateStatus,
+    );
+
+    dynamic _bodyData;
+
+    try {
+      const _type = FullType(ReviewTransactions);
+      _bodyData = _serializers.serialize(reviewTransactions, specifiedType: _type);
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _options.compose(_dio.options, _path),
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    final _response = await _dio.request<Object>(
+      _path,
+      data: _bodyData,
+      options: _options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    TransactionList? _responseData;
+
+    try {
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(rawResponse, specifiedType: const FullType(TransactionList))
+                as TransactionList;
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<TransactionList>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
   }
 
   /// revokeAssistant

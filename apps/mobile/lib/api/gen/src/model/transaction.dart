@@ -23,6 +23,8 @@ part 'transaction.g.dart';
 /// * [recurrenceId]
 /// * [importId]
 /// * [source_]
+/// * [needsReview]
+/// * [captureSource]
 /// * [createdAt]
 /// * [updatedAt]
 @BuiltValue()
@@ -60,7 +62,14 @@ abstract class Transaction implements Built<Transaction, TransactionBuilder> {
 
   @BuiltValueField(wireName: r'source')
   TransactionSource_Enum get source_;
-  // enum source_Enum {  app,  web,  widget,  mcp,  import,  recurrence,  };
+  // enum source_Enum {  app,  web,  widget,  mcp,  import,  recurrence,  capture,  };
+
+  @BuiltValueField(wireName: r'needsReview')
+  bool get needsReview;
+
+  @BuiltValueField(wireName: r'captureSource')
+  TransactionCaptureSourceEnum? get captureSource;
+  // enum captureSourceEnum {  revolut,  google_wallet,  ,  };
 
   @BuiltValueField(wireName: r'createdAt')
   String get createdAt;
@@ -128,6 +137,15 @@ class _$TransactionSerializer implements PrimitiveSerializer<Transaction> {
       object.source_,
       specifiedType: const FullType(TransactionSource_Enum),
     );
+    yield r'needsReview';
+    yield serializers.serialize(object.needsReview, specifiedType: const FullType(bool));
+    yield r'captureSource';
+    yield object.captureSource == null
+        ? null
+        : serializers.serialize(
+            object.captureSource,
+            specifiedType: const FullType.nullable(TransactionCaptureSourceEnum),
+          );
     yield r'createdAt';
     yield serializers.serialize(object.createdAt, specifiedType: const FullType(String));
     yield r'updatedAt';
@@ -223,6 +241,19 @@ class _$TransactionSerializer implements PrimitiveSerializer<Transaction> {
           ) as TransactionSource_Enum;
           result.source_ = valueDes;
           break;
+        case r'needsReview':
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(bool)) as bool;
+          result.needsReview = valueDes;
+          break;
+        case r'captureSource':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(TransactionCaptureSourceEnum),
+          ) as TransactionCaptureSourceEnum?;
+          if (valueDes == null) continue;
+          result.captureSource = valueDes;
+          break;
         case r'createdAt':
           final valueDes =
               serializers.deserialize(value, specifiedType: const FullType(String)) as String;
@@ -289,6 +320,8 @@ class TransactionSource_Enum extends EnumClass {
   static const TransactionSource_Enum import_ = _$transactionSourceEnum_import_;
   @BuiltValueEnumConst(wireName: r'recurrence')
   static const TransactionSource_Enum recurrence = _$transactionSourceEnum_recurrence;
+  @BuiltValueEnumConst(wireName: r'capture')
+  static const TransactionSource_Enum capture = _$transactionSourceEnum_capture;
 
   static Serializer<TransactionSource_Enum> get serializer => _$transactionSourceEnumSerializer;
 
@@ -296,4 +329,21 @@ class TransactionSource_Enum extends EnumClass {
 
   static BuiltSet<TransactionSource_Enum> get values => _$transactionSourceEnumValues;
   static TransactionSource_Enum valueOf(String name) => _$transactionSourceEnumValueOf(name);
+}
+
+class TransactionCaptureSourceEnum extends EnumClass {
+  @BuiltValueEnumConst(wireName: r'revolut')
+  static const TransactionCaptureSourceEnum revolut = _$transactionCaptureSourceEnum_revolut;
+  @BuiltValueEnumConst(wireName: r'google_wallet')
+  static const TransactionCaptureSourceEnum googleWallet =
+      _$transactionCaptureSourceEnum_googleWallet;
+
+  static Serializer<TransactionCaptureSourceEnum> get serializer =>
+      _$transactionCaptureSourceEnumSerializer;
+
+  const TransactionCaptureSourceEnum._(String name) : super(name);
+
+  static BuiltSet<TransactionCaptureSourceEnum> get values => _$transactionCaptureSourceEnumValues;
+  static TransactionCaptureSourceEnum valueOf(String name) =>
+      _$transactionCaptureSourceEnumValueOf(name);
 }

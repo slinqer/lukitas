@@ -40,6 +40,9 @@ const TransactionSource_Enum _$transactionSourceEnum_import_ = const Transaction
 const TransactionSource_Enum _$transactionSourceEnum_recurrence = const TransactionSource_Enum._(
   'recurrence',
 );
+const TransactionSource_Enum _$transactionSourceEnum_capture = const TransactionSource_Enum._(
+  'capture',
+);
 
 TransactionSource_Enum _$transactionSourceEnumValueOf(String name) {
   switch (name) {
@@ -55,6 +58,8 @@ TransactionSource_Enum _$transactionSourceEnumValueOf(String name) {
       return _$transactionSourceEnum_import_;
     case 'recurrence':
       return _$transactionSourceEnum_recurrence;
+    case 'capture':
+      return _$transactionSourceEnum_capture;
     default:
       throw ArgumentError(name);
   }
@@ -68,12 +73,37 @@ final BuiltSet<TransactionSource_Enum> _$transactionSourceEnumValues =
       _$transactionSourceEnum_mcp,
       _$transactionSourceEnum_import_,
       _$transactionSourceEnum_recurrence,
+      _$transactionSourceEnum_capture,
+    ]);
+
+const TransactionCaptureSourceEnum _$transactionCaptureSourceEnum_revolut =
+    const TransactionCaptureSourceEnum._('revolut');
+const TransactionCaptureSourceEnum _$transactionCaptureSourceEnum_googleWallet =
+    const TransactionCaptureSourceEnum._('googleWallet');
+
+TransactionCaptureSourceEnum _$transactionCaptureSourceEnumValueOf(String name) {
+  switch (name) {
+    case 'revolut':
+      return _$transactionCaptureSourceEnum_revolut;
+    case 'googleWallet':
+      return _$transactionCaptureSourceEnum_googleWallet;
+    default:
+      throw ArgumentError(name);
+  }
+}
+
+final BuiltSet<TransactionCaptureSourceEnum> _$transactionCaptureSourceEnumValues =
+    BuiltSet<TransactionCaptureSourceEnum>(const <TransactionCaptureSourceEnum>[
+      _$transactionCaptureSourceEnum_revolut,
+      _$transactionCaptureSourceEnum_googleWallet,
     ]);
 
 Serializer<TransactionStatusEnum> _$transactionStatusEnumSerializer =
     _$TransactionStatusEnumSerializer();
 Serializer<TransactionSource_Enum> _$transactionSourceEnumSerializer =
     _$TransactionSource_EnumSerializer();
+Serializer<TransactionCaptureSourceEnum> _$transactionCaptureSourceEnumSerializer =
+    _$TransactionCaptureSourceEnumSerializer();
 
 class _$TransactionStatusEnumSerializer implements PrimitiveSerializer<TransactionStatusEnum> {
   static const Map<String, Object> _toWire = const <String, Object>{
@@ -115,6 +145,7 @@ class _$TransactionSource_EnumSerializer implements PrimitiveSerializer<Transact
     'mcp': 'mcp',
     'import_': 'import',
     'recurrence': 'recurrence',
+    'capture': 'capture',
   };
   static const Map<Object, String> _fromWire = const <Object, String>{
     'app': 'app',
@@ -123,6 +154,7 @@ class _$TransactionSource_EnumSerializer implements PrimitiveSerializer<Transact
     'mcp': 'mcp',
     'import': 'import_',
     'recurrence': 'recurrence',
+    'capture': 'capture',
   };
 
   @override
@@ -143,6 +175,39 @@ class _$TransactionSource_EnumSerializer implements PrimitiveSerializer<Transact
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
   }) => TransactionSource_Enum.valueOf(
+    _fromWire[serialized] ?? (serialized is String ? serialized : ''),
+  );
+}
+
+class _$TransactionCaptureSourceEnumSerializer
+    implements PrimitiveSerializer<TransactionCaptureSourceEnum> {
+  static const Map<String, Object> _toWire = const <String, Object>{
+    'revolut': 'revolut',
+    'googleWallet': 'google_wallet',
+  };
+  static const Map<Object, String> _fromWire = const <Object, String>{
+    'revolut': 'revolut',
+    'google_wallet': 'googleWallet',
+  };
+
+  @override
+  final Iterable<Type> types = const <Type>[TransactionCaptureSourceEnum];
+  @override
+  final String wireName = 'TransactionCaptureSourceEnum';
+
+  @override
+  Object serialize(
+    Serializers serializers,
+    TransactionCaptureSourceEnum object, {
+    FullType specifiedType = FullType.unspecified,
+  }) => _toWire[object.name] ?? object.name;
+
+  @override
+  TransactionCaptureSourceEnum deserialize(
+    Serializers serializers,
+    Object serialized, {
+    FullType specifiedType = FullType.unspecified,
+  }) => TransactionCaptureSourceEnum.valueOf(
     _fromWire[serialized] ?? (serialized is String ? serialized : ''),
   );
 }
@@ -171,6 +236,10 @@ class _$Transaction extends Transaction {
   @override
   final TransactionSource_Enum source_;
   @override
+  final bool needsReview;
+  @override
+  final TransactionCaptureSourceEnum? captureSource;
+  @override
   final String createdAt;
   @override
   final String updatedAt;
@@ -190,6 +259,8 @@ class _$Transaction extends Transaction {
     this.recurrenceId,
     this.importId,
     required this.source_,
+    required this.needsReview,
+    this.captureSource,
     required this.createdAt,
     required this.updatedAt,
   }) : super._();
@@ -215,6 +286,8 @@ class _$Transaction extends Transaction {
         recurrenceId == other.recurrenceId &&
         importId == other.importId &&
         source_ == other.source_ &&
+        needsReview == other.needsReview &&
+        captureSource == other.captureSource &&
         createdAt == other.createdAt &&
         updatedAt == other.updatedAt;
   }
@@ -233,6 +306,8 @@ class _$Transaction extends Transaction {
     _$hash = $jc(_$hash, recurrenceId.hashCode);
     _$hash = $jc(_$hash, importId.hashCode);
     _$hash = $jc(_$hash, source_.hashCode);
+    _$hash = $jc(_$hash, needsReview.hashCode);
+    _$hash = $jc(_$hash, captureSource.hashCode);
     _$hash = $jc(_$hash, createdAt.hashCode);
     _$hash = $jc(_$hash, updatedAt.hashCode);
     _$hash = $jf(_$hash);
@@ -253,6 +328,8 @@ class _$Transaction extends Transaction {
           ..add('recurrenceId', recurrenceId)
           ..add('importId', importId)
           ..add('source_', source_)
+          ..add('needsReview', needsReview)
+          ..add('captureSource', captureSource)
           ..add('createdAt', createdAt)
           ..add('updatedAt', updatedAt))
         .toString();
@@ -306,6 +383,15 @@ class TransactionBuilder implements Builder<Transaction, TransactionBuilder> {
   TransactionSource_Enum? get source_ => _$this._source_;
   set source_(TransactionSource_Enum? source_) => _$this._source_ = source_;
 
+  bool? _needsReview;
+  bool? get needsReview => _$this._needsReview;
+  set needsReview(bool? needsReview) => _$this._needsReview = needsReview;
+
+  TransactionCaptureSourceEnum? _captureSource;
+  TransactionCaptureSourceEnum? get captureSource => _$this._captureSource;
+  set captureSource(TransactionCaptureSourceEnum? captureSource) =>
+      _$this._captureSource = captureSource;
+
   String? _createdAt;
   String? get createdAt => _$this._createdAt;
   set createdAt(String? createdAt) => _$this._createdAt = createdAt;
@@ -332,6 +418,8 @@ class TransactionBuilder implements Builder<Transaction, TransactionBuilder> {
       _recurrenceId = $v.recurrenceId;
       _importId = $v.importId;
       _source_ = $v.source_;
+      _needsReview = $v.needsReview;
+      _captureSource = $v.captureSource;
       _createdAt = $v.createdAt;
       _updatedAt = $v.updatedAt;
       _$v = null;
@@ -371,6 +459,12 @@ class TransactionBuilder implements Builder<Transaction, TransactionBuilder> {
           recurrenceId: recurrenceId,
           importId: importId,
           source_: BuiltValueNullFieldError.checkNotNull(source_, r'Transaction', 'source_'),
+          needsReview: BuiltValueNullFieldError.checkNotNull(
+            needsReview,
+            r'Transaction',
+            'needsReview',
+          ),
+          captureSource: captureSource,
           createdAt: BuiltValueNullFieldError.checkNotNull(createdAt, r'Transaction', 'createdAt'),
           updatedAt: BuiltValueNullFieldError.checkNotNull(updatedAt, r'Transaction', 'updatedAt'),
         );

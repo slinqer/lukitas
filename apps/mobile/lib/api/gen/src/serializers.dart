@@ -16,6 +16,9 @@ import 'package:wambito/api/gen/src/model/date.dart';
 
 import 'package:wambito/api/gen/src/model/assistant.dart';
 import 'package:wambito/api/gen/src/model/assistant_list.dart';
+import 'package:wambito/api/gen/src/model/capture_result.dart';
+import 'package:wambito/api/gen/src/model/capture_result_category.dart';
+import 'package:wambito/api/gen/src/model/capture_result_transaction.dart';
 import 'package:wambito/api/gen/src/model/category.dart';
 import 'package:wambito/api/gen/src/model/category_report.dart';
 import 'package:wambito/api/gen/src/model/category_report_items_inner.dart';
@@ -24,6 +27,8 @@ import 'package:wambito/api/gen/src/model/claim_email_verify.dart';
 import 'package:wambito/api/gen/src/model/confirm_import.dart';
 import 'package:wambito/api/gen/src/model/cost_of_living_report.dart';
 import 'package:wambito/api/gen/src/model/cost_of_living_report_categories_inner.dart';
+import 'package:wambito/api/gen/src/model/create_capture.dart';
+import 'package:wambito/api/gen/src/model/create_capture_currency.dart';
 import 'package:wambito/api/gen/src/model/create_category.dart';
 import 'package:wambito/api/gen/src/model/create_recurrence.dart';
 import 'package:wambito/api/gen/src/model/create_transaction.dart';
@@ -39,6 +44,7 @@ import 'package:wambito/api/gen/src/model/problem.dart';
 import 'package:wambito/api/gen/src/model/problem_errors_inner.dart';
 import 'package:wambito/api/gen/src/model/profile.dart';
 import 'package:wambito/api/gen/src/model/recurrence.dart';
+import 'package:wambito/api/gen/src/model/review_transactions.dart';
 import 'package:wambito/api/gen/src/model/set_budget.dart';
 import 'package:wambito/api/gen/src/model/summary.dart';
 import 'package:wambito/api/gen/src/model/summary_categories_inner.dart';
@@ -59,6 +65,9 @@ part 'serializers.g.dart';
 @SerializersFor([
   Assistant,
   AssistantList,
+  CaptureResult,
+  CaptureResultCategory,
+  CaptureResultTransaction,
   Category,
   CategoryReport,
   CategoryReportItemsInner,
@@ -67,6 +76,8 @@ part 'serializers.g.dart';
   ConfirmImport,
   CostOfLivingReport,
   CostOfLivingReportCategoriesInner,
+  CreateCapture,
+  CreateCaptureCurrency,
   CreateCategory,
   CreateRecurrence,
   CreateTransaction,
@@ -82,6 +93,7 @@ part 'serializers.g.dart';
   ProblemErrorsInner,
   Profile,
   Recurrence,
+  ReviewTransactions,
   SetBudget,
   Summary,
   SummaryCategoriesInner,
