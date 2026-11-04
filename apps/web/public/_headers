@@ -38,6 +38,38 @@
   Cache-Control: public, max-age=300, must-revalidate
 /pt/roadmap/
   Cache-Control: public, max-age=300, must-revalidate
+/privacy
+  Cache-Control: public, max-age=300, must-revalidate
+/privacy/
+  Cache-Control: public, max-age=300, must-revalidate
+/delete-account
+  Cache-Control: public, max-age=300, must-revalidate
+/delete-account/
+  Cache-Control: public, max-age=300, must-revalidate
+/en/privacy
+  Cache-Control: public, max-age=300, must-revalidate
+/en/privacy/
+  Cache-Control: public, max-age=300, must-revalidate
+/en/delete-account
+  Cache-Control: public, max-age=300, must-revalidate
+/en/delete-account/
+  Cache-Control: public, max-age=300, must-revalidate
+/it/privacy
+  Cache-Control: public, max-age=300, must-revalidate
+/it/privacy/
+  Cache-Control: public, max-age=300, must-revalidate
+/it/delete-account
+  Cache-Control: public, max-age=300, must-revalidate
+/it/delete-account/
+  Cache-Control: public, max-age=300, must-revalidate
+/pt/privacy
+  Cache-Control: public, max-age=300, must-revalidate
+/pt/privacy/
+  Cache-Control: public, max-age=300, must-revalidate
+/pt/delete-account
+  Cache-Control: public, max-age=300, must-revalidate
+/pt/delete-account/
+  Cache-Control: public, max-age=300, must-revalidate
 /404.html
   Cache-Control: public, max-age=300, must-revalidate
 

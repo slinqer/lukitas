@@ -1,8 +1,9 @@
 # apps/web (`@wambito/web`)
 
-React Router 8 (framework mode, SPA + prerender): the public landing and roadmap (prerendered,
-es/en/it/pt), the signed-in app (`/app/*`), sign-in, onboarding (`/welcome`), OAuth consent for
-assistants, and a fake-backend demo (`/demo/*`).
+React Router 8 (framework mode, SPA + prerender): the public landing, roadmap, privacy policy and
+account deletion page (prerendered, es/en/it/pt; `app/features/legal/`), the signed-in app
+(`/app/*`), sign-in, onboarding (`/welcome`), OAuth consent for assistants, and a fake-backend demo
+(`/demo/*`).
 
 ## Entry points
 

@@ -6,7 +6,7 @@ import es from "../../i18n/messages/es.json" with { type: "json" };
 import it from "../../i18n/messages/it.json" with { type: "json" };
 import pt from "../../i18n/messages/pt.json" with { type: "json" };
 import { SITE_ORIGIN } from "../../site/config.ts";
-import { LANDING_PATH, PAGE_PATH, ROADMAP_PATH, type SitePage } from "../../site/paths.ts";
+import { LANDING_PATH, PAGE_PATH, type SitePage } from "../../site/paths.ts";
 import { landingFontPreloads } from "./font-preloads.ts";
 
 export { LANDING_PATH };
@@ -30,7 +30,7 @@ interface PageTags {
 }
 
 /** Title, description and Open Graph / Twitter tags of a public page. */
-function pageMeta({ locale, path, title, description, imageAlt }: PageTags): MetaDescriptor[] {
+function tags({ locale, path, title, description, imageAlt }: PageTags): MetaDescriptor[] {
   const url = absolute(path);
   const image = absolute(`/og-${locale}.png`);
   return [
@@ -70,7 +70,7 @@ export function landingMeta(locale: Locale): MetaDescriptor[] {
     messages: CATALOGS[locale],
     namespace: "landing.meta",
   });
-  return pageMeta({
+  return tags({
     locale,
     path: LANDING_PATH[locale],
     title: t("title"),
@@ -92,24 +92,45 @@ export function landingLinks(locale: Locale): LinkDescriptor[] {
   ];
 }
 
+/** The i18n namespace holding each page's `meta` (title and description). */
+const META_NAMESPACE = {
+  roadmap: "roadmap.meta",
+  privacy: "legal.privacy.meta",
+  deleteAccount: "legal.delete_account.meta",
+} as const satisfies Record<Exclude<SitePage, "landing">, string>;
+
 /**
- * The roadmap page's own title and description. It shares the landing's 1200×630 share image (and
+ * A secondary page's own title and description. It shares the landing's 1200×630 share image (and
  * its alt text, which describes that image).
  */
-export function roadmapMeta(locale: Locale): MetaDescriptor[] {
+export function pageMeta(page: Exclude<SitePage, "landing">, locale: Locale): MetaDescriptor[] {
   const messages = CATALOGS[locale];
-  const t = createTranslator({ locale: intlTag(locale), messages, namespace: "roadmap.meta" });
+  const t = createTranslator({
+    locale: intlTag(locale),
+    messages,
+    namespace: META_NAMESPACE[page],
+  });
   const image = createTranslator({ locale: intlTag(locale), messages, namespace: "landing.meta" });
-  return pageMeta({
+  return tags({
     locale,
-    path: ROADMAP_PATH[locale],
+    path: PAGE_PATH[page][locale],
     title: t("title"),
     description: t("description"),
     imageAlt: image("image_alt"),
   });
 }
 
+/** Canonical and `hreflang` alternates of a secondary page. */
+export function pageLinksFor(page: Exclude<SitePage, "landing">, locale: Locale): LinkDescriptor[] {
+  return [...pageLinks(page, locale), ...landingFontPreloads()];
+}
+
+/** The roadmap page's meta. */
+export function roadmapMeta(locale: Locale): MetaDescriptor[] {
+  return pageMeta("roadmap", locale);
+}
+
 /** Canonical and `hreflang` alternates of the roadmap page. */
 export function roadmapLinks(locale: Locale): LinkDescriptor[] {
-  return [...pageLinks("roadmap", locale), ...landingFontPreloads()];
+  return pageLinksFor("roadmap", locale);
 }

@@ -217,7 +217,7 @@
       },
       "privacy": {
         "q": "Cosa fate con i miei dati?",
-        "a": "I tuoi dati viaggiano cifrati e non li vendiamo né li condividiamo mai con gli inserzionisti. Puoi esportarli o cancellare il tuo account quando vuoi. Il codice è open source: chiunque può leggere il codice che li gestisce."
+        "a": "I tuoi dati viaggiano cifrati e non li vendiamo né li condividiamo mai con gli inserzionisti. Puoi esportarli o cancellare il tuo account quando vuoi. Il codice è open source: chiunque può leggere il codice che li gestisce. I dettagli sono nell’<privacy>informativa sulla privacy</privacy>."
       },
       "free": {
         "q": "È gratis?",
@@ -238,13 +238,96 @@
       "language": "Lingua",
       "privacy": "Privacy",
       "copyright": "© {year} Wambito",
-      "roadmap": "In arrivo"
+      "roadmap": "In arrivo",
+      "delete_account": "Elimina account"
     },
     "not_found": {
       "title": "Questa pagina non esiste",
       "body": "Forse il link è rotto o la pagina è stata spostata. Wambi l'ha già cercata ovunque.",
       "home": "Torna alla home",
       "mascot": "Wambi, una moneta d'oro preoccupata, cerca la pagina"
+    }
+  },
+  "legal": {
+    "privacy": {
+      "meta": {
+        "title": "Wambito · Informativa sulla privacy",
+        "description": "Come Wambito tratta i tuoi dati: cosa conserva, dove, chi può vederli e come chiederne la cancellazione."
+      },
+      "title": "Informativa sulla privacy",
+      "version": "Versione del 4 novembre 2026",
+      "sections": {
+        "controller": {
+          "title": "Chi è responsabile dei tuoi dati",
+          "body": "Wambito appartiene a Slinqer S.A.S., un’azienda colombiana. Slinqer S.A.S. è titolare del trattamento dei tuoi dati, secondo la Ley 1581 de 2012 della Colombia (la sua legge sulla protezione dei dati). Questa informativa copre wambito.com, app.wambito.com e l’app Android quando usa il nostro server. Per qualsiasi domanda sui tuoi dati, scrivici a <email>privacy@wambito.com</email>."
+        },
+        "data": {
+          "title": "Cosa conserviamo",
+          "body": "La tua email. Le tue passkey, solo la loro parte pubblica: la chiave privata resta sul tuo dispositivo. Quello che annoti o importi: movimenti, categorie, budget e ricorrenti. Il tuo fuso orario e la tua lingua. Se colleghi un assistente IA, il permesso che gli hai dato. E, per sicurezza, l’indirizzo IP e il tipo di browser o di app di ogni sessione, più un registro minimo delle visite: quando, da quale IP, quale pagina e come ha risposto. Quel registro non conserva né quello che viene dopo il «?» negli indirizzi né le intestazioni."
+        },
+        "purposes": {
+          "title": "Perché lo conserviamo",
+          "body": "La tua email, per farti entrare con un codice o un link, e per risponderti se ci scrivi. Le passkey, per farti entrare senza password. I tuoi movimenti, categorie, budget e ricorrenti, per mostrarti il tuo budget: l’app serve a questo. Il fuso orario, per sapere quando iniziano il tuo giorno e il tuo mese. La lingua, per parlarti nella tua, nell’app e nelle email. L’IP e le sessioni, per proteggere il tuo account e fermare gli abusi, come chiedere codici senza sosta. Le email per entrare partono tramite un servizio di invio email, che riceve solo il tuo indirizzo e il messaggio."
+        },
+        "storage": {
+          "title": "Dove si trova",
+          "body": "Su un server nell’Unione europea. I tuoi dati viaggiano cifrati tra il tuo dispositivo e il server. Ogni giorno facciamo una copia di sicurezza sul server e ne conserviamo un’altra, cifrata con age, su Cloudflare R2. Nessuna copia dura più di 14 giorni: dopo si cancella da sola. Così, se cancelli il tuo account, esce anche dalle copie entro 14 giorni al massimo."
+        },
+        "not_done": {
+          "title": "Cosa non facciamo",
+          "body": "Niente tracker, niente analytics, niente pubblicità. Non vendiamo i tuoi dati e non li condividiamo. Passano solo dai servizi che ci servono per funzionare (il server, le copie e l’invio delle email), e solo per questo."
+        },
+        "voice": {
+          "title": "La tua voce",
+          "body": "Nell’app Android puoi dettare una spesa. La voce viene elaborata sul tuo telefono, con Vosk, e l’audio non lo lascia mai. I modelli vocali si scaricano una volta, quando lo chiedi tu, dalle release del progetto su GitHub. Al nostro server arriva solo il movimento che salvi, come se lo avessi scritto."
+        },
+        "assistants": {
+          "title": "Assistenti IA",
+          "body": "Puoi collegare un assistente IA al tuo account. Entra solo se lo autorizzi tu, in una schermata di permesso (OAuth) che ti dice cosa potrà fare: leggere i tuoi dati, annotare per te o entrambe le cose. Puoi togliergli l’accesso quando vuoi, nelle Impostazioni. Quello che l’assistente legge lo tratta l’azienda che lo offre, secondo la sua informativa."
+        },
+        "guest": {
+          "title": "Senza email: la modalità ospite",
+          "body": "Nell’app Android puoi iniziare senza email. I tuoi dati sono conservati sul server, in un account ospite. Se poi aggiungi la tua email, li tieni. Un account ospite che resta inutilizzato per 60 giorni viene cancellato con tutti i suoi dati, anche se hai chiuso la sessione."
+        },
+        "self_hosted": {
+          "title": "Se usi un altro server",
+          "body": "Il codice di Wambito è open source e chiunque può gestire un proprio server. Se la tua app usa un server che non è il nostro, chi lo gestisce è il titolare dei tuoi dati lì, non Slinqer S.A.S. Questa informativa copre solo i server che gestiamo noi."
+        },
+        "rights": {
+          "title": "I tuoi diritti",
+          "body": "Secondo la Ley 1581 de 2012, puoi sapere quali dati abbiamo su di te, aggiornarli, correggerli, chiederci di cancellarli e revocare il tuo consenso. Per farlo, scrivici a <email>privacy@wambito.com</email> dall’email del tuo account. Molte cose le fai senza scriverci: scaricare i tuoi dati nelle Impostazioni o <link>cancellare il tuo account</link>. Se la nostra risposta non ti soddisfa, puoi rivolgerti alla Superintendencia de Industria y Comercio della Colombia."
+        },
+        "changes": {
+          "title": "Modifiche a questa informativa",
+          "body": "Se cambiamo questa informativa, pubblichiamo qui la nuova versione con la sua data. La data in alto è quella della versione in vigore."
+        }
+      }
+    },
+    "delete_account": {
+      "meta": {
+        "title": "Wambito · Elimina il tuo account",
+        "description": "Come eliminare il tuo account Wambito e i dati che conserva, dall’app o via email."
+      },
+      "title": "Elimina il tuo account",
+      "version": "Versione del 4 novembre 2026",
+      "sections": {
+        "in_app": {
+          "title": "Dall’app",
+          "body": "Sul web o nell’app Android, vai nelle Impostazioni e scegli «Elimina il mio account». Per confermare, ti chiediamo di scrivere la tua email. Se vuoi, prima scarica i tuoi dati: il pulsante è proprio lì. Se usi l’app come ospite, prima salva i tuoi progressi con un’email; altrimenti il tuo account si cancella da solo dopo 60 giorni senza uso."
+        },
+        "by_email": {
+          "title": "Per email",
+          "body": "Se non riesci a entrare, scrivici a <email>privacy@wambito.com</email> dall’email del tuo account e chiedici di cancellarlo. Ti avvisiamo quando è fatto."
+        },
+        "what_goes": {
+          "title": "Cosa si cancella",
+          "body": "Tutto ciò che è nel tuo account, subito: il tuo account, la tua email, le tue passkey e sessioni, i tuoi movimenti, categorie, budget e ricorrenti, e i permessi degli assistenti che hai collegato. Sul telefono, l’app cancella anche quello che conservava del tuo account."
+        },
+        "backups": {
+          "title": "Le copie di sicurezza",
+          "body": "Le copie di sicurezza che includono il tuo account si cancellano da sole entro 14 giorni al massimo. La copia che esce dal server è cifrata. Trovi più dettagli nell’<link>informativa sulla privacy</link>."
+        }
+      }
     }
   }
 }

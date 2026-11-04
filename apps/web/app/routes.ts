@@ -15,6 +15,15 @@ export default [
   route("en/roadmap", "routes/en.roadmap.tsx"),
   route("it/roadmap", "routes/it.roadmap.tsx"),
   route("pt/roadmap", "routes/pt.roadmap.tsx"),
+  // The privacy policy and the account deletion page, prerendered per language too.
+  route("privacy", "routes/privacy.tsx"),
+  route("en/privacy", "routes/en.privacy.tsx"),
+  route("it/privacy", "routes/it.privacy.tsx"),
+  route("pt/privacy", "routes/pt.privacy.tsx"),
+  route("delete-account", "routes/delete-account.tsx"),
+  route("en/delete-account", "routes/en.delete-account.tsx"),
+  route("it/delete-account", "routes/it.delete-account.tsx"),
+  route("pt/delete-account", "routes/pt.delete-account.tsx"),
   // Every screen of the app (sign-in, welcome, /app/*) nests under this layout, which holds the
   // API client, its cache and the toasts. The landing stays outside it, so visitors do not download
   // that code. The demo (/demo/*) has its own layout with a demo ApiProvider, beside this one.

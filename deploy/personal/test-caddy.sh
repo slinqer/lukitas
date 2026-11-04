@@ -8,7 +8,8 @@
 # What it checks (tunnel, Caddyfile): the client's address reaches the API and the MCP as the only
 # X-Forwarded-For entry, taken from Cf-Connecting-Ip when Cloudflare sent one and from the TCP peer
 # otherwise, never from the X-Forwarded-For the client sent; the access log names the same visitor;
-# the API schema is not public; the landing's paths redirect to LANDING_URL with path and query.
+# the API schema is not public; the landing's paths (landing, roadmap, privacy, account deletion) redirect to LANDING_URL with
+# path and query.
 #
 # What it checks (direct, Caddyfile.direct, as app.localhost with Caddy's internal CA): the client's
 # address is always the TCP peer, whatever Cf-Connecting-Ip or X-Forwarded-For it sends, and the log
@@ -172,6 +173,11 @@ cases_tunnel() {
     "$(curl_web -o /dev/null -w '%{http_code}' http://web:80/api/openapi.json)"
   check "tunnel: landing redirect" "302 $LANDING_URL/pt?x=1" \
     "$(curl_web -o /dev/null -w '%{http_code} %{redirect_url}' 'http://web:80/pt?x=1')"
+  # The roadmap and the legal pages (privacy, account deletion) live on the landing too.
+  for path in /roadmap /it/roadmap/ /privacy /en/privacy/ /pt/privacy /delete-account /it/delete-account /en/delete-account/; do
+    check "tunnel: $path redirect" "302 $LANDING_URL$path" \
+      "$(curl_web -o /dev/null -w '%{http_code} %{redirect_url}' "http://web:80$path")"
+  done
   if web_log_has '"visitor_ip":"203.0.113.7"'; then
     ok "tunnel: log has the visitor"
   else
@@ -251,6 +257,10 @@ cases_direct() {
     "$(curl_app -o /dev/null -w '%{http_code}' "$app/api/openapi.json")"
   check "direct: landing redirect" "302 $LANDING_URL/pt?x=1" \
     "$(curl_app -o /dev/null -w '%{http_code} %{redirect_url}' "$app/pt?x=1")"
+  for path in /roadmap /it/roadmap/ /privacy /en/privacy/ /pt/privacy /delete-account /it/delete-account /en/delete-account/; do
+    check "direct: $path redirect" "302 $LANDING_URL$path" \
+      "$(curl_app -o /dev/null -w '%{http_code} %{redirect_url}' "$app$path")"
+  done
 
   check "direct: internal listener" 200 "$(curl_web -o /dev/null -w '%{http_code}' http://web:8080/sign-in)"
   check "direct: internal listener, no HSTS" "" \
