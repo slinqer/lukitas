@@ -119,7 +119,11 @@ class HomeCache {
         ],
         items: [
           for (final t in doc['items']! as List<Object?>)
-            standardSerializers.deserializeWith(Transaction.serializer, t)!,
+            // Rows cached before the field existed are not waiting for review.
+            standardSerializers.deserializeWith(Transaction.serializer, {
+              'needsReview': false,
+              ...(t! as Map<String, Object?>),
+            })!,
         ],
       );
     } catch (_) {

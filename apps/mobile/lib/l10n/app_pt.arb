@@ -718,14 +718,14 @@
   "settingsAssistantsRevokeConfirm": "Sim, revogar",
   "settingsAssistantsRevoked": "Revogámos {name}.",
   "autoCaptureTitle": "Captura automática",
-  "autoCaptureLead": "Registre seus gastos e receitas a partir das notificações do Revolut e do Google Wallet.",
+  "autoCaptureLead": "Regista as tuas despesas e receitas a partir das notificações do Revolut e do Google Wallet.",
   "autoCaptureActive": "Ativa",
-  "autoCaptureExplainerBody": "O Wambito lê as notificações dos apps que você ativar (Revolut, Google Wallet) para registrar seus gastos e receitas. O texto é processado no seu telefone e nunca sai dele: ao servidor chegam só o valor, o comércio, a data e a fonte. Você pode desligar quando quiser.",
+  "autoCaptureExplainerBody": "O Wambito lê as notificações das apps que ativares (Revolut, Google Wallet) para registar as tuas despesas e receitas. O texto é processado no teu telemóvel e nunca sai dele: ao servidor chegam só o valor, o comerciante, a data e a fonte. Podes desligar quando quiseres.",
   "autoCaptureExplainerConfirm": "Ativar acesso",
   "autoCaptureMissing": "Falta a permissão",
   "autoCaptureGrant": "Ativar",
   "autoCaptureStuck": "Não deixa?",
-  "autoCaptureStepsTitle": "Configurações restritas",
-  "autoCaptureSteps": "1. Toque em Abrir informações do app.\n2. Toque em ⋮ no canto superior direito e escolha Permitir configurações restritas.\n3. Volte aqui e toque em Ativar.",
-  "autoCaptureOpenInfo": "Abrir informações do app"
+  "autoCaptureStepsTitle": "Definições restritas",
+  "autoCaptureSteps": "1. Toca em Abrir informações da app.\n2. Toca em ⋮ no canto superior direito e escolhe Permitir definições restritas.\n3. Volta aqui e toca em Ativar.",
+  "autoCaptureOpenInfo": "Abrir informações da app"
 }

@@ -62,6 +62,7 @@ class FakeAddRepository implements AddRepository {
               : TransactionStatusEnum.paid
           ..note = input.note
           ..categoryId = input.categoryId
+          ..needsReview = false
           ..source_ = TransactionSource_Enum.app
           ..createdAt = '2026-10-22T10:00:00.000Z'
           ..updatedAt = '2026-10-22T10:00:00.000Z',

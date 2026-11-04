@@ -84,6 +84,7 @@ class PendingSave {
               : TransactionStatusEnum.paid
           ..note = item.note
           ..categoryId = item.categoryId
+          ..needsReview = false
           ..source_ = TransactionSource_Enum.app
           ..createdAt = ''
           ..updatedAt = '',
