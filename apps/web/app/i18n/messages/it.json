@@ -246,5 +246,19 @@
       "home": "Torna alla home",
       "mascot": "Wambi, una moneta d'oro preoccupata, cerca la pagina"
     }
+  },
+  "legal": {
+    "privacy": {
+      "meta": {
+        "title": "Wambito · Informativa sulla privacy",
+        "description": "Come Wambito tratta i tuoi dati: cosa conserva, dove, chi può vederli e come chiederne la cancellazione."
+      }
+    },
+    "delete_account": {
+      "meta": {
+        "title": "Wambito · Elimina il tuo account",
+        "description": "Come eliminare il tuo account Wambito e i dati che conserva, dall'app o via email."
+      }
+    }
   }
 }

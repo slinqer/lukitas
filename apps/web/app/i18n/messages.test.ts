@@ -101,9 +101,9 @@ function apiErrorCodes(): string[] {
 
 describe("message catalogs", () => {
   it("come in two parts, the public pages' and the app's, each namespace in one part only", () => {
-    // What the landing and roadmap render (Landing, Roadmap, SiteHeader, Footer, ThemeToggle,
+    // What the landing, roadmap and legal pages render (Landing, Roadmap, SiteHeader, Footer, ThemeToggle,
     // HeroMascot): the root's IntlProvider holds only these, so the landing ships nothing else.
-    const site = ["app", "landing", "language", "mascot", "roadmap", "theme"];
+    const site = ["app", "landing", "language", "legal", "mascot", "roadmap", "theme"];
     for (const language of LANGUAGES) {
       expect(Object.keys(SITES[language]).sort(), language).toEqual(site);
       expect(Object.keys(APPS[language]).sort(), language).toEqual(Object.keys(appEs).sort());

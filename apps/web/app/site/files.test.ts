@@ -19,7 +19,29 @@ describe("sitemapXml", () => {
     ]) {
       expect(xml).toContain(`<loc>${ORIGIN}${path}</loc>`);
     }
-    expect(xml.match(/<url>/g)).toHaveLength(8);
+    expect(xml.match(/<url>/g)).toHaveLength(16);
+  });
+
+  it("lists the privacy and account deletion pages in every language", () => {
+    for (const path of [
+      "/privacy",
+      "/en/privacy",
+      "/it/privacy",
+      "/pt/privacy",
+      "/delete-account",
+      "/en/delete-account",
+      "/it/delete-account",
+      "/pt/delete-account",
+    ]) {
+      expect(xml).toContain(`<loc>${ORIGIN}${path}</loc>`);
+    }
+    const start = xml.indexOf(`<loc>${ORIGIN}/it/delete-account</loc>`);
+    const block = xml.slice(start, xml.indexOf("</url>", start));
+    expect(block).toContain(`hreflang="es" href="${ORIGIN}/delete-account"`);
+    expect(block).toContain(`hreflang="en" href="${ORIGIN}/en/delete-account"`);
+    expect(block).toContain(`hreflang="it" href="${ORIGIN}/it/delete-account"`);
+    expect(block).toContain(`hreflang="pt" href="${ORIGIN}/pt/delete-account"`);
+    expect(block).toContain(`hreflang="x-default" href="${ORIGIN}/delete-account"`);
   });
 
   it("gives each roadmap page its own alternates, not the landing's", () => {

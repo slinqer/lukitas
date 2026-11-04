@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { SITE_ORIGIN } from "../../site/config.ts";
-import { landingLinks, landingMeta, roadmapLinks, roadmapMeta } from "./seo.ts";
+import {
+  landingLinks,
+  landingMeta,
+  pageLinksFor,
+  pageMeta,
+  roadmapLinks,
+  roadmapMeta,
+} from "./seo.ts";
 
 function metaContent(
   tags: ReturnType<typeof roadmapMeta>,
@@ -91,6 +98,27 @@ describe("Italian and Portuguese pages", () => {
     expect(roadmapLinks("it")).toContainEqual({
       rel: "canonical",
       href: `${SITE_ORIGIN}/it/roadmap`,
+    });
+  });
+});
+
+describe("pageMeta and pageLinksFor", () => {
+  it("gives the privacy page its own title and URL, not the roadmap's", () => {
+    const en = pageMeta("privacy", "en");
+    expect(en).not.toContainEqual({ title: "Wambito · What's next" });
+    expect(metaContent(en, "property", "og:url")).toBe(`${SITE_ORIGIN}/en/privacy`);
+    expect(metaContent(en, "name", "description")?.length).toBeGreaterThan(20);
+  });
+
+  it("keeps the roadmap wrappers equal to the generic helpers", () => {
+    expect(roadmapMeta("it")).toEqual(pageMeta("roadmap", "it"));
+    expect(roadmapLinks("it")).toEqual(pageLinksFor("roadmap", "it"));
+  });
+
+  it("makes the account deletion page canonical to itself", () => {
+    expect(pageLinksFor("deleteAccount", "es")).toContainEqual({
+      rel: "canonical",
+      href: `${SITE_ORIGIN}/delete-account`,
     });
   });
 });

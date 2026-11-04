@@ -246,5 +246,19 @@
       "home": "Back to home",
       "mascot": "Wambi, a worried gold coin, looks for the page"
     }
+  },
+  "legal": {
+    "privacy": {
+      "meta": {
+        "title": "Wambito · Privacy policy",
+        "description": "How Wambito handles your data: what it stores, where, who can see it and how to ask us to delete it."
+      }
+    },
+    "delete_account": {
+      "meta": {
+        "title": "Wambito · Delete your account",
+        "description": "How to delete your Wambito account and the data it holds, from the app or by email."
+      }
+    }
   }
 }
