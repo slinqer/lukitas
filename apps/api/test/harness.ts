@@ -82,15 +82,11 @@ export async function createTestApp(
     return app.request(path, init);
   }
 
-  /**
-   * Signs `email` in. A new account starts with the suggested categories (auth.ts); this helper
-   * clears them on the account's first sign-in, so a test builds its categories on a blank slate.
-   * Pass `{ starterCategories: true }` to keep them (guests.test.ts tests them directly).
-   */
-  async function signIn(
+  /** Runs the email-code sign-in for `email`; returns the sign-in response and the user id. */
+  async function signInResponse(
     email: string,
-    { starterCategories = false }: { starterCategories?: boolean } = {},
-  ): Promise<{ userId: string; headers: { authorization: string } }> {
+    starterCategories: boolean,
+  ): Promise<{ res: Response; userId: string }> {
     const existed =
       (await admin.db.select({ id: user.id }).from(user).where(eq(user.email, email))).length > 0;
     const sent = await request("POST", "/auth/email-otp/send-verification-otp", {
@@ -104,12 +100,41 @@ export async function createTestApp(
       body: { email, otp: codeFrom(mail.subject) },
     });
     if (res.status !== 200) throw new Error(`sign-in failed: ${res.status} ${await res.text()}`);
-    const token = res.headers.get("set-auth-token");
-    const json = (await res.json()) as { user: { id: string } };
+    const json = (await res.clone().json()) as { user: { id: string } };
     if (!existed && !starterCategories) {
       await admin.db.delete(categories).where(eq(categories.userId, json.user.id));
     }
-    return { userId: json.user.id, headers: { authorization: `Bearer ${token}` } };
+    return { res, userId: json.user.id };
+  }
+
+  /**
+   * Signs `email` in. A new account starts with the suggested categories (auth.ts); this helper
+   * clears them on the account's first sign-in, so a test builds its categories on a blank slate.
+   * Pass `{ starterCategories: true }` to keep them (guests.test.ts tests them directly).
+   */
+  async function signIn(
+    email: string,
+    { starterCategories = false }: { starterCategories?: boolean } = {},
+  ): Promise<{ userId: string; headers: { authorization: string } }> {
+    const { res, userId } = await signInResponse(email, starterCategories);
+    const token = res.headers.get("set-auth-token");
+    return { userId, headers: { authorization: `Bearer ${token}` } };
+  }
+
+  /**
+   * Signs `email` in as the web does: the session travels in the cookie the sign-in set, not in a
+   * bearer token (the admin panel accepts only that).
+   */
+  async function signInCookie(
+    email: string,
+  ): Promise<{ userId: string; headers: { cookie: string } }> {
+    const { res, userId } = await signInResponse(email, false);
+    const cookie = res.headers
+      .getSetCookie()
+      .map((c) => c.split(";")[0])
+      .join("; ");
+    if (!cookie) throw new Error("sign-in set no cookie");
+    return { userId, headers: { cookie } };
   }
 
   /** Registers an assistant by Dynamic Client Registration; returns its client_id. */
@@ -212,6 +237,7 @@ export async function createTestApp(
     mailer,
     request,
     signIn,
+    signInCookie,
     async stop() {
       await app$.close();
       await admin.close();

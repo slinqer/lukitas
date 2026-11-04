@@ -207,6 +207,9 @@ importers:
       '@hono/zod-openapi':
         specifier: ^1.6.3
         version: 1.6.3(hono@4.13.13)(zod@4.6.7)
+      '@simplewebauthn/server':
+        specifier: 13.3.3
+        version: 13.3.3
       '@wambito/core':
         specifier: workspace:*
         version: link:../../packages/core
