@@ -69,6 +69,28 @@ describe("revokeAssistant", () => {
     expect(await revokeAssistant(t.admin, "nobody", second)).toBe(false);
     expect(await count(oauthConsent, a.userId)).toBe(1);
   });
+
+  test("leaves another client's consent and tokens in place", async () => {
+    const a = await connected("keep-a@wambito.test", 2);
+    const [first, second] = a.clientIds as [string, string];
+    await revokeAssistant(t.admin, a.userId, first);
+    const consents = await t.admin
+      .select()
+      .from(oauthConsent)
+      .where(eq(oauthConsent.userId, a.userId));
+    expect(consents.map((r) => r.clientId)).toEqual([second]);
+    const refresh = await t.admin
+      .select()
+      .from(oauthRefreshToken)
+      .where(eq(oauthRefreshToken.userId, a.userId));
+    expect(refresh.length).toBeGreaterThan(0);
+    expect(refresh.every((r) => r.clientId === second)).toBe(true);
+    const access = await t.admin
+      .select()
+      .from(oauthAccessToken)
+      .where(eq(oauthAccessToken.userId, a.userId));
+    expect(access.every((r) => r.clientId === second)).toBe(true);
+  });
 });
 
 describe("deleteAccount", () => {

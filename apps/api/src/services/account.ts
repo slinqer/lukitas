@@ -21,24 +21,27 @@ export async function deleteAccount(tx: Db | Tx, userId: string): Promise<boolea
 /**
  * Revokes one assistant: deletes the consent and the access and refresh tokens. Without a refresh
  * token the assistant cannot get a new access token, so it loses access within 15 minutes at most.
- * False when the user had no consent for that client.
+ * Atomic on a `Db` too (a transaction; a savepoint on a `Tx`). False when the user had no consent
+ * for that client.
  */
 export async function revokeAssistant(
   tx: Db | Tx,
   userId: string,
   clientId: string,
 ): Promise<boolean> {
-  const consents = await tx
-    .delete(oauthConsent)
-    .where(and(eq(oauthConsent.userId, userId), eq(oauthConsent.clientId, clientId)))
-    .returning({ id: oauthConsent.id });
-  await tx
-    .delete(oauthAccessToken)
-    .where(and(eq(oauthAccessToken.userId, userId), eq(oauthAccessToken.clientId, clientId)));
-  await tx
-    .delete(oauthRefreshToken)
-    .where(and(eq(oauthRefreshToken.userId, userId), eq(oauthRefreshToken.clientId, clientId)));
-  return consents.length > 0;
+  return tx.transaction(async (t) => {
+    const consents = await t
+      .delete(oauthConsent)
+      .where(and(eq(oauthConsent.userId, userId), eq(oauthConsent.clientId, clientId)))
+      .returning({ id: oauthConsent.id });
+    await t
+      .delete(oauthAccessToken)
+      .where(and(eq(oauthAccessToken.userId, userId), eq(oauthAccessToken.clientId, clientId)));
+    await t
+      .delete(oauthRefreshToken)
+      .where(and(eq(oauthRefreshToken.userId, userId), eq(oauthRefreshToken.clientId, clientId)));
+    return consents.length > 0;
+  });
 }
 
 /** The same for every assistant of the user; returns how many consents it removed. */
