@@ -129,7 +129,7 @@ class _$CreateCapture extends CreateCapture {
   @override
   final int amount;
   @override
-  final CreateCaptureCurrency currency;
+  final String currency;
   @override
   final String merchant;
   @override
@@ -204,9 +204,9 @@ class CreateCaptureBuilder implements Builder<CreateCapture, CreateCaptureBuilde
   int? get amount => _$this._amount;
   set amount(int? amount) => _$this._amount = amount;
 
-  CreateCaptureCurrencyBuilder? _currency;
-  CreateCaptureCurrencyBuilder get currency => _$this._currency ??= CreateCaptureCurrencyBuilder();
-  set currency(CreateCaptureCurrencyBuilder? currency) => _$this._currency = currency;
+  String? _currency;
+  String? get currency => _$this._currency;
+  set currency(String? currency) => _$this._currency = currency;
 
   String? _merchant;
   String? get merchant => _$this._merchant;
@@ -229,7 +229,7 @@ class CreateCaptureBuilder implements Builder<CreateCapture, CreateCaptureBuilde
     if ($v != null) {
       _kind = $v.kind;
       _amount = $v.amount;
-      _currency = $v.currency.toBuilder();
+      _currency = $v.currency;
       _merchant = $v.merchant;
       _capturedAt = $v.capturedAt;
       _source_ = $v.source_;
@@ -252,32 +252,20 @@ class CreateCaptureBuilder implements Builder<CreateCapture, CreateCaptureBuilde
   CreateCapture build() => _build();
 
   _$CreateCapture _build() {
-    _$CreateCapture _$result;
-    try {
-      _$result =
-          _$v ??
-          _$CreateCapture._(
-            kind: BuiltValueNullFieldError.checkNotNull(kind, r'CreateCapture', 'kind'),
-            amount: BuiltValueNullFieldError.checkNotNull(amount, r'CreateCapture', 'amount'),
-            currency: currency.build(),
-            merchant: BuiltValueNullFieldError.checkNotNull(merchant, r'CreateCapture', 'merchant'),
-            capturedAt: BuiltValueNullFieldError.checkNotNull(
-              capturedAt,
-              r'CreateCapture',
-              'capturedAt',
-            ),
-            source_: BuiltValueNullFieldError.checkNotNull(source_, r'CreateCapture', 'source_'),
-          );
-    } catch (_) {
-      late String _$failedField;
-      try {
-        _$failedField = 'currency';
-        currency.build();
-      } catch (e) {
-        throw BuiltValueNestedFieldError(r'CreateCapture', _$failedField, e.toString());
-      }
-      rethrow;
-    }
+    final _$result =
+        _$v ??
+        _$CreateCapture._(
+          kind: BuiltValueNullFieldError.checkNotNull(kind, r'CreateCapture', 'kind'),
+          amount: BuiltValueNullFieldError.checkNotNull(amount, r'CreateCapture', 'amount'),
+          currency: BuiltValueNullFieldError.checkNotNull(currency, r'CreateCapture', 'currency'),
+          merchant: BuiltValueNullFieldError.checkNotNull(merchant, r'CreateCapture', 'merchant'),
+          capturedAt: BuiltValueNullFieldError.checkNotNull(
+            capturedAt,
+            r'CreateCapture',
+            'capturedAt',
+          ),
+          source_: BuiltValueNullFieldError.checkNotNull(source_, r'CreateCapture', 'source_'),
+        );
     replace(_$result);
     return _$result;
   }

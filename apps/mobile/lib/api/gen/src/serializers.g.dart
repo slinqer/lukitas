@@ -28,7 +28,6 @@ Serializers _$serializers =
           ..add(CostOfLivingReportCategoriesInner.serializer)
           ..add(CostOfLivingReportCategoriesInnerTypeEnum.serializer)
           ..add(CreateCapture.serializer)
-          ..add(CreateCaptureCurrency.serializer)
           ..add(CreateCaptureKindEnum.serializer)
           ..add(CreateCaptureSource_Enum.serializer)
           ..add(CreateCategory.serializer)

@@ -4,7 +4,6 @@
 
 // ignore_for_file: unused_element
 import 'package:built_collection/built_collection.dart';
-import 'package:wambito/api/gen/src/model/create_capture_currency.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -29,7 +28,7 @@ abstract class CreateCapture implements Built<CreateCapture, CreateCaptureBuilde
   int get amount;
 
   @BuiltValueField(wireName: r'currency')
-  CreateCaptureCurrency get currency;
+  String get currency;
 
   @BuiltValueField(wireName: r'merchant')
   String get merchant;
@@ -69,10 +68,7 @@ class _$CreateCaptureSerializer implements PrimitiveSerializer<CreateCapture> {
     yield r'amount';
     yield serializers.serialize(object.amount, specifiedType: const FullType(int));
     yield r'currency';
-    yield serializers.serialize(
-      object.currency,
-      specifiedType: const FullType(CreateCaptureCurrency),
-    );
+    yield serializers.serialize(object.currency, specifiedType: const FullType(String));
     yield r'merchant';
     yield serializers.serialize(object.merchant, specifiedType: const FullType(String));
     yield r'capturedAt';
@@ -118,11 +114,9 @@ class _$CreateCaptureSerializer implements PrimitiveSerializer<CreateCapture> {
           result.amount = valueDes;
           break;
         case r'currency':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(CreateCaptureCurrency),
-          ) as CreateCaptureCurrency;
-          result.currency.replace(valueDes);
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(String)) as String;
+          result.currency = valueDes;
           break;
         case r'merchant':
           final valueDes =

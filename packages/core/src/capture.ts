@@ -1,14 +1,14 @@
 import { z } from "zod";
 import { CAPTURE_SOURCES } from "./capture-sources.ts";
-import { SUPPORTED_CURRENCIES } from "./currencies.ts";
 import { transactionDto } from "./schemas.ts";
 
 export { CAPTURE_SOURCES, type CaptureSource } from "./capture-sources.ts";
 
-const captureCurrencySchema = z.union([
-  z.enum(SUPPORTED_CURRENCIES),
-  z.string().regex(/^[A-Z]{3}$/, "Expected a 3-letter uppercase ISO currency code"),
-]);
+// One pattern, not a union with the supported-currency enum: every supported code matches it,
+// and the OpenAPI anyOf a union produces breaks the generated Dart client.
+const captureCurrencySchema = z
+  .string()
+  .regex(/^[A-Z]{3}$/, "Expected a 3-letter uppercase ISO currency code");
 
 export const createCaptureSchema = z.object({
   kind: z.enum(["expense", "income"]),

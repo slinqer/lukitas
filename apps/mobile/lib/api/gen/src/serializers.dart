@@ -28,7 +28,6 @@ import 'package:wambito/api/gen/src/model/confirm_import.dart';
 import 'package:wambito/api/gen/src/model/cost_of_living_report.dart';
 import 'package:wambito/api/gen/src/model/cost_of_living_report_categories_inner.dart';
 import 'package:wambito/api/gen/src/model/create_capture.dart';
-import 'package:wambito/api/gen/src/model/create_capture_currency.dart';
 import 'package:wambito/api/gen/src/model/create_category.dart';
 import 'package:wambito/api/gen/src/model/create_recurrence.dart';
 import 'package:wambito/api/gen/src/model/create_transaction.dart';
@@ -77,7 +76,6 @@ part 'serializers.g.dart';
   CostOfLivingReport,
   CostOfLivingReportCategoriesInner,
   CreateCapture,
-  CreateCaptureCurrency,
   CreateCategory,
   CreateRecurrence,
   CreateTransaction,

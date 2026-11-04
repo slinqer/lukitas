@@ -26,7 +26,6 @@ export 'package:wambito/api/gen/src/model/confirm_import.dart';
 export 'package:wambito/api/gen/src/model/cost_of_living_report.dart';
 export 'package:wambito/api/gen/src/model/cost_of_living_report_categories_inner.dart';
 export 'package:wambito/api/gen/src/model/create_capture.dart';
-export 'package:wambito/api/gen/src/model/create_capture_currency.dart';
 export 'package:wambito/api/gen/src/model/create_category.dart';
 export 'package:wambito/api/gen/src/model/create_recurrence.dart';
 export 'package:wambito/api/gen/src/model/create_transaction.dart';

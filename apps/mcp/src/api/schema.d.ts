@@ -631,7 +631,7 @@ export interface components {
             /** @enum {string} */
             kind: "expense" | "income";
             amount: number;
-            currency: ("COP" | "USD" | "EUR") | string;
+            currency: string;
             merchant: string;
             /** Format: date-time */
             capturedAt: string;
