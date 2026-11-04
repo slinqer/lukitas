@@ -254,8 +254,6 @@ const ROADMAP = {
         ],
       },
     ],
-    landingItems: ["Conecta tu IA", "App para iPhone", "Cifrado de punta a punta"],
-    cta: "Ver el roadmap",
     navLink: "Lo que viene",
     description: /Lo que tenemos planeado para Wambito/,
     logo: "Wambito, inicio",
@@ -304,8 +302,6 @@ const ROADMAP = {
         ],
       },
     ],
-    landingItems: ["Connect your AI", "iPhone app", "End-to-end encryption"],
-    cta: "See the roadmap",
     navLink: "What's next",
     description: /What we have planned for Wambito/,
     logo: "Wambito, home",
@@ -354,8 +350,6 @@ const ROADMAP = {
         ],
       },
     ],
-    landingItems: ["Collega la tua IA", "App per iPhone", "Crittografia end-to-end"],
-    cta: "Vedi la roadmap",
     navLink: "In arrivo",
     description: /Cosa abbiamo in programma per Wambito/,
     logo: "Wambito, home",
@@ -404,8 +398,6 @@ const ROADMAP = {
         ],
       },
     ],
-    landingItems: ["Liga a tua IA", "App para iPhone", "Encriptação ponta a ponta"],
-    cta: "Ver o roadmap",
     navLink: "O que vem aí",
     description: /O que temos planeado para Wambito/,
     logo: "Wambito, início",
@@ -740,16 +732,9 @@ for (const l of LOCALES) {
 
     test("says nothing about games, best friends or paying later", async ({ page, request }) => {
       const html = await (await request.get(l.path)).text();
-      // "What's next" lists planned items (end-to-end encryption among them): plans, not claims.
-      const withoutScripts = html
-        .replace(/<script[\s\S]*?<\/script>/g, "")
-        .replace(/<section id="whats-next"[\s\S]*?<\/section>/, "");
+      const withoutScripts = html.replace(/<script[\s\S]*?<\/script>/g, "");
       await page.goto(l.path);
-      const text = await page.locator("body").evaluate((body) => {
-        const copy = body.cloneNode(true) as HTMLElement;
-        copy.querySelector("#whats-next")?.remove();
-        return copy.textContent ?? "";
-      });
+      const text = (await page.locator("body").textContent()) ?? "";
       for (const pattern of l.banned) {
         expect(withoutScripts).not.toMatch(pattern);
         expect(text).not.toMatch(pattern);
@@ -798,16 +783,9 @@ for (const l of LOCALES) {
     test("privacy copy promises only what Wambito does today", async ({ page, request }) => {
       // React escapes apostrophes in text ("can't" → "can&#x27;t"): decode before matching.
       const html = (await (await request.get(l.path)).text()).replaceAll("&#x27;", "'");
-      // "What's next" lists planned items (end-to-end encryption among them): plans, not claims.
-      const withoutScripts = html
-        .replace(/<script[\s\S]*?<\/script>/g, "")
-        .replace(/<section id="whats-next"[\s\S]*?<\/section>/, "");
+      const withoutScripts = html.replace(/<script[\s\S]*?<\/script>/g, "");
       await page.goto(l.path);
-      const text = await page.locator("body").evaluate((body) => {
-        const copy = body.cloneNode(true) as HTMLElement;
-        copy.querySelector("#whats-next")?.remove();
-        return copy.textContent ?? "";
-      });
+      const text = (await page.locator("body").textContent()) ?? "";
       for (const pattern of l.overclaims) {
         expect(withoutScripts).not.toMatch(pattern);
         expect(text).not.toMatch(pattern);
@@ -933,32 +911,16 @@ for (const l of LOCALES) {
       await expect(code).toHaveAttribute("target", "_blank");
       await expect(code).toHaveAttribute("rel", "noopener");
       await expect(code.locator(".sr-only")).toHaveText(l.newTab);
-      // Then "what's next", and the FAQ after it.
-      expect(await section.evaluate((el) => el.nextElementSibling?.id)).toBe("whats-next");
+      // Then the FAQ: no "what's next" section between them.
+      expect(await section.evaluate((el) => el.nextElementSibling?.id)).toBe("faq");
     });
 
-    test("what's next: three planned items and a button to the roadmap", async ({ page }) => {
-      const r = ROADMAP[l.locale];
+    test("no what's next section: the header and the footer lead to the roadmap", async ({
+      page,
+    }) => {
       await page.goto(l.path);
-      const section = page.locator("#whats-next");
-      await expect(section.getByRole("heading", { level: 2 })).toHaveText(r.title);
-      await expect(section).toContainText(r.intro);
-      const cards = section.getByRole("listitem");
-      await expect(cards).toHaveCount(3);
-      for (const [index, title] of r.landingItems.entries()) {
-        await expect(cards.nth(index).getByRole("heading", { level: 3 })).toHaveText(title);
-      }
-      // The same card look as "use it your way".
-      await expect(cards.first()).toHaveClass(/lk-landing-card/);
-      const button = section.getByRole("link", { name: r.cta });
-      await expect(button).toHaveAttribute("href", r.path);
-      await expect(button).not.toHaveAttribute("target", /.+/);
-      await expect(button).toHaveClass(/lk-btn-secondary/);
-      // After "open source", before the FAQ.
-      expect(await section.evaluate((el) => el.previousElementSibling?.id)).toBe("open-source");
-      expect(await section.evaluate((el) => el.nextElementSibling?.id)).toBe("faq");
-      // No call to propose or vote.
-      await expect(section.getByRole("link")).toHaveCount(1);
+      await expect(page.locator("#whats-next")).toHaveCount(0);
+      await expect(page.locator("main")).not.toContainText(ROADMAP[l.locale].intro);
     });
 
     test("the footer links to the roadmap, and the header does on a wide screen", async ({
@@ -1593,7 +1555,7 @@ for (const l of LOCALES) {
         await expectFitsTheViewport(page);
       });
 
-      test("the landing's what's-next section does not overflow either", async ({ page }) => {
+      test("the landing does not overflow either", async ({ page }) => {
         await page.goto(l.path);
         await expectFitsTheViewport(page);
       });
@@ -1627,12 +1589,12 @@ for (const l of LOCALES) {
         expect(errors).toEqual([]);
       });
 
-      test("the landing's button opens the roadmap and the logo comes back", async ({ page }) => {
+      test("the landing's footer opens the roadmap and the logo comes back", async ({ page }) => {
         const errors: string[] = [];
         page.on("pageerror", (error) => errors.push(error.message));
         await page.goto(l.path);
         await page.waitForLoadState("networkidle");
-        await page.locator("#whats-next").getByRole("link", { name: r.cta }).click();
+        await page.getByRole("contentinfo").getByRole("link", { name: r.navLink }).click();
         await expect(page).toHaveURL(new RegExp(`${r.path}$`));
         await expect(page.getByRole("heading", { level: 1 })).toHaveText(r.title);
         await expect(page.locator("html")).toHaveAttribute("lang", l.locale);

@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { useTranslations } from "use-intl";
 import { useLocale } from "../../i18n/IntlProvider.tsx";
 import { APP_ORIGIN, COMING_SOON } from "../../site/config.ts";
@@ -6,14 +7,15 @@ import { PressLink } from "../../ui/PressLink.tsx";
 import { LiveWambiBoundary, useLiveWambiReady } from "../../wambi/live-support.tsx";
 import { TravelingWambi as TravelingWambi2D } from "../../wambi/TravelingWambi.tsx";
 import { LANDING_ART, Wambi } from "../../wambi/Wambi.tsx";
-import { WhatsNext } from "../roadmap/WhatsNext.tsx";
 import { Faq } from "./Faq.tsx";
 import { Footer } from "./Footer.tsx";
 import { Hero } from "./Hero.tsx";
 import { HowItWorks } from "./HowItWorks.tsx";
 import { appLinkProps } from "./links.ts";
 import { NewTabHint } from "./NewTabHint.tsx";
+import { NoMoreSpreadsheet } from "./NoMoreSpreadsheet.tsx";
 import { OpenSource } from "./OpenSource.tsx";
+import { useButtonGlow } from "./pointer-glow.ts";
 import { SiteHeader } from "./SiteHeader.tsx";
 import { UseItYourWay } from "./UseItYourWay.tsx";
 import "./landing.css";
@@ -81,15 +83,17 @@ function Closing() {
  * renders without JavaScript and in the URL's language.
  */
 export function Landing() {
+  const root = useRef<HTMLDivElement>(null);
+  useButtonGlow(root);
   return (
-    <div className="lk-screen lk-landing">
+    <div ref={root} className="lk-screen lk-landing">
       <SiteHeader page="landing" />
       <main className="lk-landing-wrap">
         <Hero />
-        <UseItYourWay />
+        <NoMoreSpreadsheet />
         <HowItWorks />
+        <UseItYourWay />
         <OpenSource />
-        <WhatsNext />
         <Faq />
         <Closing />
       </main>

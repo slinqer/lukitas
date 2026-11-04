@@ -35,10 +35,6 @@
       "next": "Prossimo",
       "later": "Più avanti"
     },
-    "landing": {
-      "title": "In arrivo",
-      "cta": "Vedi la roadmap"
-    },
     "items": {
       "web_app": {
         "title": "App web",
@@ -147,6 +143,26 @@
       "perks": "Gratis per sempre · <github>Open source</github> · Senza password",
       "mascot": "Wambi, una moneta d'oro sorridente, ti saluta"
     },
+    "spreadsheet": {
+      "title": "Basta con l'Excel delle spese.",
+      "image": "Wambi, soddisfatto, infila un foglio di calcolo in un distruggidocumenti",
+      "before": "Con un foglio Excel",
+      "after": "Con Wambito",
+      "rows": {
+        "open": {
+          "before": "Accendi il computer, cerchi il file e scorri fino all'ultima riga.",
+          "after": "Lo segni in pochi secondi, anche dal telefono."
+        },
+        "formula": {
+          "before": "Una formula rotta e il totale non torna più.",
+          "after": "I conti si fanno da soli."
+        },
+        "budget": {
+          "before": "Scopri di aver sforato quando hai già sforato.",
+          "after": "I tuoi budget ti avvisano prima."
+        }
+      }
+    },
     "ways": {
       "title": "Usala come preferisci",
       "soon": "Presto",
@@ -173,10 +189,11 @@
         "home": "Casa",
         "transport": "Trasporti"
       },
-      "log": {
-        "title": "Annota in pochi secondi",
-        "body": "Tocchi ＋, scrivi l'importo e fatto: meno di cinque secondi da quando apri l'app. Wambi festeggia con te.",
-        "demo_name": "Caffè e cornetto",
+      "voice": {
+        "title": "Annota le spese con la voce",
+        "body": "Di' a Wambi «Ho speso 3 euro per un caffè» ed è annotato, senza scrivere niente. Dal widget dell'app per Android.",
+        "demo_said": "«Ho speso 3 euro per un caffè»",
+        "demo_name": "Caffè",
         "demo_saved": "Annotato!"
       },
       "spend": {

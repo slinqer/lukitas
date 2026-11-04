@@ -35,10 +35,6 @@
       "next": "Next",
       "later": "Later"
     },
-    "landing": {
-      "title": "What's next",
-      "cta": "See the roadmap"
-    },
     "items": {
       "web_app": {
         "title": "Web app",
@@ -147,6 +143,26 @@
       "perks": "Free forever · <github>Open source</github> · No passwords",
       "mascot": "Wambi, a smiling gold coin, waves at you"
     },
+    "spreadsheet": {
+      "title": "No more expenses in Excel.",
+      "image": "Wambi, pleased, feeds a spreadsheet into a paper shredder",
+      "before": "With a spreadsheet",
+      "after": "With Wambito",
+      "rows": {
+        "open": {
+          "before": "Open the laptop, find the file, scroll down to the last row.",
+          "after": "Log it in seconds, from your phone too."
+        },
+        "formula": {
+          "before": "One broken formula and the total stops adding up.",
+          "after": "The sums do themselves."
+        },
+        "budget": {
+          "before": "You find out you overspent once you already have.",
+          "after": "Your budgets give you a heads-up first."
+        }
+      }
+    },
     "ways": {
       "title": "Use it your way",
       "soon": "Soon",
@@ -173,10 +189,11 @@
         "home": "Home",
         "transport": "Getting around"
       },
-      "log": {
-        "title": "Log it in seconds",
-        "body": "Tap ＋, type the amount and you're done: under five seconds from opening the app. Wambi celebrates with you.",
-        "demo_name": "Coffee and a pastry",
+      "voice": {
+        "title": "Log your expenses by voice",
+        "body": "Tell Wambi “I spent 3 euros on coffee” and it's logged, no typing. From the Android app's widget.",
+        "demo_said": "“I spent 3 euros on coffee”",
+        "demo_name": "Coffee",
         "demo_saved": "Logged!"
       },
       "spend": {
