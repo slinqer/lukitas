@@ -27,6 +27,9 @@ Hono + Better Auth + Drizzle (`@wambito/db`), OpenAPI document "Wambito API". Ev
   `requireUser`), the person's end of an admin's email change; 10 per 10 min per client IP in the
   `rate_limit` table (key `email-change-confirm|<ip>`).
 - `src/scripts/seed.ts`: creates `dev@wambito.test`.
+- `src/scripts/seed-admin.ts` (`seed:admin`): upserts the admin `dev-admin` (`admin@wambito.test`,
+  onboarded, default account and categories) through `DATABASE_ADMIN_URL` and clears its email
+  throttle; the root compose lists it in `ADMIN_USER_IDS`. CI runs it before the web e2e.
 
 ## Talks to
 
