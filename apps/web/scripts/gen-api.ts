@@ -54,7 +54,8 @@ async function documentFromApp(): Promise<OpenAPI3> {
     config: {
       DATABASE_URL: "postgres://inert:inert@localhost:5432/inert",
       DATABASE_ADMIN_URL: "postgres://inert:inert@localhost:5432/inert",
-      BETTER_AUTH_SECRET: "q7Hx2vK9mZpL4tRw8nYb3cDf6gJs1aEu",
+      // Never used: the app only builds its OpenAPI document. Plainly fake, so no scanner reads it as a leak.
+      BETTER_AUTH_SECRET: "x".repeat(32),
       API_URL: "http://localhost:3000",
       WEB_URL: "http://localhost:5173",
       MAIL_FROM: "Wambito <gen-api@wambito.test>",
