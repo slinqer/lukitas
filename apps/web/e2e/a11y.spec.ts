@@ -32,6 +32,8 @@ const h1 = (page: Page, name: string | RegExp) => page.getByRole("heading", { le
 const isPhone = (page: Page) => (page.viewportSize()?.width ?? 0) < 1024;
 
 test("the landing and the roadmap, in every language", async ({ page }) => {
+  // Eight pages, each with a full axe run: more than a single screen's 30s on a cold dev server.
+  test.slow();
   // The landing's own run (landing.spec.ts) adds axe's best practices; so does this one.
   const tags = [...WCAG_TAGS, "best-practice"];
   for (const [path, heading] of [
