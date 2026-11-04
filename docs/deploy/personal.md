@@ -1,7 +1,7 @@
 # Deploying a personal install
 
 Wambito can run as a private, single-person install on one machine: its own Docker stack, reached
-through a Cloudflare named tunnel at one hostname, with an email allowlist and a daily verified
+through a Cloudflare named tunnel at one hostname, with an optional email allowlist and a daily verified
 backup. It is meant for using the app with real data before (or instead of) a cloud deployment, and
 it moves to a server with its data later.
 
@@ -15,7 +15,7 @@ What the API gained for it (also useful for any deployment):
 
 - **`SIGN_IN_ALLOWLIST`**: comma-separated emails (case-insensitive). When set, a sign-in code is
   only sent to those addresses; anyone else gets `403 sign_in_not_allowed` and no email goes out.
-  Unset (development, tests) means no restriction. Existing users' passkeys are not affected.
+  Unset or empty means no restriction: anyone may create an account (production runs this way). Existing users' passkeys are not affected.
 - **`SMTP_TLS_INSECURE=true`**: accept the SMTP server's self-signed certificate (Proton Bridge),
   still over STARTTLS. Refused unless `SMTP_URL` is on this machine (`localhost`, `127.0.0.1`,
   `[::1]`, `host.docker.internal`).

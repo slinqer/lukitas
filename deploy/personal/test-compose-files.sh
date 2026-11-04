@@ -126,6 +126,19 @@ with_env direct-port COMPOSE_FILE=docker-compose.yml:docker-compose.direct.yml W
 check "direct ports: WEB_PORT moves the local listener" "127.0.0.1:9099->8080/tcp" \
   "$(web_ports | grep '^127\.0\.0\.1:' || true)"
 
+# --- Sign-in: open to everyone unless SIGN_IN_ALLOWLIST names someone. ----------------------------
+ENV_FILE="$tmp/open.env"
+printf '%s\n' POSTGRES_PASSWORD=test APP_DB_PASSWORD=test BETTER_AUTH_SECRET=test >"$ENV_FILE"
+if open_json="$(compose config --format json 2>/dev/null)"; then
+  check "no SIGN_IN_ALLOWLIST: open sign-in (empty)" "" \
+    "$(jq -r '.services.api.environment.SIGN_IN_ALLOWLIST // ""' <<<"$open_json")"
+else
+  fail "no SIGN_IN_ALLOWLIST: compose refuses the .env"
+fi
+with_env allowlist
+check "SIGN_IN_ALLOWLIST is passed on" you@example.com \
+  "$(compose config --format json | jq -r .services.api.environment.SIGN_IN_ALLOWLIST)"
+
 # --- What COMPOSE_FILE may name. ------------------------------------------------------------------
 refused() { # NAME VALUE: compose_files exits non-zero for COMPOSE_FILE=VALUE
   with_env refused "COMPOSE_FILE=$2"

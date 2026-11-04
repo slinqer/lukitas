@@ -26,7 +26,7 @@ const LOCALES = [
     soon: "Pronto",
     others: ["App para Android y iOS", "Con tu IA"],
     closingBody:
-      "Wambito ya funciona y la estamos probando con un grupo pequeño. Si te invitaron, entra con tu correo.",
+      "Crea tu cuenta con tu correo en menos de un minuto. Wambito se encarga de que sea divertido.",
     comingSoon: [/Muy pronto/, /Síguelo en GitHub/, /en construcción/],
     banned: [/\bjueg(o|a)\b/i],
   },
@@ -41,7 +41,7 @@ const LOCALES = [
     soon: "Soon",
     others: ["Android & iOS app", "With your AI"],
     closingBody:
-      "Wambito already works, and we're trying it out with a small group. If you were invited, sign in with your email.",
+      "Create your account with your email in under a minute. Wambito takes care of making it fun.",
     comingSoon: [/Coming soon/, /Follow on GitHub/, /being built in the open/],
     banned: [/\bgames?\b/i],
   },
@@ -147,7 +147,7 @@ for (const l of LOCALES) {
       expect(toApp).toEqual(Array(4).fill(`${APP}/sign-in?lang=${l.locale}`));
     });
 
-    test("the closing section is honest: it works, for a small group", async ({ page }) => {
+    test("the closing section is honest: anyone can create an account", async ({ page }) => {
       await page.goto(l.path);
       await expect(page.locator("#closing").locator("p")).toHaveText(l.closingBody);
     });

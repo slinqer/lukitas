@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { useTranslations } from "use-intl";
 import { useLocale } from "../../i18n/IntlProvider.tsx";
-import { APP_ORIGIN, COMING_SOON } from "../../site/config.ts";
+import { COMING_SOON } from "../../site/config.ts";
 import { cx } from "../../ui/cx.ts";
 import { PressLink } from "../../ui/PressLink.tsx";
 import { LiveWambiBoundary, useLiveWambiReady } from "../../wambi/live-support.tsx";
@@ -42,12 +42,8 @@ function Closing() {
   const t = useTranslations("landing");
   const { locale } = useLocale();
   const app = appLinkProps(locale);
-  // Honest about where the app is: not open yet, open to a small group, or open to everyone.
-  const closingBody = COMING_SOON
-    ? "closing.body_soon"
-    : APP_ORIGIN
-      ? "closing.body_invite"
-      : "closing.body";
+  // Honest about where the app is: not open yet, or open to everyone.
+  const closingBody = COMING_SOON ? "closing.body_soon" : "closing.body";
   return (
     <section id="closing" className="lk-landing-section" aria-labelledby="closing-title">
       <div className="lk-landing-closing">

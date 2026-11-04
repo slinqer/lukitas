@@ -78,7 +78,8 @@ services:
       SMTP_URL: ${SMTP_URL:-}
       SMTP_TLS_INSECURE: ${SMTP_TLS_INSECURE:-false}
       RESEND_API_KEY: ${RESEND_API_KEY:-}
-      SIGN_IN_ALLOWLIST: ${SIGN_IN_ALLOWLIST:?Set SIGN_IN_ALLOWLIST in .env}
+      # Empty or unset: anyone may sign in. Emails, comma-separated: only those.
+      SIGN_IN_ALLOWLIST: ${SIGN_IN_ALLOWLIST:-}
       # Guest sign-up from the Android app (an account without an email). On unless set to false.
       GUEST_SIGNUP: ${GUEST_SIGNUP:-true}
       # The Android app's signing-certificate fingerprints (the web's assetlinks.json reads the same
