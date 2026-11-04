@@ -21,7 +21,7 @@ const landingOnly = isLandingOnly(env.landingOnly);
 // Not used here, but a typo should stop the build before it prerenders broken links.
 resolveAppOrigin(env.appUrl);
 
-/** The public pages, in every language (the landing and the roadmap). */
+/** The public pages, in every language (landing, roadmap, privacy policy, account deletion). */
 const PUBLIC_PAGES = SITE_PAGES.flatMap((page) => LOCALES.map((locale) => PAGE_PATH[page][locale]));
 
 /**
@@ -33,7 +33,7 @@ const buildDirectory = process.env.WAMBITO_BUILD_DIR || "build";
 
 export default {
   buildDirectory,
-  // The landing and roadmap pages are static HTML; everything else is a client-side SPA.
+  // The public pages (landing, roadmap, legal) are static HTML; everything else is a client-side SPA.
   ssr: false,
   // Landing-only: the unknown-path page too, which buildEnd turns into the top-level 404.html.
   prerender: landingOnly ? [...PUBLIC_PAGES, "/404"] : PUBLIC_PAGES,

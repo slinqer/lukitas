@@ -41,7 +41,6 @@ const LOCALES = [
     privacyAnswer:
       "Tus datos viajan cifrados y nunca los vendemos ni los compartimos con anunciantes.",
     faq: "Preguntas frecuentes",
-    privacy: "Privacidad",
     signIn: "Entrar",
     toggleToDay: "Cambiar a modo día",
     toggleToNight: "Cambiar a modo noche",
@@ -79,7 +78,6 @@ const LOCALES = [
     privacyAnswer:
       "Your data travels encrypted, and we never sell it or share it with advertisers.",
     faq: "Frequently asked questions",
-    privacy: "Privacy",
     signIn: "Sign in",
     toggleToDay: "Switch to day mode",
     toggleToNight: "Switch to night mode",
@@ -122,7 +120,6 @@ const LOCALES = [
     privacyAnswer:
       "I tuoi dati viaggiano cifrati e non li vendiamo né li condividiamo mai con gli inserzionisti.",
     faq: "Domande frequenti",
-    privacy: "Privacy",
     signIn: "Entra",
     toggleToDay: "Passa alla modalità giorno",
     toggleToNight: "Passa alla modalità notte",
@@ -160,7 +157,6 @@ const LOCALES = [
     privacyAnswer:
       "Os teus dados viajam cifrados e nunca os vendemos nem os partilhamos com anunciantes.",
     faq: "Perguntas frequentes",
-    privacy: "Privacidade",
     signIn: "Entrar",
     toggleToDay: "Mudar para o modo dia",
     toggleToNight: "Mudar para o modo noite",
@@ -171,6 +167,46 @@ const LOCALES = [
     titlePart: "O teu dinheiro, finalmente claro",
   },
 ] as const;
+
+/** The privacy policy and account deletion pages, per language: path, heading and footer link. */
+const LEGAL = {
+  es: {
+    privacy: { path: "/privacy", title: "Política de privacidad", link: "Privacidad" },
+    deleteAccount: { path: "/delete-account", title: "Borrar tu cuenta", link: "Borrar cuenta" },
+    otherPrivacy: "/en/privacy",
+    faqLink: "política de privacidad",
+  },
+  en: {
+    privacy: { path: "/en/privacy", title: "Privacy policy", link: "Privacy" },
+    deleteAccount: {
+      path: "/en/delete-account",
+      title: "Delete your account",
+      link: "Delete account",
+    },
+    otherPrivacy: "/privacy",
+    faqLink: "privacy policy",
+  },
+  it: {
+    privacy: { path: "/it/privacy", title: "Informativa sulla privacy", link: "Privacy" },
+    deleteAccount: {
+      path: "/it/delete-account",
+      title: "Elimina il tuo account",
+      link: "Elimina account",
+    },
+    otherPrivacy: "/pt/privacy",
+    faqLink: "informativa sulla privacy",
+  },
+  pt: {
+    privacy: { path: "/pt/privacy", title: "Política de privacidade", link: "Privacidade" },
+    deleteAccount: {
+      path: "/pt/delete-account",
+      title: "Apagar a tua conta",
+      link: "Apagar conta",
+    },
+    otherPrivacy: "/it/privacy",
+    faqLink: "política de privacidade",
+  },
+} as const;
 
 /** The roadmap page and the landing's what's-next section, per language. */
 const ROADMAP = {
@@ -776,7 +812,13 @@ for (const l of LOCALES) {
         expect(withoutScripts).not.toMatch(pattern);
         expect(text).not.toMatch(pattern);
       }
-      await expect(page.locator("#privacy")).toContainText(l.privacyAnswer);
+      const privacyAnswer = page.locator("#faq details").filter({ hasText: l.privacyAnswer });
+      await expect(privacyAnswer).toHaveCount(1);
+      // The answer links to the policy page.
+      // (Closed `<details>` content is out of the accessibility tree, so find it by text.)
+      await expect(
+        privacyAnswer.locator("a", { hasText: LEGAL[l.locale].faqLink }),
+      ).toHaveAttribute("href", LEGAL[l.locale].privacy.path);
     });
 
     test("has its SEO tags: description, Open Graph, canonical and hreflang", async ({ page }) => {
@@ -962,19 +1004,20 @@ for (const l of LOCALES) {
       await expect(first.locator("summary + *")).toBeVisible();
     });
 
-    test("the footer switches language on the same page and links to privacy", async ({ page }) => {
+    test("the footer switches language on the same page and links to the legal pages", async ({
+      page,
+    }) => {
       await page.goto(l.path);
       const footer = page.getByRole("contentinfo");
       const switchLink = footer.getByRole("link", { name: l.other.name });
       await expect(switchLink).toHaveAttribute("href", l.other.path);
       await expect(switchLink).toHaveAttribute("hreflang", l.other.lang);
-      const privacy = footer.getByRole("link", { name: l.privacy });
-      await expect(privacy).toHaveAttribute("href", "#privacy");
-      // A placeholder anchor until the policy has its page: the FAQ answer about your data,
-      // which the browser opens when the link is followed.
-      await expect(page.locator("#privacy")).toBeHidden();
-      await privacy.click();
-      await expect(page.locator("#privacy")).toBeVisible();
+      await expect(
+        footer.getByRole("link", { name: LEGAL[l.locale].privacy.link }),
+      ).toHaveAttribute("href", LEGAL[l.locale].privacy.path);
+      await expect(
+        footer.getByRole("link", { name: LEGAL[l.locale].deleteAccount.link }),
+      ).toHaveAttribute("href", LEGAL[l.locale].deleteAccount.path);
       await expect(footer).toContainText("© 2026 Wambito");
 
       await switchLink.click();
@@ -1524,10 +1567,9 @@ for (const l of LOCALES) {
         "aria-current",
         "true",
       );
-      await expect(footer.getByRole("link", { name: l.privacy })).toHaveAttribute(
-        "href",
-        `${l.path}#privacy`,
-      );
+      await expect(
+        footer.getByRole("link", { name: LEGAL[l.locale].privacy.link }),
+      ).toHaveAttribute("href", LEGAL[l.locale].privacy.path);
       await expect(footer).toContainText("© 2026 Wambito");
 
       // The language switch keeps the page.
@@ -1602,6 +1644,46 @@ for (const l of LOCALES) {
   });
 }
 
+for (const l of LOCALES) {
+  const legal = LEGAL[l.locale];
+
+  test.describe(`legal pages (${l.locale})`, () => {
+    for (const key of ["privacy", "deleteAccount"] as const) {
+      const page_ = legal[key];
+
+      test(`${page_.path} is prerendered, 200, with its heading, and the footer leads to it`, async ({
+        page,
+        request,
+      }) => {
+        const response = await request.get(page_.path);
+        expect(response.status()).toBe(200);
+        expect(await response.text()).toContain(`<html lang="${l.locale}"`);
+
+        await page.goto(l.path);
+        await page
+          .getByRole("contentinfo")
+          .getByRole("link", { name: page_.link, exact: true })
+          .click();
+        await expect(page).toHaveURL(new RegExp(`${page_.path}$`));
+        await expect(page.getByRole("heading", { level: 1 })).toHaveText(page_.title);
+        // The page's own footer marks it as the current one.
+        await expect(
+          page.getByRole("contentinfo").getByRole("link", { name: page_.link, exact: true }),
+        ).toHaveAttribute("aria-current", "page");
+      });
+    }
+  });
+}
+
+test("the language switch on the privacy policy keeps the page", async ({ page }) => {
+  await page.goto("/it/privacy");
+  const pt = page.getByRole("contentinfo").getByRole("link", { name: "Português" });
+  await expect(pt).toHaveAttribute("href", "/pt/privacy");
+  await pt.click();
+  await expect(page).toHaveURL(/\/pt\/privacy$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(LEGAL.pt.privacy.title);
+});
+
 test.describe("static files", () => {
   test("robots.txt, sitemap.xml and the Open Graph images are served", async ({ request }) => {
     const robots = await (await request.get("/robots.txt")).text();
@@ -1616,6 +1698,11 @@ test.describe("static files", () => {
     expect(sitemap).toContain("<loc>https://wambito.test/en/roadmap</loc>");
     for (const path of ["/it", "/pt", "/it/roadmap", "/pt/roadmap"]) {
       expect(sitemap).toContain(`<loc>https://wambito.test${path}</loc>`);
+    }
+    for (const entry of Object.values(LEGAL)) {
+      for (const key of ["privacy", "deleteAccount"] as const) {
+        expect(sitemap).toContain(`<loc>https://wambito.test${entry[key].path}</loc>`);
+      }
     }
 
     for (const locale of ["es", "en", "it", "pt"]) {

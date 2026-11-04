@@ -39,11 +39,5 @@ export function demoLinkProps(
   return appOrigin ? { to: `${appOrigin}${demo}` } : null;
 }
 
-/**
- * The privacy policy. A placeholder anchor on the landing page itself (the FAQ answer about your
- * data) until the policy has its own page.
- */
-export const PRIVACY_HREF = "#privacy";
-
 /** The copyright year: the landing page's first publication. */
 export const COPYRIGHT_YEAR = 2026;

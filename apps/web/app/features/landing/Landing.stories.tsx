@@ -223,7 +223,10 @@ export const FaqSection: Story = {
     await expectTarget(first);
     await userEvent.click(first);
     await expect(first.parentElement).toHaveAttribute("open");
-    await expect(canvasElement.querySelector("#privacy")).not.toBeNull();
+    await expect(summaries[3]?.parentElement?.querySelector("a")).toHaveAttribute(
+      "href",
+      "/privacy",
+    );
     await userEvent.tab();
     await expectFocusRing(summaries[1] as HTMLElement);
   },
@@ -252,7 +255,7 @@ export const HeaderLanguageMenu: Story = {
   },
 };
 
-/** Language switch (current language marked), privacy link, copyright. */
+/** Language switch (current language marked), privacy and account deletion links, copyright. */
 export const FooterSection: Story = {
   render: () => <Footer />,
   globals: { locale: "en", theme: "day" },
@@ -263,7 +266,14 @@ export const FooterSection: Story = {
     const spanish = canvas.getByRole("link", { name: "Español" });
     await expect(spanish).toHaveAttribute("href", "/");
     await expect(spanish).toHaveAttribute("hreflang", "es");
-    await expect(canvas.getByRole("link", { name: "Privacy" })).toHaveAttribute("href", "#privacy");
+    await expect(canvas.getByRole("link", { name: "Privacy" })).toHaveAttribute(
+      "href",
+      "/en/privacy",
+    );
+    await expect(canvas.getByRole("link", { name: "Delete account" })).toHaveAttribute(
+      "href",
+      "/en/delete-account",
+    );
     for (const link of canvas.getAllByRole("link")) await expectTarget(link);
     await expect(canvasElement).toHaveTextContent("© 2026 Wambito");
   },

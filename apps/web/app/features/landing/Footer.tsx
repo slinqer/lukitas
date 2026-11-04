@@ -2,15 +2,20 @@ import { Link } from "react-router";
 import { useTranslations } from "use-intl";
 import { LOCALES } from "../../i18n/format.ts";
 import { useLocale } from "../../i18n/IntlProvider.tsx";
-import { LANDING_PATH, PAGE_PATH, ROADMAP_PATH, type SitePage } from "../../site/paths.ts";
-import { COPYRIGHT_YEAR, PRIVACY_HREF } from "./links.ts";
+import {
+  DELETE_ACCOUNT_PATH,
+  PAGE_PATH,
+  PRIVACY_PATH,
+  ROADMAP_PATH,
+  type SitePage,
+} from "../../site/paths.ts";
+import { COPYRIGHT_YEAR } from "./links.ts";
 
 /**
- * Language switch (the same page in the other language), the roadmap and privacy links and the
- * copyright. The active language is marked `aria-current="true"` (a filled pill) and the current
- * page `aria-current="page"` (the gold underline), so the two never look alike. `page` is the page
- * it sits on (the landing by default): the language switch keeps it, and on the roadmap the privacy
- * link leads to the landing's answer.
+ * Language switch (the same page in the other language), the roadmap, privacy and account deletion
+ * links and the copyright. The active language is marked `aria-current="true"` (a filled pill) and
+ * the current page `aria-current="page"` (the gold underline), so the two never look alike. `page`
+ * is the page it sits on (the landing by default): the language switch keeps it.
  */
 export function Footer({ page = "landing" }: { page?: SitePage }) {
   const t = useTranslations();
@@ -44,12 +49,20 @@ export function Footer({ page = "landing" }: { page?: SitePage }) {
           >
             {t("landing.footer.roadmap")}
           </Link>
-          <a
-            href={page === "landing" ? PRIVACY_HREF : `${LANDING_PATH[locale]}${PRIVACY_HREF}`}
+          <Link
+            to={PRIVACY_PATH[locale]}
             className="lk-landing-link"
+            aria-current={page === "privacy" ? "page" : undefined}
           >
             {t("landing.footer.privacy")}
-          </a>
+          </Link>
+          <Link
+            to={DELETE_ACCOUNT_PATH[locale]}
+            className="lk-landing-link"
+            aria-current={page === "deleteAccount" ? "page" : undefined}
+          >
+            {t("landing.footer.delete_account")}
+          </Link>
         </div>
         <p className="lk-landing-copyright">
           {t("landing.footer.copyright", { year: String(COPYRIGHT_YEAR) })}
