@@ -1,9 +1,10 @@
 import { pageLinksFor, pageMeta } from "../features/landing/seo.ts";
+import { LegalPage } from "../features/legal/LegalPage.tsx";
 
 export const meta = () => pageMeta("deleteAccount", "pt");
 export const links = () => pageLinksFor("deleteAccount", "pt");
 
-/** Placeholder until the legal page body lands. */
+/** `/pt/delete-account`: how to delete an account, in Portuguese, prerendered. */
 export default function DeleteAccountPt() {
-  return <h1>{(pageMeta("deleteAccount", "pt")[0] as { title: string }).title}</h1>;
+  return <LegalPage page="deleteAccount" />;
 }

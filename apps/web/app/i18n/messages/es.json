@@ -252,12 +252,80 @@
       "meta": {
         "title": "Wambito · Política de privacidad",
         "description": "Cómo Wambito trata tus datos: qué guarda, dónde, quién lo ve y cómo pedir que lo borremos."
+      },
+      "title": "Política de privacidad",
+      "version": "Versión del 4 de noviembre de 2026",
+      "sections": {
+        "controller": {
+          "title": "Quién responde por tus datos",
+          "body": "Wambito es de Slinqer S.A.S., una empresa colombiana. Slinqer S.A.S. es la responsable del tratamiento de tus datos, según la Ley 1581 de 2012 de Colombia. Esta política cubre wambito.com, app.wambito.com y la app de Android cuando usa nuestro servidor. Si tienes cualquier pregunta sobre tus datos, escríbenos a <email>privacy@wambito.com</email>."
+        },
+        "data": {
+          "title": "Qué guardamos",
+          "body": "Tu correo. Tus passkeys, pero solo su parte pública: la llave privada se queda en tu dispositivo. Lo que anotas o importas: movimientos, categorías, presupuestos y recurrentes. Tu zona horaria y tu idioma. Si conectas un asistente de IA, el permiso que le diste. Y, por seguridad, la dirección IP y el tipo de navegador o app de cada sesión, más un registro mínimo de visitas: cuándo, desde qué IP, qué página y cómo respondió. Ese registro no guarda lo que va después del «?» en las direcciones, ni las cabeceras."
+        },
+        "purposes": {
+          "title": "Para qué lo usamos",
+          "body": "Tu correo, para que entres con un código o un enlace, y para responderte si nos escribes. Las passkeys, para que entres sin contraseña. Tus movimientos, categorías, presupuestos y recurrentes, para mostrarte tu presupuesto: para eso existe la app. La zona horaria, para saber cuándo empieza tu día y tu mes. El idioma, para hablarte en el tuyo, en la app y en los correos. La IP y las sesiones, para cuidar tu cuenta y frenar abusos, como pedir códigos sin parar. Los correos para entrar salen por un servicio de envío de correo, que solo recibe tu dirección y el mensaje."
+        },
+        "storage": {
+          "title": "Dónde se guarda",
+          "body": "En un servidor en la Unión Europea. Tus datos viajan cifrados entre tu dispositivo y el servidor. Cada día hacemos una copia de seguridad, la ciframos con age y guardamos esa copia cifrada en Cloudflare R2. Ninguna copia dura más de 14 días: después se borra sola. Por eso, si borras tu cuenta, también sale de las copias en 14 días como mucho."
+        },
+        "not_done": {
+          "title": "Lo que no hacemos",
+          "body": "No usamos rastreadores, ni analítica, ni publicidad. No vendemos tus datos ni los compartimos. Solo pasan por los servicios que necesitamos para funcionar (el servidor, las copias y el envío de correos), y solo para eso."
+        },
+        "voice": {
+          "title": "Tu voz",
+          "body": "En la app de Android puedes dictar un gasto. La voz se procesa en tu teléfono, con Vosk, y el audio nunca sale de él. Los modelos de voz se descargan una vez, cuando tú lo pides, desde las versiones del proyecto en GitHub. A nuestro servidor solo llega el movimiento que guardas, como si lo hubieras escrito."
+        },
+        "assistants": {
+          "title": "Asistentes de IA",
+          "body": "Puedes conectar un asistente de IA a tu cuenta. Solo entra si tú lo autorizas, en una pantalla de permiso (OAuth) que te dice qué va a poder hacer: leer tus datos, anotar por ti o las dos cosas. Le quitas el acceso cuando quieras, en Ajustes. Lo que el asistente lee lo trata la empresa que lo ofrece, según su propia política."
+        },
+        "guest": {
+          "title": "Sin correo: el modo invitado",
+          "body": "En la app de Android puedes empezar sin correo. Tus datos se guardan en el servidor, en una cuenta de invitado. Si después agregas tu correo, los conservas. Una cuenta de invitado que pasa 60 días sin usarse se borra con todos sus datos, también si cerraste sesión."
+        },
+        "self_hosted": {
+          "title": "Si usas otro servidor",
+          "body": "El código de Wambito es abierto y cualquiera puede montar su propio servidor. Si tu app usa un servidor que no es el nuestro, quien lo administra es el responsable de tus datos allí, no Slinqer S.A.S. Esta política solo cubre los servidores que manejamos nosotros."
+        },
+        "rights": {
+          "title": "Tus derechos",
+          "body": "Según la Ley 1581 de 2012, puedes conocer los datos que tenemos de ti, actualizarlos, corregirlos, pedir que los borremos y retirar tu autorización. Para eso, escríbenos a <email>privacy@wambito.com</email> desde el correo de tu cuenta. Muchas cosas las haces sin escribirnos: descargar tus datos en Ajustes o <link>borrar tu cuenta</link>. Si no quedas conforme con nuestra respuesta, puedes acudir a la Superintendencia de Industria y Comercio."
+        },
+        "changes": {
+          "title": "Cambios a esta política",
+          "body": "Si cambiamos esta política, publicamos aquí la nueva versión con su fecha. La fecha de arriba es la de la versión vigente."
+        }
       }
     },
     "delete_account": {
       "meta": {
         "title": "Wambito · Borrar tu cuenta",
         "description": "Cómo borrar tu cuenta de Wambito y los datos que guarda, desde la app o por correo."
+      },
+      "title": "Borrar tu cuenta",
+      "version": "Versión del 4 de noviembre de 2026",
+      "sections": {
+        "in_app": {
+          "title": "Desde la app",
+          "body": "En la web o en la app de Android, entra a Ajustes y toca «Eliminar mi cuenta». Para confirmar, te pedimos escribir tu correo. Si quieres, antes descarga tus datos: el botón está ahí mismo. Si usas la app como invitado, primero guarda tu progreso con un correo; si no, tu cuenta se borra sola tras 60 días sin uso."
+        },
+        "by_email": {
+          "title": "Por correo",
+          "body": "Si no puedes entrar, escríbenos a <email>privacy@wambito.com</email> desde el correo de tu cuenta y pídenos borrarla. Te avisamos cuando esté hecho."
+        },
+        "what_goes": {
+          "title": "Qué se borra",
+          "body": "Todo, de inmediato: tu cuenta, tu correo, tus passkeys y sesiones, tus movimientos, categorías, presupuestos y recurrentes, y los permisos de los asistentes que conectaste. En el teléfono, la app también borra lo que guardaba de tu cuenta."
+        },
+        "backups": {
+          "title": "Las copias de seguridad",
+          "body": "Las copias de seguridad que incluyan tu cuenta se borran solas en 14 días como mucho. Mientras tanto siguen cifradas. Tienes más detalles en la <link>política de privacidad</link>."
+        }
       }
     }
   }

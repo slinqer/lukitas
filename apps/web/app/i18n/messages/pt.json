@@ -252,12 +252,80 @@
       "meta": {
         "title": "Wambito · Política de privacidade",
         "description": "Como o Wambito trata os seus dados: o que guarda, onde, quem os vê e como pedir que os apaguemos."
+      },
+      "title": "Política de privacidade",
+      "version": "Versão de 4 de novembro de 2026",
+      "sections": {
+        "controller": {
+          "title": "Quem responde pelos teus dados",
+          "body": "O Wambito pertence à Slinqer S.A.S., uma empresa colombiana. A Slinqer S.A.S. é a responsável pelo tratamento dos teus dados, segundo a Ley 1581 de 2012 da Colômbia (a sua lei de proteção de dados). Esta política cobre wambito.com, app.wambito.com e a app Android quando usa o nosso servidor. Para qualquer pergunta sobre os teus dados, escreve-nos para <email>privacy@wambito.com</email>."
+        },
+        "data": {
+          "title": "O que guardamos",
+          "body": "O teu email. As tuas passkeys, só a parte pública: a chave privada fica no teu dispositivo. O que registas ou importas: movimentos, categorias, orçamentos e recorrentes. O teu fuso horário e o teu idioma. Se ligares um assistente de IA, a autorização que lhe deste. E, por segurança, o endereço IP e o tipo de navegador ou app de cada sessão, mais um registo mínimo de visitas: quando, de que IP, que página e como respondeu. Esse registo não guarda o que vem depois do «?» nos endereços, nem os cabeçalhos."
+        },
+        "purposes": {
+          "title": "Para que o usamos",
+          "body": "O teu email, para entrares com um código ou uma ligação, e para te respondermos se nos escreveres. As passkeys, para entrares sem palavra-passe. Os teus movimentos, categorias, orçamentos e recorrentes, para te mostrar o teu orçamento: é para isso que a app existe. O fuso horário, para saber quando começam o teu dia e o teu mês. O idioma, para falar o teu, na app e nos emails. O IP e as sessões, para proteger a tua conta e travar abusos, como pedir códigos sem parar. Os emails para entrar saem por um serviço de envio de email, que só recebe o teu endereço e a mensagem."
+        },
+        "storage": {
+          "title": "Onde fica guardado",
+          "body": "Num servidor na União Europeia. Os teus dados viajam cifrados entre o teu dispositivo e o servidor. Todos os dias fazemos uma cópia de segurança, ciframo-la com age e guardamos essa cópia cifrada no Cloudflare R2. Nenhuma cópia dura mais de 14 dias: depois apaga-se sozinha. Por isso, se apagares a tua conta, ela também sai das cópias em 14 dias, no máximo."
+        },
+        "not_done": {
+          "title": "O que não fazemos",
+          "body": "Sem rastreadores, sem análises, sem publicidade. Não vendemos os teus dados nem os partilhamos. Só passam pelos serviços de que precisamos para funcionar (o servidor, as cópias e o envio de emails), e só para isso."
+        },
+        "voice": {
+          "title": "A tua voz",
+          "body": "Na app Android podes ditar uma despesa. A voz é processada no teu telemóvel, com o Vosk, e o áudio nunca sai dele. Os modelos de voz são transferidos uma vez, quando tu pedes, a partir das versões do projeto no GitHub. Ao nosso servidor só chega o movimento que guardas, como se o tivesses escrito."
+        },
+        "assistants": {
+          "title": "Assistentes de IA",
+          "body": "Podes ligar um assistente de IA à tua conta. Só entra se o autorizares, num ecrã de autorização (OAuth) que te diz o que vai poder fazer: ler os teus dados, registar por ti ou as duas coisas. Retiras-lhe o acesso quando quiseres, nas Definições. O que o assistente lê é tratado pela empresa que o oferece, segundo a sua própria política."
+        },
+        "guest": {
+          "title": "Sem email: o modo convidado",
+          "body": "Na app Android podes começar sem email. Os teus dados ficam guardados no servidor, numa conta de convidado. Se depois juntares o teu email, ficas com eles. Uma conta de convidado que passa 60 dias sem uso é apagada com todos os seus dados, mesmo que tenhas terminado a sessão."
+        },
+        "self_hosted": {
+          "title": "Se usas outro servidor",
+          "body": "O código do Wambito é aberto e qualquer pessoa pode montar o seu próprio servidor. Se a tua app usa um servidor que não é o nosso, quem o gere é o responsável pelos teus dados aí, não a Slinqer S.A.S. Esta política só cobre os servidores que gerimos."
+        },
+        "rights": {
+          "title": "Os teus direitos",
+          "body": "Segundo a Ley 1581 de 2012, podes conhecer os dados que temos sobre ti, atualizá-los, corrigi-los, pedir que os apaguemos e retirar a tua autorização. Para isso, escreve-nos para <email>privacy@wambito.com</email> a partir do email da tua conta. Muitas coisas fazes sem nos escrever: descarregar os teus dados nas Definições ou <link>apagar a tua conta</link>. Se a nossa resposta não te satisfizer, podes recorrer à Superintendencia de Industria y Comercio da Colômbia."
+        },
+        "changes": {
+          "title": "Alterações a esta política",
+          "body": "Se alterarmos esta política, publicamos aqui a nova versão com a sua data. A data no topo é a da versão em vigor."
+        }
       }
     },
     "delete_account": {
       "meta": {
         "title": "Wambito · Apagar a sua conta",
         "description": "Como apagar a sua conta do Wambito e os dados que guarda, a partir da app ou por email."
+      },
+      "title": "Apagar a tua conta",
+      "version": "Versão de 4 de novembro de 2026",
+      "sections": {
+        "in_app": {
+          "title": "Na app",
+          "body": "Na web ou na app Android, vai às Definições e toca em «Eliminar a minha conta». Para confirmar, pedimos-te que escrevas o teu email. Se quiseres, descarrega antes os teus dados: o botão está mesmo aí. Se usas a app como convidado, guarda primeiro o teu progresso com um email; senão, a tua conta apaga-se sozinha após 60 dias sem uso."
+        },
+        "by_email": {
+          "title": "Por email",
+          "body": "Se não conseguires entrar, escreve-nos para <email>privacy@wambito.com</email> a partir do email da tua conta e pede-nos que a apaguemos. Avisamos-te quando estiver feito."
+        },
+        "what_goes": {
+          "title": "O que é apagado",
+          "body": "Tudo, de imediato: a tua conta, o teu email, as tuas passkeys e sessões, os teus movimentos, categorias, orçamentos e recorrentes, e as autorizações dos assistentes que ligaste. No telemóvel, a app também apaga o que guardava da tua conta."
+        },
+        "backups": {
+          "title": "As cópias de segurança",
+          "body": "As cópias de segurança que incluem a tua conta apagam-se sozinhas em 14 dias, no máximo. Até lá, continuam cifradas. Tens mais detalhes na <link>política de privacidade</link>."
+        }
       }
     }
   }

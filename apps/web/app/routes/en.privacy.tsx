@@ -1,9 +1,10 @@
 import { pageLinksFor, pageMeta } from "../features/landing/seo.ts";
+import { LegalPage } from "../features/legal/LegalPage.tsx";
 
 export const meta = () => pageMeta("privacy", "en");
 export const links = () => pageLinksFor("privacy", "en");
 
-/** Placeholder until the legal page body lands. */
+/** `/en/privacy`: the privacy policy, in English, prerendered. */
 export default function PrivacyEn() {
-  return <h1>{(pageMeta("privacy", "en")[0] as { title: string }).title}</h1>;
+  return <LegalPage page="privacy" />;
 }
