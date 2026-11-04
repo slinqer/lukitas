@@ -97,6 +97,8 @@ the granted access per component).
   capture counts.
 - `transaction_source` enum gains `capture`.
 - `transactions.capture_source` text, null unless `source = capture`: `revolut`, `google_wallet`.
+- `transactions.captured_at` timestamptz, null unless `source = capture`: the notification's posted
+  time. Transactions only keep a date, and the duplicate window needs the time.
 - `categories.system_key` text, null by default; `other` marks the fallback categories. Unique per
   person and kind where not null.
 - New table `merchant_categories`: `user_id`, `merchant_key`, `category_id` (cascade on delete),
@@ -117,8 +119,9 @@ next capture creates a new one.
 
 - Idempotency key required (as for `/v1/transactions/batch`). Body: kind, amount (integer cents),
   currency, merchant, posted time, source. Validated with a zod schema in `packages/core`.
-- **Duplicates:** a transaction with `source = capture`, `needs_review = true`, the same kind,
-  amount and currency, posted within 10 minutes, is the same purchase. The answer is
+- **Duplicates:** a transaction with `source = capture` (confirmed or not: the second app can
+  notify after Bien), the same kind,
+  amount and currency, whose `captured_at` is within 10 minutes of this one, is the same purchase. The answer is
   `{ result: "merged", transaction }` and nothing is written.
 - Otherwise the category is the `merchant_categories` entry for the merchant key, or the fallback
   of that kind. The transaction is created in the default account with `needs_review = true`,
