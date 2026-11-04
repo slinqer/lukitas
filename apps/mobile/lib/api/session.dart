@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import '../capture_auto/capture_platform.dart';
 import '../home/home_cache.dart';
 import '../home/widget_sync.dart';
 import '../offline/pending_saves.dart';
@@ -405,6 +406,7 @@ class SessionController extends Notifier<SessionState> {
       }
     }
     await _forgetWidget();
+    _forgetCaptures();
     await _store.clear();
     state = SessionState.signedOut;
   }
@@ -420,8 +422,18 @@ class SessionController extends Notifier<SessionState> {
     await clearHomeCache(ref.read(homeCacheStoreProvider));
     await clearPendingSaves(ref.read(pendingSavesStoreProvider));
     await ref.read(widgetSyncProvider).signedOut().timeout(widgetWait, onTimeout: () {});
+    _forgetCaptures();
     await _store.clear();
     state = SessionState.signedOut;
+  }
+
+  /// The captures detected from notifications and still waiting to be sent belong to the account
+  /// that leaves: the next one must not receive them (Android's queue, `clearQueue`). Not waited
+  /// for, like the home cache: signing out never hangs on it.
+  void _forgetCaptures() {
+    unawaited(
+      ref.read(autoCapturePlatformProvider).clearQueue().then<void>((_) {}, onError: (Object _) {}),
+    );
   }
 
   /// The most a sign-out waits for the widget's storage.

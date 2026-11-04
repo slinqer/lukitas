@@ -716,5 +716,16 @@
   "settingsAssistantsRevokeTitle": "Revocare {name}?",
   "settingsAssistantsRevokeBody": "Entro pochi minuti non potrà più vedere né annotare nei tuoi conti. Puoi collegarlo di nuovo quando vuoi.",
   "settingsAssistantsRevokeConfirm": "Sì, revoca",
-  "settingsAssistantsRevoked": "Abbiamo revocato {name}."
+  "settingsAssistantsRevoked": "Abbiamo revocato {name}.",
+  "autoCaptureTitle": "Cattura automatica",
+  "autoCaptureLead": "Annota le tue spese e entrate dalle notifiche di Revolut e Google Wallet.",
+  "autoCaptureActive": "Attiva",
+  "autoCaptureExplainerBody": "Wambito legge le notifiche delle app che attivi (Revolut, Google Wallet) per annotare le tue spese e entrate. Il testo viene elaborato sul tuo telefono e non ne esce mai: al server arrivano solo l'importo, l'esercente, la data e la fonte. Puoi disattivarla quando vuoi.",
+  "autoCaptureExplainerConfirm": "Attiva l'accesso",
+  "autoCaptureMissing": "Manca il permesso",
+  "autoCaptureGrant": "Attiva",
+  "autoCaptureStuck": "Non te lo permette?",
+  "autoCaptureStepsTitle": "Impostazioni con restrizioni",
+  "autoCaptureSteps": "1. Tocca Apri info app.\n2. Tocca ⋮ in alto a destra e scegli Consenti impostazioni con restrizioni.\n3. Torna qui e tocca Attiva.",
+  "autoCaptureOpenInfo": "Apri info app"
 }

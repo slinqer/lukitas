@@ -3501,5 +3501,49 @@
         "type": "String"
       }
     }
+  },
+  "autoCaptureTitle": "Captura automática",
+  "@autoCaptureTitle": {
+    "description": "Settings: the automatic capture card's title, also the explainer's."
+  },
+  "autoCaptureLead": "Anota tus gastos e ingresos a partir de las notificaciones de Revolut y Google Wallet.",
+  "@autoCaptureLead": {
+    "description": "Settings: what automatic capture is for."
+  },
+  "autoCaptureActive": "Activa",
+  "@autoCaptureActive": {
+    "description": "Settings: automatic capture is on and has access."
+  },
+  "autoCaptureExplainerBody": "Wambito lee las notificaciones de las apps que actives (Revolut, Google Wallet) para anotar tus gastos e ingresos. El texto se procesa en tu teléfono y nunca sale de él: al servidor solo llegan el monto, el comercio, la fecha y la fuente. Puedes apagarlo cuando quieras.",
+  "@autoCaptureExplainerBody": {
+    "description": "Prominent disclosure before asking for notification access: which apps are read, that the text stays on the phone, what reaches the server."
+  },
+  "autoCaptureExplainerConfirm": "Activar acceso",
+  "@autoCaptureExplainerConfirm": {
+    "description": "The explainer's button: goes to Android's notification access screen."
+  },
+  "autoCaptureMissing": "Falta el permiso",
+  "@autoCaptureMissing": {
+    "description": "Settings: a source is on but Android's notification access is missing."
+  },
+  "autoCaptureGrant": "Activar",
+  "@autoCaptureGrant": {
+    "description": "Settings: opens Android's notification access screen."
+  },
+  "autoCaptureStuck": "¿No te deja?",
+  "@autoCaptureStuck": {
+    "description": "Settings: link shown after trying and still no access; opens the restricted-settings steps."
+  },
+  "autoCaptureStepsTitle": "Ajustes restringidos",
+  "@autoCaptureStepsTitle": {
+    "description": "The title of the restricted-settings steps sheet."
+  },
+  "autoCaptureSteps": "1. Toca Abrir información de la app.\n2. Toca ⋮ arriba a la derecha y elige Permitir ajustes restringidos.\n3. Vuelve aquí y toca Activar.",
+  "@autoCaptureSteps": {
+    "description": "Android 13+ APK installs: the steps to allow restricted settings, one per line."
+  },
+  "autoCaptureOpenInfo": "Abrir información de la app",
+  "@autoCaptureOpenInfo": {
+    "description": "Opens the app's info screen in Android."
   }
 }

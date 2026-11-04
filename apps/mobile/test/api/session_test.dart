@@ -7,9 +7,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:wambito/api/auth_api.dart';
 import 'package:wambito/api/passkeys.dart';
 import 'package:wambito/api/session.dart';
+import 'package:wambito/capture_auto/capture_platform.dart';
 import 'package:wambito/home/home_cache.dart';
 import 'package:wambito/home/widget_snapshot.dart';
 
+import '../capture_auto/fakes.dart';
 import '../entry/fakes.dart';
 import '../home/fakes.dart';
 
@@ -358,6 +360,26 @@ void main() {
       expect(container.read(sessionProvider).status, SessionStatus.signedOut);
       expect(await SessionStore().read(), isNull);
       expect(auth.calls.last, 'signOut email-token-0');
+    });
+
+    test('signOut clears the queue of captures waiting to be sent', () async {
+      mockStorage(token: 'email-token-0');
+      final capture = FakeAutoCapturePlatform();
+      final container = ProviderContainer(
+        overrides: [
+          authApiProvider.overrideWithValue(auth),
+          passkeysProvider.overrideWithValue(passkeys),
+          widgetStoreProvider.overrideWithValue(widget),
+          homeCacheStoreProvider.overrideWithValue(homeCache),
+          autoCapturePlatformProvider.overrideWithValue(capture),
+        ],
+      );
+      addTearDown(container.dispose);
+      final controller = await ready(container);
+      await controller.signOut();
+
+      expect(capture.callsNamed('clearQueue'), hasLength(1));
+      expect(container.read(sessionProvider).status, SessionStatus.signedOut);
     });
 
     test(

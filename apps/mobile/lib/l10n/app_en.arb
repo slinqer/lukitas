@@ -1913,5 +1913,16 @@
   "settingsAssistantsRevokeTitle": "Revoke {name}?",
   "settingsAssistantsRevokeBody": "Within a few minutes it will stop seeing and logging in your accounts. You can connect it again whenever you like.",
   "settingsAssistantsRevokeConfirm": "Yes, revoke",
-  "settingsAssistantsRevoked": "{name} revoked."
+  "settingsAssistantsRevoked": "{name} revoked.",
+  "autoCaptureTitle": "Automatic capture",
+  "autoCaptureLead": "Log your spending and income from Revolut and Google Wallet notifications.",
+  "autoCaptureActive": "On",
+  "autoCaptureExplainerBody": "Wambito reads the notifications of the apps you turn on (Revolut, Google Wallet) to log your spending and income. The text is processed on your phone and never leaves it: only the amount, the merchant, the date and the source reach the server. You can turn it off whenever you like.",
+  "autoCaptureExplainerConfirm": "Turn on access",
+  "autoCaptureMissing": "Permission missing",
+  "autoCaptureGrant": "Turn on",
+  "autoCaptureStuck": "Can't turn it on?",
+  "autoCaptureStepsTitle": "Restricted settings",
+  "autoCaptureSteps": "1. Tap Open app info.\n2. Tap ⋮ at the top right and choose Allow restricted settings.\n3. Come back here and tap Turn on.",
+  "autoCaptureOpenInfo": "Open app info"
 }

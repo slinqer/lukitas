@@ -10,6 +10,11 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
   settings, then `WambitoApp` (`lib/app.dart`). Router: `lib/router.dart` (go_router).
 - One folder per feature (`lib/home/`, `lib/capture/`, `lib/budgets/`, …); Riverpod 3 providers
   sit next to their feature; tests override them.
+- `lib/capture_auto/`: Settings → "Captura automática" (switch per source, explainer on the first
+  switch on, notification-access state, restricted-settings steps). `capture_platform.dart` wraps the
+  `wambito/capture` channel (`autoCapturePlatformProvider`; no channel ⇒ `status()` null ⇒ the section
+  hides); `SessionController.signOut`/`accountDeleted` call its `clearQueue()`. Tests fake it with
+  `test/capture_auto/fakes.dart`.
 - API: `lib/api/client.dart` (Dio, `WambitoApi`); headers from `lib/api/device.dart`
   (`x-wambito-timezone`, `-locale`, `-client: android`); server defaults to `https://app.wambito.com`,
   override `--dart-define=WAMBITO_SERVER=…` (`lib/api/server_address.dart`) or in Settings.
