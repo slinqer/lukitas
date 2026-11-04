@@ -19,22 +19,51 @@ async function seedAdmin(t: TestApp) {
     .values({ id: ADMIN_ID, name: "Admin", email: ADMIN_EMAIL, emailVerified: true });
 }
 
-/** Every admin route, so the "not found" cases cover them all (and an unknown admin path). */
-const ADMIN_ROUTES: [string, string][] = [
-  ["GET", "/v1/admin/me"],
-  ["POST", "/v1/admin/verify/options"],
-  ["POST", "/v1/admin/verify"],
-  ["POST", "/v1/admin/users/some-id/email-change"],
-  ["GET", "/v1/admin/nothing-here"],
-];
+const HTTP_METHODS = new Set(["get", "put", "post", "patch", "delete"]);
+
+/**
+ * Every admin route in the app's OpenAPI document, each method, path parameters filled with a
+ * dummy id, plus an admin path that does not exist: the "not found" cases cover them all, so a
+ * route added later is swept without editing this list.
+ */
+async function adminRoutes(t: TestApp): Promise<[string, string][]> {
+  const res = await t.request("GET", "/openapi.json");
+  expect(res.status).toBe(200);
+  const doc = (await res.json()) as { paths: Record<string, Record<string, unknown>> };
+  const routes = Object.entries(doc.paths)
+    .filter(([path]) => path.startsWith("/v1/admin/"))
+    .flatMap(([path, item]) =>
+      Object.keys(item)
+        .filter((method) => HTTP_METHODS.has(method))
+        .map((method): [string, string] => [
+          method.toUpperCase(),
+          path.replace(/\{[^}]+\}/g, "some-id"),
+        ]),
+    );
+  return [...routes, ["GET", "/v1/admin/nothing-here"]];
+}
 
 async function expectNotFoundEverywhere(t: TestApp, headers: Headers) {
-  for (const [method, path] of ADMIN_ROUTES) {
+  const routes = await adminRoutes(t);
+  // The sweep reaches the verify routes (which skip only the passkey step) and the actions.
+  for (const route of [
+    "POST /v1/admin/verify/options",
+    "POST /v1/admin/verify",
+    "GET /v1/admin/me",
+    "GET /v1/admin/audit",
+    "DELETE /v1/admin/users/some-id",
+    "POST /v1/admin/users/some-id/suspend",
+    "POST /v1/admin/users/some-id/reactivate",
+    "DELETE /v1/admin/users/some-id/passkeys/some-id",
+  ]) {
+    expect(routes.map(([method, path]) => `${method} ${path}`)).toContain(route);
+  }
+  for (const [method, path] of routes) {
     const res = await t.request(method, path, {
       headers,
-      ...(method === "POST" ? { body: {} } : {}),
+      ...(method === "GET" ? {} : { body: {} }),
     });
-    expect({ path, status: res.status }).toEqual({ path, status: 404 });
+    expect({ method, path, status: res.status }).toEqual({ method, path, status: 404 });
     expect(((await res.json()) as { code: string }).code).toBe("not_found");
   }
 }
