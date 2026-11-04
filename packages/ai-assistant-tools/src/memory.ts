@@ -235,6 +235,8 @@ export class MemoryWambito implements Wambito {
         recurrenceId: null,
         importId: null,
         source: i.source,
+        needsReview: false,
+        captureSource: null,
         createdAt: stamp,
         updatedAt: stamp,
       }),

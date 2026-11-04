@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
-import { categories, createDb, type Db, user, withUser } from "../src/index.ts";
+import { categories, createDb, type Db, merchantCategories, user, withUser } from "../src/index.ts";
 import { startTestDatabase } from "../src/testing.ts";
 
 let stop: () => Promise<void>;
@@ -61,5 +61,23 @@ describe("row-level security", () => {
       tx.update(categories).set({ name: "x" }).where(eq(categories.id, categoryOfB)).returning(),
     );
     expect(updated).toEqual([]);
+  });
+
+  test("the merchant category memory is isolated per user", async () => {
+    const [catA] = await withUser(app.db, "user-a", (tx) =>
+      tx.select().from(categories).where(eq(categories.userId, "user-a")),
+    );
+    const categoryId = catA?.id ?? "";
+    await withUser(app.db, "user-a", (tx) =>
+      tx
+        .insert(merchantCategories)
+        .values({ userId: "user-a", merchantKey: "mercadona", categoryId }),
+    );
+    const seenByB = await withUser(app.db, "user-b", (tx) => tx.select().from(merchantCategories));
+    expect(seenByB).toEqual([]);
+    const error = await withUser(app.db, "user-b", (tx) =>
+      tx.insert(merchantCategories).values({ userId: "user-a", merchantKey: "lidl", categoryId }),
+    ).catch((e: Error) => e);
+    expect(String((error as Error).cause)).toMatch(/row-level security/);
   });
 });

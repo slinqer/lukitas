@@ -36,6 +36,8 @@ const tx = (over: Partial<TransactionDto> & Pick<TransactionDto, "id">): Transac
   recurrenceId: null,
   importId: null,
   source: "app",
+  needsReview: false,
+  captureSource: null,
   createdAt: "2026-10-05T10:00:00.000Z",
   updatedAt: "2026-10-05T10:00:00.000Z",
   ...over,

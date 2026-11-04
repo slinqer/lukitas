@@ -313,6 +313,8 @@ function draftFrom(qc: QueryClient, input: NewTransaction): TransactionDto {
     recurrenceId: null,
     importId: null,
     source: input.source ?? "app",
+    needsReview: false,
+    captureSource: null,
     createdAt: now,
     updatedAt: now,
   };

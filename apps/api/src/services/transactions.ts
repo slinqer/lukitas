@@ -1,4 +1,4 @@
-import type { TransactionDto } from "@wambito/core";
+import type { CaptureSource, TransactionDto } from "@wambito/core";
 import { accounts, categories, type Tx, transactions } from "@wambito/db";
 import { and, eq, isNull } from "@wambito/db/orm";
 import { ApiError } from "../http/problem.ts";
@@ -18,6 +18,8 @@ export function toTransactionDto(row: TransactionRow): TransactionDto {
     recurrenceId: row.recurrenceId,
     importId: row.importId,
     source: row.source,
+    needsReview: row.needsReview,
+    captureSource: row.captureSource as CaptureSource | null,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   };

@@ -499,7 +499,10 @@ export interface components {
             /** Format: uuid */
             importId: string | null;
             /** @enum {string} */
-            source: "app" | "web" | "widget" | "mcp" | "import" | "recurrence";
+            source: "app" | "web" | "widget" | "mcp" | "import" | "recurrence" | "capture";
+            needsReview: boolean;
+            /** @enum {string|null} */
+            captureSource: "revolut" | "google_wallet" | null;
             createdAt: string;
             updatedAt: string;
         };
@@ -552,6 +555,8 @@ export interface components {
             /** @enum {string} */
             status?: "paid" | "pending";
             note?: string | null;
+            /** @enum {boolean} */
+            needsReview?: false;
         };
         Recurrence: {
             /** Format: uuid */

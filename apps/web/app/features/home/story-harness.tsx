@@ -105,6 +105,8 @@ function transaction(
     recurrenceId: null,
     importId: null,
     source: "web",
+    needsReview: false,
+    captureSource: null,
     createdAt: `${date}T09:00:00.000Z`,
     updatedAt: `${date}T09:00:00.000Z`,
   };

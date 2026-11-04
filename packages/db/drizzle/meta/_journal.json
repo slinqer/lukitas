@@ -57,6 +57,13 @@
       "when": 1793730342371,
       "tag": "0007_guest_domain",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1793822411482,
+      "tag": "0008_automatic_capture",
+      "breakpoints": true
     }
   ]
 }

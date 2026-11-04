@@ -21,6 +21,8 @@ function tx(id: string, date: string, amount: number, status: "paid" | "pending"
     recurrenceId: null,
     importId: null,
     source: "web",
+    needsReview: false,
+    captureSource: null,
     createdAt: "2026-10-01T10:00:00.000Z",
     updatedAt: "2026-10-01T10:00:00.000Z",
   } satisfies TransactionDto;
