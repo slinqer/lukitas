@@ -713,5 +713,21 @@
     "paid": "Pago",
     "hint": "Toca para o editar ou eliminar.",
     "hint_pending": "Toca para o editar ou eliminar; Pendente marca-o como pago."
+  },
+  "confirm_email": {
+    "meta_title": "Confirmar o teu novo email · Wambito",
+    "title": "Confirma o teu novo email",
+    "lead": "Toca no botão para alterar o email da tua conta Wambito.",
+    "confirm": "Confirmar o meu novo email",
+    "confirming": "A confirmar…",
+    "done_title": "Pronto. Entra com o teu novo email.",
+    "done_lead": "Por segurança, terminámos as tuas sessões abertas. Entra de novo com o email novo.",
+    "sign_in": "Ir para a entrada",
+    "expired_title": "Esta ligação já não funciona",
+    "expired_lead": "Expirou ou já foi usada. Se ainda precisas da alteração, escreve para privacy@wambito.com.",
+    "taken_title": "Esse email já tem uma conta",
+    "taken_lead": "Não podemos alterá-lo para um email que outra conta já usa. Escreve para privacy@wambito.com.",
+    "no_token_title": "A ligação está incompleta",
+    "no_token_lead": "Abre a ligação completa do email que te enviámos."
   }
 }

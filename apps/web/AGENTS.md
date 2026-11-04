@@ -18,6 +18,11 @@ assistants, and a fake-backend demo (`/demo/*`).
   `AccountScreen` + `ActionSheet` (`/admin/users/:id`: the account and its actions; a sheet's
   fields live in the component, so a reason survives re-verification). Stories `Admin/*`,
   web-only, not in parity.json.
+- `/confirm-email?token=…` (`routes/confirm-email.tsx`, `features/confirm-email/`, under the app
+  layout, public): the page of an admin-started email change. It posts the token only when the
+  person taps the button (a mail scanner opening the link spends nothing), then sends them to
+  sign-in (every session was closed). Copy in `confirm_email.*` in all four languages; story
+  `ConfirmEmail`, web-only, not in parity.json.
 - Storage: only `readStored/writeStored/removeStored` in `app/lib/stored.ts` (keys
   `wambito.<name>`, `sessionArea()` for session data).
 - i18n: `app/i18n/messages/{es,en,it,pt}.json` public pages, `app.{es,en,it,pt}.json` the rest.

@@ -27,6 +27,8 @@ export default [
         layout("routes/app-layout.tsx", [
           route("sign-in", "routes/sign-in.tsx"),
           route("auth/verify", "routes/auth.verify.tsx"),
+          // The link of an email change (admin panel spec §5.2): works signed in or not.
+          route("confirm-email", "routes/confirm-email.tsx"),
           // After an email sign-in: "¿Entrar con tu huella la próxima vez?", once per user per device.
           route("passkey-offer", "routes/passkey-offer.tsx"),
           route("welcome/:step?", "routes/welcome.tsx"),

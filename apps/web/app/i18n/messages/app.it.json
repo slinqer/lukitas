@@ -713,5 +713,21 @@
     "paid": "Pagato",
     "hint": "Toccalo per modificarlo o eliminarlo.",
     "hint_pending": "Toccalo per modificarlo o eliminarlo; In sospeso lo segna come pagato."
+  },
+  "confirm_email": {
+    "meta_title": "Conferma la tua nuova email · Wambito",
+    "title": "Conferma la tua nuova email",
+    "lead": "Tocca il pulsante per cambiare l'email del tuo account Wambito.",
+    "confirm": "Conferma la mia nuova email",
+    "confirming": "Conferma in corso…",
+    "done_title": "Fatto. Accedi con la tua nuova email.",
+    "done_lead": "Per sicurezza abbiamo chiuso le tue sessioni aperte. Accedi di nuovo con la nuova email.",
+    "sign_in": "Vai all'accesso",
+    "expired_title": "Questo link non è più valido",
+    "expired_lead": "È scaduto o è già stato usato. Se ti serve ancora la modifica, scrivi a privacy@wambito.com.",
+    "taken_title": "Questa email ha già un account",
+    "taken_lead": "Non possiamo cambiarla con un'email che un altro account usa già. Scrivi a privacy@wambito.com.",
+    "no_token_title": "Il link è incompleto",
+    "no_token_lead": "Apri il link completo dell'email che ti abbiamo inviato."
   }
 }
