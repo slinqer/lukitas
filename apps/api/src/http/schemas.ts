@@ -9,7 +9,9 @@
  */
 import { z } from "@hono/zod-openapi";
 import {
+  captureResultDto,
   categoryDto,
+  createCaptureSchema,
   createCategorySchema,
   createRecurrenceSchema,
   createTransactionSchema,
@@ -43,6 +45,9 @@ export const CreateTransactionsBatch = createTransactionsBatchSchema
 export const DeleteTransactionsBatch = deleteTransactionsBatchSchema.meta({
   id: "DeleteTransactionsBatch",
 });
+
+export const CreateCapture = createCaptureSchema.meta({ id: "CreateCapture" });
+export const CaptureResult = captureResultDto.meta({ id: "CaptureResult" });
 
 export const Category = categoryDto.meta({ id: "Category" });
 export const CreateCategory = createCategorySchema.meta({ id: "CreateCategory" });

@@ -147,7 +147,8 @@ export function categoryRoutes(deps: AppDeps) {
               : null;
         const [row] = await tx
           .update(categories)
-          .set({ ...fields, archivedAt })
+          // Archiving clears `system_key` (a capture then makes a new fallback).
+          .set({ ...fields, archivedAt, ...(archived ? { systemKey: null } : {}) })
           .where(eq(categories.id, id))
           .returning();
         // Its active recurrences end today, and their unpaid pending rows from today on go, so

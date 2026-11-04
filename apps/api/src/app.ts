@@ -9,6 +9,7 @@ import { notFound, onError, validationHook } from "./http/problem.ts";
 import { assistantScopes } from "./http/scopes.ts";
 import { requireUser } from "./http/session.ts";
 import { assistantRoutes } from "./routes/assistants.ts";
+import { captureRoutes } from "./routes/captures.ts";
 import { categoryRoutes } from "./routes/categories.ts";
 import { importRoutes } from "./routes/imports.ts";
 import { meRoutes } from "./routes/me.ts";
@@ -66,6 +67,7 @@ export function createApp(deps: AppDeps) {
   app.route("/", assistantRoutes(deps));
   app.route("/", categoryRoutes(deps));
   app.route("/", transactionRoutes(deps));
+  app.route("/", captureRoutes(deps));
   app.route("/", recurrenceRoutes(deps));
   app.route("/", summaryRoutes(deps));
   app.route("/", reportRoutes(deps));

@@ -13,6 +13,9 @@ Hono + Better Auth + Drizzle (`@wambito/db`), OpenAPI document "Wambito API". Ev
   MCP_URL). `src/http/scopes.ts`: OAuth scopes (`finance:read`, …), enforced here, not in the MCP.
 - `src/http/client-headers.ts`: `clientHeader`. `src/routes/*.ts`: the routes.
   `src/services/`: domain services. `src/emails/sign-in.ts`: sign-in mail copy (es/en/it/pt).
+- `POST /v1/captures` (`src/routes/captures.ts`, `src/services/captures.ts`): saves a bank-notification
+  capture to review; 10-minute duplicate merge, merchant → category memory, `system_key = other`
+  fallback categories; the Idempotency-Key is required.
 - `src/scripts/seed.ts`: creates `dev@wambito.test`.
 
 ## Talks to
