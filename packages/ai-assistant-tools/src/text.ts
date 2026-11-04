@@ -36,6 +36,8 @@ interface Phrases {
   recurringUpdated(name: string): string;
   recurringStopped(name: string): string;
   pending: string;
+  toReview: string;
+  fromSource(source: "revolut" | "google_wallet"): string;
 }
 
 const STATES: Record<Locale, Record<State, string>> = {
@@ -44,6 +46,8 @@ const STATES: Record<Locale, Record<State, string>> = {
   it: { ok: "in linea", near: "vicino al limite", over: "superato" },
   pt: { ok: "dentro", near: "perto do limite", over: "ultrapassado" },
 };
+
+const SOURCES = { revolut: "Revolut", google_wallet: "Google Wallet" } as const;
 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
@@ -80,6 +84,8 @@ const PHRASES: Record<Locale, Phrases> = {
     recurringUpdated: (n) => `Actualicé el recurrente ${n}.`,
     recurringStopped: (n) => `Detuve el recurrente ${n}.`,
     pending: "pendiente",
+    toReview: "por revisar",
+    fromSource: (s) => `de ${SOURCES[s]}`,
   },
   en: {
     overview: (p) =>
@@ -113,6 +119,8 @@ const PHRASES: Record<Locale, Phrases> = {
     recurringUpdated: (n) => `Updated the recurring transaction ${n}.`,
     recurringStopped: (n) => `Stopped the recurring transaction ${n}.`,
     pending: "pending",
+    toReview: "to review",
+    fromSource: (s) => `from ${SOURCES[s]}`,
   },
   it: {
     overview: (p) =>
@@ -146,6 +154,8 @@ const PHRASES: Record<Locale, Phrases> = {
     recurringUpdated: (n) => `Ho aggiornato il ricorrente ${n}.`,
     recurringStopped: (n) => `Ho fermato il ricorrente ${n}.`,
     pending: "in sospeso",
+    toReview: "da rivedere",
+    fromSource: (s) => `da ${SOURCES[s]}`,
   },
   pt: {
     overview: (p) =>
@@ -179,6 +189,8 @@ const PHRASES: Record<Locale, Phrases> = {
     recurringUpdated: (n) => `Atualizei o recorrente ${n}.`,
     recurringStopped: (n) => `Parei o recorrente ${n}.`,
     pending: "pendente",
+    toReview: "por rever",
+    fromSource: (s) => `do ${SOURCES[s]}`,
   },
 };
 

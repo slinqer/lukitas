@@ -144,6 +144,7 @@ export class MemoryWambito implements Wambito {
           (!q.to || t.date <= q.to) &&
           (!q.categoryId || t.categoryId === q.categoryId) &&
           (!q.status || t.status === q.status) &&
+          (q.needsReview === undefined || t.needsReview === q.needsReview) &&
           (!needle ||
             normalizeName(t.name).includes(needle) ||
             normalizeName(t.note ?? "").includes(needle)),

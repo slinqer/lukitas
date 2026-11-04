@@ -128,6 +128,10 @@ export const listTransactions = defineTool({
       .enum(["paid", "pending"])
       .optional()
       .describe("pending: expected but not paid yet (e.g. upcoming recurring bills)"),
+    needsReview: z
+      .boolean()
+      .optional()
+      .describe("true: only transactions detected from bank notifications and not confirmed yet"),
     cursor: z.string().optional().describe("nextCursor from the previous page"),
     limit: z.number().int().min(1).max(PAGE_LIMIT).default(50),
   }),
@@ -151,6 +155,7 @@ export const listTransactions = defineTool({
         ? findCategory(input.category, categories, { archived: true }).id
         : undefined,
       status: input.status,
+      needsReview: input.needsReview,
       q: input.text,
       cursor: input.cursor,
       limit: input.limit,
@@ -162,7 +167,7 @@ export const listTransactions = defineTool({
       p.transactions(items.length, page.nextCursor !== null),
       ...items.map(
         (t) =>
-          `${t.date} ${quote(t.name)} ${t.kind === "expense" ? "-" : "+"}${t.formatted} ${quote(t.category)}${t.status === "pending" ? ` (${p.pending})` : ""} [${t.id}]`,
+          `${t.date} ${quote(t.name)} ${t.kind === "expense" ? "-" : "+"}${t.formatted} ${quote(t.category)}${t.status === "pending" ? ` (${p.pending})` : ""}${t.needsReview ? ` (${p.toReview})` : ""}${t.captureSource ? ` (${p.fromSource(t.captureSource)})` : ""} [${t.id}]`,
       ),
     ];
     return { structured: { items, nextCursor: page.nextCursor }, text: lines.join("\n") };
