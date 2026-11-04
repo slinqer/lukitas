@@ -217,7 +217,7 @@
       },
       "privacy": {
         "q": "Cosa fate con i miei dati?",
-        "a": "I tuoi dati viaggiano cifrati e non li vendiamo né li condividiamo mai con gli inserzionisti. Puoi esportarli o cancellare il tuo account quando vuoi. Il codice è open source: chiunque può leggere il codice che li gestisce."
+        "a": "I tuoi dati viaggiano cifrati e non li vendiamo né li condividiamo mai con gli inserzionisti. Puoi esportarli o cancellare il tuo account quando vuoi. Il codice è open source: chiunque può leggere il codice che li gestisce. I dettagli sono nell’<privacy>informativa sulla privacy</privacy>."
       },
       "free": {
         "q": "È gratis?",
@@ -238,7 +238,8 @@
       "language": "Lingua",
       "privacy": "Privacy",
       "copyright": "© {year} Wambito",
-      "roadmap": "In arrivo"
+      "roadmap": "In arrivo",
+      "delete_account": "Elimina account"
     },
     "not_found": {
       "title": "Questa pagina non esiste",
@@ -305,7 +306,7 @@
     "delete_account": {
       "meta": {
         "title": "Wambito · Elimina il tuo account",
-        "description": "Come eliminare il tuo account Wambito e i dati che conserva, dall'app o via email."
+        "description": "Come eliminare il tuo account Wambito e i dati che conserva, dall’app o via email."
       },
       "title": "Elimina il tuo account",
       "version": "Versione del 4 novembre 2026",

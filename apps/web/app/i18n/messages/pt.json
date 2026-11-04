@@ -217,7 +217,7 @@
       },
       "privacy": {
         "q": "O que fazem com os meus dados?",
-        "a": "Os teus dados viajam cifrados e nunca os vendemos nem os partilhamos com anunciantes. Podes exportá-los ou apagar a tua conta quando quiseres. O código é aberto: qualquer pessoa pode ler o código que os trata."
+        "a": "Os teus dados viajam cifrados e nunca os vendemos nem os partilhamos com anunciantes. Podes exportá-los ou apagar a tua conta quando quiseres. O código é aberto: qualquer pessoa pode ler o código que os trata. Os detalhes estão na <privacy>política de privacidade</privacy>."
       },
       "free": {
         "q": "É grátis?",
@@ -238,7 +238,8 @@
       "language": "Idioma",
       "privacy": "Privacidade",
       "copyright": "© {year} Wambito",
-      "roadmap": "O que vem aí"
+      "roadmap": "O que vem aí",
+      "delete_account": "Apagar conta"
     },
     "not_found": {
       "title": "Esta página não existe",

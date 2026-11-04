@@ -74,6 +74,43 @@ const ROADMAP = {
   },
 } as const;
 
+/** The privacy policy and account deletion pages, per language, as the landing-only release ships them. */
+const LEGAL = {
+  es: {
+    privacy: { path: "/privacy", title: "Política de privacidad", link: "Privacidad" },
+    deleteAccount: { path: "/delete-account", title: "Borrar tu cuenta", link: "Borrar cuenta" },
+    faqLink: "política de privacidad",
+  },
+  en: {
+    privacy: { path: "/en/privacy", title: "Privacy policy", link: "Privacy" },
+    deleteAccount: {
+      path: "/en/delete-account",
+      title: "Delete your account",
+      link: "Delete account",
+    },
+    faqLink: "privacy policy",
+  },
+  it: {
+    privacy: { path: "/it/privacy", title: "Informativa sulla privacy", link: "Privacy" },
+    deleteAccount: {
+      path: "/it/delete-account",
+      title: "Elimina il tuo account",
+      link: "Elimina account",
+    },
+    faqLink: "informativa sulla privacy",
+  },
+  pt: {
+    privacy: { path: "/pt/privacy", title: "Política de privacidade", link: "Privacidade" },
+    deleteAccount: {
+      path: "/pt/delete-account",
+      title: "Apagar a tua conta",
+      link: "Apagar conta",
+    },
+    faqLink: "política de privacidade",
+  },
+} as const;
+const LANDING = { es: "/", en: "/en", it: "/it", pt: "/pt" } as const;
+
 /** Axe with the WCAG A/AA rule sets (2.0 to 2.2) plus best practices. */
 async function expectNoA11yViolations(page: Page) {
   const results = await new AxeBuilder({ page })
@@ -511,6 +548,54 @@ for (const l of LOCALES) {
   });
 }
 
+for (const locale of ["es", "en", "it", "pt"] as const) {
+  const legal = LEGAL[locale];
+
+  test.describe(`landing-only legal pages (${locale})`, () => {
+    for (const key of ["privacy", "deleteAccount"] as const) {
+      const entry = legal[key];
+
+      test(`${entry.path} is prerendered, 200, and the footer leads to it`, async ({
+        page,
+        request,
+      }) => {
+        const response = await request.get(entry.path);
+        expect(response.status()).toBe(200);
+        expect(await response.text()).toContain(`<html lang="${locale}"`);
+
+        await page.goto(LANDING[locale]);
+        await page
+          .getByRole("contentinfo")
+          .getByRole("link", { name: entry.link, exact: true })
+          .click();
+        await expect(page).toHaveURL(new RegExp(`${entry.path}$`));
+        await expect(page.getByRole("heading", { level: 1 })).toHaveText(entry.title);
+        await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+          "href",
+          `${ORIGIN}${entry.path}`,
+        );
+      });
+    }
+
+    test("the FAQ's privacy answer links to the policy", async ({ page }) => {
+      await page.goto(LANDING[locale]);
+      await expect(page.locator("#faq a", { hasText: legal.faqLink })).toHaveAttribute(
+        "href",
+        legal.privacy.path,
+      );
+    });
+  });
+}
+
+test("landing-only: the language switch on the privacy policy keeps the page", async ({ page }) => {
+  await page.goto("/it/privacy");
+  const pt = page.getByRole("contentinfo").getByRole("link", { name: "Português" });
+  await expect(pt).toHaveAttribute("href", "/pt/privacy");
+  await pt.click();
+  await expect(page).toHaveURL(/\/pt\/privacy$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(LEGAL.pt.privacy.title);
+});
+
 test.describe("landing-only build output", () => {
   test("ships only the landing, a 404 page and the static files", () => {
     expect(readdirSync(CLIENT).sort()).toEqual(
@@ -535,14 +620,25 @@ test.describe("landing-only build output", () => {
         "pt",
         "robots.txt",
         "roadmap",
+        "privacy",
+        "delete-account",
         "sitemap.xml",
       ].sort(),
     );
     for (const language of ["en", "it", "pt"]) {
-      expect(readdirSync(`${CLIENT}${language}`).sort()).toEqual(["index.html", "roadmap"]);
+      expect(readdirSync(`${CLIENT}${language}`).sort()).toEqual([
+        "delete-account",
+        "index.html",
+        "privacy",
+        "roadmap",
+      ]);
+      expect(readdirSync(`${CLIENT}${language}/privacy`)).toEqual(["index.html"]);
+      expect(readdirSync(`${CLIENT}${language}/delete-account`)).toEqual(["index.html"]);
       expect(readdirSync(`${CLIENT}${language}/roadmap`)).toEqual(["index.html"]);
     }
     expect(readdirSync(`${CLIENT}roadmap`)).toEqual(["index.html"]);
+    expect(readdirSync(`${CLIENT}privacy`)).toEqual(["index.html"]);
+    expect(readdirSync(`${CLIENT}delete-account`)).toEqual(["index.html"]);
     expect(existsSync(`${CLIENT}__spa-fallback.html`)).toBe(false);
   });
 
