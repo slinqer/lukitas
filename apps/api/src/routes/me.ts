@@ -26,6 +26,7 @@ import { jsonBody, jsonResponse, problems } from "../http/openapi.ts";
 import { ApiError } from "../http/problem.ts";
 import { router } from "../http/router.ts";
 import { UpdateProfile } from "../http/schemas.ts";
+import { deleteAccount } from "../services/account.ts";
 import { userToday } from "../services/time.ts";
 import { defaultAccount, toTransactionDto } from "../services/transactions.ts";
 
@@ -361,8 +362,7 @@ export function meRoutes(deps: AppDeps) {
       responses: { 204: { description: "Account and all data permanently deleted" } },
     }),
     async (c) => {
-      // Every user-owned row (domain data, sessions, passkeys, OAuth grants) cascades from `user`.
-      await deps.db.delete(user).where(eq(user.id, c.get("userId")));
+      await deleteAccount(deps.db, c.get("userId"));
       return c.body(null, 204);
     },
   );
