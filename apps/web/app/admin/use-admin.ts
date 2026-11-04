@@ -29,6 +29,8 @@ export type VerificationStatus = "idle" | "busy" | "failed" | "no_passkey";
 export interface AdminSnapshot {
   state: AdminState;
   verifiedUntil?: Date;
+  /** The signed-in admin's own account id (`GET /v1/admin/me`), once known. */
+  adminId?: string;
   verification: VerificationStatus;
   /** A failure that is none of the above (no connection, a 5xx): the route's error boundary shows it. */
   error?: unknown;
@@ -98,6 +100,7 @@ export function createAdminSession({ client, authenticate }: AdminDeps): AdminSe
       const { data } = await client.GET("/v1/admin/me");
       set({
         state: "ready",
+        ...(data?.id ? { adminId: data.id } : {}),
         verifiedUntil: new Date(data?.verifiedUntil ?? 0),
         verification: "idle",
       });
@@ -203,6 +206,8 @@ export const AdminSessionContext = createContext<AdminSession | null>(null);
 export interface UseAdmin {
   state: AdminState;
   verifiedUntil?: Date;
+  /** The signed-in admin's own account id, once the session is ready. */
+  adminId?: string;
   verification: VerificationStatus;
   verify(): Promise<void>;
   cancel(): void;
@@ -227,6 +232,7 @@ export function useAdmin(): UseAdmin {
   return {
     state: snapshot.state,
     ...(snapshot.verifiedUntil ? { verifiedUntil: snapshot.verifiedUntil } : {}),
+    ...(snapshot.adminId ? { adminId: snapshot.adminId } : {}),
     verification: snapshot.verification,
     verify: session.verify,
     cancel: session.cancel,

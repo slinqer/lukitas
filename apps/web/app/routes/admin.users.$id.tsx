@@ -1,7 +1,8 @@
-/**
- * `/admin/users/:id`: one account and its actions, built on the admin layout's `useAdmin`
- * (Task 11). Until then, nothing but the layout's verification.
- */
+import { useParams } from "react-router";
+import { AccountScreen } from "../admin/AccountScreen.tsx";
+
+/** `/admin/users/:id`: one account and the admin's actions on it, under the admin layout. */
 export default function AdminUserRoute() {
-  return null;
+  const { id = "" } = useParams();
+  return <AccountScreen key={id} userId={id} />;
 }

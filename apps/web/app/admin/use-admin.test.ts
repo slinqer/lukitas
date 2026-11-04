@@ -67,6 +67,14 @@ describe("the admin session", () => {
     expect(admin.getSnapshot()).toMatchObject({ state: "ready", verifiedUntil: new Date(UNTIL) });
   });
 
+  it("knows the admin's own account id once ready (own account: no delete or suspend)", async () => {
+    const { admin } = session({
+      "GET /v1/admin/me": () => json(200, { id: "admin-1", verifiedUntil: UNTIL }),
+    });
+    await admin.load();
+    expect(admin.getSnapshot().adminId).toBe("admin-1");
+  });
+
   it("is not_found when the API answers 404 (not an admin, or no admins at all)", async () => {
     const { admin } = session({});
     await admin.load();

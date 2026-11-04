@@ -12,13 +12,22 @@ export interface AuditListProps {
   /** The last "Load more" failed. */
   moreFailed: boolean;
   onMore(): void;
+  /** The heading (and the list's name); the panel-wide log's by default. */
+  title?: string;
 }
 
 /**
  * The audit log, newest first, 50 a page (spec §6): what was done in words (never the raw action
  * code), when, to which account and why. "Load more" follows the API's cursor.
  */
-export function AuditList({ entries, hasMore, loadingMore, moreFailed, onMore }: AuditListProps) {
+export function AuditList({
+  entries,
+  hasMore,
+  loadingMore,
+  moreFailed,
+  onMore,
+  title,
+}: AuditListProps) {
   const t = useTranslations("admin.home.audit");
   const when = new Intl.DateTimeFormat(useLocale(), { dateStyle: "medium", timeStyle: "short" });
   const action = (code: string) => (t.has(`actions.${code}`) ? t(`actions.${code}`) : code);
@@ -31,7 +40,7 @@ export function AuditList({ entries, hasMore, loadingMore, moreFailed, onMore }:
         id="admin-audit-title"
         className="m-0 font-display text-[20px] leading-tight font-bold text-ink"
       >
-        {t("title")}
+        {title ?? t("title")}
       </h2>
       {entries.length === 0 ? (
         <p className="m-0 text-ink-muted">{t("empty")}</p>

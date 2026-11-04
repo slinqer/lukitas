@@ -1,21 +1,18 @@
 import { useEffect, useState } from "react";
-import { Outlet } from "react-router";
 import { createTranslator } from "use-intl/core";
+import { AdminGate } from "../admin/AdminGate.tsx";
 import { AdminMessages } from "../admin/AdminMessages.tsx";
 import {
   AdminSessionContext,
   browserAuthenticate,
   createAdminSession,
-  useAdmin,
 } from "../admin/use-admin.ts";
-import { VerifyScreen } from "../admin/VerifyScreen.tsx";
 import { ApiProvider, useApi } from "../api/ApiProvider.tsx";
 import { requireSession } from "../auth/session.ts";
 import { ScreenError } from "../features/home/ScreenError.tsx";
 import adminEs from "../i18n/messages/admin.es.json" with { type: "json" };
 import { ToastProvider } from "../ui/Toast.tsx";
 import type { Route } from "./+types/admin";
-import NotFoundRoute from "./not-found.tsx";
 
 export const meta = () => {
   const t = createTranslator({ locale: "es", messages: adminEs, namespace: "admin" });
@@ -71,23 +68,6 @@ function AdminSessionProvider({ children }: { children: React.ReactNode }) {
     return () => session.cancel();
   }, [session]);
   return <AdminSessionContext value={session}>{children}</AdminSessionContext>;
-}
-
-function AdminGate() {
-  const admin = useAdmin();
-  if (admin.state === "loading") return <div className="lk-screen min-h-dvh" />;
-  if (admin.state === "not_found") return <NotFoundRoute />;
-  const verifying = admin.state === "needs_verification";
-  return (
-    <>
-      {verifying && (
-        <VerifyScreen verification={admin.verification} onVerify={() => void admin.verify()} />
-      )}
-      <div hidden={verifying}>
-        <Outlet />
-      </div>
-    </>
-  );
 }
 
 /** A failed session check (no connection, a server error): what went wrong and a retry. */
