@@ -1,11 +1,15 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import type { AuthenticationResponseJSON } from "@simplewebauthn/server";
+import { adminAudit } from "@wambito/db";
+import { and, desc, eq, lt } from "@wambito/db/orm";
 import type { Auth } from "../auth.ts";
 import type { AppDeps } from "../deps.ts";
 import type { AdminEnv } from "../env.ts";
 import { ADMIN_VERIFY_MS, requireAdmin } from "../http/admin.ts";
 import { jsonBody, jsonResponse, problems } from "../http/openapi.ts";
-import { notFound, validationHook } from "../http/problem.ts";
+import { ApiError, notFound, validationHook } from "../http/problem.ts";
+import { lookupUser } from "../services/admin/lookup.ts";
+import { adminMetrics } from "../services/admin/metrics.ts";
 import { adminVerifyOptions, verifyAdminAssertion } from "../services/admin/verify.ts";
 
 /** The reason an admin gives for an action (spec §5): required, 1–300 characters. */
@@ -20,6 +24,74 @@ const AdminMe = z
     verifiedUntil: z.string(),
   })
   .openapi("AdminMe");
+
+const AdminUser = z
+  .object({
+    id: z.string(),
+    /** `null` for a guest. */
+    email: z.string().nullable(),
+    isAnonymous: z.boolean(),
+    locale: z.string(),
+    createdAt: z.string(),
+    lastActiveAt: z.string().nullable(),
+    suspendedAt: z.string().nullable(),
+    sessionCount: z.number().int(),
+    passkeys: z.array(
+      z.object({
+        id: z.string(),
+        name: z.string().nullable(),
+        deviceType: z.string(),
+        createdAt: z.string().nullable(),
+      }),
+    ),
+    assistants: z.array(
+      z.object({ clientId: z.string(), name: z.string(), consentedAt: z.string() }),
+    ),
+  })
+  .openapi("AdminUser");
+
+const AdminMetrics = z
+  .object({
+    total: z.number().int(),
+    withEmail: z.number().int(),
+    guests: z.number().int(),
+    active30d: z.number().int(),
+    suspended: z.number().int(),
+    signups7d: z.number().int(),
+    signupsPrev7d: z.number().int(),
+    weekly: z.array(
+      z.object({
+        /** Monday of the ISO week (UTC), YYYY-MM-DD. */
+        weekStart: z.string(),
+        withEmail: z.number().int(),
+        guests: z.number().int(),
+      }),
+    ),
+  })
+  .openapi("AdminMetrics");
+
+const AuditEntry = z
+  .object({
+    id: z.string(),
+    at: z.string(),
+    adminUserId: z.string().nullable(),
+    action: z.string(),
+    targetUserId: z.string().nullable(),
+    emailHash: z.string().nullable(),
+    reason: z.string().nullable(),
+    detail: z.record(z.string(), z.string()).nullable(),
+  })
+  .openapi("AdminAuditEntry");
+
+const AuditPage = z
+  .object({
+    entries: z.array(AuditEntry),
+    /** Pass as `before` for the next page; `null` at the end. */
+    next: z.string().nullable(),
+  })
+  .openapi("AdminAuditPage");
+
+const AUDIT_PAGE = 50;
 
 const Credential = z.object({
   id: z.string(),
@@ -124,6 +196,101 @@ export function adminRoutes(deps: AppDeps, auth: Auth) {
         },
         200,
       );
+    },
+  );
+
+  app.openapi(
+    createRoute({
+      method: "get",
+      path: "/v1/admin/users",
+      operationId: "adminLookupUser",
+      tags,
+      middleware: [verified] as const,
+      request: {
+        query: z
+          .object({ email: z.string().min(1).optional(), id: z.string().min(1).optional() })
+          .refine((q) => (q.email === undefined) !== (q.id === undefined), {
+            message: "Give exactly one of email or id",
+          }),
+      },
+      responses: {
+        200: jsonResponse(AdminUser, "The account"),
+        ...problems(401, 404, 422),
+      },
+    }),
+    async (c) => {
+      const q = c.req.valid("query");
+      const found = await lookupUser(
+        deps.db,
+        q.email !== undefined ? { email: q.email } : { id: q.id ?? "" },
+      );
+      if (!found) throw new ApiError(404, "user_not_found", "No account matches");
+      return c.json(found, 200);
+    },
+  );
+
+  app.openapi(
+    createRoute({
+      method: "get",
+      path: "/v1/admin/metrics",
+      operationId: "getAdminMetrics",
+      tags,
+      middleware: [verified] as const,
+      responses: {
+        200: jsonResponse(AdminMetrics, "Account counts and sign-ups per week"),
+        ...problems(401, 404),
+      },
+    }),
+    async (c) => {
+      const now = (deps.now ?? (() => new Date()))();
+      return c.json(await adminMetrics(deps.db, now), 200);
+    },
+  );
+
+  app.openapi(
+    createRoute({
+      method: "get",
+      path: "/v1/admin/audit",
+      operationId: "listAdminAudit",
+      tags,
+      middleware: [verified] as const,
+      request: {
+        query: z.object({
+          before: z.string().datetime({ offset: true }).optional(),
+          targetUserId: z.string().min(1).optional(),
+        }),
+      },
+      responses: {
+        200: jsonResponse(AuditPage, "The audit log, newest first"),
+        ...problems(401, 404, 422),
+      },
+    }),
+    async (c) => {
+      const { before, targetUserId } = c.req.valid("query");
+      const rows = await deps.db
+        .select()
+        .from(adminAudit)
+        .where(
+          and(
+            before ? lt(adminAudit.at, new Date(before)) : undefined,
+            targetUserId ? eq(adminAudit.targetUserId, targetUserId) : undefined,
+          ),
+        )
+        .orderBy(desc(adminAudit.at), desc(adminAudit.id))
+        .limit(AUDIT_PAGE + 1);
+      const page = rows.slice(0, AUDIT_PAGE);
+      const entries = page.map((r) => ({
+        id: r.id,
+        at: r.at.toISOString(),
+        adminUserId: r.adminUserId,
+        action: r.action,
+        targetUserId: r.targetUserId,
+        emailHash: r.emailHash,
+        reason: r.reason,
+        detail: (r.detail as Record<string, string> | null) ?? null,
+      }));
+      const last = entries.at(-1);
+      return c.json({ entries, next: rows.length > AUDIT_PAGE && last ? last.at : null }, 200);
     },
   );
 
