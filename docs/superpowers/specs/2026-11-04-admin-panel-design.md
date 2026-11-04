@@ -1,7 +1,7 @@
 # Wambito: the admin panel (account management)
 
 - **Date:** 2026-11-04
-- **Status:** draft for review.
+- **Status:** approved by the founder on 2026-11-04.
 - **Reviewed with the founder:** every section, in conversation on 2026-11-04.
 - **Why now:** Wambito opens sign-up to everyone once this panel works (the `SIGN_IN_ALLOWLIST`
   goes, as a separate step). The privacy page promises that account deletion can be requested by
