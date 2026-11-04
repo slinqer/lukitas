@@ -57,6 +57,13 @@
       "when": 1793730342371,
       "tag": "0007_guest_domain",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1793808983891,
+      "tag": "0008_admin",
+      "breakpoints": true
     }
   ]
 }

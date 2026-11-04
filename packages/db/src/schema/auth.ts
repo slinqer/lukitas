@@ -30,6 +30,7 @@ export const user = pgTable("user", {
   locale: text("locale").default("es").notNull(),
   onboardingCompletedAt: timestamp("onboarding_completed_at", { withTimezone: true }),
   lastActiveAt: timestamp("last_active_at"),
+  suspendedAt: timestamp("suspended_at", { withTimezone: true }),
 });
 
 export const session = pgTable(

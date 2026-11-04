@@ -20,6 +20,7 @@ Drizzle schema, SQL migrations and row-level security for Postgres.
   live in `grantAppRole` (bootstrap), which `prepareDatabase` runs after the migrations.
 - Add migrations with drizzle-kit; never edit an applied one (the one exception: `0001`'s grants
   moved to the bootstrap in part 2b).
+- `admin_audit` is append-only: the app role has no UPDATE/DELETE on it, `grantAppRole` revokes them.
 - In production `docker compose run --rm migrate` (`deploy/personal/up.sh`) runs bootstrap +
   migrations.
 

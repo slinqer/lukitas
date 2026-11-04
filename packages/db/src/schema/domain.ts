@@ -16,7 +16,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { v7 as uuidv7 } from "uuid";
-import { user } from "./auth.ts";
+import { session, user } from "./auth.ts";
 
 const id = () =>
   uuid("id")
@@ -181,6 +181,54 @@ export const emailThrottle = pgTable("email_throttle", {
   email: text("email").primaryKey(),
   windowStart: timestamp("window_start", { withTimezone: true }).notNull(),
   count: integer("count").notNull(),
+});
+
+/**
+ * Admin actions, append-only: the app role has no UPDATE/DELETE (see `grantAppRole`). No foreign
+ * keys, so a row outlives the user it names. Not user-scoped.
+ */
+export const adminAudit = pgTable(
+  "admin_audit",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => uuidv7()),
+    at: timestamp("at", { withTimezone: true }).notNull().defaultNow(),
+    adminUserId: text("admin_user_id"),
+    action: text("action").notNull(),
+    targetUserId: text("target_user_id"),
+    emailHash: text("email_hash"),
+    reason: text("reason"),
+    detail: jsonb("detail"),
+  },
+  (t) => [
+    index("admin_audit_at_idx").on(t.at.desc()),
+    index("admin_audit_target_idx").on(t.targetUserId),
+  ],
+);
+
+/** When an admin session last re-verified. Goes with the session. */
+export const adminVerification = pgTable("admin_verification", {
+  sessionId: text("session_id")
+    .primaryKey()
+    .references(() => session.id, { onDelete: "cascade" }),
+  verifiedAt: timestamp("verified_at", { withTimezone: true }).notNull(),
+});
+
+/** A pending email change an admin started; only the token's hash is stored. */
+export const emailChange = pgTable("email_change", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => uuidv7()),
+  userId: text("user_id")
+    .notNull()
+    .unique()
+    .references(() => user.id, { onDelete: "cascade" }),
+  newEmail: text("new_email").notNull(),
+  tokenHash: text("token_hash").notNull().unique(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  createdBy: text("created_by").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 });
 
 /** Tables protected by row-level security on `user_id`. */
