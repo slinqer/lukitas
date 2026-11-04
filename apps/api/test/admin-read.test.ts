@@ -211,7 +211,7 @@ describe("admin look-up, metrics and audit list", () => {
     };
     expect(page1.entries).toHaveLength(50);
     expect(page1.entries[0]?.reason).toBe("r0");
-    expect(page1.next).toBe(page1.entries[49]?.at);
+    expect(page1.next).toEqual(expect.any(String));
 
     const page2 = (await (
       await get(`/v1/admin/audit?targetUserId=u2&before=${encodeURIComponent(page1.next ?? "")}`)
@@ -237,6 +237,33 @@ describe("admin look-up, metrics and audit list", () => {
       "reason",
       "targetUserId",
     ]);
+  });
+
+  test("rows sharing one `at` are all paged through exactly once", async () => {
+    const at = new Date(NOW.getTime() + 60_000);
+    await t.admin.insert(adminAudit).values(
+      Array.from({ length: 120 }, (_, i) => ({
+        at,
+        adminUserId: ADMIN_ID,
+        action: "account.reactivate",
+        targetUserId: "same-at",
+        reason: `s${i}`,
+      })),
+    );
+    const seen: string[] = [];
+    let before = "";
+    for (let page = 0; page < 5; page++) {
+      const q = `targetUserId=same-at${before ? `&before=${encodeURIComponent(before)}` : ""}`;
+      const body = (await (await get(`/v1/admin/audit?${q}`)).json()) as {
+        entries: { id: string }[];
+        next: string | null;
+      };
+      seen.push(...body.entries.map((e) => e.id));
+      if (!body.next) break;
+      before = body.next;
+    }
+    expect(seen).toHaveLength(120);
+    expect(new Set(seen).size).toBe(120);
   });
 
   test("a bad `before` → 422", async () => {

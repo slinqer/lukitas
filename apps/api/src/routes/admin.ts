@@ -1,7 +1,7 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import type { AuthenticationResponseJSON } from "@simplewebauthn/server";
 import { adminAudit } from "@wambito/db";
-import { and, desc, eq, lt } from "@wambito/db/orm";
+import { and, desc, eq, sql } from "@wambito/db/orm";
 import type { Auth } from "../auth.ts";
 import type { AppDeps } from "../deps.ts";
 import type { AdminEnv } from "../env.ts";
@@ -92,6 +92,23 @@ const AuditPage = z
   .openapi("AdminAuditPage");
 
 const AUDIT_PAGE = 50;
+
+const MICROS_AT = sql<string>`to_char(${adminAudit.at} at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"')`;
+const CURSOR_AT = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z$/;
+
+/** The audit cursor: `(at, id)` of the last entry, `at` at microsecond precision; opaque to callers. */
+const encodeCursor = (at: string, id: string) =>
+  Buffer.from(JSON.stringify([at, id])).toString("base64url");
+
+function decodeCursor(raw: string): { at: string; id: string } | null {
+  try {
+    const [at, id] = JSON.parse(Buffer.from(raw, "base64url").toString("utf8")) as unknown[];
+    if (typeof at !== "string" || typeof id !== "string" || !CURSOR_AT.test(at) || !id) return null;
+    return { at, id };
+  } catch {
+    return null;
+  }
+}
 
 const Credential = z.object({
   id: z.string(),
@@ -256,7 +273,12 @@ export function adminRoutes(deps: AppDeps, auth: Auth) {
       middleware: [verified] as const,
       request: {
         query: z.object({
-          before: z.string().datetime({ offset: true }).optional(),
+          before: z
+            .string()
+            .refine((v) => decodeCursor(v) !== null, {
+              message: "Not a cursor from a previous page",
+            })
+            .optional(),
           targetUserId: z.string().min(1).optional(),
         }),
       },
@@ -267,19 +289,22 @@ export function adminRoutes(deps: AppDeps, auth: Auth) {
     }),
     async (c) => {
       const { before, targetUserId } = c.req.valid("query");
+      const cursor = before ? decodeCursor(before) : null;
       const rows = await deps.db
-        .select()
+        .select({ row: adminAudit, atMicros: MICROS_AT })
         .from(adminAudit)
         .where(
           and(
-            before ? lt(adminAudit.at, new Date(before)) : undefined,
+            cursor
+              ? sql`(${adminAudit.at}, ${adminAudit.id}) < (${cursor.at}::timestamptz, ${cursor.id})`
+              : undefined,
             targetUserId ? eq(adminAudit.targetUserId, targetUserId) : undefined,
           ),
         )
         .orderBy(desc(adminAudit.at), desc(adminAudit.id))
         .limit(AUDIT_PAGE + 1);
       const page = rows.slice(0, AUDIT_PAGE);
-      const entries = page.map((r) => ({
+      const entries = page.map(({ row: r }) => ({
         id: r.id,
         at: r.at.toISOString(),
         adminUserId: r.adminUserId,
@@ -289,8 +314,10 @@ export function adminRoutes(deps: AppDeps, auth: Auth) {
         reason: r.reason,
         detail: (r.detail as Record<string, string> | null) ?? null,
       }));
-      const last = entries.at(-1);
-      return c.json({ entries, next: rows.length > AUDIT_PAGE && last ? last.at : null }, 200);
+      const last = page.at(-1);
+      const next =
+        rows.length > AUDIT_PAGE && last ? encodeCursor(last.atMicros, last.row.id) : null;
+      return c.json({ entries, next }, 200);
     },
   );
 
