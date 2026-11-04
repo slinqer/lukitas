@@ -184,6 +184,7 @@
     "invalid_email": "Enter a valid email, like ana@example.com.",
     "invalid_code": "That code isn't right. Check it and try again.",
     "invalid_or_expired_code": "This code no longer works: it expired or was already used. Ask for a new one.",
+    "link_expired": "This link has expired or was already used.",
     "too_many_attempts": "Too many tries with this code. Ask for a new one.",
     "too_many_requests": "You asked for a lot of codes in a row. Wait a few minutes and try again.",
     "sign_in_not_allowed": "Wambito isn't open to the public yet. If you'd like to try it, message the person who invited you.",

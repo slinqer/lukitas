@@ -184,6 +184,7 @@
     "invalid_email": "Scrivi un'email valida, come ana@email.it.",
     "invalid_code": "Questo codice non è corretto. Controllalo e riprova.",
     "invalid_or_expired_code": "Questo codice non vale più: è scaduto o già usato. Chiedine uno nuovo.",
+    "link_expired": "Questo link è scaduto o è già stato usato.",
     "too_many_attempts": "Troppi tentativi con questo codice. Chiedine uno nuovo.",
     "too_many_requests": "Hai chiesto troppi codici di fila. Aspetta qualche minuto e riprova.",
     "sign_in_not_allowed": "Wambito non è ancora aperta al pubblico. Se vuoi provarla, scrivi a chi ti ha invitato.",

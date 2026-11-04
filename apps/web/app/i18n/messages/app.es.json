@@ -184,6 +184,7 @@
     "invalid_email": "Escribe un correo válido, como ana@correo.com.",
     "invalid_code": "Ese código no es correcto. Revísalo e inténtalo otra vez.",
     "invalid_or_expired_code": "Este código ya no sirve: venció o ya se usó. Pide uno nuevo.",
+    "link_expired": "Este enlace caducó o ya se usó.",
     "too_many_attempts": "Demasiados intentos con este código. Pide uno nuevo.",
     "too_many_requests": "Pediste muchos códigos seguidos. Espera unos minutos e inténtalo otra vez.",
     "sign_in_not_allowed": "Wambito todavía no está abierto al público. Si quieres probarlo, escríbele a quien te invitó.",

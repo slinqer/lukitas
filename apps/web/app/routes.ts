@@ -48,6 +48,14 @@ export default [
             route("settings", "routes/app.settings.tsx"),
           ]),
         ]),
+        // The admin panel (admin panel spec §3): its own layout, with the app's API client and its
+        // own Spanish/English messages; signed in, and the API decides who is an admin (anyone
+        // else sees the not-found page). Its code loads only on /admin, and the landing-only
+        // release leaves it out with the app.
+        route("admin", "routes/admin.tsx", [
+          index("routes/admin._index.tsx"),
+          route("users/:id", "routes/admin.users.$id.tsx"),
+        ]),
         // Try before signing up (spec §2.6b): the same screens as /app (the same route modules,
         // under their own ids), as the made-up "Valentina (demo)", on a backend in the page. No
         // import: settings turns it off in the demo.

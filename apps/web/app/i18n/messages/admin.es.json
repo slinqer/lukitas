@@ -1,0 +1,24 @@
+{
+  "admin": {
+    "meta_title": "Wambito · Administración",
+    "verify": {
+      "title": "Confirma que eres tú",
+      "lead": "El panel de administración pide tu passkey cada 15 minutos. Tu dispositivo te pedirá el PIN, la huella o la cara.",
+      "button": "Confirmar con tu passkey",
+      "busy": "Esperando la passkey…",
+      "failed": "No se pudo confirmar la passkey. Inténtalo otra vez.",
+      "no_passkey": {
+        "title": "Necesitas una passkey",
+        "body": "Para usar el panel, añade una passkey a tu cuenta en los ajustes.",
+        "link": "Ir a ajustes"
+      }
+    },
+    "errors": {
+      "admin_verification_required": "Confirma con tu passkey para seguir.",
+      "passkey_verification_failed": "No se pudo confirmar la passkey. Inténtalo otra vez.",
+      "user_not_found": "Ninguna cuenta coincide.",
+      "is_guest": "Es una cuenta de invitado: no tiene correo que cambiar.",
+      "cannot_target_self": "No puedes hacer esto con tu propia cuenta. Usa los ajustes de la app o pídeselo a otra persona administradora."
+    }
+  }
+}
