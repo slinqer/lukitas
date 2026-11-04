@@ -8,6 +8,15 @@ import type { AdminEnv } from "../env.ts";
 import { ADMIN_VERIFY_MS, requireAdmin } from "../http/admin.ts";
 import { jsonBody, jsonResponse, problems } from "../http/openapi.ts";
 import { ApiError, notFound, validationHook } from "../http/problem.ts";
+import {
+  type ActionContext,
+  deleteUser,
+  disconnectAssistant,
+  reactivateUser,
+  removePasskey,
+  signOutEverywhere,
+  suspendUser,
+} from "../services/admin/actions.ts";
 import { lookupUser } from "../services/admin/lookup.ts";
 import { adminMetrics } from "../services/admin/metrics.ts";
 import { adminVerifyOptions, verifyAdminAssertion } from "../services/admin/verify.ts";
@@ -16,6 +25,16 @@ import { adminVerifyOptions, verifyAdminAssertion } from "../services/admin/veri
 export const reasonField = z.string().trim().min(1).max(300);
 
 const tags = ["admin"];
+
+const ReasonBody = z.object({ reason: reasonField }).openapi("AdminActionReason");
+const DeleteBody = z
+  .object({
+    reason: reasonField,
+    /** The account's email, or its id for a guest, as the app's own deletion asks. */
+    confirm: z.string().min(1),
+  })
+  .openapi("AdminDeleteUser");
+const UserParam = z.object({ id: z.string().min(1) });
 
 const AdminMe = z
   .object({
@@ -318,6 +337,124 @@ export function adminRoutes(deps: AppDeps, auth: Auth) {
       const next =
         rows.length > AUDIT_PAGE && last ? encodeCursor(last.atMicros, last.row.id) : null;
       return c.json({ entries, next }, 200);
+    },
+  );
+
+  const ctx = (c: { get(key: "adminId"): string }, reason: string): ActionContext => ({
+    db: deps.db,
+    mailer: deps.mailer,
+    webUrl: deps.config.WEB_URL,
+    adminId: c.get("adminId"),
+    reason,
+  });
+  const done = { 204: { description: "Done; the person is notified by email" } };
+
+  app.openapi(
+    createRoute({
+      method: "delete",
+      path: "/v1/admin/users/{id}",
+      operationId: "adminDeleteUser",
+      tags,
+      middleware: [verified] as const,
+      request: { params: UserParam, body: jsonBody(DeleteBody) },
+      responses: { ...done, ...problems(400, 401, 404, 409, 422) },
+    }),
+    async (c) => {
+      const { id } = c.req.valid("param");
+      const { reason, confirm } = c.req.valid("json");
+      await deleteUser(ctx(c, reason), id, confirm);
+      return c.body(null, 204);
+    },
+  );
+
+  app.openapi(
+    createRoute({
+      method: "post",
+      path: "/v1/admin/users/{id}/sessions/revoke",
+      operationId: "adminRevokeSessions",
+      tags,
+      middleware: [verified] as const,
+      request: { params: UserParam, body: jsonBody(ReasonBody) },
+      responses: { ...done, ...problems(401, 404, 422) },
+    }),
+    async (c) => {
+      const { id } = c.req.valid("param");
+      await signOutEverywhere(ctx(c, c.req.valid("json").reason), id);
+      return c.body(null, 204);
+    },
+  );
+
+  app.openapi(
+    createRoute({
+      method: "delete",
+      path: "/v1/admin/users/{id}/assistants/{clientId}",
+      operationId: "adminRevokeAssistant",
+      tags,
+      middleware: [verified] as const,
+      request: {
+        params: z.object({ id: z.string().min(1), clientId: z.string().min(1) }),
+        body: jsonBody(ReasonBody),
+      },
+      responses: { ...done, ...problems(401, 404, 422) },
+    }),
+    async (c) => {
+      const { id, clientId } = c.req.valid("param");
+      await disconnectAssistant(ctx(c, c.req.valid("json").reason), id, clientId);
+      return c.body(null, 204);
+    },
+  );
+
+  app.openapi(
+    createRoute({
+      method: "delete",
+      path: "/v1/admin/users/{id}/passkeys/{passkeyId}",
+      operationId: "adminRemovePasskey",
+      tags,
+      middleware: [verified] as const,
+      request: {
+        params: z.object({ id: z.string().min(1), passkeyId: z.string().min(1) }),
+        body: jsonBody(ReasonBody),
+      },
+      responses: { ...done, ...problems(401, 404, 422) },
+    }),
+    async (c) => {
+      const { id, passkeyId } = c.req.valid("param");
+      await removePasskey(ctx(c, c.req.valid("json").reason), id, passkeyId);
+      return c.body(null, 204);
+    },
+  );
+
+  app.openapi(
+    createRoute({
+      method: "post",
+      path: "/v1/admin/users/{id}/suspend",
+      operationId: "adminSuspendUser",
+      tags,
+      middleware: [verified] as const,
+      request: { params: UserParam, body: jsonBody(ReasonBody) },
+      responses: { ...done, ...problems(401, 404, 409, 422) },
+    }),
+    async (c) => {
+      const { id } = c.req.valid("param");
+      await suspendUser(ctx(c, c.req.valid("json").reason), id);
+      return c.body(null, 204);
+    },
+  );
+
+  app.openapi(
+    createRoute({
+      method: "post",
+      path: "/v1/admin/users/{id}/reactivate",
+      operationId: "adminReactivateUser",
+      tags,
+      middleware: [verified] as const,
+      request: { params: UserParam, body: jsonBody(ReasonBody) },
+      responses: { ...done, ...problems(401, 404, 422) },
+    }),
+    async (c) => {
+      const { id } = c.req.valid("param");
+      await reactivateUser(ctx(c, c.req.valid("json").reason), id);
+      return c.body(null, 204);
     },
   );
 
