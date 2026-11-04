@@ -219,6 +219,13 @@ reachable:
 
 The backup does not need the Mac to be awake at 03:00: launchd runs a missed backup when the Mac wakes.
 
+## Turning on the admin panel
+
+The panel is off by default. To turn it on, put the admin's user id in `ADMIN_USER_IDS` in `.env`
+(optionally `ADMIN_ALLOWED_IPS`), then, from this folder, `docker compose up -d api` (a plain
+`docker compose restart api` does not re-read `.env`). Who may be an admin, the procedures and the
+dry run: `docs/admin.md`.
+
 ## Update
 
 ```sh

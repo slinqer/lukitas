@@ -1,6 +1,12 @@
 import postgres from "postgres";
 import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
-import { APP_ROLE, databaseUrl, ensureAppRole, prepareDatabase } from "../src/bootstrap.ts";
+import {
+  APP_ROLE,
+  databaseUrl,
+  ensureAppRole,
+  grantAppRole,
+  prepareDatabase,
+} from "../src/bootstrap.ts";
 import { runMigrations } from "../src/migrate.ts";
 import { startBareDatabase } from "../src/testing.ts";
 
@@ -153,6 +159,41 @@ describe("ensureAppRole", () => {
       await admin.end();
     } finally {
       await empty.stop();
+    }
+  });
+});
+
+describe("grantAppRole", () => {
+  test("on a restored dump from before admin_audit existed: grants, twice, without failing", async () => {
+    const restored = await startBareDatabase();
+    const admin = postgres(restored.adminUrl, { max: 1, onnotice: () => {} });
+    try {
+      await ensureAppRole(restored.adminUrl, PASSWORD);
+      // What a restore drill (`--grant-only`) meets on a dump older than migration 0008.
+      await admin`create table old_table (id int)`;
+      await expect(grantAppRole(restored.adminUrl)).resolves.toBeUndefined();
+      await expect(grantAppRole(restored.adminUrl)).resolves.toBeUndefined();
+      const [row] = await admin<{ ok: boolean }[]>`
+        select has_table_privilege('wambito_app', 'old_table', 'SELECT,INSERT,UPDATE,DELETE') as ok`;
+      expect(row?.ok).toBe(true);
+    } finally {
+      await admin.end();
+      await restored.stop();
+    }
+  });
+
+  test("after the migrations, still revokes UPDATE and DELETE on admin_audit", async () => {
+    await prepareDatabase(adminUrl, PASSWORD);
+    await grantAppRole(adminUrl);
+    const admin = postgres(adminUrl, { max: 1, onnotice: () => {} });
+    try {
+      const [row] = await admin<{ insert: boolean; update: boolean; delete: boolean }[]>`
+        select has_table_privilege('wambito_app', 'admin_audit', 'INSERT') as insert,
+               has_table_privilege('wambito_app', 'admin_audit', 'UPDATE') as update,
+               has_table_privilege('wambito_app', 'admin_audit', 'DELETE') as delete`;
+      expect(row).toEqual({ insert: true, update: false, delete: false });
+    } finally {
+      await admin.end();
     }
   });
 });

@@ -36,6 +36,8 @@ export default [
         layout("routes/app-layout.tsx", [
           route("sign-in", "routes/sign-in.tsx"),
           route("auth/verify", "routes/auth.verify.tsx"),
+          // The link of an email change (admin panel spec §5.2): works signed in or not.
+          route("confirm-email", "routes/confirm-email.tsx"),
           // After an email sign-in: "¿Entrar con tu huella la próxima vez?", once per user per device.
           route("passkey-offer", "routes/passkey-offer.tsx"),
           route("welcome/:step?", "routes/welcome.tsx"),
@@ -56,6 +58,14 @@ export default [
             route("insights", "routes/app.insights.tsx"),
             route("settings", "routes/app.settings.tsx"),
           ]),
+        ]),
+        // The admin panel (admin panel spec §3): its own layout, with the app's API client and its
+        // own Spanish/English messages; signed in, and the API decides who is an admin (anyone
+        // else sees the not-found page). Its code loads only on /admin, and the landing-only
+        // release leaves it out with the app.
+        route("admin", "routes/admin.tsx", [
+          index("routes/admin._index.tsx"),
+          route("users/:id", "routes/admin.users.$id.tsx"),
         ]),
         // Try before signing up (spec §2.6b): the same screens as /app (the same route modules,
         // under their own ids), as the made-up "Valentina (demo)", on a backend in the page. No

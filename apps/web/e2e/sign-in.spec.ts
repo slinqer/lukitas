@@ -1,5 +1,6 @@
 import { expect, type Page, test } from "@playwright/test";
 import {
+  addVirtualAuthenticator,
   clientIp,
   freshEmail,
   readSignInMail,
@@ -202,22 +203,6 @@ test("a link from a sign-in started in the Android app offers the app, and spend
   const webMail = await readSignInMail(webEmail);
   expect(new URL(webMail.link).searchParams.has("from")).toBe(false);
 });
-
-/** A software authenticator in the page's browser: creates and uses passkeys without a person. */
-async function addVirtualAuthenticator(page: Page) {
-  const cdp = await page.context().newCDPSession(page);
-  await cdp.send("WebAuthn.enable");
-  await cdp.send("WebAuthn.addVirtualAuthenticator", {
-    options: {
-      protocol: "ctap2",
-      transport: "internal",
-      hasResidentKey: true,
-      hasUserVerification: true,
-      isUserVerified: true,
-      automaticPresenceSimulation: true,
-    },
-  });
-}
 
 test("no fingerprint button before a passkey, then the offer creates one and the button signs in", async ({
   page,

@@ -50,6 +50,26 @@ describe("createApiClient", () => {
     expect(data).toEqual([]);
   });
 
+  it("leaves the admin panel's 401 (verify with a passkey) to the panel: no sign-in", async () => {
+    const onUnauthorized = vi.fn();
+    const fetch = vi.fn(async () => problemResponse(401, "admin_verification_required"));
+    const client = createApiClient({ fetch, baseUrl: BASE, onUnauthorized });
+    await expect(client.GET("/v1/admin/me")).rejects.toMatchObject({
+      status: 401,
+      code: "admin_verification_required",
+    });
+    expect(onUnauthorized).not.toHaveBeenCalled();
+  });
+
+  it("sends no authorization header: the admin guard refuses one (cookies only)", async () => {
+    const fetch = vi.fn(async (_input: RequestInfo | URL) => new Response(null, { status: 204 }));
+    const client = createApiClient({ fetch, baseUrl: BASE, onUnauthorized: vi.fn() });
+    await client.POST("/v1/admin/verify/options");
+    const request = fetch.mock.calls[0]?.[0] as Request;
+    expect(request.headers.has("authorization")).toBe(false);
+    expect(request.credentials).toBe("include");
+  });
+
   it("calls the signed-out handler on 401 and still throws", async () => {
     const onUnauthorized = vi.fn();
     const fetch = vi.fn(async () => problemResponse(401, "unauthenticated"));

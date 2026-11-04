@@ -6,6 +6,8 @@ import { createTranslator } from "use-intl/core";
 import { describe, expect, it } from "vitest";
 import { CATALOGS } from "./catalog.ts";
 import { intlTag } from "./format.ts";
+import adminEn from "./messages/admin.en.json" with { type: "json" };
+import adminEs from "./messages/admin.es.json" with { type: "json" };
 import appEn from "./messages/app.en.json" with { type: "json" };
 import appEs from "./messages/app.es.json" with { type: "json" };
 import appIt from "./messages/app.it.json" with { type: "json" };
@@ -79,6 +81,19 @@ function icuShape(message: string): string[] {
 function richTags(message: string): string[] {
   return [...message.matchAll(/<([A-Za-z_]\w*)>/g)].map((match) => match[1] as string).sort();
 }
+
+/**
+ * The codes only `/v1/admin/*` answers with. The panel speaks Spanish and English only (spec §10),
+ * so their text is `admin.errors.<code>` in `admin.{es,en}.json`, not `errors.<code>` in the four
+ * app catalogs.
+ */
+const ADMIN_ONLY_CODES = [
+  "admin_verification_required",
+  "passkey_verification_failed",
+  "user_not_found",
+  "is_guest",
+  "cannot_target_self",
+] as const;
 
 function apiErrorCodes(): string[] {
   const root = fileURLToPath(new URL("../../../api/src", import.meta.url));
@@ -274,9 +289,53 @@ describe("message catalogs", () => {
   it("covers every API error code", () => {
     const codes = apiErrorCodes();
     expect(codes.length).toBeGreaterThan(10);
-    for (const code of [...codes, "generic"]) {
+    // Each exception is a code the API really has: a stale entry would hide nothing but mislead.
+    for (const code of ADMIN_ONLY_CODES) expect(codes, code).toContain(code);
+    const userFacing = codes.filter(
+      (code) => !(ADMIN_ONLY_CODES as readonly string[]).includes(code),
+    );
+    for (const code of [...userFacing, "generic"]) {
       for (const language of LANGUAGES) {
         expect(catalogs[language], `${language} errors.${code}`).toHaveProperty([`errors.${code}`]);
+      }
+    }
+  });
+});
+
+describe("the admin panel's messages (Spanish and English only, spec §10)", () => {
+  const ADMIN = { es: flatten(adminEs as Tree), en: flatten(adminEn as Tree) } as const;
+
+  it("live in their own namespace, which no other catalog uses", () => {
+    for (const catalog of [adminEs, adminEn]) expect(Object.keys(catalog)).toEqual(["admin"]);
+    for (const language of LANGUAGES) {
+      expect(Object.keys(CATALOGS[language]), language).not.toContain("admin");
+    }
+  });
+
+  it("have the same keys, ICU arguments, branches and tags in es and en", () => {
+    expect(Object.keys(ADMIN.en).sort()).toEqual(Object.keys(ADMIN.es).sort());
+    for (const key of Object.keys(ADMIN.es)) {
+      expect(icuArguments(ADMIN.en[key] ?? ""), key).toEqual(icuArguments(ADMIN.es[key] ?? ""));
+      expect(icuShape(ADMIN.en[key] ?? ""), key).toEqual(icuShape(ADMIN.es[key] ?? ""));
+      expect(richTags(ADMIN.en[key] ?? ""), key).toEqual(richTags(ADMIN.es[key] ?? ""));
+    }
+  });
+
+  it("cover every code only the admin routes answer with", () => {
+    for (const code of ADMIN_ONLY_CODES) {
+      for (const language of ["es", "en"] as const) {
+        expect(ADMIN[language], `${language} admin.errors.${code}`).toHaveProperty([
+          `admin.errors.${code}`,
+        ]);
+      }
+    }
+  });
+
+  it("are never empty and never use the old name", () => {
+    for (const language of ["es", "en"] as const) {
+      for (const [key, value] of Object.entries(ADMIN[language])) {
+        expect(value.trim(), `${language}:${key}`).not.toBe("");
+        expect(value, `${language}:${key}`).not.toMatch(/Luk(?:itas)|\bLuk(?:as)\b/);
       }
     }
   });

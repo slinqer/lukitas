@@ -71,6 +71,11 @@ api_url="$(compose config --format json | jq -r .services.api.environment.DATABA
 api_user="${api_url#postgres://}"
 check "the API's DATABASE_URL user" wambito_app "${api_user%%:*}"
 check "the API's database" wambito "${api_url##*/}"
+# The admin settings reach the API (empty means no admins: the panel answers 404).
+with_env admin ADMIN_USER_IDS=some-id ADMIN_ALLOWED_IPS=203.0.113.0/24
+check "the API gets ADMIN_USER_IDS" some-id "$(compose config --format json | jq -r .services.api.environment.ADMIN_USER_IDS)"
+check "the API gets ADMIN_ALLOWED_IPS" 203.0.113.0/24 "$(compose config --format json | jq -r .services.api.environment.ADMIN_ALLOWED_IPS)"
+with_env unset
 check "the images" "wambito-api:personal wambito-mcp:personal wambito-web:personal" \
   "$(compose config --format json | jq -r '[.services.api.image, .services.mcp.image, .services.web.image] | join(" ")')"
 check "the postgres user and database" "wambito wambito" \

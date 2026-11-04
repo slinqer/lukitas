@@ -78,6 +78,7 @@ export type AuthErrorKey =
   | "errors.invalid_email"
   | "errors.too_many_requests"
   | "errors.sign_in_not_allowed"
+  | "errors.account_suspended"
   | "errors.too_many_sign_in_attempts"
   | "errors.passkey_failed"
   | "errors.network_error"
@@ -92,6 +93,8 @@ const CODE_KEYS: Record<string, AuthErrorKey> = {
   INVALID_EMAIL: "errors.invalid_email",
   // The API's own code (a personal install with a sign-in allowlist), already in the catalog's form.
   sign_in_not_allowed: "errors.sign_in_not_allowed",
+  // An admin suspended the account (spec §5.4): every sign-in path answers it.
+  account_suspended: "errors.account_suspended",
 };
 
 /** Errors about the code itself: the boxes are marked invalid and emptied. */
@@ -107,6 +110,9 @@ export const RETRYABLE_ERRORS: ReadonlySet<AuthErrorKey> = new Set([
   "errors.internal_error",
   "errors.too_many_sign_in_attempts",
 ]);
+
+/** Errors that say the same whatever the sign-in path: the passkey and the link keep them. */
+const ACCOUNT_ERRORS: ReadonlySet<AuthErrorKey> = new Set(["errors.account_suspended"]);
 
 /** When the server gives no `X-Retry-After` on a sign-in 429 (its window is 10 s). */
 export const DEFAULT_SIGN_IN_WAIT_S = 10;
@@ -132,7 +138,7 @@ export function authErrorKey(error: AuthFailure, action: "send" | "sign_in"): Au
 export function passkeyErrorKey(error: AuthFailure): AuthErrorKey | null {
   if (error.code === "AUTH_CANCELLED" || error.code === "ERROR_CEREMONY_ABORTED") return null;
   const key = authErrorKey(error, "sign_in");
-  return RETRYABLE_ERRORS.has(key) ? key : "errors.passkey_failed";
+  return RETRYABLE_ERRORS.has(key) || ACCOUNT_ERRORS.has(key) ? key : "errors.passkey_failed";
 }
 
 /**
@@ -142,7 +148,9 @@ export function passkeyErrorKey(error: AuthFailure): AuthErrorKey | null {
  */
 export function verifyErrorKey(error: AuthFailure): AuthErrorKey {
   const key = authErrorKey(error, "sign_in");
-  return RETRYABLE_ERRORS.has(key) ? key : "errors.invalid_or_expired_code";
+  return RETRYABLE_ERRORS.has(key) || ACCOUNT_ERRORS.has(key)
+    ? key
+    : "errors.invalid_or_expired_code";
 }
 
 /** Whether `destination` is an assistant's consent screen, which should not be kept waiting. */

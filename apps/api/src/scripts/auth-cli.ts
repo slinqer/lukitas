@@ -15,6 +15,7 @@ export const auth = createAuth({
     CLIENT_IP_HEADER: "x-forwarded-for",
     GUEST_SIGNUP: true,
     TRUSTED_PROXIES: [],
+    ADMIN_USER_IDS: [],
   },
   db: {} as never,
   mailer: { send: async () => {} },

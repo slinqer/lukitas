@@ -1,10 +1,11 @@
 import { createRoute, z } from "@hono/zod-openapi";
-import { oauthAccessToken, oauthClient, oauthConsent, oauthRefreshToken } from "@wambito/db";
+import { oauthClient, oauthConsent, oauthRefreshToken } from "@wambito/db";
 import { and, desc, eq, inArray, max } from "@wambito/db/orm";
 import type { AppDeps } from "../deps.ts";
 import { jsonResponse, problems } from "../http/openapi.ts";
 import { ApiError } from "../http/problem.ts";
 import { router } from "../http/router.ts";
+import { revokeAssistant } from "../services/account.ts";
 
 const Assistant = z
   .object({
@@ -110,21 +111,7 @@ export function assistantRoutes(deps: AppDeps) {
     async (c) => {
       const userId = c.get("userId");
       const { clientId } = c.req.valid("param");
-      const removed = await deps.db.transaction(async (tx) => {
-        const consents = await tx
-          .delete(oauthConsent)
-          .where(and(eq(oauthConsent.userId, userId), eq(oauthConsent.clientId, clientId)))
-          .returning({ id: oauthConsent.id });
-        await tx
-          .delete(oauthAccessToken)
-          .where(and(eq(oauthAccessToken.userId, userId), eq(oauthAccessToken.clientId, clientId)));
-        await tx
-          .delete(oauthRefreshToken)
-          .where(
-            and(eq(oauthRefreshToken.userId, userId), eq(oauthRefreshToken.clientId, clientId)),
-          );
-        return consents.length;
-      });
+      const removed = await deps.db.transaction((tx) => revokeAssistant(tx, userId, clientId));
       if (!removed) throw new ApiError(404, "not_found", "Assistant not found");
       return c.body(null, 204);
     },

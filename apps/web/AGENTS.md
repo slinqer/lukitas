@@ -13,11 +13,23 @@ account deletion page (prerendered, es/en/it/pt; `app/features/legal/`), the sig
 - `app/routes/*` thin route modules; `app/features/<feature>/` screens, models, stories;
   `app/ui/` shared components; `app/wambi/` the mascot (`app/wambi/experimental/` 3D, never on
   the landing); `app/api/` OpenAPI client; `app/auth/` session and passkeys; `app/demo/`;
-  `app/feedback/` sounds, vibration, `Celebration`; `app/theme/`; `app/site/` origins/build env.
+  `app/feedback/` sounds, vibration, `Celebration`; `app/theme/`; `app/site/` origins/build env;
+  `app/admin/` the admin panel (`/admin/*`, layout `routes/admin.tsx`): `useAdmin`/`adminFetch`
+  (a 401 `admin_verification_required` waits for the passkey, then retries), `AdminGate` (the layout's gate), `VerifyScreen`, `HomeScreen` (metrics, audit, look-up),
+  `AccountScreen` + `ActionSheet` (`/admin/users/:id`: the account and its actions; a sheet's
+  fields live in the component, so a reason survives re-verification). Stories `Admin/*`,
+  web-only, not in parity.json.
+- `/confirm-email?token=…` (`routes/confirm-email.tsx`, `features/confirm-email/`, under the app
+  layout, public): the page of an admin-started email change. It posts the token only when the
+  person taps the button (a mail scanner opening the link spends nothing), then sends them to
+  sign-in (every session was closed). Copy in `confirm_email.*` in all four languages; story
+  `ConfirmEmail`, web-only, not in parity.json.
 - Storage: only `readStored/writeStored/removeStored` in `app/lib/stored.ts` (keys
   `wambito.<name>`, `sessionArea()` for session data).
 - i18n: `app/i18n/messages/{es,en,it,pt}.json` public pages, `app.{es,en,it,pt}.json` the rest.
-  `messages.test.ts` enforces parity, ICU, PT-PT, no slang in it/pt, no old names.
+  `messages.test.ts` enforces parity, ICU, PT-PT, no slang in it/pt, no old names. The admin
+  panel: `admin.{es,en}.json` only (namespace `admin`, `AdminMessages`; it/pt read en); codes only
+  `/v1/admin/*` answers are `ADMIN_ONLY_CODES` there, with text in `admin.errors.*`.
 
 ## Talks to
 

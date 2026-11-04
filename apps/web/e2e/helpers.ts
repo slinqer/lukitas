@@ -138,6 +138,25 @@ export async function sessionUser(page: Page): Promise<{ id: string; email: stri
   return body?.user ?? null;
 }
 
+/**
+ * A software authenticator in the page's browser (Chrome's WebAuthn domain over CDP): creates and
+ * uses passkeys without a person, verifying the user at once. Call it before the page asks for one.
+ */
+export async function addVirtualAuthenticator(page: Page): Promise<void> {
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send("WebAuthn.enable");
+  await cdp.send("WebAuthn.addVirtualAuthenticator", {
+    options: {
+      protocol: "ctap2",
+      transport: "internal",
+      hasResidentKey: true,
+      hasUserVerification: true,
+      isUserVerified: true,
+      automaticPresenceSimulation: true,
+    },
+  });
+}
+
 /** The four languages of the app. */
 export type Lang = "es" | "en" | "it" | "pt";
 

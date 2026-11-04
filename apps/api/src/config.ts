@@ -6,6 +6,12 @@ const isCidr = (entry: string) => {
   return Boolean(ip && isIP(ip)) && (prefix === undefined || /^\d{1,3}$/.test(prefix));
 };
 
+const csv = (v: string) =>
+  v
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
 /** Hosts that mean "this machine" from the API's point of view (Docker Desktop's name for the host included). */
 const LOCAL_SMTP_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]", "host.docker.internal"]);
 
@@ -129,6 +135,31 @@ const configSchema = z
           .filter(Boolean),
       )
       .refine((list) => list.every(isCidr), "TRUSTED_PROXIES must be IPs or CIDR ranges"),
+    /**
+     * Comma-separated user ids that may use the admin panel (`/v1/admin/*`). Unset or blank: the
+     * panel is off and every admin route answers 404.
+     */
+    ADMIN_USER_IDS: z
+      .string()
+      .default("")
+      .transform((v) => csv(v)),
+    /**
+     * Optional comma-separated IPs/CIDRs the admin panel answers to (matched against the client
+     * address, see `clientIp`). Blank or unset: any address.
+     */
+    ADMIN_ALLOWED_IPS: z
+      .preprocess(
+        (v) => (typeof v === "string" && v.trim() === "" ? undefined : v),
+        z
+          .string()
+          .transform((v) => csv(v))
+          .refine(
+            (list) => list.every(isCidr),
+            "ADMIN_ALLOWED_IPS must be comma-separated IPs or CIDR ranges",
+          )
+          .optional(),
+      )
+      .optional(),
     /**
      * The version this build is, as /health reports it (the personal install's up.sh passes
      * `0.0.0-dev.<commit>`, the name the APK of that commit has). Blank or unset: none is reported.

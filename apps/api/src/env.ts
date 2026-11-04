@@ -18,3 +18,15 @@ export interface AppEnv {
     grant: Grant;
   };
 }
+
+/** What `requireAdmin` (http/admin.ts) adds for the `/v1/admin/*` routes. */
+export interface AdminEnv {
+  Variables: {
+    /** The signed-in admin's user id. */
+    adminId: string;
+    /** The admin's session, which a passkey verification belongs to. */
+    sessionId: string;
+    /** When the session's passkey verification was made; `null` on the verification routes. */
+    adminVerifiedAt: Date | null;
+  };
+}

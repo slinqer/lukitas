@@ -16,6 +16,7 @@ describe("authErrorKey", () => {
     [{ code: "TOO_MANY_ATTEMPTS", status: 403 }, "errors.too_many_attempts"],
     [{ code: "INVALID_EMAIL", status: 400 }, "errors.invalid_email"],
     [{ code: "sign_in_not_allowed", status: 403 }, "errors.sign_in_not_allowed"],
+    [{ code: "account_suspended", status: 403 }, "errors.account_suspended"],
     [{ status: 0 }, "errors.network_error"],
     [{ status: 502 }, "errors.internal_error"],
     [{ code: "SOMETHING_NEW", status: 400 }, "errors.generic"],
@@ -45,6 +46,12 @@ describe("verifyErrorKey", () => {
     expect(verifyErrorKey({ status: 503 })).toBe("errors.internal_error");
     expect(verifyErrorKey({ status: 429 })).toBe("errors.too_many_sign_in_attempts");
   });
+
+  it("says a suspended account is suspended, not that the link expired", () => {
+    expect(verifyErrorKey({ code: "account_suspended", status: 403 })).toBe(
+      "errors.account_suspended",
+    );
+  });
 });
 
 describe("passkeyErrorKey", () => {
@@ -58,6 +65,12 @@ describe("passkeyErrorKey", () => {
       "errors.passkey_failed",
     );
     expect(passkeyErrorKey({ status: 0 })).toBe("errors.network_error");
+  });
+
+  it("says a suspended account is suspended, not that the passkey failed", () => {
+    expect(passkeyErrorKey({ code: "account_suspended", status: 403 })).toBe(
+      "errors.account_suspended",
+    );
   });
 });
 

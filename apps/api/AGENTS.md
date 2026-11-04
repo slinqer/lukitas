@@ -13,7 +13,25 @@ Hono + Better Auth + Drizzle (`@wambito/db`), OpenAPI document "Wambito API". Ev
   MCP_URL). `src/http/scopes.ts`: OAuth scopes (`finance:read`, …), enforced here, not in the MCP.
 - `src/http/client-headers.ts`: `clientHeader`. `src/routes/*.ts`: the routes.
   `src/services/`: domain services. `src/emails/sign-in.ts`: sign-in mail copy (es/en/it/pt).
+- Admin panel (spec `docs/superpowers/specs/2026-11-04-admin-panel-design.md`):
+  `src/routes/admin.ts` (`/v1/admin/*`, mounted before `requireUser`), guarded by `requireAdmin`
+  (`src/http/admin.ts`): a cookie session (no `authorization` header), the id in `ADMIN_USER_IDS`,
+  the client IP in `ADMIN_ALLOWED_IPS` when set, else 404 `not_found`; actions also need a passkey
+  verification < 15 min old (401 `admin_verification_required`). `ADMIN_USER_IDS` unset: every
+  admin path is 404. Actions take a `reason` (1–300, 422 without), write the effect and its
+  `admin_audit` row in one transaction, then mail the person (`src/emails/admin.ts`, after commit;
+  failures logged, never a guest/`.invalid` address). `src/services/admin/` touches identity tables
+  only (`user`, `session`, `passkey`, OAuth, `email_change`, `admin_*`); finance data only through
+  `deleteAccount`. An email change refuses a new address `SIGN_IN_ALLOWLIST` does not list (409
+  `sign_in_not_allowed`, at request and confirm) or under `.invalid` (422). A suspend of a
+  suspended account, or a reactivate of an active one, is a 204 no-op: no audit row, no mail.
+- `src/routes/email-change.ts`: public `POST /v1/email-change/confirm` (mounted before
+  `requireUser`), the person's end of an admin's email change; 10 per 10 min per client IP in the
+  `rate_limit` table (key `email-change-confirm|<ip>`).
 - `src/scripts/seed.ts`: creates `dev@wambito.test`.
+- `src/scripts/seed-admin.ts` (`seed:admin`): upserts the admin `dev-admin` (`admin@wambito.test`,
+  onboarded, default account and categories) through `DATABASE_ADMIN_URL` and clears its email
+  throttle; the root compose lists it in `ADMIN_USER_IDS`. CI runs it before the web e2e.
 
 ## Talks to
 

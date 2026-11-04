@@ -1,5 +1,6 @@
 import { expect, type Page, test } from "@playwright/test";
 import {
+  addVirtualAuthenticator,
   clientIp,
   onboardWithSample,
   pinClock,
@@ -134,22 +135,6 @@ test("deleting the account signs out to the landing; the same email then starts 
   };
   expect(transactions.items).toHaveLength(0);
 });
-
-/** A software authenticator in the page's browser: creates passkeys without a person. */
-async function addVirtualAuthenticator(page: Page) {
-  const cdp = await page.context().newCDPSession(page);
-  await cdp.send("WebAuthn.enable");
-  await cdp.send("WebAuthn.addVirtualAuthenticator", {
-    options: {
-      protocol: "ctap2",
-      transport: "internal",
-      hasResidentKey: true,
-      hasUserVerification: true,
-      isUserVerified: true,
-      automaticPresenceSimulation: true,
-    },
-  });
-}
 
 test("a passkey added from settings is listed, and deleting it empties the list", async ({
   page,
