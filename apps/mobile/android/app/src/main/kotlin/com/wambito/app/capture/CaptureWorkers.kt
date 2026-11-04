@@ -39,12 +39,9 @@ object CaptureHooks {
     @VisibleForTesting
     var dependencies: ((Context) -> CaptureDependencies)? = null
 
-    /** Says nothing until the real poster replaces it. */
+    /** The real notifications; tests replace it. */
     @VisibleForTesting
-    var notifier: CaptureNotifier = object : CaptureNotifier {
-        override fun show(context: Context, answer: CaptureAnswer) = Unit
-        override fun signInNeeded(context: Context, count: Int) = Unit
-    }
+    var notifier: CaptureNotifier = CapturePoster
 
     fun of(context: Context): CaptureDependencies =
         dependencies?.invoke(context) ?: CaptureDependencies(session = SecureStorageSession(context))
@@ -57,7 +54,7 @@ object CaptureScheduler {
     /** Persistent name: never renamed. */
     const val SEND = "wambito.capture.send"
 
-    /** Persistent name for "Bien" (its job comes with the notification). */
+    /** Persistent name for "Bien" ([ConfirmCaptureWorker]). */
     const val CONFIRM = "wambito.capture.confirm"
 
     private val network = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
@@ -72,6 +69,58 @@ object CaptureScheduler {
             .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 30, TimeUnit.SECONDS)
             .build()
         WorkManager.getInstance(context).enqueueUniqueWork(SEND, ExistingWorkPolicy.APPEND_OR_REPLACE, request)
+    }
+
+    /**
+     * "Bien" on [id]'s notification: confirms it once there is a network. APPEND_OR_REPLACE, like the
+     * send: a second tap while the first runs gets its own run after it.
+     */
+    fun enqueueConfirm(context: Context, id: String) {
+        val request = OneTimeWorkRequestBuilder<ConfirmCaptureWorker>()
+            .setConstraints(network)
+            .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 30, TimeUnit.SECONDS)
+            .setInputData(workDataOf(ConfirmCaptureWorker.ID to id))
+            .build()
+        WorkManager.getInstance(context).enqueueUniqueWork(CONFIRM, ExistingWorkPolicy.APPEND_OR_REPLACE, request)
+    }
+}
+
+/**
+ * Confirms one transaction (`POST /v1/transactions/review`) and takes its notification away.
+ *
+ *  * Confirmed, or refused for good by the server (a 4xx other than 401: there is nothing to
+ *    confirm): the notification goes.
+ *  * 401 or no session: the notification stays, no retry (opening the app signs in again).
+ *  * Offline or a server error: the notification stays and WorkManager retries with backoff.
+ *  * A server setting that cannot be read sends nothing, as in [SendCapturesWorker].
+ */
+class ConfirmCaptureWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
+    override suspend fun doWork(): Result {
+        val context = applicationContext
+        val id = inputData.getString(ID)?.takeIf { it.isNotEmpty() } ?: return done("no id")
+        val dependencies = CaptureHooks.of(context)
+        val token = dependencies.session.token()
+        if (dependencies.session.mark() == null || token == null) return done("signed out")
+        val server = serverOf(context, dependencies.session) ?: return done("server unreadable")
+        return when (withContext(Dispatchers.IO) { dependencies.api.confirm(server, token, id) }) {
+            is ApiResult.Ok -> {
+                CapturePoster.cancel(context, id)
+                done("confirmed")
+            }
+            ApiResult.Rejected -> {
+                CapturePoster.cancel(context, id)
+                done("rejected")
+            }
+            ApiResult.Unauthorized -> done("session refused")
+            ApiResult.Failed -> Result.retry()
+        }
+    }
+
+    private fun done(outcome: String): Result = Result.success(workDataOf(CAPTURE_OUTCOME to outcome))
+
+    companion object {
+        /** The input data key of the transaction to confirm. */
+        const val ID = "id"
     }
 }
 

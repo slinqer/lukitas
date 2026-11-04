@@ -15,7 +15,8 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
   override `--dart-define=WAMBITO_SERVER=…` (`lib/api/server_address.dart`) or in Settings.
 - Storage: secure storage for session and settings; widget snapshot JSON under
   `wambito.widget.snapshot` in `HomeWidgetPreferences` (`lib/home/widget_snapshot.dart`).
-- Deep links `wambito://{add,capture,due,progress,home}` (`lib/launch/launch_links.dart`).
+- Deep links `wambito://{add,capture,due,progress,home}` (`lib/launch/launch_links.dart`), plus
+  `wambito://review/<id>` (Android side done in `LaunchLinks.kt`; the Dart side comes with the review screen).
 
 ## Android (`android/app/src/main/kotlin/com/wambito/app/`)
 
@@ -28,7 +29,13 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
   queued, sent or logged. `CaptureListener` (a `NotificationListenerService`) reads only the packages
   enabled in `CaptureSettings` (prefs `wambito.capture.sources`), hands them to `BankParsers` (empty
   until real samples exist) and queues the result; `CaptureChannel` is `wambito/capture`: `status`,
-  `setSource`, `openAccessSettings`, `openAppInfo`, `clearQueue` (on sign-out). Voice: Vosk, never Android's SpeechRecognizer. Passkeys: androidx.credentials.
+  `setSource`, `openAccessSettings`, `openAppInfo`, `clearQueue` (on sign-out). `CapturePoster` (the
+  default `CaptureHooks.notifier`) posts the silent notification per detected transaction on channel
+  `wambito.capture` (LOW; id = `notificationId(transactionId)`, so a merged answer updates it; a group
+  summary from 2): "Bien" is an immutable broadcast to the non-exported `ConfirmReceiver` →
+  `CaptureScheduler.enqueueConfirm` → `ConfirmCaptureWorker` (POST review, then cancels the
+  notification), "Cambiar" opens `wambito://review/<id>` through the launch alias. Words in
+  `CaptureText` (strings `capture_*`, language from `NoticeSettings`). Voice: Vosk, never Android's SpeechRecognizer. Passkeys: androidx.credentials.
 
 ## Generated
 

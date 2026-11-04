@@ -32,7 +32,13 @@ object LaunchLinks {
 
     /** A tap on the widget itself (not its ＋ or 🎤): home, whatever the widget's area. */
     val HOME: Uri = Uri.parse("wambito://home")
-    private val HOSTS = setOf("add", "capture", "due", "progress", "home")
+    private val HOSTS = setOf("add", "capture", "due", "progress", "home", "review")
+
+    /** `wambito://review/<id>` opens a detected transaction's review ("Cambiar" on its notification). */
+    val REVIEW: Uri = Uri.parse("wambito://review")
+
+    /** The link for transaction [id]'s review. */
+    fun review(id: String): Uri = Uri.parse("$REVIEW/${Uri.encode(id)}")
 
     /** The not-exported entry the links come through (an alias of `MainActivity`). */
     const val ALIAS = "com.wambito.app.LaunchLinkAlias"
@@ -54,7 +60,12 @@ object LaunchLinks {
         val data = intent.data ?: return null
         if (data.scheme != SCHEME || data.host !in HOSTS) return null
         val path = data.path.orEmpty()
-        if (path.isNotEmpty() && path != "/") return null
+        if (data.host == "review") {
+            // Exactly one segment: the transaction's id.
+            if (data.pathSegments.size != 1 || data.pathSegments[0].isEmpty()) return null
+        } else if (path.isNotEmpty() && path != "/") {
+            return null
+        }
         return data.toString()
     }
 

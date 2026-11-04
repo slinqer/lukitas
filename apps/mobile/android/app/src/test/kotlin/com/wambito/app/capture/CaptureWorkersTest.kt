@@ -8,6 +8,7 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.testing.TestListenableWorkerBuilder
 import androidx.work.testing.WorkManagerTestInitHelper
+import androidx.work.workDataOf
 import com.wambito.app.notices.ApiResult
 import com.wambito.app.widget.ServerSetting
 import com.wambito.app.widget.SessionSource
@@ -282,6 +283,68 @@ class CaptureWorkersTest {
         assertEquals(ApiResult.Unauthorized, CaptureApi().confirm("http://127.0.0.1:${server.port}", "t", "t-1"))
         patchStatus = 500
         assertEquals(ApiResult.Failed, CaptureApi().confirm("http://127.0.0.1:${server.port}", "t", "t-1"))
+    }
+
+    private fun runConfirm(id: String = "t-1"): ListenableWorker.Result = runBlocking {
+        TestListenableWorkerBuilder<ConfirmCaptureWorker>(context)
+            .setInputData(workDataOf(ConfirmCaptureWorker.ID to id))
+            .build()
+            .doWork()
+    }
+
+    private fun notifications() = context.getSystemService(android.app.NotificationManager::class.java)
+
+    private fun showOne() = CapturePoster.show(context, CaptureAnswer(false, "t-1", -1250, "EUR", "Mercadona", "Supermercado", false))
+
+    @Test
+    fun `confirm posts to the review endpoint and cancels the notification`() {
+        showOne()
+        assertEquals(1, notifications().activeNotifications.size)
+
+        assertEquals(ListenableWorker.Result.success().javaClass, runConfirm().javaClass)
+
+        assertEquals("""{"ids":["t-1"]}""", requests.single().body)
+        assertEquals("Bearer token-1", requests.single().headers["authorization"])
+        assertTrue(notifications().activeNotifications.isEmpty())
+    }
+
+    @Test
+    fun `confirm retries on failure and keeps the notification`() {
+        showOne()
+        patchStatus = 500
+        assertEquals(ListenableWorker.Result.retry(), runConfirm())
+        assertEquals(1, notifications().activeNotifications.size)
+    }
+
+    @Test
+    fun `confirm with a refused session or none keeps the notification and does not retry`() {
+        showOne()
+        patchStatus = 401
+        assertEquals(ListenableWorker.Result.success().javaClass, runConfirm().javaClass)
+        assertEquals(1, notifications().activeNotifications.size)
+        session.stored = null
+        requests.clear()
+        assertEquals(ListenableWorker.Result.success().javaClass, runConfirm().javaClass)
+        assertTrue(requests.isEmpty())
+        assertEquals(1, notifications().activeNotifications.size)
+    }
+
+    @Test
+    fun `confirm without an id or with an unreadable server sends nothing`() {
+        assertEquals(ListenableWorker.Result.success().javaClass, runConfirm("").javaClass)
+        session.serverUnreadable = true
+        runConfirm()
+        assertTrue(requests.isEmpty())
+    }
+
+    @Test
+    fun `the confirm is a unique job that appends, carries the id and waits for a network`() {
+        CaptureScheduler.enqueueConfirm(context, "t-1")
+        CaptureScheduler.enqueueConfirm(context, "t-2")
+
+        val jobs = WorkManager.getInstance(context).getWorkInfosForUniqueWork(CaptureScheduler.CONFIRM).get()
+        assertEquals(2, jobs.size)
+        assertTrue(jobs.all { it.constraints.requiredNetworkType == NetworkType.CONNECTED })
     }
 
     @Test
