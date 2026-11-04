@@ -12,9 +12,17 @@ shows the not-found page.
 
 To add one:
 
-1. The account needs a passkey (the panel asks for it before every session of work, and again
-   after 15 minutes). Add it in the app's settings.
-2. Find the account's id: in the panel's look-up (by email), or in the account's settings.
+1. The account needs a passkey. The panel asks for a passkey check for each sign-in session, and
+   again once 15 minutes have passed. Add it in the app's settings.
+2. Find the account's id. For the first admin, ask the database, from `deploy/personal` on the
+   server (put the account's own email in place of the example):
+
+   ```sh
+   docker compose exec postgres psql -U wambito -d wambito \
+     -c "select id from \"user\" where email = 'you@example.com'"
+   ```
+
+   Once there is an admin, later admins' ids are in the panel's look-up (by email).
 3. Put the id in `ADMIN_USER_IDS` in `deploy/personal/.env` on the server.
 4. Apply it: from `deploy/personal`, `docker compose up -d api` (a plain `restart` keeps the old
    environment).
@@ -46,7 +54,9 @@ log together with the action.
   the panel and write the request as the reason. In the answer, say that backups age out within 14
   days.
 - **Correction.** For a wrong or unreachable email, use the panel's email change: it sends a
-  confirmation link to the new address, valid 24 hours. Proving the requester is the account's
+  confirmation link to the new address, valid 24 hours. While `SIGN_IN_ALLOWLIST` is set, the new
+  address must be on it (add it to the `.env` and apply it as above first), otherwise the panel
+  refuses the change: the person could not sign in with it. Proving the requester is the account's
   owner is the admin's judgment; the reason records how it was checked. Other data the person
   corrects in the app.
 - **Account problems.** Sign out everywhere, revoke an assistant or remove a passkey from the same
@@ -57,7 +67,8 @@ An admin cannot delete or suspend their own account from the panel.
 ## Dry run
 
 After turning the panel on, and before the first real request, try it on a test account made for
-that purpose (never a real person's account):
+that purpose (never a real person's account). While `SIGN_IN_ALLOWLIST` is set, the test account's
+address must be on it, or it cannot sign in to make the account or to check step 3:
 
 1. Look the test account up by email.
 2. Suspend it with a reason; confirm it can no longer sign in.

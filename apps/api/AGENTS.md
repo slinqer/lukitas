@@ -22,7 +22,9 @@ Hono + Better Auth + Drizzle (`@wambito/db`), OpenAPI document "Wambito API". Ev
   `admin_audit` row in one transaction, then mail the person (`src/emails/admin.ts`, after commit;
   failures logged, never a guest/`.invalid` address). `src/services/admin/` touches identity tables
   only (`user`, `session`, `passkey`, OAuth, `email_change`, `admin_*`); finance data only through
-  `deleteAccount`.
+  `deleteAccount`. An email change refuses a new address `SIGN_IN_ALLOWLIST` does not list (409
+  `sign_in_not_allowed`, at request and confirm) or under `.invalid` (422). A suspend of a
+  suspended account, or a reactivate of an active one, is a 204 no-op: no audit row, no mail.
 - `src/routes/email-change.ts`: public `POST /v1/email-change/confirm` (mounted before
   `requireUser`), the person's end of an admin's email change; 10 per 10 min per client IP in the
   `rate_limit` table (key `email-change-confirm|<ip>`).
