@@ -19,6 +19,68 @@
       "user_not_found": "No account matches.",
       "is_guest": "This is a guest account: it has no email to change.",
       "cannot_target_self": "You can't do this to your own account. Use the app's settings, or ask another admin."
+    },
+    "home": {
+      "title": "Admin",
+      "loading": "Loading…",
+      "error": "The figures could not be loaded.",
+      "retry": "Try again",
+      "cards": {
+        "total": "Accounts",
+        "with_email": "With email",
+        "guests": "Guests",
+        "active": "Active in 30 days",
+        "signups": "Sign-ups in 7 days",
+        "previous": "The previous 7 days: {count}"
+      },
+      "chart": {
+        "title": "Sign-ups per week",
+        "subtitle": "The last 12 weeks, Monday to Sunday (UTC).",
+        "with_email": "With email",
+        "guests": "Guests",
+        "week": "Week",
+        "week_of": "{date}"
+      },
+      "suspended": "Suspended accounts: {count}",
+      "audit": {
+        "title": "Audit log",
+        "empty": "No actions recorded yet.",
+        "more": "Load more",
+        "loading_more": "Loading…",
+        "more_failed": "Could not load more.",
+        "target": "Account {id}",
+        "no_reason": "No reason",
+        "actions": {
+          "admin": {
+            "verified": "Passkey confirmed"
+          },
+          "email": {
+            "change_requested": "Email change requested",
+            "change_confirmed": "Email change confirmed"
+          },
+          "account": {
+            "delete": "Account deleted",
+            "suspend": "Account suspended",
+            "reactivate": "Account reactivated"
+          },
+          "sessions": {
+            "revoke": "Sessions signed out"
+          },
+          "assistant": {
+            "revoke": "Assistant disconnected"
+          },
+          "passkey": {
+            "remove": "Passkey removed"
+          }
+        }
+      },
+      "lookup": {
+        "title": "Look up an account",
+        "label": "Account email or id",
+        "button": "Look up",
+        "busy": "Looking…",
+        "miss": "No account with that email or id"
+      }
     }
   }
 }

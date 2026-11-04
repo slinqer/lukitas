@@ -14,7 +14,7 @@ assistants, and a fake-backend demo (`/demo/*`).
   the landing); `app/api/` OpenAPI client; `app/auth/` session and passkeys; `app/demo/`;
   `app/feedback/` sounds, vibration, `Celebration`; `app/theme/`; `app/site/` origins/build env;
   `app/admin/` the admin panel (`/admin/*`, layout `routes/admin.tsx`): `useAdmin`/`adminFetch`
-  (a 401 `admin_verification_required` waits for the passkey, then retries), `VerifyScreen`.
+  (a 401 `admin_verification_required` waits for the passkey, then retries), `VerifyScreen`, `HomeScreen` (metrics, audit, look-up; stories `Admin/Home`, web-only, not in parity.json).
 - Storage: only `readStored/writeStored/removeStored` in `app/lib/stored.ts` (keys
   `wambito.<name>`, `sessionArea()` for session data).
 - i18n: `app/i18n/messages/{es,en,it,pt}.json` public pages, `app.{es,en,it,pt}.json` the rest.

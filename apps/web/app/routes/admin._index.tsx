@@ -1,7 +1,6 @@
-/**
- * `/admin`: the panel's home (metrics, look-up, the audit list), built on the admin layout's
- * `useAdmin` (Task 10). Until then, nothing but the layout's verification.
- */
+import { HomeScreen } from "../admin/HomeScreen.tsx";
+
+/** `/admin`: the panel's home (metrics, the audit list, the look-up box). */
 export default function AdminHomeRoute() {
-  return null;
+  return <HomeScreen />;
 }

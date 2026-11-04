@@ -19,6 +19,68 @@
       "user_not_found": "Ninguna cuenta coincide.",
       "is_guest": "Es una cuenta de invitado: no tiene correo que cambiar.",
       "cannot_target_self": "No puedes hacer esto con tu propia cuenta. Usa los ajustes de la app o pídeselo a otra persona administradora."
+    },
+    "home": {
+      "title": "Administración",
+      "loading": "Cargando…",
+      "error": "No se pudieron cargar las cifras.",
+      "retry": "Reintentar",
+      "cards": {
+        "total": "Cuentas",
+        "with_email": "Con correo",
+        "guests": "Invitados",
+        "active": "Activas en 30 días",
+        "signups": "Altas en 7 días",
+        "previous": "Los 7 días anteriores: {count}"
+      },
+      "chart": {
+        "title": "Altas por semana",
+        "subtitle": "Las últimas 12 semanas, de lunes a domingo (UTC).",
+        "with_email": "Con correo",
+        "guests": "Invitados",
+        "week": "Semana",
+        "week_of": "{date}"
+      },
+      "suspended": "Cuentas suspendidas: {count}",
+      "audit": {
+        "title": "Registro de auditoría",
+        "empty": "Aún no hay acciones registradas.",
+        "more": "Cargar más",
+        "loading_more": "Cargando…",
+        "more_failed": "No se pudo cargar más.",
+        "target": "Cuenta {id}",
+        "no_reason": "Sin motivo",
+        "actions": {
+          "admin": {
+            "verified": "Passkey confirmada"
+          },
+          "email": {
+            "change_requested": "Cambio de correo pedido",
+            "change_confirmed": "Cambio de correo confirmado"
+          },
+          "account": {
+            "delete": "Cuenta eliminada",
+            "suspend": "Cuenta suspendida",
+            "reactivate": "Cuenta reactivada"
+          },
+          "sessions": {
+            "revoke": "Sesiones cerradas"
+          },
+          "assistant": {
+            "revoke": "Asistente desconectado"
+          },
+          "passkey": {
+            "remove": "Passkey eliminada"
+          }
+        }
+      },
+      "lookup": {
+        "title": "Buscar una cuenta",
+        "label": "Correo o id de la cuenta",
+        "button": "Buscar",
+        "busy": "Buscando…",
+        "miss": "Ninguna cuenta con ese correo o id"
+      }
     }
   }
 }

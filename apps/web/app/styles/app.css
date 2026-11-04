@@ -1277,6 +1277,25 @@
   .lk-trend-hit:hover {
     background: color-mix(in srgb, var(--ink-muted) 8%, transparent);
   }
+  .lk-admin-bars .recharts-cartesian-grid line {
+    stroke: var(--stroke);
+  }
+  .lk-admin-bars .recharts-cartesian-axis-tick-value {
+    fill: var(--ink-muted);
+    font-family: var(--font-text);
+    font-size: 11px;
+    font-weight: 800;
+  }
+  .lk-admin-bars-email .recharts-rectangle,
+  .lk-admin-swatch-email {
+    fill: var(--brand);
+    background: var(--brand);
+  }
+  .lk-admin-bars-guests .recharts-rectangle,
+  .lk-admin-swatch-guests {
+    fill: var(--candy);
+    background: var(--candy);
+  }
   .lk-swatch-income {
     background: var(--chart-income);
   }
