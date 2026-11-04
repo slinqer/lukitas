@@ -17,9 +17,11 @@ import {
   signOutEverywhere,
   suspendUser,
 } from "../services/admin/actions.ts";
+import { requestEmailChange } from "../services/admin/email-change.ts";
 import { lookupUser } from "../services/admin/lookup.ts";
 import { adminMetrics } from "../services/admin/metrics.ts";
 import { adminVerifyOptions, verifyAdminAssertion } from "../services/admin/verify.ts";
+import { nowOf } from "../services/time.ts";
 
 /** The reason an admin gives for an action (spec §5): required, 1–300 characters. */
 export const reasonField = z.string().trim().min(1).max(300);
@@ -34,6 +36,13 @@ const DeleteBody = z
     confirm: z.string().min(1),
   })
   .openapi("AdminDeleteUser");
+const EmailChangeBody = z
+  .object({
+    reason: reasonField,
+    /** Trimmed and lowercased, as sign-in reads an email. */
+    newEmail: z.string().trim().toLowerCase().pipe(z.email().max(254)),
+  })
+  .openapi("AdminEmailChange");
 const UserParam = z.object({ id: z.string().min(1) });
 
 const AdminMe = z
@@ -363,6 +372,27 @@ export function adminRoutes(deps: AppDeps, auth: Auth) {
       const { id } = c.req.valid("param");
       const { reason, confirm } = c.req.valid("json");
       await deleteUser(ctx(c, reason), id, confirm);
+      return c.body(null, 204);
+    },
+  );
+
+  app.openapi(
+    createRoute({
+      method: "post",
+      path: "/v1/admin/users/{id}/email-change",
+      operationId: "adminRequestEmailChange",
+      tags,
+      middleware: [verified] as const,
+      request: { params: UserParam, body: jsonBody(EmailChangeBody) },
+      responses: {
+        204: { description: "A confirmation link is on its way to the new email (valid 24 hours)" },
+        ...problems(401, 404, 409, 422),
+      },
+    }),
+    async (c) => {
+      const { id } = c.req.valid("param");
+      const { reason, newEmail } = c.req.valid("json");
+      await requestEmailChange({ ...ctx(c, reason), now: nowOf(deps) }, id, newEmail);
       return c.body(null, 204);
     },
   );

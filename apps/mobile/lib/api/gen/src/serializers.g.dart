@@ -8,6 +8,17 @@ part of 'serializers.dart';
 
 Serializers _$serializers =
     (Serializers().toBuilder()
+          ..add(AdminActionReason.serializer)
+          ..add(AdminAuditEntry.serializer)
+          ..add(AdminAuditPage.serializer)
+          ..add(AdminDeleteUser.serializer)
+          ..add(AdminEmailChange.serializer)
+          ..add(AdminMe.serializer)
+          ..add(AdminMetrics.serializer)
+          ..add(AdminMetricsWeeklyInner.serializer)
+          ..add(AdminUser.serializer)
+          ..add(AdminUserAssistantsInner.serializer)
+          ..add(AdminUserPasskeysInner.serializer)
           ..add(Assistant.serializer)
           ..add(AssistantList.serializer)
           ..add(Category.serializer)
@@ -31,12 +42,20 @@ Serializers _$serializers =
           ..add(CreateTransactionStatusEnum.serializer)
           ..add(CreateTransactionsBatch.serializer)
           ..add(DeleteTransactionsBatch.serializer)
+          ..add(EmailChangeConfirm.serializer)
           ..add(FileImport.serializer)
           ..add(FileImportStatusEnum.serializer)
           ..add(ImportStats.serializer)
           ..add(ImportStatsAverageMonthlySpendingInner.serializer)
           ..add(ImportStatsAverageWindow.serializer)
           ..add(ImportStatsRejectedInner.serializer)
+          ..add(PasskeyAssertion.serializer)
+          ..add(PasskeyAssertionAuthenticatorAttachmentEnum.serializer)
+          ..add(PasskeyAssertionResponse.serializer)
+          ..add(PasskeyAssertionTypeEnum.serializer)
+          ..add(PasskeyRequestOptions.serializer)
+          ..add(PasskeyRequestOptionsAllowCredentialsInner.serializer)
+          ..add(PasskeyRequestOptionsAllowCredentialsInnerTypeEnum.serializer)
           ..add(Problem.serializer)
           ..add(ProblemErrorsInner.serializer)
           ..add(Profile.serializer)
@@ -66,6 +85,22 @@ Serializers _$serializers =
           ..add(UpdateTransaction.serializer)
           ..add(UpdateTransactionStatusEnum.serializer)
           ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(AdminAuditEntry)]),
+            () => ListBuilder<AdminAuditEntry>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(AdminMetricsWeeklyInner)]),
+            () => ListBuilder<AdminMetricsWeeklyInner>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(AdminUserPasskeysInner)]),
+            () => ListBuilder<AdminUserPasskeysInner>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(AdminUserAssistantsInner)]),
+            () => ListBuilder<AdminUserAssistantsInner>(),
+          )
+          ..addBuilderFactory(
             const FullType(BuiltList, const [const FullType(Assistant)]),
             () => ListBuilder<Assistant>(),
           )
@@ -82,8 +117,25 @@ Serializers _$serializers =
             () => ListBuilder<CreateTransaction>(),
           )
           ..addBuilderFactory(
+            const FullType(BuiltList, const [
+              const FullType(PasskeyRequestOptionsAllowCredentialsInner),
+            ]),
+            () => ListBuilder<PasskeyRequestOptionsAllowCredentialsInner>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltMap, const [
+              const FullType(String),
+              const FullType.nullable(JsonObject),
+            ]),
+            () => MapBuilder<String, JsonObject?>(),
+          )
+          ..addBuilderFactory(
             const FullType(BuiltList, const [const FullType(ProblemErrorsInner)]),
             () => ListBuilder<ProblemErrorsInner>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(String)]),
+            () => ListBuilder<String>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, const [const FullType(String)]),
@@ -126,6 +178,17 @@ Serializers _$serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, const [const FullType(TrendReportMonthsInner)]),
             () => ListBuilder<TrendReportMonthsInner>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltMap, const [const FullType(String), const FullType(String)]),
+            () => MapBuilder<String, String>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltMap, const [
+              const FullType(String),
+              const FullType.nullable(JsonObject),
+            ]),
+            () => MapBuilder<String, JsonObject?>(),
           ))
         .build();
 

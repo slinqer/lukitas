@@ -15,7 +15,7 @@ export interface ActionContext {
   reason: string;
 }
 
-interface Target {
+export interface Target {
   id: string;
   email: string;
   isAnonymous: boolean;
@@ -23,7 +23,7 @@ interface Target {
 }
 
 /** The account, read before the action: the notice goes to this email, in this locale. */
-async function target(db: Db | Tx, userId: string): Promise<Target> {
+export async function target(db: Db | Tx, userId: string): Promise<Target> {
   const [row] = await db
     .select({
       id: user.id,
@@ -47,8 +47,8 @@ function notSelf(ctx: ActionContext, userId: string) {
  * Mails the notice after the commit. A guest has no real address (its placeholder is under
  * `.invalid`), so it gets nothing. A failed send is logged: the action stays done.
  */
-async function notify(
-  ctx: ActionContext,
+export async function notify(
+  ctx: Pick<ActionContext, "mailer" | "webUrl">,
   to: Target,
   kind: AdminMailKind,
   extra: Omit<AdminMailExtra, "webUrl"> = {},

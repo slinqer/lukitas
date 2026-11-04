@@ -11,6 +11,7 @@ import { requireUser } from "./http/session.ts";
 import { adminRoutes } from "./routes/admin.ts";
 import { assistantRoutes } from "./routes/assistants.ts";
 import { categoryRoutes } from "./routes/categories.ts";
+import { emailChangeRoutes } from "./routes/email-change.ts";
 import { importRoutes } from "./routes/imports.ts";
 import { meRoutes } from "./routes/me.ts";
 import { recurrenceRoutes } from "./routes/recurrences.ts";
@@ -65,6 +66,8 @@ export function createApp(deps: AppDeps) {
   // refused request gets a 404 (not requireUser's 401 or the scopes' 403), so the panel does not
   // announce itself.
   app.route("/", adminRoutes(deps, auth));
+  // Public: the person confirming an admin's email change is usually signed out (rate-limited).
+  app.route("/", emailChangeRoutes(deps));
   app.use("/v1/*", requireUser(auth, deps.config));
   app.use("/v1/*", assistantScopes());
   app.route("/", meRoutes(deps));

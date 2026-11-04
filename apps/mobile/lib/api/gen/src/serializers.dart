@@ -14,6 +14,17 @@ import 'package:built_value/iso_8601_date_time_serializer.dart';
 import 'package:wambito/api/gen/src/date_serializer.dart';
 import 'package:wambito/api/gen/src/model/date.dart';
 
+import 'package:wambito/api/gen/src/model/admin_action_reason.dart';
+import 'package:wambito/api/gen/src/model/admin_audit_entry.dart';
+import 'package:wambito/api/gen/src/model/admin_audit_page.dart';
+import 'package:wambito/api/gen/src/model/admin_delete_user.dart';
+import 'package:wambito/api/gen/src/model/admin_email_change.dart';
+import 'package:wambito/api/gen/src/model/admin_me.dart';
+import 'package:wambito/api/gen/src/model/admin_metrics.dart';
+import 'package:wambito/api/gen/src/model/admin_metrics_weekly_inner.dart';
+import 'package:wambito/api/gen/src/model/admin_user.dart';
+import 'package:wambito/api/gen/src/model/admin_user_assistants_inner.dart';
+import 'package:wambito/api/gen/src/model/admin_user_passkeys_inner.dart';
 import 'package:wambito/api/gen/src/model/assistant.dart';
 import 'package:wambito/api/gen/src/model/assistant_list.dart';
 import 'package:wambito/api/gen/src/model/category.dart';
@@ -30,11 +41,16 @@ import 'package:wambito/api/gen/src/model/create_transaction.dart';
 import 'package:wambito/api/gen/src/model/create_transaction_repeat.dart';
 import 'package:wambito/api/gen/src/model/create_transactions_batch.dart';
 import 'package:wambito/api/gen/src/model/delete_transactions_batch.dart';
+import 'package:wambito/api/gen/src/model/email_change_confirm.dart';
 import 'package:wambito/api/gen/src/model/file_import.dart';
 import 'package:wambito/api/gen/src/model/import_stats.dart';
 import 'package:wambito/api/gen/src/model/import_stats_average_monthly_spending_inner.dart';
 import 'package:wambito/api/gen/src/model/import_stats_average_window.dart';
 import 'package:wambito/api/gen/src/model/import_stats_rejected_inner.dart';
+import 'package:wambito/api/gen/src/model/passkey_assertion.dart';
+import 'package:wambito/api/gen/src/model/passkey_assertion_response.dart';
+import 'package:wambito/api/gen/src/model/passkey_request_options.dart';
+import 'package:wambito/api/gen/src/model/passkey_request_options_allow_credentials_inner.dart';
 import 'package:wambito/api/gen/src/model/problem.dart';
 import 'package:wambito/api/gen/src/model/problem_errors_inner.dart';
 import 'package:wambito/api/gen/src/model/profile.dart';
@@ -57,6 +73,17 @@ import 'package:wambito/api/gen/src/model/update_transaction.dart';
 part 'serializers.g.dart';
 
 @SerializersFor([
+  AdminActionReason,
+  AdminAuditEntry,
+  AdminAuditPage,
+  AdminDeleteUser,
+  AdminEmailChange,
+  AdminMe,
+  AdminMetrics,
+  AdminMetricsWeeklyInner,
+  AdminUser,
+  AdminUserAssistantsInner,
+  AdminUserPasskeysInner,
   Assistant,
   AssistantList,
   Category,
@@ -73,11 +100,16 @@ part 'serializers.g.dart';
   CreateTransactionRepeat,
   CreateTransactionsBatch,
   DeleteTransactionsBatch,
+  EmailChangeConfirm,
   FileImport,
   ImportStats,
   ImportStatsAverageMonthlySpendingInner,
   ImportStatsAverageWindow,
   ImportStatsRejectedInner,
+  PasskeyAssertion,
+  PasskeyAssertionResponse,
+  PasskeyRequestOptions,
+  PasskeyRequestOptionsAllowCredentialsInner,
   Problem,
   ProblemErrorsInner,
   Profile,
@@ -100,6 +132,14 @@ part 'serializers.g.dart';
 Serializers serializers =
     (_$serializers.toBuilder()
           ..addBuilderFactory(
+            const FullType(BuiltMap, [FullType(String), FullType(String)]),
+            () => MapBuilder<String, String>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(PasskeyRequestOptionsAllowCredentialsInner)]),
+            () => ListBuilder<PasskeyRequestOptionsAllowCredentialsInner>(),
+          )
+          ..addBuilderFactory(
             const FullType(BuiltList, [FullType(CategoryReportItemsInner)]),
             () => ListBuilder<CategoryReportItemsInner>(),
           )
@@ -116,12 +156,20 @@ Serializers serializers =
             () => ListBuilder<ProblemErrorsInner>(),
           )
           ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(AdminMetricsWeeklyInner)]),
+            () => ListBuilder<AdminMetricsWeeklyInner>(),
+          )
+          ..addBuilderFactory(
             const FullType(BuiltList, [FullType(Category)]),
             () => ListBuilder<Category>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(Transaction)]),
             () => ListBuilder<Transaction>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(AdminUserPasskeysInner)]),
+            () => ListBuilder<AdminUserPasskeysInner>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(TransactionSuggestion)]),
@@ -136,8 +184,20 @@ Serializers serializers =
             () => ListBuilder<SummaryCategoriesInner>(),
           )
           ..addBuilderFactory(
+            const FullType(BuiltMap, [FullType(String), FullType.nullable(JsonObject)]),
+            () => MapBuilder<String, JsonObject?>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(AdminUserAssistantsInner)]),
+            () => ListBuilder<AdminUserAssistantsInner>(),
+          )
+          ..addBuilderFactory(
             const FullType(BuiltList, [FullType(CreateTransaction)]),
             () => ListBuilder<CreateTransaction>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(AdminAuditEntry)]),
+            () => ListBuilder<AdminAuditEntry>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(String)]),

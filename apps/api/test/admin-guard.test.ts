@@ -24,6 +24,7 @@ const ADMIN_ROUTES: [string, string][] = [
   ["GET", "/v1/admin/me"],
   ["POST", "/v1/admin/verify/options"],
   ["POST", "/v1/admin/verify"],
+  ["POST", "/v1/admin/users/some-id/email-change"],
   ["GET", "/v1/admin/nothing-here"],
 ];
 
