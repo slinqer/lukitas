@@ -1,4 +1,4 @@
-import { categories, merchantCategories, transactions } from "@wambito/db";
+import { accounts, categories, merchantCategories, transactions } from "@wambito/db";
 import { and, eq } from "@wambito/db/orm";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { createTestApp, type TestApp } from "./harness.ts";
@@ -163,18 +163,36 @@ describe("de-duplication", () => {
 
   test("never merges with a hand-typed transaction", async () => {
     const cat = await json(await capture({ amount: 6001, ...at("2026-11-03T10:00:00Z") }));
-    const manual = await t.request("POST", "/v1/transactions", {
-      headers: a.headers,
-      body: {
-        categoryId: cat.transaction.categoryId,
-        name: "by hand",
-        amount: -6666,
-        date: "2026-11-04",
-      },
+    await t.admin.insert(transactions).values({
+      userId: a.userId,
+      accountId: (await t.admin.select().from(accounts).where(eq(accounts.userId, a.userId)))[0]
+        ?.id as string,
+      categoryId: cat.transaction.categoryId,
+      name: "by hand",
+      amount: -6666,
+      currency: cat.transaction.currency,
+      date: "2026-11-04",
+      source: "app",
+      capturedAt: new Date("2026-11-04T10:00:00Z"),
     });
-    expect(manual.status).toBe(201);
-    const out = await json(await capture({ amount: 6666, ...at("2026-11-04T10:00:00Z") }));
+    const out = await json(await capture({ amount: 6666, ...at("2026-11-04T10:02:00Z") }));
     expect(out.result).toBe("created");
+  });
+
+  test("merges a foreign-currency capture", async () => {
+    const first = await json(
+      await capture({ currency: "USD", amount: 8800, ...at("2026-11-04T10:00:00Z") }),
+    );
+    const second = await json(
+      await capture({
+        currency: "USD",
+        amount: 8800,
+        source: "google_wallet",
+        ...at("2026-11-04T10:04:00Z"),
+      }),
+    );
+    expect(second.result).toBe("merged");
+    expect(second.transaction.id).toBe(first.transaction.id);
   });
 
   test("isolates users", async () => {
@@ -199,6 +217,19 @@ describe("category", () => {
     const out = await json(await capture({ merchant: "MERCADONA 1234" }, { user: c }));
     expect(out.transaction.categoryId).toBe(cat?.id);
     expect(out.category).toEqual({ name: "Super", fallback: false });
+  });
+
+  test("ignores a remembered category of the other kind", async () => {
+    const c = await t.signIn("memory3@wambito.test");
+    const [cat] = await t.admin
+      .insert(categories)
+      .values({ userId: c.userId, name: "Salary", kind: "income", icon: "💰", color: "#fff" })
+      .returning();
+    await t.admin
+      .insert(merchantCategories)
+      .values({ userId: c.userId, merchantKey: "mercadona", categoryId: cat?.id as string });
+    const out = await json(await capture({}, { user: c }));
+    expect(out.category).toEqual({ name: "Otros gastos", fallback: true });
   });
 
   test("falls back when the remembered category was archived", async () => {

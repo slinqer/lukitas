@@ -6,14 +6,14 @@ import {
   todayIn,
 } from "@wambito/core";
 import { categories, merchantCategories, type Tx, transactions } from "@wambito/db";
-import { and, eq, isNull, sql } from "@wambito/db/orm";
+import { and, eq, gte, isNull, lte, sql } from "@wambito/db/orm";
 import { defaultAccount, toTransactionDto } from "./transactions.ts";
 
 type Locale = keyof typeof FALLBACK_CATEGORY_NAMES;
 type Kind = CreateCapture["kind"];
 
 /** Two captures this close in time, with the same kind, amount and currency, are one purchase. */
-const DUPLICATE_WINDOW_SECONDS = 10 * 60;
+const DUPLICATE_WINDOW_MS = 10 * 60 * 1000;
 
 const asLocale = (value: string): Locale =>
   value in FALLBACK_CATEGORY_NAMES ? (value as Locale) : "es";
@@ -104,6 +104,8 @@ export async function saveCapture(
   const account = await defaultAccount(tx, { lock: true });
   const signed = input.kind === "expense" ? -input.amount : input.amount;
   const capturedAt = new Date(input.capturedAt);
+  const from = new Date(capturedAt.getTime() - DUPLICATE_WINDOW_MS);
+  const to = new Date(capturedAt.getTime() + DUPLICATE_WINDOW_MS);
 
   const [existing] = await tx
     .select({ row: transactions, categoryName: categories.name, systemKey: categories.systemKey })
@@ -115,9 +117,15 @@ export async function saveCapture(
         eq(transactions.source, "capture"),
         eq(transactions.amount, signed),
         eq(transactions.currency, account.currency),
+        // The notified currency lives only in the note, so editing the note of a capture within
+        // the window stops it merging.
         sql`${transactions.note} is not distinct from ${noteFor(input, account.currency)}`,
-        sql`abs(extract(epoch from (${transactions.capturedAt} - ${capturedAt.toISOString()}::timestamptz))) <= ${DUPLICATE_WINDOW_SECONDS}`,
+        gte(transactions.capturedAt, from),
+        lte(transactions.capturedAt, to),
       ),
+    )
+    .orderBy(
+      sql`abs(extract(epoch from (${transactions.capturedAt} - ${capturedAt.toISOString()}::timestamptz)))`,
     )
     .limit(1);
   if (existing) {
