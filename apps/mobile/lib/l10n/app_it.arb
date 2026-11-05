@@ -724,6 +724,7 @@
   "autoCaptureHowLink": "Come funziona?",
   "autoCaptureHowNext": "Avanti",
   "autoCaptureHowDone": "Capito",
+  "autoCaptureHowStepOf": "Passo {step} di {total}",
   "autoCaptureHowDisclosure": "Wambito legge le notifiche delle app che attivi. Il testo non lascia mai il tuo telefono.",
   "autoCaptureHowPayTitle": "Paghi come sempre",
   "autoCaptureHowPayBody": "Con Revolut o Google Wallet. La tua banca ti manda la sua notifica, come sempre.",

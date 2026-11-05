@@ -158,7 +158,14 @@ export function LearnDemo() {
           <span className="lk-capture-row-main">
             <span className="lk-capture-row-name">{DEMO.merchant}</span>
             <span className="lk-capture-row-sub">
-              {n === 0 ? t("other_expenses") : t("eating_out")}
+              {n === 0 ? (
+                <>
+                  {`${t("other_expenses")} · `}
+                  <span className="lk-capture-review">{t("review")}</span>
+                </>
+              ) : (
+                t("eating_out")
+              )}
             </span>
           </span>
           {n === 1 ? (

@@ -14,8 +14,9 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
   state, restricted-settings steps). "¿Cómo funciona?" (`how_capture_works.dart`, demos in
   `capture_demos.dart`, twin of `apps/web/app/features/capture/`): five steps in an `LkSheet`
   `PageView`, shown on the first switch on (`askAccess: true`, ends with "Activar acceso", the
-  prominent disclosure) and from the section's link (ends with "Entendido"). `capture_platform.dart` wraps the
-  `wambito/capture` channel (`autoCapturePlatformProvider`; no channel ⇒ `status()` null ⇒ the section
+  prominent disclosure) and from the section's link (ends with "Entendido"); dots, Siguiente and
+  the last step's disclosure and button sit in the sheet's stuck footer. `capture_platform.dart`
+  wraps the `wambito/capture` channel (`autoCapturePlatformProvider`; no channel ⇒ `status()` null ⇒ the section
   hides); `SessionController.signOut`/`accountDeleted` call its `clearQueue()`, and every sign-in
   (`_signedIn`) and a start the server confirms call `sendQueued(userId)` (a 401 keeps the queue).
   Tests fake it with

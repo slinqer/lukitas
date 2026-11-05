@@ -31,13 +31,17 @@ const _arrowDown = 'M12 5v14M6 13l6 6 6-6';
 TextStyle _text(double size, FontWeight weight, Color color) =>
     LkText.body.copyWith(fontSize: size, fontWeight: weight, color: color);
 
-/// Negative amounts carry their minus; only income gets a plus.
-String _money(BuildContext context, int cents) => formatMoney(
+/// [cents] as money: negative amounts carry their minus; a plus only with [plus] (the web's
+/// `money(cents)` against `money(cents, plus(cents))`).
+String _money(BuildContext context, int cents, {bool plus = false}) => formatMoney(
   cents,
   _Demo.currency,
   Localizations.localeOf(context).languageCode,
-  sign: cents > 0 ? MoneySign.always : MoneySign.auto,
+  sign: plus ? MoneySign.always : MoneySign.auto,
 );
+
+/// A movement's amount: income gets its plus, an expense its minus.
+String _signed(BuildContext context, int cents) => _money(context, cents, plus: cents > 0);
 
 /// `.lk-capture-demo`: the sunken box every demo sits in, hidden from assistive technology.
 class _DemoBox extends StatelessWidget {
@@ -171,7 +175,11 @@ class _Notification extends StatelessWidget {
                               borderRadius: LkSurface.radius(LkRadius.pill),
                               border: Border.all(color: on, width: 2),
                             ),
-                            child: Text(action, style: _text(13, FontWeight.w900, on)),
+                            // Android writes a notification's actions in upper case.
+                            child: Text(
+                              LkText.upperCase(action),
+                              style: _text(13, FontWeight.w900, on),
+                            ),
                           ),
                       ],
                     ),
@@ -252,7 +260,7 @@ class _Row extends StatelessWidget {
             child: _StrokeIcon(_check, size: 14, width: 3, color: colors.bg),
           ),
         Text(
-          _money(context, cents),
+          _signed(context, cents),
           softWrap: false,
           style: LkText.amount.copyWith(color: cents < 0 ? colors.over : colors.good),
         ),
@@ -281,7 +289,7 @@ class _Pair extends StatelessWidget {
           icon: 'R',
           app: _Demo.bank,
           title: title,
-          line: '💳 ${_money(context, cents)}',
+          line: '💳 ${_signed(context, cents)}',
         ),
         Center(
           child: Container(
@@ -440,6 +448,7 @@ class LearnDemo extends StatelessWidget {
           name: _Demo.merchant,
           cents: _Demo.expense,
           category: l10n.autoCaptureHowOtherExpenses,
+          review: true,
         ),
         _Row(
           glyph: '🍽️',

@@ -3508,7 +3508,7 @@
   },
   "autoCaptureTitle": "Captura automática",
   "@autoCaptureTitle": {
-    "description": "Settings: the automatic capture card's title, also the explainer's."
+    "description": "Settings: the automatic capture card's title, also the how it works sheet's on the first switch on."
   },
   "autoCaptureLead": "Anota tus gastos e ingresos a partir de las notificaciones de Revolut y Google Wallet.",
   "@autoCaptureLead": {
@@ -3529,6 +3529,14 @@
   "autoCaptureHowDone": "Entendido",
   "@autoCaptureHowDone": {
     "description": "How it works: button on the last step, closes the screen."
+  },
+  "autoCaptureHowStepOf": "Paso {step} de {total}",
+  "@autoCaptureHowStepOf": {
+    "description": "How it works: what a screen reader says for a dot under the steps.",
+    "placeholders": {
+      "step": {"type": "int", "example": "2"},
+      "total": {"type": "int", "example": "5"}
+    }
   },
   "autoCaptureHowDisclosure": "Wambito lee las notificaciones de las apps que actives. El texto nunca sale de tu teléfono.",
   "@autoCaptureHowDisclosure": {

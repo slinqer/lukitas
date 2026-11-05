@@ -1921,6 +1921,7 @@
   "autoCaptureHowLink": "How does it work?",
   "autoCaptureHowNext": "Next",
   "autoCaptureHowDone": "Got it",
+  "autoCaptureHowStepOf": "Step {step} of {total}",
   "autoCaptureHowDisclosure": "Wambito reads the notifications of the apps you turn on. The text never leaves your phone.",
   "autoCaptureHowPayTitle": "You pay as usual",
   "autoCaptureHowPayBody": "With Revolut or Google Wallet. Your bank sends its notification, as always.",

@@ -25,22 +25,31 @@ enum CaptureHowStep { pay, reads, decide, learns, next }
 /// Opens the steps. With [askAccess] (the first switch on) the last step ends with "Activar
 /// acceso" and the answer is true when the person goes on; otherwise it ends with "Entendido".
 /// Closing the sheet answers false.
+///
+/// The pages scroll with the sheet; the dots and the button (and, on the last step, the disclosure
+/// right above it) stay at the sheet's bottom, always in view.
 Future<bool> showHowCaptureWorks(BuildContext context, {required bool askAccess}) async {
   final l10n = AppLocalizations.of(context);
   final go = await LkSheet.show<bool>(
     context,
-    title: l10n.autoCaptureHowLink,
-    children: [HowCaptureWorks(askAccess: askAccess)],
+    title: askAccess ? l10n.autoCaptureTitle : l10n.autoCaptureHowLink,
+    wrap: (sheet) => HowCaptureWorks(askAccess: askAccess, child: sheet),
+    children: const [_HowPages()],
+    stuck: const [_HowFooter()],
   );
   return go ?? false;
 }
 
-/// The steps' pages, the dots under them and the button that moves on (or ends).
+/// Holds the steps' state (the page in view and each page's height) for the sheet it wraps: the
+/// pages in its body and the dots and button in its stuck footer.
 class HowCaptureWorks extends StatefulWidget {
-  const HowCaptureWorks({super.key, required this.askAccess});
+  const HowCaptureWorks({super.key, required this.askAccess, required this.child});
 
   /// The last step asks for notification access ("Activar acceso") instead of "Entendido".
   final bool askAccess;
+
+  /// The sheet.
+  final Widget child;
 
   @override
   State<HowCaptureWorks> createState() => _HowCaptureWorksState();
@@ -55,6 +64,10 @@ class _HowCaptureWorksState extends State<HowCaptureWorks> {
   final _heights = <int, double>{};
 
   static final _last = CaptureHowStep.values.length - 1;
+
+  /// The height before any page is measured: the scene, its gap, a title line and two body lines,
+  /// so the first frame does not draw an empty page view.
+  static const _fallbackHeight = 200 + 2 * WambitoTokens.space2 + 22 * 1.2 + 2 * 15 * 1.45;
 
   @override
   void dispose() {
@@ -74,13 +87,17 @@ class _HowCaptureWorksState extends State<HowCaptureWorks> {
     }
   }
 
+  void _turned(int page) => setState(() => _page = page);
+
   void _measured(int page, double height) {
     if (_heights[page] == height || !mounted) return;
     setState(() => _heights[page] = height);
   }
 
   double _height() {
-    final known = _heights[_page] ?? _heights.values.fold<double>(0, (a, b) => a > b ? a : b);
+    final known =
+        _heights[_page] ??
+        (_heights.isEmpty ? _fallbackHeight : _heights.values.reduce((a, b) => a > b ? a : b));
     if (!_controller.hasClients || !_controller.position.haveDimensions) return known;
     final page = _controller.page ?? _page.toDouble();
     final low = page.floor().clamp(0, _last);
@@ -91,61 +108,99 @@ class _HowCaptureWorksState extends State<HowCaptureWorks> {
   }
 
   @override
+  Widget build(BuildContext context) => _HowScope(state: this, page: _page, child: widget.child);
+}
+
+/// The steps' state, for the parts of the sheet.
+class _HowScope extends InheritedWidget {
+  const _HowScope({required this.state, required this.page, required super.child});
+
+  final _HowCaptureWorksState state;
+
+  /// The page in view.
+  final int page;
+
+  static _HowCaptureWorksState of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<_HowScope>()!.state;
+
+  // The measured heights live in the state too: any rebuild of it may change what the parts draw.
+  @override
+  bool updateShouldNotify(_HowScope old) => true;
+}
+
+/// The pages, one step each, swiped sideways.
+class _HowPages extends StatelessWidget {
+  const _HowPages();
+
+  @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final colors = context.lkColors;
-    final last = _page == _last;
+    final how = _HowScope.of(context);
     return Padding(
       padding: const EdgeInsets.only(top: WambitoTokens.space3),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: WambitoTokens.space4,
-        children: [
-          AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) => SizedBox(height: _height(), child: child),
-            child: PageView.builder(
-              controller: _controller,
-              itemCount: CaptureHowStep.values.length,
-              onPageChanged: (page) => setState(() => _page = page),
-              itemBuilder: (context, page) => OverflowBox(
-                alignment: Alignment.topCenter,
-                minHeight: 0,
-                maxHeight: double.infinity,
-                child: _MeasureHeight(
-                  onHeight: (height) => _measured(page, height),
-                  child: CaptureHowStepView(step: CaptureHowStep.values[page]),
-                ),
-              ),
+      child: AnimatedBuilder(
+        animation: how._controller,
+        builder: (context, child) => SizedBox(height: how._height(), child: child),
+        child: PageView.builder(
+          controller: how._controller,
+          itemCount: CaptureHowStep.values.length,
+          onPageChanged: how._turned,
+          itemBuilder: (context, page) => OverflowBox(
+            alignment: Alignment.topCenter,
+            minHeight: 0,
+            maxHeight: double.infinity,
+            child: _MeasureHeight(
+              onHeight: (height) => how._measured(page, height),
+              child: CaptureHowStepView(step: CaptureHowStep.values[page]),
             ),
           ),
-          _Dots(count: CaptureHowStep.values.length, current: _page, onTap: _go),
-          if (!last)
-            PressButton.text(
-              l10n.autoCaptureHowNext,
-              key: const Key('autoCapture.how.next'),
-              onPressed: () => _go(_page + 1),
-            )
-          else ...[
-            CssParagraph(
-              l10n.autoCaptureHowDisclosure,
-              style: LkText.body.copyWith(color: colors.ink),
-            ),
-            if (widget.askAccess)
-              PressButton.text(
-                l10n.autoCaptureExplainerConfirm,
-                key: const Key('autoCapture.explainer.confirm'),
-                onPressed: () => Navigator.of(context).pop(true),
-              )
-            else
-              PressButton.text(
-                l10n.autoCaptureHowDone,
-                key: const Key('autoCapture.how.done'),
-                onPressed: () => Navigator.of(context).pop(false),
-              ),
-          ],
-        ],
+        ),
       ),
+    );
+  }
+}
+
+/// The sheet's stuck footer: the dots, then Siguiente; on the last step the disclosure and the
+/// button that ends ("Activar acceso" or "Entendido").
+class _HowFooter extends StatelessWidget {
+  const _HowFooter();
+
+  @override
+  Widget build(BuildContext context) {
+    final how = _HowScope.of(context);
+    final l10n = AppLocalizations.of(context);
+    final colors = context.lkColors;
+    final page = how._page;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: WambitoTokens.space2,
+      children: [
+        _Dots(count: CaptureHowStep.values.length, current: page, onTap: how._go),
+        if (page < _HowCaptureWorksState._last)
+          PressButton.text(
+            l10n.autoCaptureHowNext,
+            key: const Key('autoCapture.how.next'),
+            onPressed: () => how._go(page + 1),
+          )
+        else ...[
+          CssParagraph(
+            l10n.autoCaptureHowDisclosure,
+            key: const Key('autoCapture.how.disclosure'),
+            style: LkText.body.copyWith(color: colors.ink),
+          ),
+          if (how.widget.askAccess)
+            PressButton.text(
+              l10n.autoCaptureExplainerConfirm,
+              key: const Key('autoCapture.explainer.confirm'),
+              onPressed: () => Navigator.of(context).pop(true),
+            )
+          else
+            PressButton.text(
+              l10n.autoCaptureHowDone,
+              key: const Key('autoCapture.how.done'),
+              onPressed: () => Navigator.of(context).pop(false),
+            ),
+        ],
+      ],
     );
   }
 }
@@ -222,7 +277,7 @@ class _Dots extends StatelessWidget {
             key: Key('autoCapture.how.dot.$i'),
             button: true,
             selected: i == current,
-            label: '${i + 1} / $count',
+            label: AppLocalizations.of(context).autoCaptureHowStepOf(i + 1, count),
             excludeSemantics: true,
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,

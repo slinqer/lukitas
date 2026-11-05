@@ -40,14 +40,27 @@ export const Reads: Story = {
 };
 export const Decide: Story = {
   args: { step: "decide" },
-  play: play(
-    "Te avisa y tú decides",
-    /^Anoté −12,50\s€ en Pastelaria Aurora · Otros gastos, ¿qué categoría\?$/,
-  ),
+  play: async (context) => {
+    await play(
+      "Te avisa y tú decides",
+      /^Anoté −12,50\s€ en Pastelaria Aurora · Otros gastos, ¿qué categoría\?$/,
+    )?.(context);
+    // Android writes a notification's actions in upper case.
+    const canvas = within(context.canvasElement);
+    for (const action of ["Bien", "Cambiar"]) {
+      await expect(getComputedStyle(canvas.getByText(action)).textTransform).toBe("uppercase");
+    }
+  },
 };
 export const Learns: Story = {
   args: { step: "learns" },
-  play: play("Aprende tus categorías", /^Restaurante$/),
+  play: async (context) => {
+    await play("Aprende tus categorías", /^Restaurante$/)?.(context);
+    // The first time the category waits for a look; the second time it is already there.
+    const marks = context.canvasElement.querySelectorAll(".lk-capture-review");
+    await expect(marks).toHaveLength(1);
+    await expect(marks[0]).toHaveTextContent("por revisar");
+  },
 };
 export const Next: Story = {
   args: { step: "next" },

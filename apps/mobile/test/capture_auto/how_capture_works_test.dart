@@ -7,14 +7,19 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:wambito/capture_auto/auto_capture_section.dart';
 import 'package:wambito/capture_auto/capture_platform.dart';
 import 'package:wambito/capture_auto/how_capture_works.dart';
+import 'package:wambito/money/format.dart';
 
 import '../settings/harness.dart';
 import 'fakes.dart';
 
-Future<(SettingsEnv, FakeAutoCapturePlatform)> _pump(WidgetTester t) async {
+Future<(SettingsEnv, FakeAutoCapturePlatform)> _pump(
+  WidgetTester t, {
+  Locale locale = const Locale('es'),
+}) async {
   final fake = FakeAutoCapturePlatform();
   final env = await pumpSettingsApp(
     t,
+    locale: locale,
     location: '/settings',
     overrides: [autoCapturePlatformProvider.overrideWithValue(fake)],
   );
@@ -101,6 +106,39 @@ void main() {
     );
     expect(find.byKey(_confirm), findsOneWidget);
     expect(find.byKey(const Key('autoCapture.how.next')), findsNothing);
+
+    // Both in view without scrolling, the disclosure right above the button.
+    final screen = Offset.zero & t.view.physicalSize / t.view.devicePixelRatio;
+    final disclosure = t.getRect(find.byKey(const Key('autoCapture.how.disclosure')));
+    final button = t.getRect(find.byKey(_confirm));
+    expect(screen.intersect(disclosure), disclosure);
+    expect(screen.intersect(button), button);
+    expect(disclosure.bottom, lessThanOrEqualTo(button.top));
+  });
+
+  testWidgets('the demos show the invented movement with its signs', (t) async {
+    await _pump(t);
+    await _switchOn(t);
+    Finder inSheet(Finder f) => find.descendant(of: find.byType(HowCaptureWorks), matching: f);
+    String money(int cents, {bool plus = false}) =>
+        formatMoney(cents, 'EUR', 'es', sign: plus ? MoneySign.always : MoneySign.auto);
+
+    expect(find.text('💳 ${money(-1250)}'), findsOneWidget);
+    expect(find.textContaining('Otros gastos · por revisar', findRichText: true), findsOneWidget);
+
+    await _tap(t, const Key('autoCapture.how.next'));
+    expect(find.text(money(1250)), findsOneWidget, reason: 'the chip has no sign');
+    expect(find.text(money(1250, plus: true)), findsNothing);
+    expect(find.text('Pastelaria Aurora'), findsOneWidget);
+
+    await _tap(t, const Key('autoCapture.how.next'));
+    expect(inSheet(find.text('BIEN')), findsOneWidget);
+    expect(inSheet(find.text('CAMBIAR')), findsOneWidget);
+    expect(find.textContaining('Anoté ${money(-1250)} en Pastelaria Aurora'), findsOneWidget);
+
+    await _tap(t, const Key('autoCapture.how.next'));
+    expect(find.textContaining('Otros gastos · por revisar', findRichText: true), findsOneWidget);
+    expect(find.textContaining('Restaurante', findRichText: true), findsOneWidget);
   });
 
   testWidgets('Cómo funciona shows the steps and ends with Entendido', (t) async {
@@ -138,6 +176,7 @@ void main() {
         Tristate.isTrue;
     expect(selected(2), isTrue);
     expect(selected(1), isFalse);
+    expect(t.getSemantics(find.byKey(const Key('autoCapture.how.dot.2'))).label, 'Paso 3 de 5');
 
     await _tap(t, const Key('autoCapture.how.dot.0'));
     expect(find.text('Pagas como siempre'), findsOneWidget);
@@ -159,20 +198,22 @@ void main() {
     expect(find.text('Pagas como siempre'), findsNothing);
   });
 
-  testWidgets('fits a 360 dp phone', (t) async {
-    await _pump(t);
-    t.view
-      ..physicalSize = const Size(360, 740) * 3
-      ..devicePixelRatio = 3;
-    await t.pumpAndSettle();
-    await _show(t, const Key('autoCapture.how'));
-    await t.tap(find.byKey(const Key('autoCapture.how')));
-    await t.pumpAndSettle();
+  for (final locale in const [Locale('es'), Locale('pt')]) {
+    testWidgets('fits a 360 dp phone ($locale)', (t) async {
+      await _pump(t, locale: locale);
+      t.view
+        ..physicalSize = const Size(360, 740) * 3
+        ..devicePixelRatio = 3;
+      await t.pumpAndSettle();
+      await _show(t, const Key('autoCapture.how'));
+      await t.tap(find.byKey(const Key('autoCapture.how')));
+      await t.pumpAndSettle();
 
-    for (var i = 0; i < 5; i++) {
-      expect(t.takeException(), isNull, reason: 'step $i');
-      if (i < 4) await _tap(t, const Key('autoCapture.how.next'));
-    }
-    expect(find.byKey(const Key('autoCapture.how.done')), findsOneWidget);
-  });
+      for (var i = 0; i < 5; i++) {
+        expect(t.takeException(), isNull, reason: 'step $i');
+        if (i < 4) await _tap(t, const Key('autoCapture.how.next'));
+      }
+      expect(find.byKey(const Key('autoCapture.how.done')), findsOneWidget);
+    });
+  }
 }
