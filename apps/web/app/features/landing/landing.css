@@ -708,9 +708,20 @@
   .lk-landing-nosheet h2 {
     margin: 0 0 var(--space-2);
   }
+  /* Wambi: the still, with the scroll film's poses stacked on it (shown only where the film plays). */
   .lk-landing-nosheet-art {
+    position: relative;
     width: clamp(120px, 32vw, 280px);
+  }
+  .lk-landing-nosheet-art img {
+    display: block;
+    width: 100%;
     height: auto;
+  }
+  .lk-landing-nosheet-art .lk-landing-nosheet-pose {
+    display: none;
+    position: absolute;
+    inset: 0;
   }
   /* The smallest phones: a smaller Wambi and heading, so the text keeps room beside him. */
   @media (max-width: 359px) {
@@ -1017,8 +1028,7 @@
     .lk-landing-open,
     .lk-landing-faq > li,
     .lk-landing-nosheet-head,
-    .lk-landing-compare-row > p,
-    .lk-landing-nosheet-art {
+    .lk-landing-compare-row > p {
       animation: lk-landing-rise linear both;
       animation-timeline: view();
       animation-range: entry 5% cover 30%;
@@ -1042,10 +1052,55 @@
       animation-name: lk-landing-from-right;
       animation-range: entry 15% cover 35%;
     }
-    /* Wambi tips forward into the shredder as the block scrolls in. */
-    .lk-landing-nosheet-art {
-      animation-name: lk-landing-tip;
-      animation-range: entry 0% cover 45%;
+    /*
+     * Wambi's scroll film: the eight poses stack over the still (which keeps its place and its
+     * text), each fading in over the one before it, which then hides, so no two poses blend for
+     * long. A
+     * pose's window starts one step after the previous one's and lasts a step and a half: it fades in
+     * over the first half step and hides when the next one has fully faded in. The first pose shows
+     * from the start; the last one stays. The windows run on the stage's view timeline.
+     */
+    .lk-landing-nosheet-stage {
+      view-timeline: --lk-nosheet block;
+      --lk-film-start: 20%;
+      --lk-film-step: 5%;
+    }
+    .lk-landing-nosheet-art .lk-landing-nosheet-still {
+      opacity: 0;
+    }
+    .lk-landing-nosheet-art .lk-landing-nosheet-pose {
+      display: block;
+      animation: lk-landing-pose linear both;
+      animation-timeline: --lk-nosheet;
+      animation-range-start: cover
+        calc(var(--lk-film-start) + (var(--pose) - 1) * var(--lk-film-step));
+      animation-range-end: cover
+        calc(var(--lk-film-start) + (var(--pose) + 0.5) * var(--lk-film-step));
+    }
+    .lk-landing-nosheet-art .lk-landing-nosheet-pose:nth-child(2) {
+      animation-name: lk-landing-pose-first;
+    }
+    .lk-landing-nosheet-art .lk-landing-nosheet-pose:last-child {
+      animation-name: lk-landing-pose-last;
+    }
+    /*
+     * Phones: Wambi is big, under the heading instead of beside it, and nothing holds still: the
+     * film plays in the page's own scroll, from when Wambi is whole in the lower half of the screen
+     * to when he nears the top, so it ends up high and the rows come right after it.
+     */
+    @media (max-width: 639px) {
+      .lk-landing-nosheet-stage {
+        --lk-film-start: 30%;
+        --lk-film-step: 5%;
+      }
+      .lk-landing-nosheet-stage > .lk-landing-nosheet-head {
+        grid-template-columns: minmax(0, 1fr);
+        justify-items: center;
+        text-align: center;
+      }
+      .lk-landing-nosheet-stage .lk-landing-nosheet-art {
+        width: min(80vw, 46svh, 340px);
+      }
     }
   }
 }
@@ -1084,16 +1139,39 @@
     rotate: none;
   }
 }
-@keyframes lk-landing-tip {
-  from {
-    translate: 0 40px;
-    rotate: -8deg;
-    scale: 0.85;
+/* A pose of Wambi's scroll film: fades in, holds, then hides once the next pose covers it. */
+@keyframes lk-landing-pose {
+  0% {
+    opacity: 0;
   }
-  to {
-    translate: none;
-    rotate: none;
-    scale: none;
+  33.333% {
+    opacity: 1;
+  }
+  99.99% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+/* The first pose is there from the start. */
+@keyframes lk-landing-pose-first {
+  0%,
+  99.99% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+/* The last pose fades in and stays. */
+@keyframes lk-landing-pose-last {
+  0% {
+    opacity: 0;
+  }
+  33.333%,
+  100% {
+    opacity: 1;
   }
 }
 
