@@ -157,30 +157,10 @@ export function overallState(budgetTotal: number, spent: number): "ok" | "near" 
 
 // -- Detected transactions -----------------------------------------------------------------------
 
-/** The most ids one `POST /v1/transactions/review` takes. */
-export const REVIEW_BATCH = 50;
-
 /**
  * Where a transaction to review was detected, as the message's `source` choice (`revolut`,
  * `google_wallet`, or `other` when the API sent none); null when it needs no review.
  */
 export function reviewMark(tx: TransactionDto): "revolut" | "google_wallet" | "other" | null {
   return tx.needsReview ? (tx.captureSource ?? "other") : null;
-}
-
-/** The "Por revisar" filter: only the transactions still to review, in their order. */
-export function toReviewOnly(items: TransactionDto[]): TransactionDto[] {
-  return items.filter((tx) => tx.needsReview);
-}
-
-/** The transaction once confirmed: the mark is gone. */
-export function confirmedReview(tx: TransactionDto): TransactionDto {
-  return { ...tx, needsReview: false };
-}
-
-/** Ids in batches the API accepts, the order kept. */
-export function reviewBatches(ids: string[]): string[][] {
-  const batches: string[][] = [];
-  for (let i = 0; i < ids.length; i += REVIEW_BATCH) batches.push(ids.slice(i, i + REVIEW_BATCH));
-  return batches;
 }

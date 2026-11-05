@@ -53,11 +53,9 @@
     "nudge_budgets_action": "Ir a Categorías",
     "review_mark": "{source, select, revolut{por revisar · de Revolut} google_wallet{por revisar · de Google Wallet} other{por revisar}}",
     "review_filter": "Por revisar · {count}",
-    "review_filter_label": "Mostrar solo lo que está por revisar",
     "review_ok": "Bien",
     "review_ok_label": "Bien: {name}",
-    "review_confirm_all": "Confirmar todos",
-    "review_empty": "Nada por revisar"
+    "review_confirm_all": "Confirmar todos"
   },
   "transaction": {
     "add_expense": "Agregar gasto",
@@ -93,7 +91,7 @@
     "no_categories_income": "Aún no tienes categorías de ingreso.",
     "archived": "archivada",
     "review_confirmed": "Confirmado: {name}",
-    "review_confirmed_all": "{count, plural, one{# gasto confirmado} other{# gastos confirmados}}"
+    "review_confirmed_all": "{count, plural, one{# movimiento confirmado} other{# movimientos confirmados}}"
   },
   "wambi": {
     "first_of_day": {

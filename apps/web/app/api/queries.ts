@@ -7,7 +7,6 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { monthOf, type TransactionDto } from "@wambito/core";
-import { reviewBatches } from "../features/home/home-model.ts";
 import { useApi } from "./ApiProvider.tsx";
 import { ApiProblem } from "./errors.ts";
 import {
@@ -21,6 +20,7 @@ import {
   type TransactionPages,
   transactionsKey,
 } from "./optimistic.ts";
+import { confirmInBatches } from "./review.ts";
 import type { paths } from "./schema";
 
 type JsonBody<
@@ -101,7 +101,7 @@ export const TRANSACTIONS_PAGE = 200;
  */
 function useTransactionPages(
   queryKey: readonly unknown[],
-  query: { month: string; category?: string },
+  query: { month: string; category?: string; needsReview?: "true" },
 ) {
   const api = useApi();
   return useInfiniteQuery({
@@ -122,6 +122,17 @@ function useTransactionPages(
       ),
     getNextPageParam: (last) => last.nextCursor,
     select: (data: TransactionPages) => data.pages.flatMap((page) => page.items),
+  });
+}
+
+/**
+ * The month's transactions still to review (detected from notifications), asked of the API, so
+ * the list, its count and "Confirmar todos" cover the whole month, not only the pages shown.
+ */
+export function useReviewTransactions(month: string) {
+  return useTransactionPages([...queryKeys.transactions(month), "review"], {
+    month,
+    needsReview: "true",
   });
 }
 
@@ -454,9 +465,12 @@ export function useConfirmReview() {
     mutation(
       qc,
       async ({ items }: { items: TransactionDto[] }) => {
-        for (const ids of reviewBatches(items.map((tx) => tx.id))) {
-          dataOf(await api.POST("/v1/transactions/review", { body: { ids } }));
-        }
+        await confirmInBatches(
+          items.map((tx) => tx.id),
+          async (ids) => {
+            dataOf(await api.POST("/v1/transactions/review", { body: { ids } }));
+          },
+        );
       },
       ({ items }) => ({
         months: [...new Set(items.map((tx) => monthOf(tx.date)))],

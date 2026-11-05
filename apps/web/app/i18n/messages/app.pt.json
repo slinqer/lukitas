@@ -53,11 +53,9 @@
     "nudge_budgets_action": "Ir para Categorias",
     "review_mark": "{source, select, revolut{por rever · do Revolut} google_wallet{por rever · do Google Wallet} other{por rever}}",
     "review_filter": "Por rever · {count}",
-    "review_filter_label": "Mostrar só o que está por rever",
     "review_ok": "Certo",
     "review_ok_label": "Certo: {name}",
-    "review_confirm_all": "Confirmar tudo",
-    "review_empty": "Nada por rever"
+    "review_confirm_all": "Confirmar tudo"
   },
   "transaction": {
     "add_expense": "Adicionar despesa",

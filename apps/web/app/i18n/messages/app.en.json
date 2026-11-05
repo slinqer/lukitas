@@ -53,11 +53,9 @@
     "nudge_budgets_action": "Go to Categories",
     "review_mark": "{source, select, revolut{to review · from Revolut} google_wallet{to review · from Google Wallet} other{to review}}",
     "review_filter": "To review · {count}",
-    "review_filter_label": "Show only what is to review",
     "review_ok": "OK",
     "review_ok_label": "OK: {name}",
-    "review_confirm_all": "Confirm all",
-    "review_empty": "Nothing to review"
+    "review_confirm_all": "Confirm all"
   },
   "transaction": {
     "add_expense": "Add expense",

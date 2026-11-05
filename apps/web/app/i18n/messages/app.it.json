@@ -53,11 +53,9 @@
     "nudge_budgets_action": "Vai a Categorie",
     "review_mark": "{source, select, revolut{da rivedere · da Revolut} google_wallet{da rivedere · da Google Wallet} other{da rivedere}}",
     "review_filter": "Da rivedere · {count}",
-    "review_filter_label": "Mostra solo ciò che è da rivedere",
     "review_ok": "Va bene",
     "review_ok_label": "Va bene: {name}",
-    "review_confirm_all": "Conferma tutti",
-    "review_empty": "Niente da rivedere"
+    "review_confirm_all": "Conferma tutti"
   },
   "transaction": {
     "add_expense": "Aggiungi spesa",

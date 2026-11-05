@@ -709,6 +709,7 @@ function homeFetch({
       const items = transactions
         .filter((t) => !month || monthOf(t.date) === month)
         .filter((t) => !category || t.categoryId === category)
+        .filter((t) => url.searchParams.get("needsReview") !== "true" || t.needsReview)
         .sort(newestFirst)
         .slice(0, Number(url.searchParams.get("limit") ?? 50));
       return Response.json({ items, nextCursor: null });

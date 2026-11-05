@@ -100,12 +100,19 @@ const together =
 function listsOf(
   qc: QueryClient,
   month: string,
-): { key: QueryKey; data: TransactionPages; categoryId: string | undefined }[] {
+): { key: QueryKey; data: TransactionPages; categoryId: string | undefined; review: boolean }[] {
   return qc
     .getQueriesData<TransactionPages>({ queryKey: transactionsKey(month) })
     .flatMap(([key, data]) =>
       data && Array.isArray(data.pages)
-        ? [{ key, data, categoryId: key[2] === "category" ? String(key[3]) : undefined }]
+        ? [
+            {
+              key,
+              data,
+              categoryId: key[2] === "category" ? String(key[3]) : undefined,
+              review: key[2] === "review",
+            },
+          ]
         : [],
     );
 }
@@ -141,6 +148,7 @@ function addToCaches(qc: QueryClient, tx: TransactionDto): Rollback {
   return together([
     ...listsOf(qc, month)
       .filter((list) => list.categoryId === undefined || list.categoryId === tx.categoryId)
+      .filter((list) => !list.review || tx.needsReview)
       .map((list) => edit<TransactionPages>(qc, list.key, (data) => withRow(data, tx))),
     edit<MonthSummary>(qc, summaryKey(month), (s) => patchSummary(s, tx, kindOf(qc, tx), 1)),
   ]);

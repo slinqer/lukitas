@@ -24,6 +24,7 @@ import {
   useTransactions,
   useUpdateTransaction,
 } from "../../api/queries.ts";
+import { confirming } from "../../api/review.ts";
 import { feedback } from "../../feedback/feedback.ts";
 import { formatMoney, type Locale, lukasHint } from "../../i18n/format.ts";
 import { useLocale } from "../../i18n/IntlProvider.tsx";
@@ -488,7 +489,8 @@ export function useTransactionForm({
       if (next.status !== editing.status) patch.status = next.status;
       const nextNote = note.trim() || null;
       if (nextNote !== editing.note) patch.note = nextNote;
-      return patch;
+      // Saving the edit of a detected transaction confirms it, as on the phone.
+      return confirming(editing, patch);
     },
   };
 }

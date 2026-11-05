@@ -187,7 +187,7 @@ export const DetectedTransactions: Story = {
     await expect(await panel.findByText("por revisar · de Revolut")).toBeVisible();
     await expect(panel.getByText("por revisar · de Google Wallet")).toBeVisible();
     // The filter keeps only them.
-    const filter = panel.getByRole("button", { name: "Mostrar solo lo que está por revisar" });
+    const filter = panel.getByRole("button", { name: /^Por revisar · 2$/ });
     await expect(filter).toHaveTextContent("Por revisar · 2");
     await userEvent.click(filter);
     await expect(panel.queryByRole("button", { name: /^desayuno/ })).toBeNull();
@@ -208,6 +208,28 @@ export const DetectedTransactions: Story = {
       ),
     );
     await expect(await panel.findByRole("button", { name: /^desayuno/ })).toBeVisible();
+  },
+};
+
+/** Saving the edit of a detected transaction confirms it in the same PATCH, as on the phone. */
+export const EditConfirmsDetected: Story = {
+  render: (args) => <HomeStage onRequest={args.onRequest} detected />,
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    await hero(canvas);
+    await userEvent.click(canvas.getByRole("tab", { name: "Movimientos" }));
+    const panel = within(canvas.getByRole("tabpanel", { name: "Movimientos" }));
+    await userEvent.click(await panel.findByRole("button", { name: /^Mercadona/ }));
+    const edit = within(await screen.findByRole("dialog", { name: "Editar movimiento" }));
+    await userEvent.click(edit.getByRole("button", { name: "Guardar cambios" }));
+    await dialogGone();
+    await waitFor(() =>
+      expect(calls(args.onRequest).map(([line]) => line)).toContainEqual(
+        expect.stringMatching(/^PATCH \/api\/v1\/transactions\/\S+ \{"needsReview":false\}$/),
+      ),
+    );
+    await waitFor(() => expect(panel.queryByText("por revisar · de Revolut")).toBeNull());
+    await expect(panel.getByText("por revisar · de Google Wallet")).toBeVisible();
   },
 };
 
