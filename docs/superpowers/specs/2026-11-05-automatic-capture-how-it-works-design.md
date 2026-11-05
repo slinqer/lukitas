@@ -20,7 +20,7 @@ from a bank notification to a confirmed transaction, both in the Android app and
 ## 2. Rules for the copy
 
 - Never mention languages: no "en portugués", no "en todos los idiomas". The copy makes no promise
-  about which languages are read. A test enforces it (section 6).
+  about which languages are read. A test enforces it (section 7).
 - Describe what leaves the phone, never who can read it on the server: the copy must stay true when
   all data is encrypted end to end. (The privacy policy, which does describe the server, changes on
   that day; so does the merchant → category memory, which lives on the server today.)
@@ -30,7 +30,24 @@ from a bank notification to a confirmed transaction, both in the Android app and
   time" is the only forward-looking line.
 - Invented examples only (a fixture rule): "Pastelaria Aurora", 12,50 €, "Comida fuera".
 
-## 3. The five steps (Spanish is the source; en, it, pt-PT translated with the same meaning)
+## 3. The main picture
+
+The idea in one look: a bank notification becomes a Wambito transaction by itself. Built from UI
+pieces (not an image): on top a bank notification card (app icon, "Revolut", the time, the merchant
+as title, the amount line with no words: "💳 −12,50 €"), then a round arrow, then a Wambito card
+"✓ Anotado en Wambito" holding the transaction row ("Pastelaria Aurora · Otros gastos · por
+revisar", −12,50 €). It is the picture of the landing card and the top of the "¿Cómo funciona?"
+page and of the app's first step. The founder's reference (a notification card → arrow → "registered"
+row) sets the look: dark cards, one accent for the "registered" card, no decoration.
+
+- An income pair (notification "Nómina" "💳 +1.200,00 €" → "Nómina · Otros ingresos") sits beside
+  the expense pair only once Revolut's income notifications are read; until then the picture shows
+  the expense alone. The two pairs are one component with an `income` switch.
+- Optional: a Wambi scene by the page title, generated with Codex from the brand sprites, only if it
+  stays on-model (same face, gold, purple limbs, pink sneakers; no text in it). Without it, Wambi's
+  existing sprite stands by the title as on the rest of the landing.
+
+## 4. The five steps (Spanish is the source; en, it, pt-PT translated with the same meaning)
 
 | # | Title | Body | Picture (built from real UI pieces) |
 |---|---|---|---|
@@ -47,7 +64,7 @@ theme (day/night), read in every language and carry text a screen reader can rea
 the decoration, the step's title and body are the accessible content). Under reduced motion nothing
 moves.
 
-## 4. App (Flutter, `apps/mobile/lib/capture_auto/`)
+## 5. App (Flutter, `apps/mobile/lib/capture_auto/`)
 
 - `HowCaptureWorks` (new, `how_capture_works.dart`): an `LkSheet` with a `PageView` of the five
   steps, dots under it, Siguiente on each step but the last. Swiping and the dots both move between
@@ -65,7 +82,7 @@ moves.
 - `auto_capture_explainer.dart` and its ARB strings (`autoCaptureExplainerBody`) go; new ARB keys
   `autoCaptureHow*` in es, en, it, pt (es is the template).
 
-## 5. Landing (web, `apps/web`)
+## 6. Landing (web, `apps/web`)
 
 - **Card:** a sixth item in `HowItWorks.tsx`, full width under the 2×2 grid (`is-wide`): title
   "¡Wambi anota los gastos por ti!", body "Lee las notificaciones de Revolut y Google Wallet y anota
@@ -80,7 +97,7 @@ moves.
   copy "Captura automática de tus notificaciones — Revolut y Google Wallet primero; más apps y bancos
   con el tiempo." in the four languages.
 
-## 6. Testing (failing test first)
+## 7. Testing (failing test first)
 
 - Web unit: the capture copy exists in the four catalogs with the five steps; a test fails if any
   capture string (landing card, page, steps) or the app's `autoCaptureHow*` ARB strings name a
@@ -95,7 +112,7 @@ moves.
 - Parity: one pair per picture (night), web story ↔ Flutter golden, in `parity.json`; differences
   that the platforms cannot avoid go in `knownDifferences`.
 
-## 7. Out of scope (next, in this session)
+## 8. Out of scope (next, in this session)
 
 - Reading notifications in other languages (and the other kinds) comes after this PR is merged,
   from redacted samples the founder collects by switching Revolut's language for a few days at a
