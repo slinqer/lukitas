@@ -26,8 +26,8 @@ Builds:
       - jna@5.18.1
       - kaldi@8b7fecf92b329b7253d9d1cd97898c8b13f9aef3
       - openfst@18e94e63870ebcf79ebb42b7035cd3cb626ec090
-      - OpenBLAS@v0.3.20
-      - clapack@v3.2.1
+      - OpenBLAS@0b678b19dc03f2a999d6e038814c4c50b9640a4e
+      - clapack@f4e1647de96343fb20eea08a9d4f0e0d04c31c51
     prebuild:
       - rm -rf $$jna$$/dist $$jna$$/lib/test/*.jar $$jna$$/test/com/sun/jna/data
       - rm -f $$jna$$/lib/bsh.jar $$jna$$/lib/checkstyle-8.17-all.jar $$jna$$/lib/clover.jar
@@ -37,14 +37,16 @@ Builds:
       - export PUB_CACHE=$(pwd)/.pub-cache
       - $$flutter$$/bin/flutter config --no-analytics
       - $$flutter$$/bin/flutter pub get --enforce-lockfile
+      - sdkmanager 'platforms;android-36'
+      - sed -i -e 's/-Xmx8G/-Xmx4G/' android/gradle.properties
+      - grep -q -e '-Xmx4G' android/gradle.properties
     scandelete:
       - apps/mobile/.pub-cache
     build:
       - export PUB_CACHE=$(pwd)/.pub-cache
-      - sdkmanager 'platforms;android-36'
-      - scripts/build-native-deps.sh --abi armeabi-v7a --ndk $$NDK$$ --vosk-src $$vosk-api$$ --jna-src
-        $$jna$$ --kaldi-src $$kaldi$$ --openfst-src $$openfst$$ --openblas-src $$OpenBLAS$$ --clapack-src
-        $$clapack$$
+      - scripts/build-native-deps.sh --abi armeabi-v7a --ndk $$NDK$$ --work /tmp/wambito-native-deps
+        --vosk-src $$vosk-api$$ --jna-src $$jna$$ --kaldi-src $$kaldi$$ --openfst-src $$openfst$$
+        --openblas-src $$OpenBLAS$$ --clapack-src $$clapack$$
       - $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform android-arm
         --build-name $$VERSION$$ --build-number $(($$VERCODE$$ / 10)) -P wambito.nativeFromSource=true
     ndk: r28c
@@ -65,8 +67,8 @@ Builds:
       - jna@5.18.1
       - kaldi@8b7fecf92b329b7253d9d1cd97898c8b13f9aef3
       - openfst@18e94e63870ebcf79ebb42b7035cd3cb626ec090
-      - OpenBLAS@v0.3.20
-      - clapack@v3.2.1
+      - OpenBLAS@0b678b19dc03f2a999d6e038814c4c50b9640a4e
+      - clapack@f4e1647de96343fb20eea08a9d4f0e0d04c31c51
     prebuild:
       - rm -rf $$jna$$/dist $$jna$$/lib/test/*.jar $$jna$$/test/com/sun/jna/data
       - rm -f $$jna$$/lib/bsh.jar $$jna$$/lib/checkstyle-8.17-all.jar $$jna$$/lib/clover.jar
@@ -76,14 +78,16 @@ Builds:
       - export PUB_CACHE=$(pwd)/.pub-cache
       - $$flutter$$/bin/flutter config --no-analytics
       - $$flutter$$/bin/flutter pub get --enforce-lockfile
+      - sdkmanager 'platforms;android-36'
+      - sed -i -e 's/-Xmx8G/-Xmx4G/' android/gradle.properties
+      - grep -q -e '-Xmx4G' android/gradle.properties
     scandelete:
       - apps/mobile/.pub-cache
     build:
       - export PUB_CACHE=$(pwd)/.pub-cache
-      - sdkmanager 'platforms;android-36'
-      - scripts/build-native-deps.sh --abi arm64-v8a --ndk $$NDK$$ --vosk-src $$vosk-api$$ --jna-src
-        $$jna$$ --kaldi-src $$kaldi$$ --openfst-src $$openfst$$ --openblas-src $$OpenBLAS$$ --clapack-src
-        $$clapack$$
+      - scripts/build-native-deps.sh --abi arm64-v8a --ndk $$NDK$$ --work /tmp/wambito-native-deps
+        --vosk-src $$vosk-api$$ --jna-src $$jna$$ --kaldi-src $$kaldi$$ --openfst-src $$openfst$$
+        --openblas-src $$OpenBLAS$$ --clapack-src $$clapack$$
       - $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform android-arm64
         --build-name $$VERSION$$ --build-number $(($$VERCODE$$ / 10)) -P wambito.nativeFromSource=true
     ndk: r28c
@@ -91,6 +95,7 @@ Builds:
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags ^mobile-v
+UpdateCheckData: apps/mobile/pubspec.yaml|version:\s[\d.]+\+(\d+)|.|version:\s([\d.]+)\+
 VercodeOperation:
   - '%c * 10 + 1'
   - '%c * 10 + 2'

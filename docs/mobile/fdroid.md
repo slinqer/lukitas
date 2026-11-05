@@ -39,7 +39,7 @@ Not yet measured: a different machine or Linux, which is what F-Droid runs. The 
 
 ### Native libraries from Maven that are prebuilt
 
-`com.alphacephei:vosk-android:0.3.75` and JNA `net.java.dev.jna:jna:5.18.1` are `.aar` files from Maven Central that carry compiled native code. F-Droid wants native code built from source, so each becomes a source library (`srclibs`) built in the recipe's `prebuild`, and the Gradle dependency is replaced by what was built.
+`com.alphacephei:vosk-android:0.3.75` and JNA `net.java.dev.jna:jna:5.18.1` are `.aar` files from Maven Central that carry compiled native code. F-Droid wants native code built from source, so each becomes a source library (`srclibs`) built in the recipe's `build:` step, and the Gradle dependency is replaced by what was built.
 
 | Artifact | Prebuilt contents | In our APK | Source |
 |---|---|---|---|
@@ -50,9 +50,9 @@ Not yet measured: a different machine or Linux, which is what F-Droid runs. The 
 
 The recipe, `apps/mobile/fdroid/com.wambito.app.yml` (tested with `apps/mobile/scripts/fdroid-build-local.sh` in F-Droid's buildserver image; Task 9 rewrites this page around it), handles what was left:
 
-- `srclibs` for the six sources at the spike's revisions (`apps/mobile/fdroid/srclibs/*.yml`, plus fdroiddata's `flutter`), passed to `build-native-deps.sh --abi <the build's ABI>` in `build:` (not `prebuild:`: F-Droid scans the source between the two, and the AARs the script writes into `android/third_party/m2` would fail that scan), and the build server's packages above through `sudo:`;
+- `srclibs` for the six sources at the spike's revisions, every one pinned by commit except `jna@5.18.1` and `flutter@3.47.7` (`apps/mobile/fdroid/srclibs/*.yml`, plus fdroiddata's `flutter`), passed to `build-native-deps.sh --abi <the build's ABI>` in `build:` (not `prebuild:`: F-Droid scans the source between the two, and the AARs the script writes into `android/third_party/m2` would fail that scan), and the build server's packages above through `sudo:`;
 - JNA's other jars: the recipe deletes those its build does not use (`dist/`, the test jars and data, checkstyle, clover, bsh, junit, hamcrest) and puts Debian's `ant.jar` and `asm.jar` (`libasm-java`) in place of `lib/ant.jar` and `lib/asm-8.0.1.jar`, which compile its Ant tasks;
-- `timeout: 10800`: in the local run (4 emulated cores) one build took 40 minutes for `armeabi-v7a` and 49 for `arm64-v8a`, of which the native libraries 21 and 35;
+- `timeout: 10800`: in the local run (4 emulated cores) one build took 40 minutes for `armeabi-v7a` and 49 for `arm64-v8a`, of which the native libraries 21 and 35. The native build trees go to a fixed `--work /tmp/wambito-native-deps`, so `libvosk.so` embeds the same paths on every build, and the recipe lowers Gradle's heap from the app's `-Xmx8G` to 4 GB in `prebuild:` (8 GB killed the Gradle daemon in a 6 GB container);
 - JNA is dual-licensed (Apache-2.0 or LGPL-2.1): the About page already says so; the `proguard-rules.pro` keeps for `com.sun.jna.**` stay as they are.
 
 ### Other native code in the APK
