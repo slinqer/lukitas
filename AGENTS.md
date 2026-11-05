@@ -84,6 +84,9 @@ phone. Read the `AGENTS.md` of the area you work in; read code only to confirm.
   - `apps/mobile/lib/api/gen`: `apps/mobile/scripts/gen-api.sh`;
   - Flutter l10n (`app_localizations*.dart`, git-ignored): `flutter pub get`.
 - Write the failing test first. Everything in English.
+- A change to the API or the MCP (routes, fields, errors, auth, scopes, tools, prompts, limits) adds
+  a line under "Unreleased" in the root `CHANGELOG.md`, the server's changelog; a server release
+  raises the root `package.json` version and moves those lines under it (`chore: version X.Y.Z`).
 - Commits: Conventional Commits, repo style `feat(area): …`, `fix(android): …`, `docs: …`, a
   lowercase sentence. Never a `Co-Authored-By` line. Stage by path, never `git add -A`.
 - Whoever changes an area's structure, commands or conventions updates its `AGENTS.md`.

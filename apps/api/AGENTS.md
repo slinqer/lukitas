@@ -62,6 +62,8 @@ Hono + Better Auth + Drizzle (`@wambito/db`), OpenAPI document "Wambito API". Ev
 
 ## Traps
 
+- Every change here that clients can see goes under "Unreleased" in the root `CHANGELOG.md`.
+
 - See root `AGENTS.md`: secrets.
 - Better Auth tables: `pnpm --filter @wambito/api auth:generate` writes
   `packages/db/src/schema/auth.ts`; then add a migration in `packages/db`.

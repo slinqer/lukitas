@@ -261,7 +261,7 @@ data you had, restore the backup `update.sh` made.
 plus the commit it was built from, for example `1.0.0+1e5ccc2`, with `-dirty` after it when built with
 `--force` from uncommitted changes. Raise the version by hand on `main` when a release of the
 server deserves a new number (a commit `chore: version 1.1.0`); every deploy in between keeps it and
-changes only the commit. `up.sh` refuses a `package.json` without an `X.Y.Z` version. It does not
+changes only the commit. What each version changed is in the root `CHANGELOG.md`. `up.sh` refuses a `package.json` without an `X.Y.Z` version. It does not
 follow the app's `mobile-v*` tags: the two can share a number, but neither waits for the other.
 
 ### Automatic deploy (on a server)
