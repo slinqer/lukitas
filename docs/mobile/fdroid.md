@@ -6,7 +6,7 @@ Wambito is built for F-Droid from source on F-Droid's own build server, from the
 
 - **No Google, no trackers.** `scripts/check-no-google.sh` (CI) fails on Play Services, Firebase, ML Kit, Play Core or any other proprietary artifact in any variant's resolved classpath. No analytics, no crash reporter. Permissions are an allowlist (`scripts/check-permissions.sh`).
 - **Licences.** AGPL-3.0-only (the recipe's `License:`); every Dart and Android dependency has a licence entry in About (`scripts/check-licenses.sh`). Voice models and sounds are listed too.
-- **Metadata in the repo:** `apps/mobile/fastlane/metadata/android/{en-US,es-ES,it-IT,pt-PT}` (titles, descriptions and a changelog per version code in all four; six screenshots in en-US and es-ES). `scripts/check-fastlane.sh` checks F-Droid's limits. There is no `icon.png`: F-Droid takes the launcher icon from the APK. F-Droid finds the folder under the recipe's `subdir: apps/mobile`.
+- **Metadata in the repo:** `apps/mobile/fastlane/metadata/android/{en-US,es-ES,it-IT,pt-PT}` (titles, descriptions and a changelog per version code in all four; six screenshots in en-US and es-ES). `scripts/check-fastlane.sh` checks F-Droid's limits. The store icon is `en-US/images/icon.png`, written by `docs/brand/tools/gen-icon.cjs`. F-Droid finds the folder under the recipe's `subdir: apps/mobile`.
 - **Package name** `com.wambito.app` (`docs/superpowers/specs/2026-11-02-wambito-urls-design.md` §3.2): it cannot change once published.
 
 ## Decided
