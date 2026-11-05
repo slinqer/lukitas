@@ -52,6 +52,34 @@ release_version_code() {
   echo $((base * 10 + digit))
 }
 
+# pubspec.yaml's `version:` at a release tag is X.Y.Z+<base code> (the main branch keeps the dev
+# value): F-Droid's checkupdates reads the version of a new mobile-v* tag from it (UpdateCheckData in
+# fdroid/com.wambito.app.yml), and release.sh refuses a tag whose pubspec says something else.
+
+# release_pubspec_version <pubspec.yaml>: the value of its top-level `version:` line, or nothing.
+release_pubspec_version() {
+  sed -n 's/^version:[[:space:]]*\([^[:space:]#]*\).*/\1/p' "${1:-}" 2>/dev/null | head -n 1
+}
+
+# release_pubspec_wanted <tag>: the `version:` a pubspec must carry at that tag, X.Y.Z+<base code>.
+release_pubspec_wanted() {
+  local name base
+  name="$(release_version_name "${1:-}")" || return 1
+  base="$(release_base_code "$1")" || return 1
+  echo "$name+$base"
+}
+
+# release_check_pubspec <tag> <pubspec.yaml>: succeeds when the pubspec's version is the tag's.
+release_check_pubspec() {
+  local want have
+  want="$(release_pubspec_wanted "${1:-}")" || return 1
+  have="$(release_pubspec_version "${2:-}")"
+  if [ "$have" != "$want" ]; then
+    echo "pubspec.yaml says version '${have:-(none)}', but the tag ${1} needs 'version: $want' (docs/mobile/release.md)" >&2
+    return 1
+  fi
+}
+
 # The version of a build with no release tag: below every release (base code 1, as pubspec.yaml's
 # 0.0.0-dev+1, so 11 and 12 for the two splits, where the first release, 0.1.0, is 1000), and
 # plainly a dev build in the name. (Flutter ignores --build-number 0, hence 1 and not 0.)

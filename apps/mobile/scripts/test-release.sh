@@ -153,5 +153,20 @@ expect_fail "SDK-ranged blocks with two keys" bash -c "source '$HERE/release-lib
 expect_fail "no digest in the output" bash -c "source '$HERE/release-lib.sh'; printf 'DOES NOT VERIFY\n' | release_fingerprint_from_apksigner"
 expect_fail "two signers" bash -c "source '$HERE/release-lib.sh'; printf 'Signer #1 certificate SHA-256 digest: %s\nSigner #2 certificate SHA-256 digest: %s\n' '$lower' '$lower' | release_fingerprint_from_apksigner"
 
+# --- pubspec.yaml's version at a release tag: X.Y.Z+<base code> (F-Droid's checkupdates reads it) -
+pubspec_dir="$(mktemp -d)"
+trap 'rm -rf "$pubspec_dir"' EXIT
+pubspec() { printf 'name: wambito\n# a comment\nversion: %s\n\nenvironment:\n' "$1" >"$pubspec_dir/pubspec.yaml"; }
+pubspec "1.2.3+10203"
+expect "pubspec version read" "1.2.3+10203" "$(release_pubspec_version "$pubspec_dir/pubspec.yaml")"
+expect "pubspec version wanted for 1.2.3" "1.2.3+10203" "$(release_pubspec_wanted mobile-v1.2.3)"
+release_check_pubspec mobile-v1.2.3 "$pubspec_dir/pubspec.yaml" >/dev/null 2>&1
+expect "pubspec matching the tag passes" "0" "$?"
+expect_fail "pubspec at the dev version" bash -c "source '$HERE/release-lib.sh'; printf 'version: 0.0.0-dev+1\n' >'$pubspec_dir/dev.yaml'; release_check_pubspec mobile-v1.2.3 '$pubspec_dir/dev.yaml'"
+expect_fail "pubspec of another version" bash -c "source '$HERE/release-lib.sh'; printf 'version: 1.2.4+10204\n' >'$pubspec_dir/other.yaml'; release_check_pubspec mobile-v1.2.3 '$pubspec_dir/other.yaml'"
+expect_fail "pubspec with the right name, wrong code" bash -c "source '$HERE/release-lib.sh'; printf 'version: 1.2.3+1\n' >'$pubspec_dir/code.yaml'; release_check_pubspec mobile-v1.2.3 '$pubspec_dir/code.yaml'"
+expect_fail "pubspec with no version line" bash -c "source '$HERE/release-lib.sh'; printf 'name: wambito\n' >'$pubspec_dir/none.yaml'; release_check_pubspec mobile-v1.2.3 '$pubspec_dir/none.yaml'"
+expect "the committed pubspec is at the dev version" "0.0.0-dev+1" "$(release_pubspec_version "$HERE/../pubspec.yaml")"
+
 echo "$((checks - failures))/$checks checks passed"
 [ "$failures" -eq 0 ]

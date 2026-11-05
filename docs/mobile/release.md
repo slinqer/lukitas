@@ -69,6 +69,9 @@ Do the key move below (its own section) once, before the first build from these 
 ```sh
 cd ~/projects/wambito
 git checkout main && git pull
+git checkout --detach                  # the release commit sits on top of main, never merged into it
+sed -i '' 's/^version: .*/version: 1.0.0+10000/' apps/mobile/pubspec.yaml   # X.Y.Z+<base code>
+git commit -m "chore(mobile): release 1.0.0" -- apps/mobile/pubspec.yaml
 git tag mobile-v1.0.0                  # the release; the script builds the commit the tag points at
                                        # (push the tag once the APK is checked: F-Droid reads tags)
 export PATH="$HOME/development/flutter/bin:$PATH"
@@ -85,6 +88,8 @@ What it does: `flutter clean`, an unsigned `flutter build apk --release --split-
 ```
 wambito-1.0.0-arm64-v8a.apk   wambito-1.0.0-armeabi-v7a.apk   SHA256SUMS   ANDROID_CERT_SHA256.txt
 ```
+
+The tagged commit, and only it, carries the release's version in `apps/mobile/pubspec.yaml`: `version: X.Y.Z+<base code>` (`1.0.0+10000` for `mobile-v1.0.0`). F-Droid's `checkupdates` finds a new `mobile-v*` tag and reads the version from that line (`UpdateCheckData` in `apps/mobile/fdroid/com.wambito.app.yml`); `release.sh` refuses a tag whose pubspec says anything else. `main` keeps `0.0.0-dev+1` (`scripts/test-release.sh` checks it), so go back with `git checkout main` after the release.
 
 A tagged build needs a clean working tree (`--allow-dirty` overrides); `--tag` names the tag to build and must point at HEAD; `--no-clean` skips `flutter clean` while iterating; `--out` changes `dist`.
 
