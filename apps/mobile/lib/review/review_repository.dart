@@ -8,6 +8,9 @@ import '../home/home_repository.dart';
 /// Rows asked of the API for the inbox. More than a person reviews in one sitting.
 const reviewPageSize = 100;
 
+/// Ids per confirm request: the most `POST /v1/transactions/review` takes.
+const reviewBatchSize = 50;
+
 /// What the review inbox reads and changes on the server. Every failure is a [HomeFailure].
 abstract interface class ReviewRepository {
   /// The transactions detected from notifications that wait for a look, newest first.

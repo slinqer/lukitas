@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' show min;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,13 +14,21 @@ class ReviewList extends AsyncNotifier<List<Transaction>> {
   @override
   Future<List<Transaction>> build() => ref.watch(reviewRepositoryProvider).pending();
 
-  /// Confirms [ids] (all or nothing). Throws the failure and keeps the list when it does not work;
-  /// otherwise they leave the list and home catches up.
+  /// Confirms [ids], [reviewBatchSize] per request (the server's limit; each request is all or
+  /// nothing). Each batch that works leaves the list at once; the first failure is thrown and the
+  /// rest stay. Home catches up either way.
   Future<void> confirm(List<String> ids) async {
-    await ref.read(reviewRepositoryProvider).confirm(ids);
-    final left = state.value?.where((t) => !ids.contains(t.id)).toList();
-    if (left != null) state = AsyncData(left);
-    unawaited(ref.read(homeProvider.notifier).refresh());
+    final repository = ref.read(reviewRepositoryProvider);
+    try {
+      for (var start = 0; start < ids.length; start += reviewBatchSize) {
+        final batch = ids.sublist(start, min(start + reviewBatchSize, ids.length)).toSet();
+        await repository.confirm(batch.toList());
+        final left = state.value?.where((t) => !batch.contains(t.id)).toList();
+        if (left != null) state = AsyncData(left);
+      }
+    } finally {
+      unawaited(ref.read(homeProvider.notifier).refresh());
+    }
   }
 }
 

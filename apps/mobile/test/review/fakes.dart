@@ -31,6 +31,9 @@ class FakeReviewRepository implements ReviewRepository {
   final calls = <String>[];
   final failures = <String, Object>{};
 
+  /// Runs on each confirm after it is recorded; throwing fails that one request.
+  void Function()? beforeConfirm;
+
   void _call(String name) {
     calls.add(name);
     final failure = failures.remove(name.split(' ').first);
@@ -46,6 +49,7 @@ class FakeReviewRepository implements ReviewRepository {
   @override
   Future<void> confirm(List<String> ids) async {
     _call('confirm ${ids.join(',')}');
+    beforeConfirm?.call();
     // All or nothing: an id the account does not have answers 404 and nothing changes.
     if (ids.any((id) => !home.items.any((t) => t.id == id))) {
       throw const HomeFailure(404, code: 'not_found');

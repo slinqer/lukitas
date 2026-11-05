@@ -94,6 +94,33 @@ void main() {
     expect(find.byKey(const Key('review.confirmAll')), findsNothing);
   });
 
+  testWidgets('Confirmar todos with more than 50 waiting sends them 50 at a time', (tester) async {
+    final env = await _pump(
+      tester,
+      items: [for (var i = 0; i < 73; i++) detected('d$i', '2026-10-21', -100000, name: 'Shop $i')],
+    );
+    await tester.tap(find.byKey(const Key('review.confirmAll')));
+    await tester.pumpAndSettle();
+    final sent = env.review.calls.where((c) => c.startsWith('confirm')).toList();
+    expect([for (final c in sent) c.substring('confirm '.length).split(',').length], [50, 23]);
+    expect(find.text('Nada por revisar'), findsOneWidget);
+  });
+
+  testWidgets('when the second batch fails, the first one stays confirmed', (tester) async {
+    final env = await _pump(
+      tester,
+      items: [for (var i = 0; i < 60; i++) detected('d$i', '2026-10-21', -100000, name: 'Shop $i')],
+    );
+    var confirms = 0;
+    env.review.beforeConfirm = () {
+      if (++confirms == 2) throw const HomeFailure(0);
+    };
+    await tester.tap(find.byKey(const Key('review.confirmAll')));
+    await tester.pumpAndSettle();
+    expect(env.home.items.where((t) => t.needsReview), hasLength(10));
+    expect(find.byKey(const Key('review.confirmAll')), findsOneWidget);
+  });
+
   testWidgets('a failed confirm keeps the rows and says so', (tester) async {
     final env = await _pump(tester);
     env.review.failures['confirm'] = const HomeFailure(0);
@@ -114,6 +141,17 @@ void main() {
     await _pump(tester, location: '/review/d2');
     expect(find.byType(AddSheet), findsOneWidget);
     expect(find.text('Taxi'), findsWidgets);
+  });
+
+  testWidgets('/review/<id> of one detected after the inbox was read still opens it', (
+    tester,
+  ) async {
+    final env = await _pump(tester);
+    env.home.items.add(detected('d9', '2026-10-21', -800000, name: 'Panaderia'));
+    env.app.router.go('/review/d9');
+    await tester.pumpAndSettle();
+    expect(find.byType(AddSheet), findsOneWidget);
+    expect(find.text('Panaderia'), findsWidgets);
   });
 
   testWidgets('/review/<id> of one already confirmed just shows the inbox', (tester) async {

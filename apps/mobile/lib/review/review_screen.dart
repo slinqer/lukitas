@@ -44,6 +44,22 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
   var _opened = false;
   var _busy = false;
 
+  @override
+  void initState() {
+    super.initState();
+    // A link to one transaction usually follows a capture the cached list has not seen yet.
+    if (widget.openId != null) ref.invalidate(reviewProvider);
+  }
+
+  @override
+  void didUpdateWidget(ReviewScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.openId != oldWidget.openId) {
+      _opened = false;
+      if (widget.openId != null) ref.invalidate(reviewProvider);
+    }
+  }
+
   void _back() {
     final router = GoRouter.of(context);
     if (router.canPop()) {
@@ -86,7 +102,8 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
     final home = ref.watch(homeProvider);
     final data = home.data;
     final items = list.value;
-    if (items != null) _openRequested(items);
+    // Only a fresh list decides: a stale one may not have the linked transaction yet.
+    if (items != null && !list.isLoading) _openRequested(items);
 
     Widget body;
     if (items == null && list.hasError || data == null && home.failure != null) {
