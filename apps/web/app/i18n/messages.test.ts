@@ -400,14 +400,14 @@ describe("the automatic capture copy", () => {
   const STEPS = ["pay", "reads", "decide", "learns", "next"];
   // Every word is checked in every locale: a word of any language counts.
   const LANGUAGE_WORDS = [
-    "portugu[eê]s",
+    "portugu[eéê]s",
     "portuguese",
     "portoghese",
     "espa[nñ]ol",
     "spanish",
     "espanhol",
     "spagnolo",
-    "ingl[eê]s",
+    "ingl[eéê]s",
     "english",
     "inglese",
     "italiano",
@@ -423,6 +423,43 @@ describe("the automatic capture copy", () => {
     Object.entries(site[locale]).filter(
       ([key]) => key.startsWith("landing.capture.") || key.startsWith("roadmap.items.bank_alerts."),
     );
+
+  it("the language words match every accented and plural form", () => {
+    const forms = [
+      "portugués",
+      "português",
+      "portugues",
+      "portuguese",
+      "portoghese",
+      "español",
+      "espanol",
+      "spanish",
+      "espanhol",
+      "spagnolo",
+      "inglés",
+      "inglês",
+      "ingles",
+      "english",
+      "inglese",
+      "italiano",
+      "italian",
+      "idioma",
+      "idiomas",
+      "language",
+      "languages",
+      "lingua",
+      "lingue",
+      "língua",
+      "línguas",
+      "linguas",
+    ];
+    for (const form of forms) {
+      expect(
+        LANGUAGE_WORDS.some((word) => word.test(`en ${form}.`)),
+        form,
+      ).toBe(true);
+    }
+  });
 
   for (const locale of LANGUAGES) {
     it(`${locale}: has every step, with a title and a body`, () => {

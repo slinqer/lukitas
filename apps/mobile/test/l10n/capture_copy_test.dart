@@ -8,8 +8,8 @@ const _steps = ['Pay', 'Reads', 'Decide', 'Learns', 'Next'];
 
 /// A language is never named in the capture copy (the Global Constraints' word list).
 final _languageWords = RegExp(
-  r'portugu[eé]s|portuguese|portoghese|espa[nñ]ol|spanish|espanhol|spagnolo|ingl[eéê]s|english|'
-  r'inglese|italiano|italian|idioma|language|lingua|lingue|língua',
+  r'portugu[eéê]s|portuguese|portoghese|espa[nñ]ol|spanish|espanhol|spagnolo|ingl[eéê]s|english|'
+  r'inglese|italiano|italian|idiomas?|languages?|l[ií]nguas?|lingue',
   caseSensitive: false,
 );
 
@@ -28,6 +28,18 @@ Map<String, dynamic> _web(String locale) {
 }
 
 void main() {
+  test('the language words match every accented and plural form', () {
+    const forms = [
+      'portugués', 'português', 'portugues', 'portuguese', 'portoghese', 'español', 'espanol',
+      'spanish', 'espanhol', 'spagnolo', 'inglés', 'inglês', 'ingles', 'english', 'inglese',
+      'italiano', 'italian', 'idioma', 'idiomas', 'language', 'languages', 'lingua', 'lingue',
+      'língua', 'línguas', 'linguas',
+    ];
+    for (final form in forms) {
+      expect(_languageWords.hasMatch('en $form.'), isTrue, reason: form);
+    }
+  });
+
   final es = _how('es');
 
   test('every autoCaptureHow key exists in the four ARBs', () {
