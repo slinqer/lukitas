@@ -99,6 +99,7 @@ class CaptureWorkersTest {
         }
         session = FakeSession("token-1", "http://127.0.0.1:${server.port}")
         queue = CaptureQueue(context)
+        queue.adopt("user-1")
         CaptureHooks.dependencies = { CaptureDependencies(session = session) }
         CaptureHooks.notifier = notifier
     }
@@ -238,6 +239,42 @@ class CaptureWorkersTest {
         assertTrue(requests.isEmpty())
         assertEquals(listOf(1), notifier.signIn)
         assertEquals(1, queue.all().size)
+    }
+
+    @Test
+    fun `sends only the captures of the account the queue belongs to`() {
+        queue.add(sampleCapture("Mine"))
+        // Queued for user-1, then another account's session is stored before the app says whose
+        // the queue is now (sendQueued): nothing goes to it until then.
+        val prefs = context.getSharedPreferences(CaptureQueue.FILE, Context.MODE_PRIVATE)
+        prefs.edit().putString("owner", "user-2").commit()
+
+        assertEquals(ListenableWorker.Result.success().javaClass, runSend().javaClass)
+
+        assertTrue(posts().isEmpty())
+        assertEquals(1, queue.all().size)
+    }
+
+    @Test
+    fun `sendQueued for another account drops the old captures and sends nothing of them`() {
+        queue.add(sampleCapture("Old account"))
+        CaptureScheduler.sendQueued(context, "user-2")
+        assertTrue(queue.all().isEmpty())
+        assertEquals("user-2", queue.owner())
+        val jobs = WorkManager.getInstance(context).getWorkInfosForUniqueWork(CaptureScheduler.SEND).get()
+        assertTrue(jobs.isEmpty())
+    }
+
+    @Test
+    fun `sendQueued for the same account keeps its captures and enqueues the send`() {
+        queue.add(sampleCapture("Kept through a 401"))
+        CaptureScheduler.sendQueued(context, "user-1")
+        assertEquals(1, queue.all().size)
+        val jobs = WorkManager.getInstance(context).getWorkInfosForUniqueWork(CaptureScheduler.SEND).get()
+        assertEquals(1, jobs.size)
+        runSend()
+        assertTrue(queue.all().isEmpty())
+        assertEquals(1, notifier.shown.size)
     }
 
     @Test

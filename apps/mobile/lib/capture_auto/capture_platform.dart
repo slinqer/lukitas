@@ -53,6 +53,10 @@ abstract interface class AutoCapturePlatform {
 
   /// Forgets the captures waiting to be sent (on sign-out: they belong to the old account).
   Future<void> clearQueue();
+
+  /// [userId] signed in: the queue becomes theirs (captures queued for another account, or for no
+  /// known one, are dropped) and what is left is sent.
+  Future<void> sendQueued(String userId);
 }
 
 /// [AutoCapturePlatform] over the `wambito/capture` channel. Where that channel does not exist the
@@ -95,6 +99,9 @@ class ChannelAutoCapturePlatform implements AutoCapturePlatform {
 
   @override
   Future<void> clearQueue() => _call<void>('clearQueue');
+
+  @override
+  Future<void> sendQueued(String userId) => _call<void>('sendQueued', {'userId': userId});
 }
 
 /// The platform side of automatic capture (replaced in tests).

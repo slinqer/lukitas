@@ -13,7 +13,9 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
 - `lib/capture_auto/`: Settings → "Captura automática" (switch per source, explainer on the first
   switch on, notification-access state, restricted-settings steps). `capture_platform.dart` wraps the
   `wambito/capture` channel (`autoCapturePlatformProvider`; no channel ⇒ `status()` null ⇒ the section
-  hides); `SessionController.signOut`/`accountDeleted` call its `clearQueue()`. Tests fake it with
+  hides); `SessionController.signOut`/`accountDeleted` call its `clearQueue()`, and every sign-in
+  (`_signedIn`) and a start the server confirms call `sendQueued(userId)` (a 401 keeps the queue).
+  Tests fake it with
   `test/capture_auto/fakes.dart`.
 - API: `lib/api/client.dart` (Dio, `WambitoApi`); headers from `lib/api/device.dart`
   (`x-wambito-timezone`, `-locale`, `-client: android`); server defaults to `https://app.wambito.com`,
@@ -37,14 +39,17 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
   `wambito/*`, registered in `MainActivity.kt`; names match the Dart constants (rename both at once).
 - `widget/`: Glance widgets via home_widget; `notices/`: WorkManager `DueWorker`/`GuestWorker`,
   local notices only; `capture/`: the queue of captures parsed from bank notifications
-  (`CaptureQueue`), `CaptureApi` (`POST /v1/captures`, confirm) and WorkManager `SendCapturesWorker`
+  (`CaptureQueue`: each item tagged with the account id it was captured for, the prefs' `owner`
+  then; `adopt(userId)` drops the items of another account or of none, old untagged items included;
+  only the owner's items are sent), `CaptureApi` (`POST /v1/captures`, confirm) and WorkManager `SendCapturesWorker`
   (`CaptureHooks` replaces the session and the notifier in tests). The notification text is never
   queued, sent or logged. `CaptureListener` (a `NotificationListenerService`) reads only the packages
   enabled in `CaptureSettings` (prefs `wambito.capture.sources`), hands them to `BankParsers` (`RevolutParser`
   and `GoogleWalletParser`, European Portuguese expenses only, sharing `PtAmount`; income and the other
   languages return null until samples exist; a parser that throws drops the notification) and queues
   the result; `CaptureChannel` is `wambito/capture`: `status`,
-  `setSource`, `openAccessSettings`, `openAppInfo`, `clearQueue` (on sign-out). `CapturePoster` (the
+  `setSource`, `openAccessSettings`, `openAppInfo`, `clearQueue` (on sign-out: items and owner),
+  `sendQueued` (`{userId}`, after a sign-in: `adopt` + send). `CapturePoster` (the
   default `CaptureHooks.notifier`) posts the silent notification per detected transaction on channel
   `wambito.capture` (LOW; id = `notificationId(transactionId)`, so a merged answer updates it, and one
   already confirmed (`needsReview` false) is `dismiss`ed instead; a group

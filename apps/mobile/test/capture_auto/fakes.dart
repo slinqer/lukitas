@@ -47,4 +47,7 @@ class FakeAutoCapturePlatform implements AutoCapturePlatform {
 
   @override
   Future<void> clearQueue() async => calls.add('clearQueue');
+
+  @override
+  Future<void> sendQueued(String userId) async => calls.add('sendQueued $userId');
 }

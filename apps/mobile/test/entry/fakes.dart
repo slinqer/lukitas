@@ -94,6 +94,7 @@ class FakeAuthApi implements AuthApi {
       guest: guest,
       // Like the API's profile: a guest has no welcome to finish.
       onboardingPending: !guest && (pendingOnboarding[token] ?? false),
+      userId: account,
     );
   }
 

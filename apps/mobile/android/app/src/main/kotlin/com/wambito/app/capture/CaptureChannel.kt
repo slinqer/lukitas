@@ -37,6 +37,16 @@ class CaptureChannel(private val activity: Activity, messenger: BinaryMessenger)
                         .setData(Uri.fromParts("package", activity.packageName, null)),
                 ),
             )
+            // After every sign-in: the queue becomes this account's, and what is left of it is sent.
+            "sendQueued" -> {
+                val userId = call.argument<String>("userId")?.takeIf { it.isNotEmpty() }
+                if (userId == null) {
+                    result.error("bad_args", "userId is required", null)
+                } else {
+                    CaptureScheduler.sendQueued(activity, userId)
+                    result.success(null)
+                }
+            }
             // On sign-out: captures of the account that left must not be sent for the next one.
             "clearQueue" -> {
                 CaptureQueue(activity).clear()

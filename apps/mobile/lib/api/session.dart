@@ -190,7 +190,11 @@ class SessionController extends Notifier<SessionState> {
           stored.token,
           guest: standing.guest,
           onboardingPending: standing.onboardingPending,
+          userId: standing.userId,
         );
+      } else {
+        // The server still knows the session: captures kept through a 401 can go now.
+        _sendQueuedCaptures(stored.token, standing.userId);
       }
     } on AuthFailure catch (failure) {
       if (failure.status == 401 && state.stored?.token == stored.token) {
@@ -207,6 +211,7 @@ class SessionController extends Notifier<SessionState> {
     bool onboardingPending = false,
     bool onboardingKnown = true,
     String? offerPasskeyFor,
+    String? userId,
   }) async {
     // Another token is another session (a guest replaced by an email account, say): what the old
     // one left on this phone goes with it. The same token (a claim, a corrected flag) keeps it.
@@ -230,6 +235,24 @@ class SessionController extends Notifier<SessionState> {
       offerPasskeyFor: guest ? null : offerPasskeyFor,
     );
     ref.read(widgetSyncProvider).signedIn();
+    _sendQueuedCaptures(token, userId);
+  }
+
+  /// Tells Android whose the queue of detected captures is now, so it drops another account's and
+  /// sends the rest (`sendQueued`, R15): what a 401 kept is sent once its account signs in again.
+  /// Asks the server for the account id only when [userId] is not known and there is an Android
+  /// side. Not waited for, and a failure (offline) only leaves the queue for the next sign-in or
+  /// start: nothing is sent to an account that could not be told.
+  void _sendQueuedCaptures(String token, String? userId) {
+    final platform = ref.read(autoCapturePlatformProvider);
+    Future<void> send() async {
+      if (await platform.status() == null) return;
+      final id = userId ?? await _auth.accountId(token);
+      if (!ref.mounted || state.stored?.token != token) return;
+      await platform.sendQueued(id);
+    }
+
+    unawaited(send().then<void>((_) {}, onError: (Object _) {}));
   }
 
   void _guardGuest(bool replaceGuest) {
@@ -268,21 +291,22 @@ class SessionController extends Notifier<SessionState> {
     // After an email sign-in (code or magic link) a passkey may be offered; asking is a nicety, so a
     // failure just means no offer, and the answer is waited for only a few seconds.
     final offer = await ref.read(passkeyOfferProvider).dueFor(token);
-    final pending = await _onboardingPending(token);
+    final standing = await _standing(token);
     await _signedIn(
       token,
       guest: false,
-      onboardingPending: pending ?? false,
-      onboardingKnown: pending != null,
+      onboardingPending: standing?.onboardingPending ?? false,
+      onboardingKnown: standing != null,
       offerPasskeyFor: offer,
+      userId: standing?.userId,
     );
   }
 
-  /// Whether the account behind [token] has the welcome to do; null when the server could not say.
-  /// Not knowing lets the person in, and the next start asks again.
-  Future<bool?> _onboardingPending(String token) async {
+  /// How the account behind [token] stands (the welcome to do, its id); null when the server could
+  /// not say. Not knowing lets the person in, and the next start asks again.
+  Future<AccountStanding?> _standing(String token) async {
     try {
-      return (await _auth.standing(token)).onboardingPending;
+      return await _auth.standing(token);
     } on AuthFailure {
       return null;
     }
@@ -369,14 +393,16 @@ class SessionController extends Notifier<SessionState> {
     // say, the safe side is a guest, which /v1/me corrects at the next start.
     var guest = true;
     var pending = false;
+    String? userId;
     try {
       final standing = await _auth.standing(token);
       guest = standing.guest;
       pending = standing.onboardingPending;
+      userId = standing.userId;
     } on AuthFailure {
       guest = true;
     }
-    await _signedIn(token, guest: guest, onboardingPending: pending);
+    await _signedIn(token, guest: guest, onboardingPending: pending, userId: userId);
   }
 
   /// Adds a passkey on this phone to the signed-in user, a guest included (spec section 4.3).

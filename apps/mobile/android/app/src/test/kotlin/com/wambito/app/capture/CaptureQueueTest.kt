@@ -56,11 +56,12 @@ class CaptureQueueTest {
 
     @Test
     fun `only the capture's own fields and the key are stored`() {
+        CaptureQueue(context).adopt("user-a")
         CaptureQueue(context).add(sampleCapture())
-        val raw = context.getSharedPreferences("wambito.capture.queue", Context.MODE_PRIVATE).all.values.single() as String
+        val raw = context.getSharedPreferences("wambito.capture.queue", Context.MODE_PRIVATE).getString("items", null)!!
         val entry = org.json.JSONObject(org.json.JSONArray(raw).getJSONObject(0).toString())
         val keys = entry.keys().asSequence().toSet()
-        assertEquals(setOf("key", "kind", "amount", "currency", "merchant", "capturedAt", "source"), keys)
+        assertEquals(setOf("key", "user", "kind", "amount", "currency", "merchant", "capturedAt", "source"), keys)
         assertTrue(raw.contains("\"kind\":\"expense\""))
     }
 
@@ -69,6 +70,64 @@ class CaptureQueueTest {
         context.getSharedPreferences("wambito.capture.queue", Context.MODE_PRIVATE).edit()
             .putString("items", """[{"key":"a","kind":"nope"}]""").commit()
         assertTrue(CaptureQueue(context).all().isEmpty())
+    }
+
+    @Test
+    fun `a capture is tagged with the account the queue belongs to`() {
+        val queue = CaptureQueue(context)
+        assertEquals(null, queue.add(sampleCapture("Before")).userId)
+        queue.adopt("user-a")
+        val tagged = queue.add(sampleCapture("Mercadona"))
+        assertEquals("user-a", tagged.userId)
+        assertEquals("user-a", CaptureQueue(context).owner())
+        assertEquals(tagged, CaptureQueue(context).all().last())
+    }
+
+    @Test
+    fun `adopting another account drops the captures of the one before, and those of nobody`() {
+        val queue = CaptureQueue(context)
+        queue.add(sampleCapture("Nobody's"))
+        queue.adopt("user-a")
+        queue.add(sampleCapture("A's"))
+
+        queue.adopt("user-b")
+
+        assertTrue(queue.all().isEmpty())
+        assertEquals("user-b", queue.owner())
+    }
+
+    @Test
+    fun `adopting the same account again keeps its captures`() {
+        val queue = CaptureQueue(context)
+        queue.adopt("user-a")
+        val mine = queue.add(sampleCapture("A's"))
+        queue.adopt("user-a")
+        assertEquals(listOf(mine), queue.all())
+    }
+
+    @Test
+    fun `an entry stored before captures were tagged is nobody's, and dropped at the next adopt`() {
+        context.getSharedPreferences("wambito.capture.queue", Context.MODE_PRIVATE).edit()
+            .putString(
+                "items",
+                """[{"key":"old","kind":"expense","amount":1250,"currency":"EUR","merchant":"Old",""" +
+                    """"capturedAt":"2026-11-04T12:30:15.123Z","source":"revolut"}]""",
+            ).commit()
+        val queue = CaptureQueue(context)
+        assertEquals(null, queue.all().single().userId)
+        queue.adopt("user-a")
+        assertTrue(queue.all().isEmpty())
+    }
+
+    @Test
+    fun `clear forgets the captures and whose they were`() {
+        val queue = CaptureQueue(context)
+        queue.adopt("user-a")
+        queue.add(sampleCapture())
+        queue.clear()
+        assertTrue(queue.all().isEmpty())
+        assertEquals(null, queue.owner())
+        assertEquals(null, queue.add(sampleCapture()).userId)
     }
 
     @Test

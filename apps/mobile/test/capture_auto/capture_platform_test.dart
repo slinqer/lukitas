@@ -59,6 +59,13 @@ void main() {
     expect(calls.first.arguments, {'source': 'google_wallet', 'enabled': true});
   });
 
+  test('sendQueued names the account the queue now belongs to', () async {
+    const platform = ChannelAutoCapturePlatform();
+    await platform.sendQueued('user-1');
+    expect(calls.single.method, 'sendQueued');
+    expect(calls.single.arguments, {'userId': 'user-1'});
+  });
+
   test('without an Android side the status is null and nothing throws', () async {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
       channel,

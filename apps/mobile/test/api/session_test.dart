@@ -382,6 +382,78 @@ void main() {
       expect(container.read(sessionProvider).status, SessionStatus.signedOut);
     });
 
+    group('sends the captures queued for the account that signs in', () {
+      late FakeAutoCapturePlatform capture;
+
+      ProviderContainer withCapture() {
+        final container = ProviderContainer(
+          overrides: [
+            authApiProvider.overrideWithValue(auth),
+            passkeysProvider.overrideWithValue(passkeys),
+            widgetStoreProvider.overrideWithValue(widget),
+            homeCacheStoreProvider.overrideWithValue(homeCache),
+            autoCapturePlatformProvider.overrideWithValue(capture),
+          ],
+        );
+        addTearDown(container.dispose);
+        return container;
+      }
+
+      setUp(() => capture = FakeAutoCapturePlatform());
+
+      test('after an email sign-in, with the account id', () async {
+        auth.account = 'user-7';
+        final controller = await ready(withCapture());
+        await controller.verifyCode('ana@correo.com', '123456');
+        await pumpEventQueue();
+        expect(capture.callsNamed('sendQueued'), ['sendQueued user-7']);
+      });
+
+      test('after a guest starts', () async {
+        auth.account = 'guest-user';
+        final controller = await ready(withCapture());
+        await controller.startGuest();
+        await pumpEventQueue();
+        expect(capture.callsNamed('sendQueued'), ['sendQueued guest-user']);
+      });
+
+      test('at a start whose stored session the server still knows', () async {
+        mockStorage(token: 'email-token-0');
+        auth.account = 'user-3';
+        final controller = await ready(withCapture());
+        await controller.refreshed;
+        await pumpEventQueue();
+        expect(capture.callsNamed('sendQueued'), ['sendQueued user-3']);
+      });
+
+      test('never at a start whose session the server dropped, and the queue is kept', () async {
+        mockStorage(token: 'email-token-0');
+        auth.failures['isGuest'] = const AuthFailure(status: 401);
+        final controller = await ready(withCapture());
+        await controller.refreshed;
+        await pumpEventQueue();
+        expect(capture.callsNamed('sendQueued'), isEmpty);
+        expect(capture.callsNamed('clearQueue'), isEmpty);
+      });
+
+      test('not when the account cannot be told (offline)', () async {
+        auth.failures['accountId'] = const AuthFailure(status: 0);
+        final controller = await ready(withCapture());
+        await controller.startGuest();
+        await pumpEventQueue();
+        expect(capture.callsNamed('sendQueued'), isEmpty);
+      });
+
+      test('without an Android side the account is not even asked', () async {
+        capture.available = false;
+        final controller = await ready(withCapture());
+        await controller.startGuest();
+        await pumpEventQueue();
+        expect(capture.callsNamed('sendQueued'), isEmpty);
+        expect(auth.calls.where((c) => c.startsWith('accountId')), isEmpty);
+      });
+    });
+
     test(
       'signOut of a guest throws GuestInTheWay and keeps the session, the widget and the cache',
       () async {

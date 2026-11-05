@@ -86,6 +86,16 @@ object CaptureScheduler {
     }
 
     /**
+     * After a sign-in of [userId] (`sendQueued` on the channel): the queue becomes theirs, dropping
+     * what was captured for another account or for none, and what is left is sent.
+     */
+    fun sendQueued(context: Context, userId: String) {
+        val queue = CaptureQueue(context)
+        queue.adopt(userId)
+        if (queue.all().isNotEmpty()) enqueueSend(context)
+    }
+
+    /**
      * "Bien" on [id]'s notification: confirms it once there is a network. One unique job per id
      * (KEEP: a second tap while the first waits or runs adds nothing), so a confirm that keeps
      * failing never holds the confirm of another transaction.
@@ -156,7 +166,9 @@ class ConfirmCaptureWorker(context: Context, params: WorkerParameters) : Corouti
  *    good (a 4xx other than 401). The key travels with the item, so a retry after a crash or a lost
  *    answer saves nothing twice.
  *  * 401 or no session: the queue stays, one "sign in" notice with the count, no retry (the next
- *    capture, or the next sign-in, enqueues a send again).
+ *    capture, or the next sign-in through [CaptureScheduler.sendQueued], enqueues a send again).
+ *  * Only the captures of the queue's owner are sent: one tagged for another account (or none)
+ *    waits for the app to say whose the queue is now, which drops it.
  *  * Offline or a server error: the queue stays and WorkManager retries with backoff.
  *  * A server setting that cannot be read sends nothing: the token never goes to the default server
  *    in place of the person's.
@@ -167,11 +179,11 @@ class SendCapturesWorker(context: Context, params: WorkerParameters) : Coroutine
         val context = applicationContext
         val dependencies = CaptureHooks.of(context)
         val queue = CaptureQueue(context)
-        if (queue.all().isEmpty()) return done("empty")
+        if (mine(queue).isEmpty()) return done("empty")
         val mark = dependencies.session.mark()
         val token = dependencies.session.token()
         if (mark == null || token == null) {
-            if (mark == null) CaptureHooks.notifier.signInNeeded(context, queue.all().size)
+            if (mark == null) CaptureHooks.notifier.signInNeeded(context, mine(queue).size)
             return done(if (mark == null) "signed out" else "token unreadable")
         }
         val server = serverOf(context, dependencies.session) ?: return done("server unreadable")
@@ -186,7 +198,7 @@ class SendCapturesWorker(context: Context, params: WorkerParameters) : Coroutine
         token: String,
         mark: String,
     ): Result {
-        for (item in queue.all()) {
+        for (item in mine(queue)) {
             when (val answer = dependencies.api.send(server, token, item)) {
                 is ApiResult.Ok -> {
                     // Signed out (or another account) while the request was on its way: the capture
@@ -207,13 +219,19 @@ class SendCapturesWorker(context: Context, params: WorkerParameters) : Coroutine
                 // The server will never take this one: drop it, go on with the rest.
                 ApiResult.Rejected -> queue.remove(item.key)
                 ApiResult.Unauthorized -> {
-                    CaptureHooks.notifier.signInNeeded(context, queue.all().size)
+                    CaptureHooks.notifier.signInNeeded(context, mine(queue).size)
                     return done("session refused")
                 }
                 ApiResult.Failed -> return Result.retry()
             }
         }
         return done("sent")
+    }
+
+    /** The queued captures of the account the queue belongs to. */
+    private fun mine(queue: CaptureQueue): List<QueuedCapture> {
+        val owner = queue.owner() ?: return emptyList()
+        return queue.all().filter { it.userId == owner }
     }
 
     private fun done(outcome: String): Result = Result.success(workDataOf(CAPTURE_OUTCOME to outcome))
