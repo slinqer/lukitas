@@ -40,8 +40,9 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
 - Kotlin: `cd android && JAVA_HOME=<JDK 17> ./gradlew :app:testDebugUnitTest --console=plain`.
 - Integration tests (emulator + root dev stack): `scripts/run-integration-tests.sh`.
 - F-Droid's Vosk and JNA from source (`docs/mobile/fdroid.md`): `scripts/build-native-deps.sh
-  --vosk-src <dir> --jna-src <dir> --ndk <NDK 28.2.13676358>` (Linux x86_64 only, a linux/amd64
-  container on a Mac; 46 min with `--jobs 4`) writes `android/third_party/m2` (git-ignored), then build with
+  --vosk-src <dir> --jna-src <dir> --ndk <NDK 28.2.13676358> [--abi <one ABI>]` (Linux x86_64
+  only, a linux/amd64 container on a Mac; 46 min with `--jobs 4`, about half with `--abi`;
+  `scripts/test-build-native-deps-args.sh` (CI) tests its arguments) writes `android/third_party/m2` (git-ignored), then build with
   `-Pwambito.nativeFromSource=true` (`flutter build apk -P wambito.nativeFromSource=true`, or the
   env `ORG_GRADLE_PROJECT_wambito.nativeFromSource=true` for `gradlew` and the check scripts). ARM
   only, so off for the x86_64 emulator. `scripts/test-native-switch.sh` (CI) tests the switch.

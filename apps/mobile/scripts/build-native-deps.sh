@@ -3,7 +3,7 @@
 # and JNA (5.18.1), from source: their native libraries (libvosk.so: Vosk with Kaldi, OpenFst,
 # OpenBLAS and CLAPACK; libjnidispatch.so: JNA with libffi) and their Java classes. F-Droid takes
 # no prebuilt binary, and Maven Central's AARs are prebuilt. It writes them to a local Maven
-# repository as 0.3.75-src and 5.18.1-src, for arm64-v8a and armeabi-v7a only:
+# repository as 0.3.75-src and 5.18.1-src, for arm64-v8a and armeabi-v7a only (or one of them):
 #   <out>/com/alphacephei/vosk-android/0.3.75-src/vosk-android-0.3.75-src.{aar,pom}
 #   <out>/net/java/dev/jna/jna/5.18.1-src/jna-5.18.1-src.{aar,pom}
 # and the app takes them with `-Pwambito.nativeFromSource=true` (android/app/build.gradle.kts).
@@ -23,6 +23,8 @@
 #                                ($ANDROID_HOME, or the one the NDK sits in)
 #       [--work <dir>]           the build trees (about 4 GB), kept; default: a temporary one
 #       [--jobs <n>]             default: the number of processors
+#       [--abi <abi>]            arm64-v8a or armeabi-v7a: only that ABI (half the time, for a
+#                                split APK of that ABI); default: both
 # Every source must be a git checkout at its pinned revision, at a path with no spaces.
 # Exit codes: 0 built, 1 a build step failed, 2 bad arguments, host, tools or sources.
 set -euo pipefail
@@ -37,13 +39,13 @@ JNA_REV=3c493c1642b1555d541755e0984c968ba6c0f540      # java-native-access/jna, 
 NDK_VERSION=28.2.13676358                             # r28c, the NDK upstream built 0.3.75 with
 VOSK_VERSION=0.3.75-src
 JNA_VERSION=5.18.1-src
-ABIS=(arm64-v8a armeabi-v7a)
+ABIS=(arm64-v8a armeabi-v7a) # --abi keeps one of them
 # Timestamps inside the archives, so that two builds of the same sources give the same AARs.
 ARCHIVE_DATE=1981-01-01T01:01:02Z
 
 MOBILE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 vosk_src="" jna_src="" ndk="" out="$MOBILE/android/third_party/m2"
-kaldi_src="" openfst_src="" openblas_src="" clapack_src="" android_jar="" work="" jobs=""
+kaldi_src="" openfst_src="" openblas_src="" clapack_src="" android_jar="" work="" jobs="" only_abi=""
 
 usage() {
   sed -n '/^# Usage/,/^# Exit codes/p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//' >&2
@@ -67,11 +69,18 @@ while [ $# -gt 0 ]; do
     --android-jar) android_jar="$2" ;;
     --work) work="$2" ;;
     --jobs) jobs="$2" ;;
+    --abi) only_abi="$2" ;;
     *) usage ;;
   esac
   shift 2
 done
 [ -n "$vosk_src" ] && [ -n "$jna_src" ] && [ -n "$ndk" ] || usage
+if [ -n "$only_abi" ]; then
+  case "$only_abi" in
+    arm64-v8a | armeabi-v7a) ABIS=("$only_abi") ;;
+    *) die "--abi must be arm64-v8a or armeabi-v7a, not $only_abi." ;;
+  esac
+fi
 
 # The host and the tools. Upstream's build-vosk.sh and the JNA patch both use the NDK's
 # linux-x86_64 toolchain (on a Mac, run this in a linux/amd64 container).
@@ -425,13 +434,11 @@ cat >"$jna_out/jna-$JNA_VERSION.pom" <<POM
 </project>
 POM
 
-# Exactly the two ABIs' libraries in each AAR.
+# Exactly the built ABIs' libraries in each AAR.
 for aar in "$vosk_out/vosk-android-$VOSK_VERSION.aar" "$jna_out/jna-$JNA_VERSION.aar"; do
   jni="$(jar --list --file "$aar" | grep '^jni/.' | grep -v '/$' | LC_ALL=C sort | tr '\n' ' ')"
-  case "$aar" in
-    *vosk*) want="jni/arm64-v8a/libvosk.so jni/armeabi-v7a/libvosk.so " ;;
-    *) want="jni/arm64-v8a/libjnidispatch.so jni/armeabi-v7a/libjnidispatch.so " ;;
-  esac
+  case "$aar" in *vosk*) lib=libvosk.so ;; *) lib=libjnidispatch.so ;; esac
+  want="$(printf 'jni/%s/'"$lib"' ' "${ABIS[@]}")"
   [ "$jni" = "$want" ] || die "$(basename "$aar") holds '$jni', not '$want'." 1
 done
 
