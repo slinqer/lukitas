@@ -115,6 +115,10 @@
       "whatsapp": {
         "title": "Annota su WhatsApp",
         "body": "Mandi un messaggio ed è annotato."
+      },
+      "on_device_ai": {
+        "title": "Il riepilogo del mese con l'IA sul telefono",
+        "body": "Wambi ti racconta il tuo mese con un'IA che gira sul tuo telefono: le tue spese non escono da lì."
       }
     }
   },

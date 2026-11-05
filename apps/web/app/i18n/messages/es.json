@@ -115,6 +115,10 @@
       "whatsapp": {
         "title": "Anota por WhatsApp",
         "body": "Mándale un mensaje y queda anotado."
+      },
+      "on_device_ai": {
+        "title": "Tu resumen del mes con IA en tu teléfono",
+        "body": "Wambi te cuenta tu mes con una IA que corre en tu teléfono: tus gastos no salen de ahí."
       }
     }
   },

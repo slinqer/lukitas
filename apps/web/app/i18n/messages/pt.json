@@ -115,6 +115,10 @@
       "whatsapp": {
         "title": "Regista pelo WhatsApp",
         "body": "Envias uma mensagem e fica registado."
+      },
+      "on_device_ai": {
+        "title": "O resumo do mês com IA no teu telemóvel",
+        "body": "O Wambi conta-te o teu mês com uma IA que corre no teu telemóvel: os teus gastos não saem dali."
       }
     }
   },

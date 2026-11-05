@@ -105,4 +105,8 @@ describe("the roadmap's statuses", () => {
     expect(roadmapItem("offline").status).toBe("done");
     expect(roadmapItem("connect_ai").status).toBe("building");
   });
+
+  it("plans the on-device AI recap for later", () => {
+    expect(roadmapItem("on_device_ai").status).toBe("later");
+  });
 });

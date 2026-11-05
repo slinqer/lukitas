@@ -54,6 +54,7 @@ export const ROADMAP_ITEMS: readonly RoadmapItem[] = [
   item("bank_alerts", "later", "🏦"),
   item("no_central_server", "later", "🔗"),
   item("whatsapp", "later", "💬"),
+  item("on_device_ai", "later", "🧠"),
 ];
 
 export interface RoadmapColumn {
