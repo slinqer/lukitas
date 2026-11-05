@@ -354,7 +354,11 @@ final preciseModelStoreProvider = Provider<ModelStore>(
 /// enough RAM, sherpa-onnx linked) and the language is `es` or `en`.
 final preciseEligibleProvider = FutureProvider.family<bool, String>((ref, locale) async {
   if (!preciseModels.containsKey(locale)) return false;
-  return ref.watch(voiceChannelProvider).deviceQualifies();
+  // A channel that never answers must not hold the capture sheet: no answer means not eligible.
+  return ref
+      .watch(voiceChannelProvider)
+      .deviceQualifies()
+      .timeout(const Duration(seconds: 2), onTimeout: () => false);
 });
 
 /// Deletes the downloaded voice models (Settings, Task 14, adds the button).

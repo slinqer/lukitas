@@ -508,6 +508,36 @@ void main() {
       expect(env.engine.listens, 2, reason: 'it listens with vosk');
       expect(find.byKey(const Key('capture.offer.download')), findsNothing);
       expect(env.offerFlag.value, isNull, reason: 'a failure is not an answer');
+      expect(
+        find.text('No pudimos descargar el modelo preciso. Inténtalo otra vez.'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a joint download that installs canary records the offer as answered', (
+      tester,
+    ) async {
+      final env = await _pump(tester, failure: noModel, eligible: true);
+      await _open(tester);
+      await tester.tap(find.byKey(const Key('capture.offer.download')));
+      await tester.pumpAndSettle();
+      expect(env.offerFlag.value, isTrue);
+    });
+
+    testWidgets('canary switched off in Settings: the sheet listens, with no offer', (
+      tester,
+    ) async {
+      // Settings records the switch's answer; the canary files are gone.
+      final env = await _pump(
+        tester,
+        eligible: true,
+        voskInstalled: true,
+        offerFlag: FakeFlagStore(false),
+      );
+      expect(env.precise.installed, isFalse);
+      await _open(tester);
+      expect(find.byKey(const Key('capture.offer.precise.accept')), findsNothing);
+      expect(env.engine.listens, 1);
     });
 
     testWidgets('a phone that does not qualify sees today\'s offer and gets no canary', (
@@ -564,6 +594,10 @@ void main() {
       await tester.pumpAndSettle();
       expect(env.engine.listens, 1);
       expect(env.offerFlag.value, isNull);
+      expect(
+        find.text('No pudimos descargar el modelo preciso. Inténtalo otra vez.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('someone who already has canary is not offered it', (tester) async {

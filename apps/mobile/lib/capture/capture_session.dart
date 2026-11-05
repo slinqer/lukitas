@@ -434,14 +434,20 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
       return;
     }
     if (!mounted) return;
-    if (canary != null) await _downloadPrecise(cancel, after: voskBytes);
+    if (canary != null) await _finishPrecise(cancel, after: voskBytes);
     if (!mounted) return;
     _download = null;
     listen();
   }
 
-  /// Downloads the precise model; false when it did not come ([after] bytes of the bar are done).
-  Future<bool> _downloadPrecise(CancelToken cancel, {required int after}) async {
+  /// Downloads the precise model ([after] bytes of the bar are done) and, once it is installed,
+  /// records the one-time offer as answered. If it does not come, a toast says so and nothing is
+  /// recorded: the offer returns later. A cancel is the same, but silent: it is intentionally not
+  /// an answer either.
+  Future<void> _finishPrecise(CancelToken cancel, {required int after}) async {
+    final toasts = ToastHost.of(context);
+    final said = l10n.settingsVoicePreciseFailed;
+    final offer = ref.read(preciseOfferProvider(locale));
     try {
       await ref
           .read(preciseModelStoreProvider)
@@ -450,15 +456,16 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
             cancel: cancel,
             onProgress: (received, _) => _set(() => downloaded = after + received),
           );
-      return true;
-    } on Object {
-      return false;
+      await offer.answer(accepted: true);
+    } on Object catch (error) {
+      if (error is ModelDownloadFailure && error.cancelled) return;
+      toasts.say(said, error: true);
     }
   }
 
   /// "Mejorar": the one-time offer accepted. Only the precise model is fetched; whatever happens,
-  /// the person then listens. It is recorded as answered once it is installed: a failure leaves
-  /// the offer open for next time.
+  /// the person then listens. It is recorded as answered once it is installed: a failure or a
+  /// cancel leaves the offer open for next time (a cancel is deliberately not an answer).
   Future<void> improvePrecision() async {
     final canary = preciseModel;
     if (canary == null) {
@@ -466,9 +473,7 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
       return;
     }
     final cancel = _beginDownload(canary.bytes);
-    final done = await _downloadPrecise(cancel, after: 0);
-    if (!mounted) return;
-    if (done) await ref.read(preciseOfferProvider(locale)).answer(accepted: true);
+    await _finishPrecise(cancel, after: 0);
     if (!mounted) return;
     _download = null;
     listen();

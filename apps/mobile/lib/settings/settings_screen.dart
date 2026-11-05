@@ -19,6 +19,7 @@ import '../api/server_url.dart';
 import '../api/session.dart';
 import '../capture/capture_sheet.dart';
 import '../capture/models_download.dart';
+import '../capture/precise_offer.dart';
 import '../capture/capture_language.dart' show captureLanguage;
 import '../capture_auto/auto_capture_section.dart';
 import '../feedback/feedback.dart';
@@ -192,6 +193,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final toasts = ToastHost.of(context);
     final l10n = AppLocalizations.of(context);
     final store = ref.read(preciseModelStoreProvider);
+    final offer = ref.read(preciseOfferProvider(locale));
     try {
       if (on) {
         setState(() => _preciseProgress = 0);
@@ -204,14 +206,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       } else {
         await store.deleteModel(locale);
       }
+      // The switch is the person's answer: on or off, the capture sheet's one-time offer is done.
+      await offer.answer(accepted: on);
     } on Object {
       toasts.say(
         on ? l10n.settingsVoicePreciseFailed : l10n.settingsDeleteVoiceFailed,
         error: true,
       );
     } finally {
-      if (mounted) setState(() => _preciseProgress = null);
-      ref.invalidate(preciseModelInstalledProvider(locale));
+      // Settings may have been left during the download: nothing to refresh then.
+      if (mounted) {
+        setState(() => _preciseProgress = null);
+        ref.invalidate(preciseModelInstalledProvider(locale));
+      }
     }
   }
 

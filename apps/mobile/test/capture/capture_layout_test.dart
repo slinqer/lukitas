@@ -47,7 +47,6 @@ Future<FakeSpeechEngine> _open(
       captureRepositoryProvider.overrideWithValue(FakeCaptureRepository(server)),
       speechEngineProvider.overrideWithValue(engine),
       modelStoreProvider.overrideWithValue(FakeModelStore()),
-      preciseEligibleProvider.overrideWith((ref, locale) async => false),
     ],
   );
   unawaited(openCapture(tester.element(find.byType(HomeScreen)), listen: listen));

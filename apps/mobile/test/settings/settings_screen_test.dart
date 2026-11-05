@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -578,6 +580,20 @@ void main() {
       expect(env.precise.downloaded, ['es']);
       expect(env.models.downloads, 0);
       expect(switchOn(tester), isTrue);
+      expect(env.flags['wambito.voice.preciseOffer']?.value, isTrue);
+    });
+
+    testWidgets('leaving Settings during the download throws nothing', (tester) async {
+      final env = await pumpSettingsApp(tester, location: '/settings', preciseEligible: true);
+      env.precise.gate = Completer<void>();
+      await _scrollTo(tester, 'settings.voicePrecise');
+      await tester.tap(find.byKey(const Key('settings.voicePrecise')));
+      await tester.pump(const Duration(milliseconds: 100));
+      env.router.go('/');
+      await tester.pumpAndSettle();
+      env.precise.gate!.complete();
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
     });
 
     testWidgets('on when installed; turning it off deletes only canary', (tester) async {
@@ -596,6 +612,7 @@ void main() {
       expect(env.models.deletes, 0);
       expect(env.models.installed, isTrue, reason: 'vosk stays');
       expect(switchOn(tester), isFalse);
+      expect(env.flags['wambito.voice.preciseOffer']?.value, isFalse, reason: 'no offer after off');
     });
 
     testWidgets('a download that fails says so and leaves the switch off', (tester) async {

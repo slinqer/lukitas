@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:wambito/add/add_repository.dart';
 import 'package:wambito/feedback/stored_flag.dart';
 import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/capture/models_download.dart' show preciseEligibleProvider;
 import 'package:wambito/home/home_cache.dart';
 import 'package:wambito/home/home_controller.dart';
 import 'package:wambito/home/home_header.dart';
@@ -78,6 +79,9 @@ Future<HomeHarness> pumpHome(
       // What a person put away ("Ahora no") is kept in memory, unless the test keeps flags itself.
       if (!overrides.any((o) => '${o.origin}'.contains('FlagStore')))
         flagStoreProvider.overrideWith((ref, key) => flags.putIfAbsent(key, FakeFlagStore.new)),
+      // The phone does not qualify for the precise voice model, unless the test says so.
+      if (!overrides.any((o) => o.origin == preciseEligibleProvider))
+        preciseEligibleProvider.overrideWith((ref, locale) async => false),
       homeRepositoryProvider.overrideWithValue(repo),
       if (!overrides.any((o) => '${o.origin}'.contains('reviewRepository')))
         reviewRepositoryProvider.overrideWithValue(FakeReviewRepository(repo)),
