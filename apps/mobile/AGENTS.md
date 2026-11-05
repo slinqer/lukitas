@@ -40,8 +40,10 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
   (`CaptureQueue`), `CaptureApi` (`POST /v1/captures`, confirm) and WorkManager `SendCapturesWorker`
   (`CaptureHooks` replaces the session and the notifier in tests). The notification text is never
   queued, sent or logged. `CaptureListener` (a `NotificationListenerService`) reads only the packages
-  enabled in `CaptureSettings` (prefs `wambito.capture.sources`), hands them to `BankParsers` (empty
-  until real samples exist) and queues the result; `CaptureChannel` is `wambito/capture`: `status`,
+  enabled in `CaptureSettings` (prefs `wambito.capture.sources`), hands them to `BankParsers` (`RevolutParser`
+  and `GoogleWalletParser`, European Portuguese expenses only, sharing `PtAmount`; income and the other
+  languages return null until samples exist; a parser that throws drops the notification) and queues
+  the result; `CaptureChannel` is `wambito/capture`: `status`,
   `setSource`, `openAccessSettings`, `openAppInfo`, `clearQueue` (on sign-out). `CapturePoster` (the
   default `CaptureHooks.notifier`) posts the silent notification per detected transaction on channel
   `wambito.capture` (LOW; id = `notificationId(transactionId)`, so a merged answer updates it; a group

@@ -11,13 +11,18 @@ interface BankParser {
 }
 
 /**
- * The parsers by source. Empty until real notification samples exist: until then every
- * notification is dropped.
+ * The parsers by source: Revolut and Google Wallet, European Portuguese expenses for now. A parser
+ * that throws drops the notification instead of crashing the listener. Nothing here logs: the
+ * notification is never logged.
  */
 object BankParsers {
     @VisibleForTesting
-    var parsers: List<BankParser> = emptyList()
+    var parsers: List<BankParser> = listOf(RevolutParser, GoogleWalletParser)
 
     fun parse(source: CaptureSource, title: String?, text: String?, postedAt: Instant): ParsedCapture? =
-        parsers.firstOrNull { it.source == source }?.parse(title, text, postedAt)
+        try {
+            parsers.firstOrNull { it.source == source }?.parse(title, text, postedAt)
+        } catch (_: Exception) {
+            null
+        }
 }
