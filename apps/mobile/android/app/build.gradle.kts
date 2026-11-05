@@ -132,6 +132,51 @@ tasks.configureEach {
     }
 }
 
+// F-Droid builds Vosk and JNA from source (docs/mobile/fdroid.md): scripts/build-native-deps.sh
+// writes them, native libraries and Java classes, for arm64-v8a and armeabi-v7a only, to the local
+// repository android/third_party/m2 (git-ignored) as vosk-android 0.3.75-src and jna 5.18.1-src, and
+// -Pwambito.nativeFromSource=true takes them instead of Maven Central's prebuilt AARs. Off by
+// default: a debug build with it on has no Vosk on an x86_64 emulator.
+val nativeFromSource = project.findProperty("wambito.nativeFromSource")?.toString()?.toBoolean() == true
+if (nativeFromSource) {
+    val built = listOf(
+        "com/alphacephei/vosk-android/0.3.75-src/vosk-android-0.3.75-src",
+        "net/java/dev/jna/jna/5.18.1-src/jna-5.18.1-src",
+    ).flatMap { listOf("$it.pom", "$it.aar") }.map { rootProject.file("third_party/m2/$it") }
+    if (built.any { !it.isFile }) {
+        throw GradleException(
+            "wambito.nativeFromSource is set but android/third_party/m2 has no vosk-android 0.3.75-src: " +
+                "run apps/mobile/scripts/build-native-deps.sh first",
+        )
+    }
+    // Exclusive: only this repository serves the two -src versions, and it serves nothing else.
+    // First in the list as well.
+    lateinit var local: ArtifactRepository
+    repositories.exclusiveContent {
+        forRepository { repositories.maven { url = uri("../third_party/m2") }.also { local = it } }
+        filter {
+            includeVersion("com.alphacephei", "vosk-android", "0.3.75-src")
+            includeVersion("net.java.dev.jna", "jna", "5.18.1-src")
+        }
+    }
+    repositories.remove(local)
+    repositories.addFirst(local)
+}
+
+// Every dependency version of the app is pinned by a lockfile, so F-Droid and CI resolve the same
+// graph: app/gradle.lockfile, and app/gradle-fdroid.lockfile for the from-source graph above. A
+// changed or new dependency fails the build until the locks are rewritten (docs/mobile/setup.md,
+// "Dependency locks"). Flutter's engine artifacts are left out: the Flutter SDK pins them (their
+// version is the engine hash), and which ones a build resolves depends on its --target-platform, so
+// locking them would fail a one-ABI build (F-Droid builds one per ABI).
+dependencyLocking {
+    lockAllConfigurations()
+    ignoredDependencies.add("io.flutter:*")
+    if (nativeFromSource) {
+        lockFile.set(layout.projectDirectory.file("gradle-fdroid.lockfile"))
+    }
+}
+
 dependencies {
     // Passkeys through the platform's Credential Manager (Android 14+), never through the
     // library's Play Services bridge, which scripts/check-no-google.sh refuses.
@@ -139,8 +184,16 @@ dependencies {
     // Quick capture's speech engine, on the phone with no network (the voice spike's choice,
     // docs/superpowers/reports/2026-10-22-stage-3-voice-spike.md). Apache-2.0; it brings JNA 5.18.1
     // (Apache-2.0 / LGPL-2.1). Never Android's SpeechRecognizer, which hands the audio to the
-    // phone's recognition service (Google's, mostly).
-    implementation("com.alphacephei:vosk-android:0.3.75")
+    // phone's recognition service (Google's, mostly). Built from source with the switch above,
+    // JNA then named on its own, at its own -src version.
+    if (nativeFromSource) {
+        implementation("com.alphacephei:vosk-android:0.3.75-src") {
+            exclude(group = "net.java.dev.jna")
+        }
+        implementation("net.java.dev.jna:jna:5.18.1-src@aar")
+    } else {
+        implementation("com.alphacephei:vosk-android:0.3.75")
+    }
     // The home-screen widget (widget/), drawn with Jetpack Glance, and its refresh job on
     // WorkManager (spec section 7.1). Both AndroidX, Apache-2.0, no Play Services; home_widget
     // already brings these exact versions, they are named here because the app's own code uses them.

@@ -154,6 +154,8 @@ fi
 if [ -n "$tag" ]; then
   version_name="$(release_version_name "$tag")"
   base_code="$(release_base_code "$tag")"
+  # F-Droid reads a new tag's version from pubspec.yaml, so the tag must carry the real one.
+  release_check_pubspec "$tag" "$MOBILE/pubspec.yaml" || die "fix pubspec.yaml's version at the tag first" 1
   if [ "$allow_dirty" -ne 1 ] && [ -n "$(git status --porcelain --untracked-files=no)" ]; then
     die "the working tree has uncommitted changes: a tagged release is built from the tag's commit alone (--allow-dirty to override)" 1
   fi

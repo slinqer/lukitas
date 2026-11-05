@@ -1,4 +1,3 @@
-gradle-wrapper.jar
 /.gradle
 /captures/
 /gradlew
@@ -12,3 +11,6 @@ GeneratedPluginRegistrant.java
 key.properties
 **/*.keystore
 **/*.jks
+
+# Vosk and JNA built from source (scripts/build-native-deps.sh), a local Maven repository.
+/third_party/

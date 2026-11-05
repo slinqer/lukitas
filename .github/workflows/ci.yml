@@ -228,6 +228,14 @@ jobs:
       # F-Droid metadata's limits (title, descriptions, changelogs, screenshots).
       - run: scripts/test-release.sh
       - run: scripts/check-fastlane.sh
+      # build-native-deps.sh's arguments (--abi), checked before it needs its tools or sources.
+      - run: scripts/test-build-native-deps-args.sh
+      # The F-Droid recipe still agrees with .flutter-version and build-native-deps.sh's pinned
+      # revisions and NDK, and gradle-fdroid.lockfile is gradle.lockfile with the two -src lines
+      # (docs/mobile/fdroid.md). Their test shows each fails on a deliberate mismatch.
+      - run: scripts/test-fdroid-checks.sh
+      - run: scripts/check-fdroid-recipe.sh
+      - run: scripts/check-fdroid-lock.sh
 
   # The Android app's builds, beside the quick checks above (each took as long as the other, one
   # after the other): no Google dependencies, the debug build and the Kotlin tests, and the release
@@ -272,11 +280,18 @@ jobs:
       - run: scripts/check-no-google.sh
       - run: scripts/test-no-google-probes.sh
       - run: flutter build apk --debug
+      # Gradle dependency locking (android/app/gradle.lockfile): the committed lock is what the app
+      # resolves now. The F-Droid graph's lock needs android/third_party/m2, which CI does not have,
+      # so scripts/check-fdroid-lock.sh checks it as text in the quick `mobile` job.
+      - run: scripts/check-gradle-locks.sh
       # The Kotlin side on the JVM (Robolectric, from Maven Central): the widget's rendering and
       # refresh job, the notices, the voice model unzip, the haptics. After the debug build, which
-      # writes android/local.properties and the Gradle wrapper (neither is committed).
+      # writes android/local.properties and the gradlew script (neither is committed; the wrapper jar is).
       - run: ./gradlew :app:testDebugUnitTest --console=plain
         working-directory: apps/mobile/android
+      # The switch F-Droid builds with (Vosk and JNA from source, scripts/build-native-deps.sh): off,
+      # Maven's artifacts; on with nothing built, a clear stop; on with built ones, only those.
+      - run: scripts/test-native-switch.sh
       - if: failure()
         uses: actions/upload-artifact@v4
         with:

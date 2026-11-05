@@ -66,9 +66,14 @@ Only when that prints the same `SHA256` fingerprint as the one written next to t
 
 Do the key move below (its own section) once, before the first build from these instructions. Until the Mac folder is moved, `cd` into the current checkout instead of `~/projects/wambito`.
 
+Before this, on `main`: for each release after `mobile-v1.0.0`, add and commit the new `<versionCode>.txt` changelogs (both codes, all four locales, `scripts/check-fastlane.sh` checks them) and push `main`. The release commit below is cut from `main`, and F-Droid reads the changelogs at the tag, so they must already be there.
+
 ```sh
 cd ~/projects/wambito
 git checkout main && git pull
+git checkout --detach                  # the release commit sits on top of main, never merged into it
+sed -i '' 's/^version: .*/version: 1.0.0+10000/' apps/mobile/pubspec.yaml   # X.Y.Z+<base code>
+git commit -m "chore(mobile): release 1.0.0" -- apps/mobile/pubspec.yaml
 git tag mobile-v1.0.0                  # the release; the script builds the commit the tag points at
                                        # (push the tag once the APK is checked: F-Droid reads tags)
 export PATH="$HOME/development/flutter/bin:$PATH"
@@ -78,13 +83,17 @@ printf 'Keystore password: '; read -rs WAMBITO_KEYSTORE_PASSWORD; echo; export W
 apps/mobile/scripts/release.sh
 ```
 
-(The F-Droid changelogs in `apps/mobile/fastlane/metadata/android/*/changelogs` are named for `mobile-v1.0.0`'s version codes, 100001 and 100002. For another first version, rename them; `release.sh` warns when a tagged build has none. For each later release, add `<versionCode>.txt` for both codes in both languages.)
+(The F-Droid changelogs in `apps/mobile/fastlane/metadata/android/*/changelogs` are named for `mobile-v1.0.0`'s version codes, 100001 and 100002. For another first version, rename them; `release.sh` warns when a tagged build has none. For each later release, add `<versionCode>.txt` for both codes in all four locales, on `main`, before the release commit.)
+
+Once the APK is checked, publish the tag (it is local until then): `git push origin mobile-v1.0.0`. For the first F-Droid submission, push the tag before opening the fdroiddata merge request (`apps/mobile/fdroid/MERGE_REQUEST.md`), which needs it to exist upstream. For a later release, if Flutter, the NDK, the SDK platform, a srclib revision or `build-native-deps.sh`'s flags changed since the last one, open a merge request on fdroiddata with the updated recipe first: its copy is the live one and auto update only bumps versions (`docs/mobile/fdroid.md`, "Changing the recipe after F-Droid publishes").
 
 What it does: `flutter clean`, an unsigned `flutter build apk --release --split-per-abi --target-platform android-arm,android-arm64` with `--build-name` and `--build-number` from the tag, then for each ABI: checks the alignment (4 bytes, and 16 KB for the native libraries), signs with `apksigner`, verifies the signature (v2 at least, not the debug key, the same certificate for both APKs), compares the manifest's version with the scheme, and runs `check-permissions.sh` on the signed APK. It compares the certificate with the one `keytool` reads from the keystore, and writes everything to `apps/mobile/dist/<versionName>/` (git-ignored):
 
 ```
 wambito-1.0.0-arm64-v8a.apk   wambito-1.0.0-armeabi-v7a.apk   SHA256SUMS   ANDROID_CERT_SHA256.txt
 ```
+
+The tagged commit, and only it, carries the release's version in `apps/mobile/pubspec.yaml`: `version: X.Y.Z+<base code>` (`1.0.0+10000` for `mobile-v1.0.0`). F-Droid's `checkupdates` finds a new `mobile-v*` tag and reads the version from that line (`UpdateCheckData` in `apps/mobile/fdroid/com.wambito.app.yml`); `release.sh` refuses a tag whose pubspec says anything else. `main` keeps `0.0.0-dev+1` (`scripts/test-release.sh` checks it), so go back with `git checkout main` after the release.
 
 A tagged build needs a clean working tree (`--allow-dirty` overrides); `--tag` names the tag to build and must point at HEAD; `--no-clean` skips `flutter clean` while iterating; `--out` changes `dist`.
 

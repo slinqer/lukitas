@@ -45,8 +45,11 @@ String _gradleCache() {
   return '$home/caches/modules-2/files-2.1';
 }
 
-/// The POM of group:artifact:version from Gradle's cache.
+/// The POM of group:artifact:version from Gradle's cache, or from the local repository of the
+/// libraries built from source (-Pwambito.nativeFromSource).
 String _pom(String group, String artifact, String version) {
+  final local = File(localRepositoryPom(group, artifact, version));
+  if (local.existsSync()) return local.readAsStringSync();
   final dir = Directory('${_gradleCache()}/$group/$artifact/$version');
   if (dir.existsSync()) {
     for (final entry in dir.listSync(recursive: true)) {
@@ -77,7 +80,7 @@ void main(List<String> args) {
     final [group, artifact] = resolved.id.split(':');
     final names = _licenses(group, artifact, resolved.version);
     try {
-      libraries.add(AndroidLibrary(resolved.id, resolved.version, normalizeLicenses(names)));
+      libraries.add(AndroidLibrary(resolved.id, resolved.release, normalizeLicenses(names)));
     } on UnknownLicense {
       _fail(
         '${resolved.id} ${resolved.version}: licence $names needs a decision in scripts/android_licenses_lib.dart',
