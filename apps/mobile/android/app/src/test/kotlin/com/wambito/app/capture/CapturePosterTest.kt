@@ -98,8 +98,8 @@ class CapturePosterTest {
         val summary = active().single { isSummary(it.notification) }
         assertEquals("3 gastos por revisar", summary.notification.extras.getString(Notification.EXTRA_TEXT))
 
-        CapturePoster.cancel(context, "t-2")
-        CapturePoster.cancel(context, "t-3")
+        CapturePoster.dismiss(context, "t-2")
+        CapturePoster.dismiss(context, "t-3")
         assertEquals(listOf(CapturePoster.notificationId("t-1")), active().map { it.id })
     }
 

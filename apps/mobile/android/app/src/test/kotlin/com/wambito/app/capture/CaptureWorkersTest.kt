@@ -39,8 +39,13 @@ private class FakeSession(var stored: String?, var serverUrl: String?) : Session
 private class RecordingNotifier : CaptureNotifier {
     val shown = mutableListOf<CaptureAnswer>()
     val signIn = mutableListOf<Int>()
+    val dismissed = mutableListOf<String>()
     override fun show(context: Context, answer: CaptureAnswer) {
         shown += answer
+    }
+
+    override fun dismiss(context: Context, transactionId: String) {
+        dismissed += transactionId
     }
 
     override fun signInNeeded(context: Context, count: Int) {
@@ -60,12 +65,15 @@ class CaptureWorkersTest {
     /** The status to answer a POST with, by merchant; 201 when absent. */
     private val statusFor = mutableMapOf<String, Int>()
     private var patchStatus = 200
+
+    /** Merchants whose capture the server already holds as confirmed (`needsReview` false). */
+    private val confirmed = mutableSetOf<String>()
     private var whileAnswering: (() -> Unit)? = null
 
     private fun answer(merged: Boolean, merchant: String, amount: Long) = """
         {"result":"${if (merged) "merged" else "created"}",
          "transaction":{"id":"t-$merchant","name":"$merchant","amount":-$amount,"currency":"EUR",
-           "date":"2026-11-04","status":"posted"},
+           "date":"2026-11-04","status":"posted","needsReview":${merchant !in confirmed}},
          "category":{"name":"Supermercado","fallback":false}}
     """.trimIndent()
 
@@ -101,6 +109,7 @@ class CaptureWorkersTest {
         CaptureHooks.notifier = object : CaptureNotifier {
             override fun show(context: Context, answer: CaptureAnswer) = Unit
             override fun signInNeeded(context: Context, count: Int) = Unit
+            override fun dismiss(context: Context, transactionId: String) = Unit
         }
         server.stop()
         queue.clear()
@@ -134,6 +143,41 @@ class CaptureWorkersTest {
         runSend()
         assertTrue(queue.all().isEmpty())
         assertEquals(true, notifier.shown.single().merged)
+    }
+
+    @Test
+    fun `merged into a capture already confirmed asks nothing and takes its notification away`() {
+        statusFor["Mercadona"] = 200
+        confirmed += "Mercadona"
+        queue.add(sampleCapture("Mercadona"))
+
+        assertEquals(ListenableWorker.Result.success().javaClass, runSend().javaClass)
+
+        assertTrue(queue.all().isEmpty())
+        assertTrue(notifier.shown.isEmpty())
+        assertEquals(listOf("t-Mercadona"), notifier.dismissed)
+    }
+
+    @Test
+    fun `merged into a capture still to review asks again`() {
+        statusFor["Mercadona"] = 200
+        queue.add(sampleCapture("Mercadona"))
+        runSend()
+        val answer = notifier.shown.single()
+        assertEquals(true, answer.merged)
+        assertEquals(true, answer.needsReview)
+        assertTrue(notifier.dismissed.isEmpty())
+    }
+
+    @Test
+    fun `the poster removes the notification of a capture confirmed meanwhile`() {
+        CapturePoster.show(context, CaptureAnswer(false, "t-1", -1250, "EUR", "Mercadona", "Supermercado", false))
+        CapturePoster.show(context, CaptureAnswer(false, "t-2", -300, "EUR", "Café", "Café", false))
+        assertEquals(3, notifications().activeNotifications.size) // two and the summary
+
+        CapturePoster.dismiss(context, "t-1")
+
+        assertEquals(1, notifications().activeNotifications.size)
     }
 
     @Test

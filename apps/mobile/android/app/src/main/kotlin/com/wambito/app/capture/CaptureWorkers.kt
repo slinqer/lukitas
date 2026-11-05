@@ -32,6 +32,9 @@ interface CaptureNotifier {
 
     /** [count] captures wait for a session: "Inicia sesión para guardar 2 gastos detectados". */
     fun signInNeeded(context: Context, count: Int)
+
+    /** [transactionId] needs no "¿bien?" any more: its notification, if still up, goes. */
+    fun dismiss(context: Context, transactionId: String)
 }
 
 object CaptureHooks {
@@ -104,11 +107,11 @@ class ConfirmCaptureWorker(context: Context, params: WorkerParameters) : Corouti
         val server = serverOf(context, dependencies.session) ?: return done("server unreadable")
         return when (withContext(Dispatchers.IO) { dependencies.api.confirm(server, token, id) }) {
             is ApiResult.Ok -> {
-                CapturePoster.cancel(context, id)
+                CapturePoster.dismiss(context, id)
                 done("confirmed")
             }
             ApiResult.Rejected -> {
-                CapturePoster.cancel(context, id)
+                CapturePoster.dismiss(context, id)
                 done("rejected")
             }
             ApiResult.Unauthorized -> done("session refused")
@@ -171,7 +174,13 @@ class SendCapturesWorker(context: Context, params: WorkerParameters) : Coroutine
                         return done("dropped")
                     }
                     queue.remove(item.key)
-                    CaptureHooks.notifier.show(context, answer.value)
+                    val saved = answer.value
+                    // The other bank app's notice of a purchase already confirmed: nothing to ask.
+                    if (saved.merged && !saved.needsReview) {
+                        CaptureHooks.notifier.dismiss(context, saved.id)
+                    } else {
+                        CaptureHooks.notifier.show(context, saved)
+                    }
                 }
                 // The server will never take this one: drop it, go on with the rest.
                 ApiResult.Rejected -> queue.remove(item.key)

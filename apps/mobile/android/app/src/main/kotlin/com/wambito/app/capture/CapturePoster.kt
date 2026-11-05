@@ -87,7 +87,7 @@ object CapturePoster : CaptureNotifier {
     }
 
     /** Removes the notification of [transactionId] (confirmed), and the summary if one is left alone. */
-    fun cancel(context: Context, transactionId: String) {
+    override fun dismiss(context: Context, transactionId: String) {
         val manager = context.getSystemService(NotificationManager::class.java) ?: return
         manager.cancel(TAG, notificationId(transactionId))
         refreshSummary(context, manager)

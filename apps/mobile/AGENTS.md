@@ -46,7 +46,8 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
   the result; `CaptureChannel` is `wambito/capture`: `status`,
   `setSource`, `openAccessSettings`, `openAppInfo`, `clearQueue` (on sign-out). `CapturePoster` (the
   default `CaptureHooks.notifier`) posts the silent notification per detected transaction on channel
-  `wambito.capture` (LOW; id = `notificationId(transactionId)`, so a merged answer updates it; a group
+  `wambito.capture` (LOW; id = `notificationId(transactionId)`, so a merged answer updates it, and one
+  already confirmed (`needsReview` false) is `dismiss`ed instead; a group
   summary from 2): "Bien" is an immutable broadcast to the non-exported `ConfirmReceiver` →
   `CaptureScheduler.enqueueConfirm` → `ConfirmCaptureWorker` (POST review, then cancels the
   notification), "Cambiar" opens `wambito://review/<id>` through the launch alias. Words in

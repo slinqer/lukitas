@@ -22,6 +22,11 @@ data class CaptureAnswer(
     val categoryName: String,
     /** The category is the kind's fallback ("Otros gastos"): the merchant is new. */
     val isFallback: Boolean,
+    /**
+     * The transaction still waits for the person's "¿bien?". False only for a merged answer whose
+     * capture was already confirmed (Bien on the other app's notification, or in the app).
+     */
+    val needsReview: Boolean = true,
 )
 
 /**
@@ -55,6 +60,8 @@ class CaptureApi(
                         name = transaction.getString("name"),
                         categoryName = category.getString("name"),
                         isFallback = category.getBoolean("fallback"),
+                        // A server that does not say is asked again, as before the field existed.
+                        needsReview = transaction.optBoolean("needsReview", true),
                     ),
                 )
             } catch (_: JSONException) {
