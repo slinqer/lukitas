@@ -67,7 +67,14 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
   `wambito.capture.confirm.<id>`, KEEP; POST review, then cancels the notification; a 4xx other than
   401/408/429, 404 included, drops it; at most `MAX_ATTEMPTS` = 8 runs, then the notification stays
   for another tap), "Cambiar" opens `wambito://review/<id>` through the launch alias. Words in
-  `CaptureText` (strings `capture_*`, language from `NoticeSettings`). Voice: Vosk, never Android's SpeechRecognizer. Passkeys: androidx.credentials.
+  `CaptureText` (strings `capture_*`, language from `NoticeSettings`). Voice: Vosk, never Android's SpeechRecognizer
+  (`voice/VoiceChannel.kt`, `wambito/voice` + `wambito/voice/events`; models kept per process by
+  `ModelCache`: `VoiceModels` for Vosk, `PreciseModels` for Canary keyed `path#language`). With
+  `precisePath`/`language` in the listen args the recording is kept in memory (`PcmBuffer`, 30 s max,
+  never on disk, sent or logged) and `Refine` re-transcribes it on release (waits ≤ 3 s for a loading
+  model): events `refining`, then `refined {text}` or `refine_failed {code: timeout|failed}`, between
+  Vosk's `result`s and `done`; methods `deviceQualifies`, `warmUp`/`isWarm` with `precisePath`/
+  `language`, `releaseModels` frees both. `CanaryRecognizer` is in `src/precise` only. Passkeys: androidx.credentials.
 
 ## Generated
 

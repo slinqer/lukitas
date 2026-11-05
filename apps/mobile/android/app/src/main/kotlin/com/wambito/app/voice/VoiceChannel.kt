@@ -19,6 +19,7 @@ import org.vosk.LogLevel
 import org.vosk.Model
 import org.vosk.Recognizer
 import java.io.File
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
 
 /**
@@ -33,13 +34,19 @@ import java.util.concurrent.Executors
  * the final one: the grammar recognizer hits endpoints mid-sentence. Dart merges the two.
  *
  * Methods: `supported` → Boolean (the native library loads); `requestPermission` → Boolean;
- * `warmUp({modelPath})` → Boolean (loads the model in the background, keeps it while the process
- * lives; never records); `isWarm({modelPath})` → Boolean (loaded, and the microphone allowed);
- * `stop`; `modelsDirectory` → String; `freeBytes` → Long; `unzip({zip, into})`; `releaseModels`.
- * Events, after listening with `{modelPath, grammar}`: `{type: ready}` once the microphone records,
- * `{type: level, value}` (0..1, about 25 a second: only a number, never the audio),
- * `{type: partial, text}`, `{type: result, pass: free|grammar, json}`, `{type: done}` or
- * `{type: error, code}`. After `done` or `error` nothing more is sent, and the stream is not ended
+ * `deviceQualifies` → Boolean (this build and phone can run the precise model, [PreciseModels]);
+ * `warmUp({modelPath, precisePath?, language?})` → Boolean (loads Vosk's model, and the precise one
+ * for that language when `precisePath` is given and the phone qualifies, in the background, keeps
+ * them while the process lives; never records; true once all asked for are loaded);
+ * `isWarm({modelPath, precisePath?, language?})` → Boolean (loaded, both when `precisePath` is
+ * given, and the microphone allowed); `stop`; `modelsDirectory` → String; `freeBytes` → Long;
+ * `unzip({zip, into})`; `releaseModels` (frees both models).
+ * Events, after listening with `{modelPath, grammar, precisePath?, language?}`: `{type: ready}` once
+ * the microphone records, `{type: level, value}` (0..1, about 25 a second: only a number, never the
+ * audio), `{type: partial, text}`, `{type: result, pass: free|grammar, json}`, then, when
+ * `precisePath` and `language` were given and some audio was read, `{type: refining}` and
+ * `{type: refined, text}` or `{type: refine_failed, code}` (`timeout`, `failed`), then `{type: done}`;
+ * or `{type: error, code}`. After `done` or `error` nothing more is sent, and the stream is not ended
  * with `endOfStream`: Dart cancels it on seeing either, and an `endOfStream` arriving after that
  * finds no handler and waits in the engine's channel buffers for the next listen, which it then
  * ends at once (lib/capture/engine/voice_channel.dart `_dropStaleEvents`).
@@ -48,6 +55,11 @@ import java.util.concurrent.Executors
  * for four seconds of audio; the model and the two recognizers attach while it records, and what was
  * said meanwhile is read from that buffer first, so no word is lost. The model is the process's
  * ([VoiceModels]), loaded in advance and kept; a recording only borrows it.
+ *
+ * Refine on release: with a precise model (NVIDIA Canary, [PreciseModels]), every chunk read is also
+ * kept in memory ([PcmBuffer], at most 30 s), and when the person lets go the whole recording is
+ * re-transcribed after Vosk's final results ([Refine], waiting up to 3 s for a model still loading).
+ * The audio is freed right after; it is never written to disk, sent, or logged.
  */
 class VoiceChannel(private val activity: Activity, messenger: BinaryMessenger) :
     MethodChannel.MethodCallHandler, EventChannel.StreamHandler {
@@ -76,8 +88,13 @@ class VoiceChannel(private val activity: Activity, messenger: BinaryMessenger) :
     // activities, freed on memory pressure and by releaseModels.
     private val models = VoiceModels.cache
 
+    // The precise model is the process's too (PreciseModels), keyed by folder and language.
+    private val precise = PreciseModels.cache
+    private val refine = Refine(precise)
+
     init {
         VoiceModels.register(activity)
+        PreciseModels.register(activity)
         // JNA passes Java strings to Vosk in this encoding: the grammar must reach it as UTF-8, or
         // every accented word (gasté, millón…) is silently dropped.
         System.setProperty("jna.encoding", "UTF-8")
@@ -101,24 +118,40 @@ class VoiceChannel(private val activity: Activity, messenger: BinaryMessenger) :
                 main.post { result.success(ok) }
             }
             "requestPermission" -> requestPermission(result)
+            "deviceQualifies" -> files.execute {
+                val ok = PreciseModels.available(activity)
+                main.post { result.success(ok) }
+            }
             "warmUp" -> {
                 val path = call.argument<String>("modelPath")
                 if (path == null) {
                     result.error("failed", "Missing modelPath", null)
                     return
                 }
+                val preciseKey = preciseKey(call)
                 // The next process start loads this one before Dart runs (VoiceModels.warmFromHint).
                 WarmHint.remember(activity, path)
+                // The precise model loads on its own thread, alongside Vosk's; a failure there leaves
+                // Vosk's text, so it answers false rather than an error.
+                val canary: CompletableFuture<Boolean> = when {
+                    preciseKey == null -> CompletableFuture.completedFuture(true)
+                    !PreciseModels.available(activity) -> CompletableFuture.completedFuture(false)
+                    else -> precise.warm(preciseKey).handle { loaded, error -> error == null && loaded == true }
+                }
                 models.warm(path).whenComplete { loaded, error ->
-                    main.post {
-                        if (error != null) result.error("failed", error.message, null) else result.success(loaded)
+                    if (error != null) {
+                        main.post { result.error("failed", error.message, null) }
+                    } else {
+                        canary.whenComplete { ready, _ -> main.post { result.success(loaded && ready) } }
                     }
                 }
             }
             "isWarm" -> {
                 val path = call.argument<String>("modelPath")
+                val preciseKey = preciseKey(call)
                 result.success(
                     path != null && models.loadedPath() == path &&
+                        (preciseKey == null || precise.loadedPath() == preciseKey) &&
                         activity.checkSelfPermission(Manifest.permission.RECORD_AUDIO) ==
                         PackageManager.PERMISSION_GRANTED,
                 )
@@ -149,15 +182,23 @@ class VoiceChannel(private val activity: Activity, messenger: BinaryMessenger) :
                 stopRequested = true
                 hardStop = true
                 WarmHint.forget(activity)
-                // Behind a running recording on the worker, which ends within one chunk now; the
-                // model itself is closed when nobody uses it.
+                // Behind a running recording on the worker, which ends within one chunk now (or once
+                // a running refine returns); a model itself is closed when nobody uses it.
                 worker.execute {
                     models.drop()
+                    precise.drop()
                     main.post { result.success(null) }
                 }
             }
             else -> result.notImplemented()
         }
+    }
+
+    /** The precise model's cache key from `precisePath` and `language`, when both are given. */
+    private fun preciseKey(call: MethodCall): String? {
+        val path = call.argument<String>("precisePath") ?: return null
+        val language = call.argument<String>("language") ?: return null
+        return PreciseModels.key(path, language)
     }
 
     /** Stops recording now (the app went to the background): the loop ends within one chunk. */
@@ -211,6 +252,8 @@ class VoiceChannel(private val activity: Activity, messenger: BinaryMessenger) :
         val args = arguments as? Map<*, *>
         val path = args?.get("modelPath") as? String
         val grammar = args?.get("grammar") as? String
+        val precisePath = args?.get("precisePath") as? String
+        val language = args?.get("language") as? String
         if (disposed || path == null || grammar == null) {
             sink.success(mapOf("type" to "error", "code" to "bad_arguments"))
             return
@@ -218,7 +261,7 @@ class VoiceChannel(private val activity: Activity, messenger: BinaryMessenger) :
         stopRequested = false
         hardStop = false
         val id = ++session
-        worker.execute { record(id, path, grammar, sink) }
+        worker.execute { record(id, path, grammar, precisePath, language, sink) }
     }
 
     override fun onCancel(arguments: Any?) {
@@ -232,7 +275,17 @@ class VoiceChannel(private val activity: Activity, messenger: BinaryMessenger) :
         main.post { if (id == session) sink.success(event) }
     }
 
-    private fun record(id: Int, path: String, grammar: String, sink: EventChannel.EventSink) {
+    private fun record(
+        id: Int,
+        path: String,
+        grammar: String,
+        precise: String?,
+        language: String?,
+        sink: EventChannel.EventSink,
+    ) {
+        // The whole recording, for the precise model on release; only kept when there is one.
+        val refineKey = if (precise != null && language != null) PreciseModels.key(precise, language) else null
+        val kept = refineKey?.let { PcmBuffer() }
         var free: Recognizer? = null
         var biased: Recognizer? = null
         var audio: AudioRecord? = null
@@ -277,6 +330,7 @@ class VoiceChannel(private val activity: Activity, messenger: BinaryMessenger) :
                 if (read < 0) throw IllegalStateException("mic_read_$read")
                 if (read == 0) continue
                 backlog.addLast(chunk.copyOf(read))
+                kept?.append(chunk, read)
                 sendLevel(id, sink, chunk, read)
             }
             lease = models.acquire(path) { hardStop || id != session }
@@ -310,11 +364,12 @@ class VoiceChannel(private val activity: Activity, messenger: BinaryMessenger) :
                 val read = audio.read(chunk, 0, chunk.size)
                 if (read < 0) throw IllegalStateException("mic_read_$read")
                 if (read == 0) continue
+                kept?.append(chunk, read)
                 sendLevel(id, sink, chunk, read)
                 feed(chunk, read)
             }
             audio.stop()
-            endUnheard(id, sink, free, biased)
+            endUnheard(id, sink, free, biased, refineKey, kept)
         } catch (error: Throwable) {
             val code = when (error.message) {
                 "permission" -> "permission"
@@ -327,6 +382,7 @@ class VoiceChannel(private val activity: Activity, messenger: BinaryMessenger) :
             free?.close()
             biased?.close()
             lease?.close()
+            kept?.clear()
         }
     }
 
@@ -336,13 +392,33 @@ class VoiceChannel(private val activity: Activity, messenger: BinaryMessenger) :
     }
 
     /**
-     * Ends the stream: the final result of each recognizer that exists, then done. Called when the
-     * recording was stopped, whether or not the recognizers had come up.
+     * Ends the stream: the final result of each recognizer that exists, then, with a precise model
+     * ([refineKey]) and some audio [kept], its re-transcription of the whole recording, then done.
+     * Called when the recording was stopped, whether or not the recognizers had come up.
      */
-    private fun endUnheard(id: Int, sink: EventChannel.EventSink, free: Recognizer?, biased: Recognizer?) {
+    private fun endUnheard(
+        id: Int,
+        sink: EventChannel.EventSink,
+        free: Recognizer?,
+        biased: Recognizer?,
+        refineKey: String? = null,
+        kept: PcmBuffer? = null,
+    ) {
         if (id != session) return
         if (free != null) send(id, sink, mapOf("type" to "result", "pass" to "free", "json" to free.finalResult))
         if (biased != null) send(id, sink, mapOf("type" to "result", "pass" to "grammar", "json" to biased.finalResult))
+        if (refineKey != null && kept != null) {
+            val cancelled = { hardStop || id != session }
+            if (!kept.isEmpty && !cancelled()) {
+                send(id, sink, mapOf("type" to "refining"))
+                when (val refined = refine.run(refineKey, kept, cancelled)) {
+                    is RefineResult.Text -> send(id, sink, mapOf("type" to "refined", "text" to refined.text))
+                    is RefineResult.Failed -> send(id, sink, mapOf("type" to "refine_failed", "code" to refined.code))
+                    RefineResult.Skipped -> {}
+                }
+            }
+            kept.clear()
+        }
         send(id, sink, mapOf("type" to "done"))
     }
 

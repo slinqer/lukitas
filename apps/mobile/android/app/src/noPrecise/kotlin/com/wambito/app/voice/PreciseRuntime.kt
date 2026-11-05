@@ -6,4 +6,8 @@ package com.wambito.app.voice
  */
 object PreciseRuntime {
     val linked: Boolean = false
+
+    /** There is no precise model in this build ([PreciseModels.available] is false). */
+    fun open(path: String, language: String, threads: Int): PreciseRecognizer =
+        throw UnsupportedOperationException("No precise voice model in this build")
 }

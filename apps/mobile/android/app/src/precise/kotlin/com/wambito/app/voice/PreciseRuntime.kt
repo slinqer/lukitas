@@ -9,4 +9,8 @@ import com.k2fsa.sherpa.onnx.OfflineRecognizerConfig
  */
 object PreciseRuntime {
     val linked: Boolean = OfflineRecognizerConfig::class.java.name.isNotEmpty()
+
+    /** Loads Canary from the model folder [path] for [language] ([PreciseModels.cache]'s opener). */
+    fun open(path: String, language: String, threads: Int): PreciseRecognizer =
+        CanaryRecognizer(path, language, threads)
 }
