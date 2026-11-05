@@ -12,7 +12,7 @@ Hono + Better Auth + Drizzle (`@wambito/db`), OpenAPI document "Wambito API". Ev
 - `src/http/session.ts`: `requireUser` (cookie or bearer session, or an OAuth JWT with `aud` =
   MCP_URL). `src/http/scopes.ts`: OAuth scopes (`finance:read`, …), enforced here, not in the MCP.
 - `src/http/client-headers.ts`: `clientHeader`. `src/routes/*.ts`: the routes.
-  `src/services/`: domain services.   `src/services/`: domain services. `src/emails/sign-in.ts`: sign-in mail copy (es/en/it/pt);
+  `src/services/`: domain services. `src/emails/sign-in.ts`: sign-in mail copy (es/en/it/pt);
   `src/emails/layout.ts`: the frame every email shares (Wambi, wordmark image, card, footer; day
   colours inline, night in a `prefers-color-scheme` block; fonts by `@font-face` from WEB_URL).
 - `POST /v1/captures` (`src/routes/captures.ts`, `src/services/captures.ts`): saves a bank-notification
