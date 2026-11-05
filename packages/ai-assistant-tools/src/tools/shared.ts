@@ -62,6 +62,13 @@ export const transactionOutput = z.object({
   category: z.string().describe(DATA_NOTE),
   categoryId: z.string(),
   status: z.enum(["paid", "pending"]),
+  needsReview: z
+    .boolean()
+    .describe("True for a transaction detected from a bank notification that is not confirmed yet"),
+  captureSource: z
+    .enum(["revolut", "google_wallet"])
+    .nullable()
+    .describe("The app it was detected from; null when it was not detected"),
 });
 export type TransactionOutput = z.infer<typeof transactionOutput>;
 
@@ -106,6 +113,8 @@ export function toTransactionOutput(
     category: categories.get(tx.categoryId)?.name ?? "",
     categoryId: tx.categoryId,
     status: tx.status,
+    needsReview: tx.needsReview,
+    captureSource: tx.captureSource,
   };
 }
 

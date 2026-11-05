@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CAPTURE_SOURCES } from "./capture-sources.ts";
 import { SUPPORTED_CURRENCIES } from "./currencies.ts";
 import { isIsoDate, isMonth, isValidTimeZone } from "./dates.ts";
 
@@ -72,6 +73,7 @@ export const updateTransactionSchema = z
     date: isoDateSchema,
     status: statusSchema,
     note: noteSchema,
+    needsReview: z.literal(false),
   })
   .partial()
   .refine(atLeastOne, AT_LEAST_ONE);
@@ -166,7 +168,9 @@ export const transactionDto = z.object({
   categoryId: z.uuid(),
   recurrenceId: z.uuid().nullable(),
   importId: z.uuid().nullable(),
-  source: z.enum(["app", "web", "widget", "mcp", "import", "recurrence"]),
+  source: z.enum(["app", "web", "widget", "mcp", "import", "recurrence", "capture"]),
+  needsReview: z.boolean(),
+  captureSource: z.enum(CAPTURE_SOURCES).nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });

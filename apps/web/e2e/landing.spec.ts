@@ -1657,6 +1657,88 @@ for (const l of LOCALES) {
   });
 }
 
+/** Automatic capture: the landing's card and its "how it works" page, per language. */
+const CAPTURE = {
+  es: {
+    path: "/automatic-capture",
+    card: "¡Wambi anota los gastos por ti!",
+    badge: "Pronto · Solo en Android",
+    link: "¿Cómo funciona?",
+    title: "¿Cómo funciona la captura automática?",
+    soon: "Pronto en la app de Android.",
+  },
+  en: {
+    path: "/en/automatic-capture",
+    card: "Wambi logs your expenses for you!",
+    badge: "Soon · Android only",
+    link: "How does it work?",
+    title: "How does automatic capture work?",
+    soon: "Soon in the Android app.",
+  },
+  it: {
+    path: "/it/automatic-capture",
+    card: "Wambi annota le spese per te!",
+    badge: "Presto · Solo su Android",
+    link: "Come funziona?",
+    title: "Come funziona la cattura automatica?",
+    soon: "Presto nell’app Android.",
+  },
+  pt: {
+    path: "/pt/automatic-capture",
+    card: "O Wambi regista as despesas por ti!",
+    badge: "Em breve · Só no Android",
+    link: "Como funciona?",
+    title: "Como funciona a captura automática?",
+    soon: "Em breve na app Android.",
+  },
+} as const;
+
+for (const l of LOCALES) {
+  const c = CAPTURE[l.locale];
+
+  test.describe(`automatic capture (${l.locale})`, () => {
+    test("the landing's #how holds the card as its fifth item, with a real link to the page", async ({
+      page,
+    }) => {
+      await page.goto(l.path);
+      const items = page.locator("#how ul.is-how > li");
+      await expect(items).toHaveCount(5);
+      const card = items.nth(4);
+      await expect(card.getByRole("heading", { name: c.card })).toBeVisible();
+      await expect(card.getByText(c.badge, { exact: true })).toBeVisible();
+      await expect(card.getByRole("link", { name: c.link })).toHaveAttribute("href", c.path);
+    });
+
+    test("the page works without JavaScript: five steps, five scenes, the soon line", async ({
+      page,
+      request,
+    }) => {
+      const response = await request.get(c.path);
+      expect(response.status()).toBe(200);
+      expect(await response.text()).toContain(`<html lang="${l.locale}"`);
+      await page.goto(c.path);
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText(c.title);
+      await expect(page.getByRole("heading", { level: 2 })).toHaveCount(5);
+      await expect(page.locator("img.lk-capture-scene")).toHaveCount(5);
+      await expect(page.getByText(c.soon, { exact: true })).toBeVisible();
+      await expect(
+        page.getByRole("contentinfo").getByRole("link", { name: l.other.name }),
+      ).toHaveAttribute("href", CAPTURE[l.other.lang].path);
+    });
+
+    test.describe("at 320px", () => {
+      test.use({ viewport: { width: 320, height: 700 } });
+
+      test("nothing overflows on the page nor on #how", async ({ page }) => {
+        await page.goto(c.path);
+        await expectFitsTheViewport(page);
+        await page.goto(l.path);
+        await expectFitsTheViewport(page);
+      });
+    });
+  });
+}
+
 test("the language switch on the privacy policy keeps the page", async ({ page }) => {
   await page.goto("/it/privacy");
   const pt = page.getByRole("contentinfo").getByRole("link", { name: "Português" });

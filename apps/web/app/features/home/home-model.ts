@@ -154,3 +154,13 @@ export function overallState(budgetTotal: number, spent: number): "ok" | "near" 
   const ratio = spent / budgetTotal;
   return ratio > 1 ? "over" : ratio >= NEAR_LIMIT_RATIO ? "near" : "ok";
 }
+
+// -- Detected transactions -----------------------------------------------------------------------
+
+/**
+ * Where a transaction to review was detected, as the message's `source` choice (`revolut`,
+ * `google_wallet`, or `other` when the API sent none); null when it needs no review.
+ */
+export function reviewMark(tx: TransactionDto): "revolut" | "google_wallet" | "other" | null {
+  return tx.needsReview ? (tx.captureSource ?? "other") : null;
+}

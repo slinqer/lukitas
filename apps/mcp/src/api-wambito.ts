@@ -54,7 +54,18 @@ export function apiWambito(baseUrl: string, token: string, fetchImpl?: typeof fe
       return profile;
     },
     monthSummary: (month) => unwrap(api.GET("/v1/summary", { params: { query: { month } } })),
-    listTransactions: (q) => unwrap(api.GET("/v1/transactions", { params: { query: q } })),
+    listTransactions: (q) =>
+      unwrap(
+        api.GET("/v1/transactions", {
+          params: {
+            query: {
+              ...q,
+              needsReview:
+                q.needsReview === undefined ? undefined : q.needsReview ? "true" : "false",
+            },
+          },
+        }),
+      ),
     categoryReport: (r) =>
       unwrap(api.GET("/v1/reports/by-category", { params: { query: r } })).then((report) => ({
         total: report.total,

@@ -6,6 +6,7 @@ export const PRIVACY_SECTIONS = [
   "storage",
   "not_done",
   "voice",
+  "capture",
   "assistants",
   "guest",
   "self_hosted",

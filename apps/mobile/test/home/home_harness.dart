@@ -13,10 +13,12 @@ import 'package:wambito/home/home_screen.dart';
 import 'package:wambito/app.dart' show withAppHosts;
 import 'package:wambito/l10n/app_localizations.dart';
 import 'package:wambito/offline/pending_saves.dart';
+import 'package:wambito/review/review_repository.dart';
 import 'package:wambito/theme/theme.dart';
 
 import '../settings/fakes.dart' show FakeFlagStore;
 import 'fakes.dart';
+import '../review/fakes.dart' show FakeReviewRepository;
 import 'fixtures.dart';
 
 /// 2026-10-22 10:00 in Bogota (UTC-5).
@@ -77,6 +79,8 @@ Future<HomeHarness> pumpHome(
       if (!overrides.any((o) => '${o.origin}'.contains('FlagStore')))
         flagStoreProvider.overrideWith((ref, key) => flags.putIfAbsent(key, FakeFlagStore.new)),
       homeRepositoryProvider.overrideWithValue(repo),
+      if (!overrides.any((o) => '${o.origin}'.contains('reviewRepository')))
+        reviewRepositoryProvider.overrideWithValue(FakeReviewRepository(repo)),
       if (addRepo != null) addRepositoryProvider.overrideWithValue(addRepo),
       homeCacheProvider.overrideWithValue(HomeCache(cacheStore ?? FakeCacheStore(), token: token)),
       pendingSavesStoreProvider.overrideWithValue(pendingStore ?? FakePendingSavesStore()),

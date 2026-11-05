@@ -29,4 +29,19 @@
     <string name="notice_channel_due_description">At 9:00, one notice with the recurring payments due that day.</string>
     <string name="notice_channel_guest">Warning if you have no email</string>
     <string name="notice_channel_guest_description">A notice if 45 days pass without opening Wambito and your account has no email.</string>
+    <!-- Automatic capture (capture/CapturePoster.kt). -->
+    <string name="capture_noted">Noted %1$s at %2$s · %3$s, OK?</string>
+    <string name="capture_noted_fallback">Noted %1$s at %2$s · %3$s, which category?</string>
+    <plurals name="capture_summary">
+        <item quantity="one">%d to review</item>
+        <item quantity="other">%d to review</item>
+    </plurals>
+    <plurals name="capture_sign_in">
+        <item quantity="one">Sign in to save %d detected transaction</item>
+        <item quantity="other">Sign in to save %d detected transactions</item>
+    </plurals>
+    <string name="capture_confirm">OK</string>
+    <string name="capture_change">Change</string>
+    <string name="capture_channel">Detected transactions</string>
+    <string name="capture_channel_description">One notice for each expense or income Wambito detects in your bank apps.</string>
 </resources>

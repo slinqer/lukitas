@@ -16,6 +16,7 @@ import {
   queryKeys,
   useAllCategories,
   useMe,
+  useReviewTransactions,
   useSummary,
   useTransactions,
 } from "../../api/queries.ts";
@@ -42,7 +43,13 @@ import { createSuggestions, useHasTransactions } from "../onboarding/onboarding-
 import { SUGGESTED_CATEGORIES } from "../onboarding/suggested-categories.ts";
 import { useAppPath } from "./app-path.ts";
 import { HomeHeader } from "./HomeHeader.tsx";
-import { type DayGroup, groupByDay, homeWambiLine, overallState } from "./home-model.ts";
+import {
+  type DayGroup,
+  groupByDay,
+  homeWambiLine,
+  overallState,
+  reviewMark,
+} from "./home-model.ts";
 import {
   type HomeView,
   requestedView,
@@ -565,6 +572,7 @@ function Lists({
     >
       <h2 className="lk-panel-title">{t("view.transactions")}</h2>
       <Transactions
+        month={month}
         items={items}
         pages={pages}
         categories={categories}
@@ -622,6 +630,7 @@ function Lists({
 }
 
 function Transactions({
+  month,
   items,
   pages,
   categories,
@@ -629,6 +638,7 @@ function Transactions({
   currency,
   monthName,
 }: {
+  month: Month;
   items: TransactionDto[] | undefined;
   pages: MorePages;
   categories: CategoryDto[] | undefined;
@@ -653,11 +663,87 @@ function Transactions({
   }
   const byId = new Map(categories.map((c) => [c.id, c]));
   return (
+    <ReviewedList
+      month={month}
+      items={items}
+      byId={byId}
+      today={today}
+      currency={currency}
+      pages={pages}
+    />
+  );
+}
+
+/**
+ * The days of a month's list with the "Por revisar" filter above them while some transactions
+ * detected from notifications wait for a look: it keeps only those, and then "Confirmar todos"
+ * confirms them as they are.
+ */
+function ReviewedList({
+  month,
+  items,
+  byId,
+  today,
+  currency,
+  pages,
+}: {
+  month: Month;
+  items: TransactionDto[];
+  byId: Map<string, CategoryDto>;
+  today: string;
+  currency: string;
+  pages: MorePages;
+}) {
+  const t = useTranslations("home");
+  const { actions } = useTransactionSheet();
+  const [only, setOnly] = useState(false);
+  // Asked of the API, so the count and "Confirmar todos" cover the whole month.
+  const review = useReviewTransactions(month);
+  const toReview = review.data ?? [];
+  const filtering = only && toReview.length > 0;
+  // Once nothing is left to review the filter goes away; a later capture starts unfiltered.
+  useEffect(() => {
+    if (review.data && review.data.length === 0) setOnly(false);
+  }, [review.data]);
+
+  // Every one to review, also the pages not shown yet.
+  const confirmAll = async () => {
+    let all = toReview;
+    let more = review.hasNextPage;
+    while (more) {
+      const next = await review.fetchNextPage();
+      if (next.error) throw next.error;
+      all = next.data ?? all;
+      more = next.hasNextPage;
+    }
+    await actions.confirmAll(all);
+  };
+
+  return (
     <>
-      {groupByDay(items, today).map((group) => (
+      {toReview.length > 0 && (
+        <div className="flex flex-wrap items-center gap-(--space-2)">
+          <PressButton
+            variant="secondary"
+            size="sm"
+            aria-pressed={filtering}
+            onClick={() => setOnly(!filtering)}
+          >
+            {t("review_filter", {
+              count: `${toReview.length}${review.hasNextPage ? "+" : ""}`,
+            })}
+          </PressButton>
+          {filtering && (
+            <PressButton size="sm" onClick={() => void confirmAll().catch(() => {})}>
+              {t("review_confirm_all")}
+            </PressButton>
+          )}
+        </div>
+      )}
+      {groupByDay(filtering ? toReview : items, today).map((group) => (
         <Day key={group.date} group={group} byId={byId} currency={currency} />
       ))}
-      <ShowMore pages={pages} />
+      <ShowMore pages={filtering ? review : pages} />
     </>
   );
 }
@@ -759,6 +845,7 @@ export function Day({
       </h3>
       {group.items.map((tx) => {
         const category = byId.get(tx.categoryId);
+        const mark = reviewMark(tx);
         // A row the API has not confirmed yet cannot be edited or paid.
         const draft = tx.id.startsWith("pending-");
         // Swipes are shortcuts: left deletes, right edits (or pays a pending one).
@@ -789,6 +876,18 @@ export function Day({
               currency={currency}
               status={tx.status}
               paidHere={paidHere.has(tx.id)}
+              {...(mark && !draft
+                ? {
+                    review: {
+                      mark: t("review_mark", { source: mark }),
+                      confirm: t("review_ok"),
+                      confirmLabel: t("review_ok_label", {
+                        name: tx.name.trim() || category?.name || "",
+                      }),
+                      onConfirm: () => void actions.confirm(tx).catch(() => {}),
+                    },
+                  }
+                : {})}
               onOpen={() => {
                 if (!draft) openEdit(tx);
               }}

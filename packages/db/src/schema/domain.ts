@@ -44,6 +44,7 @@ export const transactionSource = pgEnum("transaction_source", [
   "mcp",
   "import",
   "recurrence",
+  "capture",
 ]);
 export const recurrenceFrequency = pgEnum("recurrence_frequency", ["monthly", "yearly"]);
 export const importSource = pgEnum("import_source", ["budge"]);
@@ -73,12 +74,17 @@ export const categories = pgTable(
     color: text("color").notNull(),
     sortOrder: integer("sort_order").notNull().default(0),
     archivedAt: timestamp("archived_at", { withTimezone: true }),
+    /** Marks a built-in category the app looks up by key (e.g. the `other` fallback of a capture). */
+    systemKey: text("system_key"),
     ...timestamps,
   },
   (t) => [
     uniqueIndex("categories_active_name")
       .on(t.userId, sql`lower(${t.name})`)
       .where(sql`${t.archivedAt} is null`),
+    uniqueIndex("categories_system_key")
+      .on(t.userId, t.kind, t.systemKey)
+      .where(sql`${t.systemKey} is not null and ${t.archivedAt} is null`),
   ],
 );
 
@@ -150,6 +156,13 @@ export const transactions = pgTable(
     importId: uuid("import_id").references(() => imports.id, { onDelete: "set null" }),
     source: transactionSource("source").notNull(),
     externalHash: text("external_hash"),
+    /** A captured bank notification waiting for the user to confirm it. */
+    needsReview: boolean("needs_review").notNull().default(false),
+    captureSource: text("capture_source"),
+    /** When the notification was posted on the phone; the duplicate window runs on it. */
+    capturedAt: timestamp("captured_at", { withTimezone: true }),
+    /** `merchantKey` of the merchant as notified, so renaming the row still teaches that merchant. */
+    captureMerchantKey: text("capture_merchant_key"),
     deletedAt: timestamp("deleted_at", { withTimezone: true }),
     ...timestamps,
   },
@@ -160,7 +173,25 @@ export const transactions = pgTable(
       .on(t.recurrenceId, t.occurrenceMonth)
       .where(sql`${t.recurrenceId} is not null`),
     uniqueIndex("transactions_external_hash").on(t.userId, t.externalHash),
+    index("transactions_user_capture")
+      .on(t.userId, t.capturedAt)
+      .where(sql`${t.capturedAt} is not null`),
   ],
+);
+
+/** The category the user last chose for a merchant, so the next capture from it lands there. */
+export const merchantCategories = pgTable(
+  "merchant_categories",
+  {
+    id: id(),
+    userId: userId(),
+    merchantKey: text("merchant_key").notNull(),
+    categoryId: uuid("category_id")
+      .notNull()
+      .references(() => categories.id, { onDelete: "cascade" }),
+    ...timestamps,
+  },
+  (t) => [uniqueIndex("merchant_categories_key").on(t.userId, t.merchantKey)],
 );
 
 export const idempotencyKeys = pgTable(
@@ -239,5 +270,6 @@ export const RLS_TABLES = [
   "recurrences",
   "imports",
   "transactions",
+  "merchant_categories",
   "idempotency_keys",
 ] as const;

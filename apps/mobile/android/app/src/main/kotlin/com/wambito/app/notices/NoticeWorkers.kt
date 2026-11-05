@@ -115,7 +115,7 @@ class DueWorker(context: Context, params: WorkerParameters) : CoroutineWorker(co
         val profile = when (val answer = dependencies.api.profile(server, token)) {
             is ApiResult.Ok -> answer.value
             ApiResult.Unauthorized -> return Run("session refused", known, keepGoing = false)
-            ApiResult.Failed -> return null
+            ApiResult.Failed, ApiResult.Rejected -> return null
         }
         val zone = NoticeTimes.zoneOr(profile.timezone, known)
         if (settings.zone != zone.id) settings.zone = zone.id
@@ -127,7 +127,7 @@ class DueWorker(context: Context, params: WorkerParameters) : CoroutineWorker(co
         val names = when (val answer = dependencies.api.dueToday(server, token, today)) {
             is ApiResult.Ok -> answer.value
             ApiResult.Unauthorized -> return Run("session refused", zone, keepGoing = false)
-            ApiResult.Failed -> return null
+            ApiResult.Failed, ApiResult.Rejected -> return null
         }
         // Signed out, or the switch turned off, while the request was on its way: nothing is said.
         if (dependencies.session.mark() != mark || !settings.dueEnabled) return Run("dropped", zone)

@@ -12,8 +12,8 @@ MOBILE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 
-# The copy keeps the Gradle wrapper and local.properties when they exist (they are not committed;
-# check-no-google.sh writes them otherwise) and leaves build outputs behind.
+# The copy keeps the gradlew script and local.properties when they exist (they are not committed;
+# check-no-google.sh writes them otherwise; the wrapper jar is committed) and leaves build outputs behind.
 COPY="$WORK/mobile"
 rsync -a --exclude /build --exclude /.dart_tool --exclude /android/.gradle \
   --exclude /android/.kotlin --exclude /android/app/build "$MOBILE/" "$COPY/"

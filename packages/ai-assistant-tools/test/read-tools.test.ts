@@ -162,6 +162,58 @@ describe("list_transactions", () => {
     expect(await names({ month: "2026-09" })).toEqual(["Bus"]);
   });
 
+  it("marks detected transactions to review, with their origin, and filters them", async () => {
+    const detected = { source: "capture" as const, needsReview: true };
+    const { ctx } = setup({
+      transactions: (c) => [
+        transaction(c.comida, -1800000, "2026-10-30", {
+          name: "Rappi",
+          captureSource: "revolut",
+          ...detected,
+        }),
+        transaction(c.comida, -900000, "2026-10-29", {
+          name: "Tienda",
+          captureSource: "google_wallet",
+          source: "capture",
+        }),
+        transaction(c.comida, -500000, "2026-10-28", { name: "Almuerzo" }),
+      ],
+    });
+    const all = await call("list_transactions", {}, ctx);
+    expect(all.text).toContain("por revisar");
+    expect(all.text).toContain("de Revolut");
+    expect(all.text).toContain("de Google Wallet");
+    expect(all.structured.items[0]).toMatchObject({
+      needsReview: true,
+      captureSource: "revolut",
+    });
+    expect(all.structured.items[2]).toMatchObject({ needsReview: false, captureSource: null });
+    const pending = await call("list_transactions", { needsReview: true }, ctx);
+    expect(pending.structured.items.map((t: { name: string }) => t.name)).toEqual(["Rappi"]);
+  });
+
+  it("words the review mark in the person's language", async () => {
+    for (const [locale, review, origin] of [
+      ["en", "to review", "from Revolut"],
+      ["it", "da rivedere", "da Revolut"],
+      ["pt", "por rever", "do Revolut"],
+    ] as const) {
+      const { ctx } = setup({
+        profile: { locale },
+        transactions: (c) => [
+          transaction(c.comida, -1800000, "2026-10-30", {
+            source: "capture",
+            needsReview: true,
+            captureSource: "revolut",
+          }),
+        ],
+      });
+      const { text } = await call("list_transactions", {}, ctx);
+      expect(text).toContain(review);
+      expect(text).toContain(origin);
+    }
+  });
+
   it("wraps names in «» in the text, as data", async () => {
     const { ctx } = setup({
       transactions: (c) => [

@@ -105,6 +105,8 @@ function transaction(
     recurrenceId: null,
     importId: null,
     source: "web",
+    needsReview: false,
+    captureSource: null,
     createdAt: `${date}T09:00:00.000Z`,
     updatedAt: `${date}T09:00:00.000Z`,
   };
@@ -304,6 +306,8 @@ export interface HomeApiOptions {
   budgetsSince?: number;
   /** The profile's language (the story's locale by default). */
   locale?: Locale;
+  /** Two transactions detected from notifications, still to review (sample data only). */
+  detected?: boolean;
   /**
    * The currency stays locked (409 `currency_locked`) even with no transactions or recurrences
    * in sight, as when only deleted transactions remain.
@@ -373,6 +377,7 @@ function homeFetch({
   recurrencesDelayMs = 0,
   budgetsSince = 12,
   locale = "es",
+  detected = false,
   currencyLocked = false,
   failExport = false,
   failDelete = false,
@@ -395,6 +400,23 @@ function homeFetch({
       : data === "sample" && currency === "EUR"
         ? sampleTransactions()
         : [];
+  if (detected) {
+    transactions = [
+      ...transactions,
+      {
+        ...transaction("Mercadona", "cat-groceries", -2350, STORY_TODAY),
+        source: "capture",
+        needsReview: true,
+        captureSource: "revolut",
+      },
+      {
+        ...transaction("Zara", "cat-fun", -4990, STORY_TODAY),
+        source: "capture",
+        needsReview: true,
+        captureSource: "google_wallet",
+      },
+    ];
+  }
   if (archivedCategory) {
     categories = categories.map((c) =>
       c.id === "cat-transport" ? { ...c, archived: true, currentBudget: null } : c,
@@ -687,6 +709,7 @@ function homeFetch({
       const items = transactions
         .filter((t) => !month || monthOf(t.date) === month)
         .filter((t) => !category || t.categoryId === category)
+        .filter((t) => url.searchParams.get("needsReview") !== "true" || t.needsReview)
         .sort(newestFirst)
         .slice(0, Number(url.searchParams.get("limit") ?? 50));
       return Response.json({ items, nextCursor: null });
@@ -705,6 +728,16 @@ function homeFetch({
       };
       transactions = [...transactions, created];
       return Response.json(created, { status: 201 });
+    }
+    if (path === "/api/v1/transactions/review" && request.method === "POST") {
+      const { ids } = body as { ids: string[] };
+      transactions = transactions.map((t) =>
+        ids.includes(t.id) ? { ...t, needsReview: false } : t,
+      );
+      return Response.json({
+        items: transactions.filter((t) => ids.includes(t.id)),
+        nextCursor: null,
+      });
     }
     const restore = /^\/api\/v1\/transactions\/([^/]+)\/restore$/.exec(path);
     if (restore) {

@@ -477,6 +477,27 @@
     margin-top: auto;
     padding-top: var(--space-2);
   }
+  .lk-landing-capture-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .lk-landing-capture-link {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 4px;
+    color: var(--ink);
+    font-weight: 800;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
+  .lk-landing-capture-link:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
   .lk-landing-soon {
     display: inline-block;
     font-size: 11px;
@@ -900,8 +921,10 @@
     .lk-landing-cards.is-how {
       grid-template-columns: repeat(2, 1fr);
     }
+    .lk-landing-card.is-wide {
+      grid-column: 1 / -1;
+    }
   }
-
   @media (min-width: 900px) {
     .lk-landing-wrap {
       padding-inline: var(--space-6);

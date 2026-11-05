@@ -440,6 +440,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/transactions/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Confirms detected transactions at once, learning the category of each. All or nothing: an id that is not the caller's, or was deleted, answers 404 and nothing changes. Ids already confirmed are left as they are. */
+        post: operations["reviewTransactions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/transactions/{id}": {
         parameters: {
             query?: never;
@@ -466,6 +483,23 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["restoreTransaction"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/captures": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Saves a purchase parsed from a bank notification, to review. The same purchase seen again (same kind, amount and currency within 10 minutes of `capturedAt`) is not saved twice: the answer is `merged`. `Idempotency-Key` is required. */
+        post: operations["createCapture"];
         delete?: never;
         options?: never;
         head?: never;
@@ -824,7 +858,10 @@ export interface components {
             /** Format: uuid */
             importId: string | null;
             /** @enum {string} */
-            source: "app" | "web" | "widget" | "mcp" | "import" | "recurrence";
+            source: "app" | "web" | "widget" | "mcp" | "import" | "recurrence" | "capture";
+            needsReview: boolean;
+            /** @enum {string|null} */
+            captureSource: "revolut" | "google_wallet" | null;
             createdAt: string;
             updatedAt: string;
         };
@@ -868,6 +905,9 @@ export interface components {
         DeleteTransactionsBatch: {
             ids: string[];
         };
+        ReviewTransactions: {
+            ids: string[];
+        };
         UpdateTransaction: {
             name?: string;
             amount?: number;
@@ -877,6 +917,51 @@ export interface components {
             /** @enum {string} */
             status?: "paid" | "pending";
             note?: string | null;
+            /** @enum {boolean} */
+            needsReview?: false;
+        };
+        CaptureResult: {
+            /** @enum {string} */
+            result: "created" | "merged";
+            transaction: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                amount: number;
+                currency: string;
+                date: string;
+                /** @enum {string} */
+                status: "paid" | "pending";
+                note: string | null;
+                /** Format: uuid */
+                categoryId: string;
+                /** Format: uuid */
+                recurrenceId: string | null;
+                /** Format: uuid */
+                importId: string | null;
+                /** @enum {string} */
+                source: "app" | "web" | "widget" | "mcp" | "import" | "recurrence" | "capture";
+                needsReview: boolean;
+                /** @enum {string|null} */
+                captureSource: "revolut" | "google_wallet" | null;
+                createdAt: string;
+                updatedAt: string;
+            };
+            category: {
+                name: string;
+                fallback: boolean;
+            };
+        };
+        CreateCapture: {
+            /** @enum {string} */
+            kind: "expense" | "income";
+            amount: number;
+            currency: string;
+            merchant: string;
+            /** Format: date-time */
+            capturedAt: string;
+            /** @enum {string} */
+            source: "revolut" | "google_wallet";
         };
         Recurrence: {
             /** Format: uuid */
@@ -2156,6 +2241,7 @@ export interface operations {
                 q?: string;
                 category?: string;
                 status?: "paid" | "pending";
+                needsReview?: "true" | "false";
                 cursor?: string;
                 limit?: number;
             };
@@ -2329,6 +2415,51 @@ export interface operations {
             };
         };
     };
+    reviewTransactions: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description A key that stays the same across retries of the same request (a UUID, say): a retry with the same key and body returns the first response instead of saving twice. */
+                "Idempotency-Key"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewTransactions"];
+            };
+        };
+        responses: {
+            /** @description The transactions, in request order */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TransactionList"];
+                };
+            };
+            /** @description Problem */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Problem */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
     deleteTransaction: {
         parameters: {
             query?: never;
@@ -2424,6 +2555,60 @@ export interface operations {
             };
             /** @description Problem */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    createCapture: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description A key that stays the same across retries of the same request (a UUID, say): a retry with the same key and body returns the first response instead of saving twice. */
+                "Idempotency-Key": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCapture"];
+            };
+        };
+        responses: {
+            /** @description Already saved (`merged`): nothing was written */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CaptureResult"];
+                };
+            };
+            /** @description Saved (`created`) */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CaptureResult"];
+                };
+            };
+            /** @description Problem */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Problem */
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };

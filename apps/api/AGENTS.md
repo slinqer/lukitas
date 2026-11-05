@@ -12,9 +12,18 @@ Hono + Better Auth + Drizzle (`@wambito/db`), OpenAPI document "Wambito API". Ev
 - `src/http/session.ts`: `requireUser` (cookie or bearer session, or an OAuth JWT with `aud` =
   MCP_URL). `src/http/scopes.ts`: OAuth scopes (`finance:read`, …), enforced here, not in the MCP.
 - `src/http/client-headers.ts`: `clientHeader`. `src/routes/*.ts`: the routes.
-  `src/services/`: domain services. `src/emails/sign-in.ts`: sign-in mail copy (es/en/it/pt);
+  `src/services/`: domain services.   `src/services/`: domain services. `src/emails/sign-in.ts`: sign-in mail copy (es/en/it/pt);
   `src/emails/layout.ts`: the frame every email shares (Wambi, wordmark image, card, footer; day
   colours inline, night in a `prefers-color-scheme` block; fonts by `@font-face` from WEB_URL).
+- `POST /v1/captures` (`src/routes/captures.ts`, `src/services/captures.ts`): saves a bank-notification
+  capture to review; 10-minute duplicate merge, merchant → category memory, `system_key = other`
+  fallback categories; the Idempotency-Key is required.
+- Reviewing captures: `PATCH /v1/transactions/{id}` with `needsReview: false` and `POST
+  /v1/transactions/review` (all or nothing, 404 on any foreign id) confirm them; list filter
+  `needsReview=true|false`. `learn` (`services/captures.ts`) upserts the merchant → category memory,
+  keyed on `transactions.capture_merchant_key` (the merchant as notified; the name only when null),
+  only when a `capture` row flips to confirmed in that request, with an active, same-kind category
+  that has no `system_key`.
 - Admin panel (spec `docs/superpowers/specs/2026-11-04-admin-panel-design.md`):
   `src/routes/admin.ts` (`/v1/admin/*`, mounted before `requireUser`), guarded by `requireAdmin`
   (`src/http/admin.ts`): a cookie session (no `authorization` header), the id in `ADMIN_USER_IDS`,
@@ -55,6 +64,7 @@ Hono + Better Auth + Drizzle (`@wambito/db`), OpenAPI document "Wambito API". Ev
 
 ## Traps
 
+- Every change here that clients can see goes under "Unreleased" in the root `CHANGELOG.md`.
 - See root `AGENTS.md`: secrets.
 - Better Auth tables: `pnpm --filter @wambito/api auth:generate` writes
   `packages/db/src/schema/auth.ts`; then add a migration in `packages/db`.

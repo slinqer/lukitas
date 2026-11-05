@@ -288,6 +288,7 @@ class WelcomeWorld implements HomeRepository, OnboardingRepository, ImportReposi
       ..date = '2026-10-01'
       ..status = TransactionStatusEnum.paid
       ..categoryId = 'cat-groceries'
+      ..needsReview = false
       ..source_ = TransactionSource_Enum.app
       ..createdAt = '2026-10-01T10:00:00.000Z'
       ..updatedAt = '2026-10-01T10:00:00.000Z',

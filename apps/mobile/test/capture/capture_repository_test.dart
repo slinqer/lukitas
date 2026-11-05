@@ -19,6 +19,7 @@ Map<String, Object?> _row(String id, Map<String, dynamic> item) => {
   'categoryId': item['categoryId'],
   'recurrenceId': null,
   'importId': null,
+  'needsReview': false,
   'source': 'app',
   'createdAt': '2026-10-22T10:00:00.000Z',
   'updatedAt': '2026-10-22T10:00:00.000Z',

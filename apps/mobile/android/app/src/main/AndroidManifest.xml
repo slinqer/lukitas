@@ -91,6 +91,9 @@
                 <data android:scheme="wambito" android:host="progress"/>
                 <!-- A tap on the widget itself: home. -->
                 <data android:scheme="wambito" android:host="home"/>
+                <!-- "Cambiar" on a detected transaction's notification (capture/CapturePoster.kt):
+                     wambito://review/<id>. -->
+                <data android:scheme="wambito" android:host="review"/>
             </intent-filter>
         </activity-alias>
         <!-- The home-screen widget, small (2×1) and medium (4×2), drawn with Jetpack Glance
@@ -127,6 +130,23 @@
                 <action android:name="android.service.quicksettings.action.QS_TILE"/>
             </intent-filter>
         </service>
+        <!-- Automatic capture (capture/CaptureListener.kt): reads the notifications of the bank apps the
+             person enabled. Only the system may bind it; the person grants access in the phone's
+             settings. No uses-permission line goes with it. -->
+        <service
+            android:name=".capture.CaptureListener"
+            android:exported="true"
+            android:label="Wambito"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService"/>
+            </intent-filter>
+        </service>
+        <!-- "Bien" on a detected transaction's notification (capture/ConfirmReceiver.kt). Not exported:
+             only the notification's own PendingIntent reaches it. -->
+        <receiver
+            android:name=".capture.ConfirmReceiver"
+            android:exported="false"/>
         <!-- The share sheet (files/FilesChannel.kt): the file to hand to another app is served from the
              app's cache/shared folder through this provider, with a read grant for that one link. Not
              exported; it asks for no permission. -->

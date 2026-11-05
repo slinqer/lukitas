@@ -17,6 +17,12 @@ Human docs. Live docs are kept current; `superpowers/` is history.
   the wordmark day/night, the fonts) from the landing's sprite and Fredoka; a changed image needs
   a new name (Gmail's proxy caches by URL).
   Colours: tokens `brand-plum`, `brand-gold`.
+  Scenes `wambi-capture-step{1..5}.webp` are Codex-generated (`codex exec` image generation) from
+  `wambi-pointing.webp` and checked by eye as one set on night and day; masters 1024 px. The apps
+  ship byte-identical 512 px copies (`magick … -resize 512x512 -quality 90 -define
+  webp:alpha-quality=100`) in `apps/web/public/wambi` and `apps/mobile/assets/wambi`. Make a new
+  scene the same way and add it only if on-model (same face, gold, purple limbs, pink sneakers; no
+  text, letters, numbers or logos).
 - `docs/deploy/`: `personal.md` (private install, short; the runbook is
   `deploy/personal/README.md`), `landing.md` (Cloudflare landing), `api.md` (client addresses,
   rate limits).
@@ -24,7 +30,7 @@ Human docs. Live docs are kept current; `superpowers/` is history.
   deadlines and procedures, the dry run.
 - `docs/mobile/`: `setup.md` (toolchain, JDK 17, emulator, tests), `release.md` (signing, APK
   build; the founder copies its commands), `parity.md` (web/app visual parity ledger), `fdroid.md`
-  (F-Droid blockers).
+  (how Wambito is built on F-Droid).
 
 ## History: `docs/superpowers/` (read only when needed, never edit after the fact)
 

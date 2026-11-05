@@ -1,0 +1,273 @@
+/*
+ * Automatic capture's "how it works" (steps and demos). Every color is a token; the demos are
+ * decoration drawn with the app's own pieces (landing.css, app.css). No transitions or animations.
+ */
+@layer components {
+  .lk-capture-steps {
+    display: grid;
+    gap: var(--space-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .lk-capture-step {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .lk-capture-scene {
+    width: 200px;
+    height: 200px;
+    max-width: 100%;
+    align-self: center;
+    object-fit: contain;
+  }
+  .lk-capture-step h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 1.2;
+  }
+  .lk-capture-step p {
+    font-size: 15px;
+    line-height: 1.45;
+    color: var(--ink-muted);
+  }
+
+  .lk-capture-demo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+    background: var(--bg);
+  }
+
+  /* The bank's notification as Android shows it: a dark card at night, a light one by day. */
+  .lk-capture-notif {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    column-gap: var(--space-3);
+    row-gap: 2px;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-lg);
+    background: var(--brand-plum);
+    color: var(--on-brand);
+  }
+  .lk-capture-notif-icon {
+    grid-row: span 3;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    background: var(--on-brand);
+    color: var(--brand-plum);
+    font-weight: 900;
+    font-size: 18px;
+  }
+  .lk-capture-notif-app,
+  .lk-capture-notif-time {
+    font-size: 12px;
+    font-weight: 800;
+  }
+  .lk-capture-notif-title {
+    grid-column: 2 / 4;
+    font-size: 15px;
+    font-weight: 900;
+  }
+  .lk-capture-notif-line {
+    grid-column: 2 / 4;
+    font-size: 14px;
+  }
+  .lk-capture-notif-actions {
+    grid-column: 2 / 4;
+    display: flex;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+  }
+  /* Android writes a notification's actions in upper case. */
+  .lk-capture-notif-action {
+    text-transform: uppercase;
+    font-size: 13px;
+    font-weight: 900;
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+    border: 2px solid currentColor;
+  }
+  [data-theme="day"] .lk-capture-notif {
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: inset 0 0 0 2px var(--stroke);
+  }
+  [data-theme="day"] .lk-capture-notif-icon {
+    background: var(--brand-plum);
+    color: var(--on-brand);
+  }
+
+  .lk-capture-arrow {
+    display: grid;
+    place-items: center;
+    align-self: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    border: 2px solid var(--stroke);
+    color: var(--brand);
+  }
+  .lk-capture-arrow svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .lk-capture-registered {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+  }
+  .lk-capture-registered-head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--good);
+  }
+  .lk-capture-registered-head svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .lk-capture-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .lk-capture-row-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .lk-capture-row-name {
+    font-size: 14px;
+    font-weight: 800;
+  }
+  .lk-capture-row-sub {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-muted);
+  }
+  .lk-capture-review {
+    color: var(--near);
+    font-weight: 900;
+  }
+  .lk-capture-expense {
+    color: var(--over);
+  }
+  .lk-capture-income {
+    color: var(--good);
+  }
+
+  .lk-capture-chips {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .lk-capture-chip {
+    padding: 6px 14px;
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    border: 2px solid var(--stroke);
+    font-size: 14px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .lk-capture-check {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    flex: none;
+    border-radius: var(--radius-pill);
+    background: var(--good);
+    color: var(--bg);
+  }
+  .lk-capture-check svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* The page (/automatic-capture): title, lead, the steps, the "soon" line, the way back. */
+  .lk-capture-page {
+    display: grid;
+    gap: var(--space-5);
+    max-width: 40rem;
+    padding-bottom: var(--space-6);
+  }
+  .lk-capture-intro {
+    display: grid;
+    gap: var(--space-2);
+    padding-top: var(--space-4);
+  }
+  .lk-landing .lk-capture-intro h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 1.1;
+    margin: 0;
+    color: var(--good);
+  }
+  .lk-capture-intro p {
+    margin: 0;
+    line-height: 1.5;
+    color: var(--ink-muted);
+  }
+  .lk-landing .lk-capture-step h2 {
+    margin: 0;
+    font-size: 22px;
+  }
+  .lk-capture-soon {
+    margin: 0;
+    font-weight: 800;
+    color: var(--near);
+  }
+  .lk-capture-back {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    justify-self: start;
+    border-radius: 4px;
+    color: var(--ink);
+    font-weight: 800;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
+  .lk-capture-back:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+}

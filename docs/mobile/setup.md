@@ -235,6 +235,37 @@ Why the permission matters: a fresh install has not been given the notification 
 The first Gradle build also installs `platforms;android-35` and `cmake;3.22.1` into the SDK: the
 `jni` plugin (pulled in through `flutter_secure_storage`'s dependencies) builds against them.
 
+## Dependency locks
+
+Gradle dependency locking pins every dependency version of the Android app (`lockAllConfigurations()`
+in `android/app/build.gradle.kts`), so F-Droid and CI resolve the same graph. Two files, both committed:
+
+- `android/app/gradle.lockfile`: the default graph (Vosk and JNA from Maven Central);
+- `android/app/gradle-fdroid.lockfile`: the graph with `-Pwambito.nativeFromSource=true` (Vosk and JNA
+  from source, `docs/mobile/fdroid.md`); it differs from the first only in the two `-src` versions.
+
+Flutter's engine artifacts (`io.flutter:*`) are not locked (`ignoredDependencies`): the Flutter SDK
+pins them, and a build resolves only those of its `--target-platform`, so locking them fails a
+one-ABI build such as F-Droid's. `check-gradle-locks.sh` fails if either lock lists them.
+
+A new or changed dependency, or a Flutter or plugin upgrade, fails the build until you regenerate
+the locks and commit them:
+
+```bash
+cd apps/mobile/android
+export JAVA_HOME=~/development/jdk/jdk-17.0.21+9/Contents/Home
+./gradlew :app:dependencies --write-locks
+# the F-Droid lock is the default one with the two -src lines; no native build is needed
+sed -e 's/^\(com\.alphacephei:vosk-android:0\.3\.75\)=/\1-src=/' \
+    -e 's/^\(net\.java\.dev\.jna:jna:5\.18\.1\)=/\1-src=/' \
+    app/gradle.lockfile > app/gradle-fdroid.lockfile
+```
+
+`apps/mobile/scripts/check-gradle-locks.sh` (CI's `mobile-build`) rewrites the default lock and fails
+when it differs from the committed one. `scripts/check-fdroid-lock.sh` (CI's `mobile` job, text only)
+fails when `gradle-fdroid.lockfile` is not the default lock with exactly those two `-src`
+substitutions, so rewrite it with the `sed` above whenever the first changes.
+
 ## Physical phone
 
 Enable Developer options and USB debugging on the phone, connect it by USB, accept the debugging prompt, then run `adb devices`. One device should be listed as `device`.

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { ToolError } from "../src/index.ts";
+import { TOOLS, ToolError } from "../src/index.ts";
 import { idempotencyKey } from "../src/tools/write.ts";
 import { call, NOW, setup, tool, transaction } from "./harness.ts";
 
@@ -229,6 +229,31 @@ describe("update_transaction", () => {
     const [tx] = await all(ctx);
     await call("update_transaction", { id: tx?.id, category: "salario" }, ctx);
     expect((await all(ctx))[0]).toMatchObject({ categoryId: cats.salario.id, amount: 1800000 });
+  });
+
+  it("confirms a detected transaction", async () => {
+    const { ctx } = setup({
+      transactions: (c) => [
+        transaction(c.comida, -1800000, "2026-10-30", {
+          source: "capture",
+          needsReview: true,
+          captureSource: "revolut",
+        }),
+      ],
+    });
+    const [tx] = await all(ctx);
+    const { structured } = await call("update_transaction", { id: tx?.id, confirm: true }, ctx);
+    expect(structured.transaction).toMatchObject({ needsReview: false });
+    expect((await all(ctx))[0]).toMatchObject({ needsReview: false, amount: -1800000 });
+  });
+
+  it("refuses confirm: false", () => {
+    expect(() =>
+      TOOLS.find((t) => t.name === "update_transaction")?.input.parse({
+        id: "00000000-0000-4000-8000-000000000001",
+        confirm: false,
+      }),
+    ).toThrow();
   });
 
   it("renames, re-dates, marks as paid and clears the note", async () => {

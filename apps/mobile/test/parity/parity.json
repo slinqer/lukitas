@@ -2044,5 +2044,41 @@
     "knownDifferences": [
       "The app's pair leaves out its own cards (SettingsScreen.webSectionsOnly) and the language's 'Automático'. test/settings/goldens has the app's own cards to review by eye"
     ]
+  },
+  {
+    "id": "capture-step-pay",
+    "storyId": "capture-step--pay",
+    "theme": "night",
+    "appTest": "test/parity/capture_how_parity_test.dart"
+  },
+  {
+    "id": "capture-step-reads",
+    "storyId": "capture-step--reads",
+    "theme": "night",
+    "appTest": "test/parity/capture_how_parity_test.dart"
+  },
+  {
+    "id": "capture-step-decide",
+    "storyId": "capture-step--decide",
+    "theme": "night",
+    "appTest": "test/parity/capture_how_parity_test.dart"
+  },
+  {
+    "id": "capture-step-learns",
+    "storyId": "capture-step--learns",
+    "theme": "night",
+    "appTest": "test/parity/capture_how_parity_test.dart"
+  },
+  {
+    "id": "capture-step-next",
+    "storyId": "capture-step--next",
+    "theme": "night",
+    "appTest": "test/parity/capture_how_parity_test.dart"
+  },
+  {
+    "id": "capture-main-picture",
+    "storyId": "capture-mainpicture--night",
+    "theme": "night",
+    "appTest": "test/parity/capture_how_parity_test.dart"
   }
 ]

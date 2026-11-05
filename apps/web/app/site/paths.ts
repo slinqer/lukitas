@@ -32,10 +32,24 @@ export const DELETE_ACCOUNT_PATH: Record<Locale, string> = {
   pt: "/pt/delete-account",
 };
 
-/** The public, prerendered pages of the site. */
-export type SitePage = "landing" | "roadmap" | "privacy" | "deleteAccount";
+/** Each locale's "how automatic capture works" page. */
+export const AUTOMATIC_CAPTURE_PATH: Record<Locale, string> = {
+  es: "/automatic-capture",
+  en: "/en/automatic-capture",
+  it: "/it/automatic-capture",
+  pt: "/pt/automatic-capture",
+};
 
-export const SITE_PAGES: readonly SitePage[] = ["landing", "roadmap", "privacy", "deleteAccount"];
+/** The public, prerendered pages of the site. */
+export type SitePage = "landing" | "roadmap" | "privacy" | "deleteAccount" | "automaticCapture";
+
+export const SITE_PAGES: readonly SitePage[] = [
+  "landing",
+  "roadmap",
+  "privacy",
+  "deleteAccount",
+  "automaticCapture",
+];
 
 /** Where each public page lives, per language. */
 export const PAGE_PATH: Record<SitePage, Record<Locale, string>> = {
@@ -43,4 +57,5 @@ export const PAGE_PATH: Record<SitePage, Record<Locale, string>> = {
   roadmap: ROADMAP_PATH,
   privacy: PRIVACY_PATH,
   deleteAccount: DELETE_ACCOUNT_PATH,
+  automaticCapture: AUTOMATIC_CAPTURE_PATH,
 };

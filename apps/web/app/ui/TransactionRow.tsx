@@ -26,6 +26,17 @@ export interface TransactionRowProps {
    * already `paid`, so the change is seen and announced where it happened.
    */
   paidHere?: boolean;
+  /**
+   * A transaction detected from a notification and still to review: the mark's words ("to review
+   * · from Revolut") and the button that confirms it as it is. Texts arrive translated.
+   */
+  review?: {
+    mark: string;
+    confirm: string;
+    /** The button's accessible name (names the transaction). */
+    confirmLabel: string;
+    onConfirm(): void;
+  };
 }
 
 /**
@@ -43,6 +54,7 @@ export function TransactionRow({
   onOpen,
   onPay,
   paidHere = false,
+  review,
 }: TransactionRowProps) {
   const t = useTranslations("common");
   const { locale } = useLocale();
@@ -83,6 +95,19 @@ export function TransactionRow({
             ) : (
               <span className="lk-badge cursor-default">{t("pending")}</span>
             ))}
+          {review && (
+            <>
+              <span className="lk-badge cursor-default">{review.mark}</span>
+              <button
+                type="button"
+                className="lk-row-control -my-(--space-3) inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center border-0 bg-transparent p-0 font-text"
+                aria-label={review.confirmLabel}
+                onClick={review.onConfirm}
+              >
+                <span className="lk-badge is-paid">{review.confirm}</span>
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

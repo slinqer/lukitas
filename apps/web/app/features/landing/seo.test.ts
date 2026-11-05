@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { SITE_ORIGIN } from "../../site/config.ts";
+import { sitemapXml } from "../../site/files.ts";
 import {
   landingLinks,
   landingMeta,
@@ -99,6 +100,33 @@ describe("Italian and Portuguese pages", () => {
       rel: "canonical",
       href: `${SITE_ORIGIN}/it/roadmap`,
     });
+  });
+});
+
+describe("the automatic capture page", () => {
+  it("has a title, description and URL in every language", () => {
+    expect(pageMeta("automaticCapture", "es")).toContainEqual({
+      title: "Wambito · Captura automática",
+    });
+    expect(metaContent(pageMeta("automaticCapture", "en"), "property", "og:url")).toBe(
+      `${SITE_ORIGIN}/en/automatic-capture`,
+    );
+    expect(
+      metaContent(pageMeta("automaticCapture", "pt"), "name", "description")?.length,
+    ).toBeGreaterThan(40);
+  });
+
+  it("lists the four languages plus x-default and is in the sitemap", () => {
+    const links = pageLinksFor("automaticCapture", "it");
+    const hrefLangs = links.flatMap((link) =>
+      "rel" in link && link.rel === "alternate" ? [link.hrefLang] : [],
+    );
+    expect(hrefLangs).toEqual(["es", "en", "it", "pt", "x-default"]);
+    expect(links).toContainEqual({
+      rel: "canonical",
+      href: `${SITE_ORIGIN}/it/automatic-capture`,
+    });
+    expect(sitemapXml(SITE_ORIGIN)).toContain(`<loc>${SITE_ORIGIN}/pt/automatic-capture</loc>`);
   });
 });
 

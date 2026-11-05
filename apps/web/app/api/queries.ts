@@ -20,6 +20,7 @@ import {
   type TransactionPages,
   transactionsKey,
 } from "./optimistic.ts";
+import { confirmInBatches } from "./review.ts";
 import type { paths } from "./schema";
 
 type JsonBody<
@@ -100,7 +101,7 @@ export const TRANSACTIONS_PAGE = 200;
  */
 function useTransactionPages(
   queryKey: readonly unknown[],
-  query: { month: string; category?: string },
+  query: { month: string; category?: string; needsReview?: "true" },
 ) {
   const api = useApi();
   return useInfiniteQuery({
@@ -121,6 +122,17 @@ function useTransactionPages(
       ),
     getNextPageParam: (last) => last.nextCursor,
     select: (data: TransactionPages) => data.pages.flatMap((page) => page.items),
+  });
+}
+
+/**
+ * The month's transactions still to review (detected from notifications), asked of the API, so
+ * the list, its count and "Confirmar todos" cover the whole month, not only the pages shown.
+ */
+export function useReviewTransactions(month: string) {
+  return useTransactionPages([...queryKeys.transactions(month), "review"], {
+    month,
+    needsReview: "true",
   });
 }
 
@@ -313,6 +325,8 @@ function draftFrom(qc: QueryClient, input: NewTransaction): TransactionDto {
     recurrenceId: null,
     importId: null,
     source: input.source ?? "app",
+    needsReview: false,
+    captureSource: null,
     createdAt: now,
     updatedAt: now,
   };
@@ -434,6 +448,40 @@ export function useMarkPaid() {
       ({ id, month }) => ({
         months: [month],
         apply: () => optimisticUpdate(qc, month, id, { status: "paid" }),
+      }),
+    ),
+  );
+}
+
+/**
+ * Confirms detected transactions at once ("Confirmar todos"), the mark gone from the lists as
+ * soon as it is asked. The API takes 50 ids at most, so more go in batches; a batch that fails
+ * puts every mark back.
+ */
+export function useConfirmReview() {
+  const api = useApi();
+  const qc = useQueryClient();
+  return useMutation(
+    mutation(
+      qc,
+      async ({ items }: { items: TransactionDto[] }) => {
+        await confirmInBatches(
+          items.map((tx) => tx.id),
+          async (ids) => {
+            dataOf(await api.POST("/v1/transactions/review", { body: { ids } }));
+          },
+        );
+      },
+      ({ items }) => ({
+        months: [...new Set(items.map((tx) => monthOf(tx.date)))],
+        apply: () => {
+          const rollbacks = items.map((tx) =>
+            optimisticUpdate(qc, monthOf(tx.date), tx.id, { needsReview: false }),
+          );
+          return () => {
+            for (const rollback of rollbacks.reverse()) rollback();
+          };
+        },
       }),
     ),
   );

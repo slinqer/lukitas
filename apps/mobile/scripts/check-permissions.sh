@@ -15,6 +15,8 @@
 set -euo pipefail
 
 PACKAGE="com.wambito.app"
+# The notification listener (capture/CaptureListener.kt) is bound via BIND_NOTIFICATION_LISTENER_SERVICE,
+# a service permission: it needs no uses-permission and must not appear below.
 REQUIRED=(
   "android.permission.INTERNET"
   "android.permission.RECORD_AUDIO"

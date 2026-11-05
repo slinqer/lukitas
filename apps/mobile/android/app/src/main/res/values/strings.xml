@@ -46,4 +46,20 @@
     <string name="notice_channel_due_description">A las 9:00, un aviso con los pagos recurrentes que vencen ese día.</string>
     <string name="notice_channel_guest">Aviso si no tienes correo</string>
     <string name="notice_channel_guest_description">Un aviso si pasan 45 días sin abrir Wambito y tu cuenta no tiene correo.</string>
+    <!-- Automatic capture (capture/CapturePoster.kt): the silent notification of a detected transaction.
+         %1$s is the money, %2$s the merchant, %3$s the category. -->
+    <string name="capture_noted">Anoté %1$s en %2$s · %3$s, ¿bien?</string>
+    <string name="capture_noted_fallback">Anoté %1$s en %2$s · %3$s, ¿qué categoría?</string>
+    <plurals name="capture_summary">
+        <item quantity="one">%d gasto por revisar</item>
+        <item quantity="other">%d gastos por revisar</item>
+    </plurals>
+    <plurals name="capture_sign_in">
+        <item quantity="one">Inicia sesión para guardar %d gasto detectado</item>
+        <item quantity="other">Inicia sesión para guardar %d gastos detectados</item>
+    </plurals>
+    <string name="capture_confirm">Bien</string>
+    <string name="capture_change">Cambiar</string>
+    <string name="capture_channel">Gastos detectados</string>
+    <string name="capture_channel_description">Un aviso por cada gasto o ingreso que Wambito detecta en tus apps del banco.</string>
 </resources>

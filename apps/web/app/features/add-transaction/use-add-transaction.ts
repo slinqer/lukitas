@@ -14,6 +14,7 @@ import {
   queryKeys,
   type TransactionPatch,
   useAllCategories,
+  useConfirmReview,
   useCreateTransaction,
   useDeleteRecurrence,
   useDeleteTransaction,
@@ -23,6 +24,7 @@ import {
   useTransactions,
   useUpdateTransaction,
 } from "../../api/queries.ts";
+import { confirming } from "../../api/review.ts";
 import { feedback } from "../../feedback/feedback.ts";
 import { formatMoney, type Locale, lukasHint } from "../../i18n/format.ts";
 import { useLocale } from "../../i18n/IntlProvider.tsx";
@@ -102,6 +104,7 @@ export function useTransactionActions({
   const remove = useDeleteTransaction();
   const restore = useRestoreTransaction();
   const pay = useMarkPaid();
+  const confirmReview = useConfirmReview();
 
   const fail = (problem: unknown) =>
     toast.show({
@@ -213,6 +216,36 @@ export function useTransactionActions({
       } catch (problem) {
         fail(problem);
       }
+    },
+
+    /**
+     * Confirms a detected transaction as it is (the mark goes; the API learns its merchant's
+     * category). Rejects on failure, after the error toast.
+     */
+    async confirm(tx: TransactionDto) {
+      try {
+        await update.mutateAsync({
+          id: tx.id,
+          month: monthOf(tx.date),
+          patch: { needsReview: false },
+        });
+      } catch (problem) {
+        fail(problem);
+        throw problem;
+      }
+      toast.show({ message: t("review_confirmed", { name: tx.name }) });
+    },
+
+    /** Confirms several detected transactions at once, as they are. */
+    async confirmAll(items: TransactionDto[]) {
+      if (items.length === 0) return;
+      try {
+        await confirmReview.mutateAsync({ items });
+      } catch (problem) {
+        fail(problem);
+        throw problem;
+      }
+      toast.show({ message: t("review_confirmed_all", { count: items.length }) });
     },
 
     /** Deletes (the API keeps it), with Deshacer to bring it back. */
@@ -456,7 +489,8 @@ export function useTransactionForm({
       if (next.status !== editing.status) patch.status = next.status;
       const nextNote = note.trim() || null;
       if (nextNote !== editing.note) patch.note = nextNote;
-      return patch;
+      // Saving the edit of a detected transaction confirms it, as on the phone.
+      return confirming(editing, patch);
     },
   };
 }

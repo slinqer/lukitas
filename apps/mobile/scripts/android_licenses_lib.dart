@@ -10,7 +10,20 @@ class ResolvedLibrary {
 
   final String id;
   final String version;
+
+  /// The upstream release: a library scripts/build-native-deps.sh built from source is published
+  /// as `<release>-src` (vosk-android 0.3.75-src, jna 5.18.1-src) and is that release's code.
+  String get release => version.endsWith(_fromSource)
+      ? version.substring(0, version.length - _fromSource.length)
+      : version;
 }
+
+const _fromSource = '-src';
+
+/// Where scripts/build-native-deps.sh writes the POM of a library built from source: the local
+/// repository android/third_party/m2, relative to apps/mobile (Gradle never caches its files).
+String localRepositoryPom(String group, String artifact, String version) =>
+    'android/third_party/m2/${group.replaceAll('.', '/')}/$artifact/$version/$artifact-$version.pom';
 
 /// Flutter's engine and embedding (`io.flutter`): their licences are Flutter's own, already in the
 /// licence page that Flutter builds.
