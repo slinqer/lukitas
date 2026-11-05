@@ -23,6 +23,31 @@ export const Night: Story = {
   },
 };
 
+/**
+ * Day theme: the bank's notification is a light card with dark words, as Android's own
+ * notifications follow the phone's mode (at night it is the brand's plum).
+ */
+export const Day: Story = {
+  globals: { theme: "day" },
+  play: async ({ canvasElement }) => {
+    const card = canvasElement.querySelector<HTMLElement>(".lk-capture-notif");
+    await expect(card).not.toBeNull();
+    const root = getComputedStyle(document.documentElement);
+    const surface = root.getPropertyValue("--surface").trim();
+    const plum = root.getPropertyValue("--brand-plum").trim();
+    const probe = document.createElement("div");
+    document.body.append(probe);
+    probe.style.color = surface;
+    const surfaceRgb = getComputedStyle(probe).color;
+    probe.style.color = plum;
+    const plumRgb = getComputedStyle(probe).color;
+    probe.remove();
+    const background = getComputedStyle(card as HTMLElement).backgroundColor;
+    await expect(background).toBe(surfaceRgb);
+    await expect(background).not.toBe(plumRgb);
+  },
+};
+
 /** With the income pair too. */
 export const Income: Story = {
   args: { income: true },

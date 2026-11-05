@@ -107,7 +107,8 @@ class _StrokePainter extends CustomPainter {
       old.path != path || old.width != width || old.color != color;
 }
 
-/// `.lk-capture-notif`: a notification as Android shows it, a dark card in both themes.
+/// `.lk-capture-notif`: a notification as Android shows it: a dark card at night, a light one by
+/// day (as Android's own notifications follow the phone's mode).
 class _Notification extends StatelessWidget {
   const _Notification({required this.icon, required this.app, this.title, required this.line})
     : actions = const [];
@@ -128,7 +129,9 @@ class _Notification extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.lkColors;
-    final on = colors.onBrand;
+    final night = Theme.of(context).brightness == Brightness.dark;
+    // Night: the brand's plum card with light words. Day: a light card with dark words.
+    final on = night ? colors.onBrand : colors.ink;
     final title = this.title;
     return Container(
       padding: const EdgeInsets.symmetric(
@@ -136,7 +139,8 @@ class _Notification extends StatelessWidget {
         vertical: WambitoTokens.space3,
       ),
       decoration: BoxDecoration(
-        color: colors.brandPlum,
+        color: night ? colors.brandPlum : colors.surface,
+        border: night ? null : Border.all(color: colors.stroke, width: 2),
         borderRadius: LkSurface.radius(LkRadius.lg),
       ),
       child: Row(
@@ -146,8 +150,14 @@ class _Notification extends StatelessWidget {
             width: 36,
             height: 36,
             alignment: Alignment.center,
-            decoration: BoxDecoration(color: on, borderRadius: LkSurface.radius(LkRadius.sm)),
-            child: Text(icon, style: _text(18, FontWeight.w900, colors.brandPlum)),
+            decoration: BoxDecoration(
+              color: night ? colors.onBrand : colors.brandPlum,
+              borderRadius: LkSurface.radius(LkRadius.sm),
+            ),
+            child: Text(
+              icon,
+              style: _text(18, FontWeight.w900, night ? colors.brandPlum : colors.onBrand),
+            ),
           ),
           Expanded(
             child: Column(
