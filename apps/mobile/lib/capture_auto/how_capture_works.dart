@@ -57,6 +57,9 @@ class _HowCaptureWorksState extends State<HowCaptureWorks> {
   final _controller = PageController();
   int _page = 0;
 
+  /// The steps went compact because the tall ones did not fit the sheet (see [_HowPages]).
+  bool _tooTall = false;
+
   static final _last = CaptureHowStep.values.length - 1;
 
   @override
@@ -79,47 +82,75 @@ class _HowCaptureWorksState extends State<HowCaptureWorks> {
 
   void _turned(int page) => setState(() => _page = page);
 
+  void _overflowed() {
+    if (!_tooTall && mounted) setState(() => _tooTall = true);
+  }
+
   @override
-  Widget build(BuildContext context) => _HowScope(state: this, page: _page, child: widget.child);
+  Widget build(BuildContext context) =>
+      _HowScope(state: this, page: _page, tooTall: _tooTall, child: widget.child);
 }
 
 /// The steps' state, for the parts of the sheet.
 class _HowScope extends InheritedWidget {
-  const _HowScope({required this.state, required this.page, required super.child});
+  const _HowScope({
+    required this.state,
+    required this.page,
+    required this.tooTall,
+    required super.child,
+  });
 
   final _HowCaptureWorksState state;
 
   /// The page in view.
   final int page;
 
+  /// The tall steps did not fit: the compact ones are shown.
+  final bool tooTall;
+
   static _HowCaptureWorksState of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<_HowScope>()!.state;
 
   @override
-  bool updateShouldNotify(_HowScope old) => old.page != page;
+  bool updateShouldNotify(_HowScope old) => old.page != page || old.tooTall != tooTall;
 }
 
 /// The pages, one step each, swiped sideways. Every step is as tall as the tallest one (the hidden
 /// copies under the page view give the height), so the sheet keeps its size from step to step.
+///
+/// A short screen gets the compact steps at once. On a taller one the tall steps are tried first;
+/// if the sheet then has to scroll (a large font or display size, or the room the footer keeps for
+/// the disclosure), the steps go compact, so the demo is never cut under the footer.
 class _HowPages extends StatelessWidget {
   const _HowPages();
 
   @override
   Widget build(BuildContext context) {
     final how = _HowScope.of(context);
-    final compact = MediaQuery.sizeOf(context).height < CaptureHowStepView.compactBelow;
+    final tooTall = context.dependOnInheritedWidgetOfExactType<_HowScope>()!.tooTall;
+    final compact = tooTall || MediaQuery.sizeOf(context).height < CaptureHowStepView.compactBelow;
+    if (!compact) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!context.mounted) return;
+        final position = Scrollable.maybeOf(context)?.position;
+        if (position != null && position.hasContentDimensions && position.maxScrollExtent > 0) {
+          how._overflowed();
+        }
+      });
+    }
     return Padding(
       padding: EdgeInsets.only(top: compact ? WambitoTokens.space1 : WambitoTokens.space3),
       child: _Tallest(
         children: [
-          for (final step in CaptureHowStep.values) CaptureHowStepView(step: step),
+          for (final step in CaptureHowStep.values)
+            CaptureHowStepView(step: step, compact: compact),
           PageView.builder(
             controller: how._controller,
             itemCount: CaptureHowStep.values.length,
             onPageChanged: how._turned,
             itemBuilder: (context, page) => Align(
               alignment: Alignment.topCenter,
-              child: CaptureHowStepView(step: CaptureHowStep.values[page]),
+              child: CaptureHowStepView(step: CaptureHowStep.values[page], compact: compact),
             ),
           ),
         ],
@@ -185,9 +216,12 @@ class _HowFooter extends StatelessWidget {
 
 /// One step: its scene (decoration), title, body and, for most, its demo.
 class CaptureHowStepView extends StatelessWidget {
-  const CaptureHowStepView({super.key, required this.step});
+  const CaptureHowStepView({super.key, required this.step, this.compact});
 
   final CaptureHowStep step;
+
+  /// The compact step (a smaller scene beside the words); null decides by [compactBelow].
+  final bool? compact;
 
   /// Screens shorter than this (logical pixels) get the compact step: a smaller scene beside the
   /// words. The parity goldens (915 tall) and most phones keep the scene above.
@@ -213,7 +247,7 @@ class CaptureHowStepView extends StatelessWidget {
     };
     // On a short screen the scene shrinks and sits beside the words, so a step (demo included)
     // fits in the sheet without scrolling; on a tall one it stands above them, as on the web.
-    final compact = MediaQuery.sizeOf(context).height < compactBelow;
+    final compact = this.compact ?? MediaQuery.sizeOf(context).height < compactBelow;
     final scene = Image.asset(
       'assets/wambi/capture-step${step.index + 1}.webp',
       width: compact ? 72 : 200,
