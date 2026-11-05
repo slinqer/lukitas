@@ -93,5 +93,5 @@ Not yet measured: a different machine or Linux, which is what F-Droid runs. The 
 
 ## Voice models and the server
 
-- The voice models are not in the APK. They are downloaded on first use, after an opt-in that shows the size: Vosk small models for Spanish, English, Italian and Portuguese (30 to 50 MB each; Apache-2.0), SHA-256 checked before they are unzipped (`lib/capture/models_download.dart`). They are data, not code. The `voice-models-v1` GitHub release they come from does not exist yet: publish it before the first release.
+- The voice models are not in the APK. They are downloaded on first use, after an opt-in that shows the size: Vosk small models for Spanish, English, Italian and Portuguese (30 to 50 MB each; Apache-2.0), SHA-256 checked before they are unzipped (`lib/capture/models_download.dart`). They are data, not code. They come from the `voice-models-v1` GitHub release of this repository.
 - By default the app talks to `https://app.wambito.com`, the author's install of the AGPL server in this repo (`deploy/personal`). Settings changes it. No anti-features are declared (see `apps/mobile/fdroid/MERGE_REQUEST.md`).
