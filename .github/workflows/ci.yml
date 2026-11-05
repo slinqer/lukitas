@@ -273,6 +273,9 @@ jobs:
       # writes android/local.properties and the Gradle wrapper (neither is committed).
       - run: ./gradlew :app:testDebugUnitTest --console=plain
         working-directory: apps/mobile/android
+      # The switch F-Droid builds with (Vosk and JNA from source, scripts/build-native-deps.sh): off,
+      # Maven's artifacts; on with nothing built, a clear stop; on with built ones, only those.
+      - run: scripts/test-native-switch.sh
       - if: failure()
         uses: actions/upload-artifact@v4
         with:

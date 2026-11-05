@@ -1,6 +1,6 @@
 # F-Droid: what is ready and what a submission still needs
 
-Wambito is built to be listed on F-Droid, but nothing has been submitted (spec section 1: "no F-Droid submission"). This is the ledger for the day it is: what is already in the repo, what was measured, and what the submission will have to solve. Nothing below is solved yet.
+Wambito is built to be listed on F-Droid, but nothing has been submitted (spec section 1: "no F-Droid submission"). This is the ledger for the day it is: what is already in the repo, what was measured, and what the submission will have to solve. Nothing below is solved yet, except that Vosk and JNA can now be built from source (below).
 
 ## Ready now
 
@@ -46,12 +46,14 @@ Not yet measured: a different machine or Linux, which is what F-Droid runs. The 
 | `vosk-android:0.3.75` | `jni/{arm64-v8a,armeabi-v7a,x86,x86_64}/libvosk.so` (9 to 10 MB each) and a small `classes.jar` | `lib/arm64-v8a/libvosk.so` (10 MB), `lib/armeabi-v7a/libvosk.so` (9 MB): the biggest part of the APK after the Flutter engine | `https://github.com/alphacep/vosk-api`, the `android/` directory (the POM's `scm` URL). `libvosk.so` is Kaldi plus OpenFst plus OpenBLAS and CLAPACK, cross-built with the NDK by the scripts in `android/lib` (`build-kaldi.sh`, `build-vosk.sh`). Heavy: it compiles those dependencies from their own sources. The `0.3.75` tag name and whether the script's output matches the published AAR byte for byte are to be checked |
 | `jna:5.18.1` (Vosk reaches its library through it, by reflection) | `jni/<abi>/libjnidispatch.so` for eight ABIs (`armeabi`, `mips` and `mips64` included) and `classes.jar` | `lib/arm64-v8a/libjnidispatch.so`, `lib/armeabi-v7a/libjnidispatch.so` | `https://github.com/java-native-access/jna`, built with Ant and the NDK for `android-aarch64` and `android-armv7`; the Java classes come from the same source |
 
-Things to settle when doing it:
+**Built in the repo now.** The revisions, patches and timings are in the spike report (`docs/superpowers/reports/2026-11-04-vosk-from-source-spike.md`). `apps/mobile/scripts/build-native-deps.sh --vosk-src <dir> --jna-src <dir> --ndk <dir>` builds both libraries' native code and Java classes from the pinned sources, for `arm64-v8a` and `armeabi-v7a` only, and writes them to a local Maven repository, `apps/mobile/android/third_party/m2` (git-ignored), as `vosk-android:0.3.75-src` and `jna:5.18.1-src`. The Gradle property `wambito.nativeFromSource=true` then takes those instead of Maven Central's (`android/app/build.gradle.kts`; `scripts/test-native-switch.sh` tests it in CI). With the property set, `scripts/check-no-google.sh` resolves the from-source classpath, and `scripts/check-licenses.sh` finds the licences in the local POMs and lists both libraries at their upstream version, so `assets/licenses/android-libraries.json` does not change. The script never uses anything prebuilt from either tree: it deletes JNA's `lib/native/*.jar` (upstream's `jnidispatch` for every platform) before building. It runs on Linux x86_64 only (upstream's scripts use the NDK's `linux-x86_64` toolchain) and needs `cmake autoconf automake libtool libltdl-dev texinfo ant`, JDK 17, an SDK platform (`android.jar`) and the NDK `28.2.13676358`; on a Mac, a `linux/amd64` container. Vosk's own dependencies (Kaldi, OpenFst, OpenBLAS, CLAPACK) are given with `--kaldi-src`, `--openfst-src`, `--openblas-src` and `--clapack-src`, or fetched with git at their pinned revisions.
 
-- how the built `libvosk.so`, `libjnidispatch.so` and their Java classes replace the Maven artifacts in Gradle (a local Maven repository or `flatDir` populated by the recipe, or an `includeBuild`), and that `scripts/check-no-google.sh` and `assets/licenses/android-libraries.json` (which lists both under their POM licences) still agree;
-- JNA is dual-licensed (Apache-2.0 or LGPL-2.1): the About page already says so;
-- the `proguard-rules.pro` keeps for `com.sun.jna.**` stay as they are;
-- Vosk is built for four ABIs upstream and we ship two: the recipe builds only `arm64-v8a` and `armeabi-v7a`, which also shortens the Kaldi build.
+Still for the recipe:
+
+- `srclibs` for the six sources at the spike's revisions, passed to `build-native-deps.sh` in `prebuild`, and the build server's packages above (`sudo apt-get install`);
+- JNA's tree has more jars than `lib/native/`: `lib/asm-8.0.1.jar` (its Ant tasks are compiled against it while building) and test jars. The scanner may flag them; decide between `scandelete` with Debian's `libasm-java` in their place, or what the F-Droid reviewers accept;
+- a `timeout:` above the default: the script took 46 minutes for both ABIs here (`--jobs 4`, a `linux/amd64` container on an Apple Silicon Mac), and the spike report estimates 40 minutes to 2.5 hours on F-Droid's server depending on its cores;
+- JNA is dual-licensed (Apache-2.0 or LGPL-2.1): the About page already says so; the `proguard-rules.pro` keeps for `com.sun.jna.**` stay as they are.
 
 ### Other native code in the APK
 

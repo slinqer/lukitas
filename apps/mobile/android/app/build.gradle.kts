@@ -132,6 +132,35 @@ tasks.configureEach {
     }
 }
 
+// F-Droid builds Vosk and JNA from source (docs/mobile/fdroid.md): scripts/build-native-deps.sh
+// writes them, native libraries and Java classes, for arm64-v8a and armeabi-v7a only, to the local
+// repository android/third_party/m2 (git-ignored) as vosk-android 0.3.75-src and jna 5.18.1-src, and
+// -Pwambito.nativeFromSource=true takes them instead of Maven Central's prebuilt AARs. Off by
+// default: a debug build with it on has no Vosk on an x86_64 emulator.
+val nativeFromSource = project.findProperty("wambito.nativeFromSource")?.toString()?.toBoolean() == true
+if (nativeFromSource) {
+    val built = listOf(
+        "com/alphacephei/vosk-android/0.3.75-src/vosk-android-0.3.75-src",
+        "net/java/dev/jna/jna/5.18.1-src/jna-5.18.1-src",
+    ).flatMap { listOf("$it.pom", "$it.aar") }.map { rootProject.file("third_party/m2/$it") }
+    if (built.any { !it.isFile }) {
+        throw GradleException(
+            "wambito.nativeFromSource is set but android/third_party/m2 has no vosk-android 0.3.75-src: " +
+                "run apps/mobile/scripts/build-native-deps.sh first",
+        )
+    }
+    // First, so that nothing else can answer for these two; and it answers for nothing else.
+    val local = repositories.maven {
+        url = uri("../third_party/m2")
+        content {
+            includeVersion("com.alphacephei", "vosk-android", "0.3.75-src")
+            includeVersion("net.java.dev.jna", "jna", "5.18.1-src")
+        }
+    }
+    repositories.remove(local)
+    repositories.addFirst(local)
+}
+
 dependencies {
     // Passkeys through the platform's Credential Manager (Android 14+), never through the
     // library's Play Services bridge, which scripts/check-no-google.sh refuses.
@@ -139,8 +168,16 @@ dependencies {
     // Quick capture's speech engine, on the phone with no network (the voice spike's choice,
     // docs/superpowers/reports/2026-10-22-stage-3-voice-spike.md). Apache-2.0; it brings JNA 5.18.1
     // (Apache-2.0 / LGPL-2.1). Never Android's SpeechRecognizer, which hands the audio to the
-    // phone's recognition service (Google's, mostly).
-    implementation("com.alphacephei:vosk-android:0.3.75")
+    // phone's recognition service (Google's, mostly). Built from source with the switch above,
+    // JNA then named on its own, at its own -src version.
+    if (nativeFromSource) {
+        implementation("com.alphacephei:vosk-android:0.3.75-src") {
+            exclude(group = "net.java.dev.jna")
+        }
+        implementation("net.java.dev.jna:jna:5.18.1-src@aar")
+    } else {
+        implementation("com.alphacephei:vosk-android:0.3.75")
+    }
     // The home-screen widget (widget/), drawn with Jetpack Glance, and its refresh job on
     // WorkManager (spec section 7.1). Both AndroidX, Apache-2.0, no Play Services; home_widget
     // already brings these exact versions, they are named here because the app's own code uses them.

@@ -54,6 +54,38 @@ void main() {
     });
   });
 
+  group(
+    'a library built from source (scripts/build-native-deps.sh, -Pwambito.nativeFromSource)',
+    () {
+      test(
+        'is listed at the release it was built from, and its POM looked up at its own version',
+        () {
+          final libraries = resolvedLibraries('''
+releaseRuntimeClasspath - Runtime classpath of '/release'.
++--- com.alphacephei:vosk-android:0.3.75-src
++--- net.java.dev.jna:jna:5.18.1-src
+\\--- androidx.core:core:1.15.0
+''');
+          expect(
+            [for (final l in libraries) '${l.id} ${l.version} ${l.release}'],
+            [
+              'androidx.core:core 1.15.0 1.15.0',
+              'com.alphacephei:vosk-android 0.3.75-src 0.3.75',
+              'net.java.dev.jna:jna 5.18.1-src 5.18.1',
+            ],
+          );
+        },
+      );
+
+      test('has its POM in the local repository, android/third_party/m2', () {
+        expect(
+          localRepositoryPom('net.java.dev.jna', 'jna', '5.18.1-src'),
+          'android/third_party/m2/net/java/dev/jna/jna/5.18.1-src/jna-5.18.1-src.pom',
+        );
+      });
+    },
+  );
+
   group('a POM\'s licence', () {
     test('is read from its <licenses>, not from its parent\'s declaration', () {
       expect(pomLicenses(_pom(['The Apache Software License, Version 2.0'], parent: 'p')), [
