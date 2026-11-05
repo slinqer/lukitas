@@ -55,8 +55,8 @@ model in Settings. Nothing else is downloaded or executed at runtime.
 The app keeps the person's data on a Wambito server. By default that is `https://app.wambito.com`,
 the author's own install of the server. The server is free software too (AGPL, in this repository:
 `apps/api`, deployment in `deploy/personal`), and the person can change the address in Settings
-(HTTPS only in release builds). Because the default server is the author's personal install, it may
-limit who can sign up.
+(HTTPS only in release builds). Because the default server is the author's own install, anyone can create an
+account on it unless the operator sets an allowlist; self-hosters decide for their own server.
 
 ## Anti-features
 
@@ -74,6 +74,6 @@ If a reviewer reads the default server as `NonFreeNet`, we are happy to add it.
 
 - [x] License AGPL-3.0-only, in the repo (`LICENSE`).
 - [x] `fdroid lint` and `fdroid build` pass locally; `fdroid scanner` reports no problems.
-- [x] Metadata in `fastlane` (es-ES, en-US), changelogs per version code.
+- [x] Metadata in `fastlane` (en-US, es-ES, it-IT, pt-PT), changelogs per version code.
 - [ ] `fdroid checkupdates` on the real tag (the tag `mobile-v1.0.0` must exist upstream before
       this merge request).

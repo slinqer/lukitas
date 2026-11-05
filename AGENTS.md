@@ -46,8 +46,10 @@ phone. Read the `AGENTS.md` of the area you work in; read code only to confirm.
   `e2e:landing-only`, `e2e:landing-only-app`.
 - `deploy-landing`: push to `main` after `check` + `e2e`; `wrangler deploy` from `deploy/landing`.
 - `mobile` / `mobile-build` (only when mobile paths change): pub get, analyze, tests without
-  goldens, tokens and `apps/mobile/lib/api/gen` staleness, release self-tests, no-Google check,
-  debug build, Gradle unit tests, release build.
+  goldens, tokens and `apps/mobile/lib/api/gen` staleness, release self-tests, `build-native-deps.sh`
+  `--abi` argument test, F-Droid recipe and lock checks (`check-fdroid-recipe.sh`,
+  `check-fdroid-lock.sh`, tested by `test-fdroid-checks.sh`), no-Google check, debug build, Gradle
+  lock check, Gradle unit tests, native-switch test (`test-native-switch.sh`), release build.
 
 ## Guards (both in CI `check`, before lint)
 

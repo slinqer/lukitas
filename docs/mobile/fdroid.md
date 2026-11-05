@@ -6,7 +6,7 @@ Wambito is built for F-Droid from source on F-Droid's own build server, from the
 
 - **No Google, no trackers.** `scripts/check-no-google.sh` (CI) fails on Play Services, Firebase, ML Kit, Play Core or any other proprietary artifact in any variant's resolved classpath. No analytics, no crash reporter. Permissions are an allowlist (`scripts/check-permissions.sh`).
 - **Licences.** AGPL-3.0-only (the recipe's `License:`); every Dart and Android dependency has a licence entry in About (`scripts/check-licenses.sh`). Voice models and sounds are listed too.
-- **Metadata in the repo:** `apps/mobile/fastlane/metadata/android/{es-ES,en-US}` (titles, descriptions, six screenshots each, a changelog per version code). `scripts/check-fastlane.sh` checks F-Droid's limits. There is no `icon.png`: F-Droid takes the launcher icon from the APK. F-Droid finds the folder under the recipe's `subdir: apps/mobile`.
+- **Metadata in the repo:** `apps/mobile/fastlane/metadata/android/{en-US,es-ES,it-IT,pt-PT}` (titles, descriptions and a changelog per version code in all four; six screenshots in en-US and es-ES). `scripts/check-fastlane.sh` checks F-Droid's limits. There is no `icon.png`: F-Droid takes the launcher icon from the APK. F-Droid finds the folder under the recipe's `subdir: apps/mobile`.
 - **Package name** `com.wambito.app` (`docs/superpowers/specs/2026-11-02-wambito-urls-design.md` §3.2): it cannot change once published.
 
 ## Decided
@@ -34,11 +34,11 @@ The prebuilt native code in the APK comes from two Maven artifacts: `com.alphace
   - Linux x86_64 only (upstream's scripts use the NDK's `linux-x86_64` toolchain), so a `linux/amd64` container on a Mac. Needs `cmake autoconf automake libtool libltdl-dev texinfo ant`, JDK 17, an SDK platform and the NDK.
   - Nothing prebuilt from either tree is used: JNA's `lib/native/*.jar` are deleted first. JNA is dual-licensed (Apache-2.0 or LGPL-2.1); About says so, and the `com.sun.jna.**` ProGuard keeps stay.
   - The recipe passes a fixed `--work /tmp/wambito-native-deps`, so `libvosk.so` embeds the same paths on every build.
-- The Gradle property `-Pwambito.nativeFromSource=true` (`android/app/build.gradle.kts`) makes the app take those `-src` artifacts. It is off by default, so CI's x86_64 emulator keeps voice. With it set, `check-no-google.sh` resolves the from-source classpath and `check-licenses.sh` reads the licences from the local POMs. `scripts/test-native-switch.sh` tests the switch in CI.
+- The Gradle property `-Pwambito.nativeFromSource=true` (`android/app/build.gradle.kts`) makes the app take those `-src` artifacts. It is off by default, so CI's x86_64 emulator keeps voice. With it set (`-P`, or `env 'ORG_GRADLE_PROJECT_wambito.nativeFromSource=true' scripts/check-no-google.sh`), `check-no-google.sh` resolves the from-source classpath and `check-licenses.sh` reads the licences from the local POMs. `scripts/test-native-switch.sh` tests the switch in CI.
 
 ### The two lockfiles
 
-`android/app/gradle.lockfile` (default) and `android/app/gradle-fdroid.lockfile` (with the switch) pin every Gradle dependency. They differ only in the two `-src` lines. Flutter's own `io.flutter:*` artifacts are left out of both: they depend on the ABI, and a one-ABI build would not resolve. How to regenerate them: `setup.md`, "Dependency locks". CI checks the default one.
+`android/app/gradle.lockfile` (default) and `android/app/gradle-fdroid.lockfile` (with the switch) pin every Gradle dependency. They differ only in the two `-src` lines, and `scripts/check-fdroid-lock.sh` (CI) checks exactly that, as text. Flutter's own `io.flutter:*` artifacts are left out of both: they depend on the ABI, and a one-ABI build would not resolve. How to regenerate them: `setup.md`, "Dependency locks". CI also resolves the default one again (`check-gradle-locks.sh`).
 
 ### The Gradle wrapper jar
 
@@ -54,6 +54,10 @@ The prebuilt native code in the APK comes from two Maven artifacts: `com.alphace
 - **`build:`, not `prebuild:`, runs `build-native-deps.sh`.** F-Droid scans the source between the two, and the AARs the script writes to `android/third_party/m2` would fail that scan. They come from sources that were scanned clean, so the intent holds. Then `flutter build apk --release --split-per-abi` with the switch, `--build-name $$VERSION$$` and `--build-number $(($$VERCODE$$ / 10))`.
 - Auto update: `UpdateCheckMode: Tags ^mobile-v`; `VercodeOperation` `%c * 10 + 1` and `%c * 10 + 2`.
 - **The pubspec version at release tags.** `UpdateCheckData` reads `apps/mobile/pubspec.yaml`. The tagged commit, and only it, carries `version: X.Y.Z+<base code>`; `main` keeps `0.0.0-dev+1`, which the pattern skips. `release.sh` refuses a tag whose pubspec differs (`release.md`).
+
+### Changing the recipe after F-Droid publishes
+
+Once the merge request lands, the live recipe is fdroiddata's copy, not the one in this repo. `AutoUpdateMode: Version` only adds build entries with a new version name, version code and commit; it copies `srclibs`, `ndk`, the SDK platform and the `build:` flags unchanged. So a change to Flutter's version (`apps/mobile/.flutter-version`), a srclib revision, the NDK, the SDK platform or `build-native-deps.sh`'s flags needs its own merge request on fdroiddata, opened before tagging the release that needs it; otherwise F-Droid builds the new tag with the old recipe, or fails. `scripts/check-fdroid-recipe.sh` (CI) keeps the repo's copy in step with `.flutter-version` and `build-native-deps.sh` (Flutter version, srclib revisions, NDK), so the repo copy is what to copy into that merge request. It cannot see fdroiddata.
 
 ### Building it locally
 

@@ -66,6 +66,8 @@ Only when that prints the same `SHA256` fingerprint as the one written next to t
 
 Do the key move below (its own section) once, before the first build from these instructions. Until the Mac folder is moved, `cd` into the current checkout instead of `~/projects/wambito`.
 
+Before this, on `main`: for each release after `mobile-v1.0.0`, add and commit the new `<versionCode>.txt` changelogs (both codes, all four locales, `scripts/check-fastlane.sh` checks them) and push `main`. The release commit below is cut from `main`, and F-Droid reads the changelogs at the tag, so they must already be there.
+
 ```sh
 cd ~/projects/wambito
 git checkout main && git pull
@@ -81,7 +83,9 @@ printf 'Keystore password: '; read -rs WAMBITO_KEYSTORE_PASSWORD; echo; export W
 apps/mobile/scripts/release.sh
 ```
 
-(The F-Droid changelogs in `apps/mobile/fastlane/metadata/android/*/changelogs` are named for `mobile-v1.0.0`'s version codes, 100001 and 100002. For another first version, rename them; `release.sh` warns when a tagged build has none. For each later release, add `<versionCode>.txt` for both codes in both languages.)
+(The F-Droid changelogs in `apps/mobile/fastlane/metadata/android/*/changelogs` are named for `mobile-v1.0.0`'s version codes, 100001 and 100002. For another first version, rename them; `release.sh` warns when a tagged build has none. For each later release, add `<versionCode>.txt` for both codes in all four locales, on `main`, before the release commit.)
+
+Once the APK is checked, publish the tag (it is local until then): `git push origin mobile-v1.0.0`. For the first F-Droid submission, push the tag before opening the fdroiddata merge request (`apps/mobile/fdroid/MERGE_REQUEST.md`), which needs it to exist upstream. For a later release, if Flutter, the NDK, the SDK platform, a srclib revision or `build-native-deps.sh`'s flags changed since the last one, open a merge request on fdroiddata with the updated recipe first: its copy is the live one and auto update only bumps versions (`docs/mobile/fdroid.md`, "Changing the recipe after F-Droid publishes").
 
 What it does: `flutter clean`, an unsigned `flutter build apk --release --split-per-abi --target-platform android-arm,android-arm64` with `--build-name` and `--build-number` from the tag, then for each ABI: checks the alignment (4 bytes, and 16 KB for the native libraries), signs with `apksigner`, verifies the signature (v2 at least, not the debug key, the same certificate for both APKs), compares the manifest's version with the scheme, and runs `check-permissions.sh` on the signed APK. It compares the certificate with the one `keytool` reads from the keystore, and writes everything to `apps/mobile/dist/<versionName>/` (git-ignored):
 
