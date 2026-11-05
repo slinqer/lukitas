@@ -18,6 +18,16 @@ if [ ! -f "$LOCK" ]; then
   echo "android/$LOCK is missing: run ./gradlew :app:dependencies --write-locks and commit it." >&2
   exit 1
 fi
+# Flutter's engine artifacts (io.flutter:*) are left out of both locks: they are pinned by the
+# Flutter SDK (the engine hash is their version), and which of them a build resolves depends on its
+# --target-platform, so a lock with all of them fails a one-ABI build (F-Droid's, one per ABI).
+for lock in "$LOCK" app/gradle-fdroid.lockfile; do
+  if [ -f "$lock" ] && grep -q '^io\.flutter:' "$lock"; then
+    echo "android/$lock locks Flutter's engine artifacts (io.flutter:*): they must be ignored" \
+      "(dependencyLocking.ignoredDependencies in app/build.gradle.kts)." >&2
+    exit 1
+  fi
+done
 ./gradlew --no-daemon --quiet --console=plain :app:dependencies --write-locks >/dev/null ||
   { echo "Gradle failed." >&2; exit 2; }
 # Modified or untracked: the file Gradle just wrote must be what is committed.

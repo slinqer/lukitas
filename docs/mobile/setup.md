@@ -244,6 +244,10 @@ in `android/app/build.gradle.kts`), so F-Droid and CI resolve the same graph. Tw
 - `android/app/gradle-fdroid.lockfile`: the graph with `-Pwambito.nativeFromSource=true` (Vosk and JNA
   from source, `docs/mobile/fdroid.md`); it differs from the first only in the two `-src` versions.
 
+Flutter's engine artifacts (`io.flutter:*`) are not locked (`ignoredDependencies`): the Flutter SDK
+pins them, and a build resolves only those of its `--target-platform`, so locking them fails a
+one-ABI build such as F-Droid's. `check-gradle-locks.sh` fails if either lock lists them.
+
 A new or changed dependency, or a Flutter or plugin upgrade, fails the build until you regenerate
 the locks and commit them:
 

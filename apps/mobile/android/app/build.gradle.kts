@@ -166,9 +166,12 @@ if (nativeFromSource) {
 // Every dependency version of the app is pinned by a lockfile, so F-Droid and CI resolve the same
 // graph: app/gradle.lockfile, and app/gradle-fdroid.lockfile for the from-source graph above. A
 // changed or new dependency fails the build until the locks are rewritten (docs/mobile/setup.md,
-// "Dependency locks").
+// "Dependency locks"). Flutter's engine artifacts are left out: the Flutter SDK pins them (their
+// version is the engine hash), and which ones a build resolves depends on its --target-platform, so
+// locking them would fail a one-ABI build (F-Droid builds one per ABI).
 dependencyLocking {
     lockAllConfigurations()
+    ignoredDependencies.add("io.flutter:*")
     if (nativeFromSource) {
         lockFile.set(layout.projectDirectory.file("gradle-fdroid.lockfile"))
     }
