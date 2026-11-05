@@ -20,13 +20,13 @@
 #       [--out <dir>]       default: a new temporary directory
 #       [--cpus <n>]        processors given to the container (default 4); the native build and
 #                           Gradle see only these
-#       [--memory <size>]   default 7g
-#       [--gradle-heap <size>]  Gradle's -Xmx in the container (default 4g; the app's own 8g does
-#                           not fit in --memory)
+#       [--memory <size>]   default 7g (the recipe caps Gradle's heap at 4 GB)
+#       [--abi <abi>]       build only the entry of arm64-v8a or armeabi-v7a; default: both
 #       [--keep]            leave the container (wambito-fdroid-build) running afterwards, to look
-#                           around in it; remove it with `docker rm -f wambito-fdroid-build`
+#                           around in it; remove it with `docker rm -f wambito-fdroid-build`. A run
+#                           refuses to start while that container exists.
 # About an hour per ABI on 4 emulated cores, most of it Vosk's native build.
-# Exit codes: 0 lint, both builds and the scanner passed; 1 one of them failed; 2 bad arguments or
+# Exit codes: 0 lint, the builds and the scanner passed; 1 one of them failed; 2 bad arguments or
 # setup.
 set -euo pipefail
 
@@ -49,20 +49,24 @@ usage() {
   exit 2
 }
 
-commit="" version="" out="" cpus=4 memory=7g gradle_heap=4g keep=false
+commit="" version="" out="" cpus=4 memory=7g only_abi="" keep=false
 while [ $# -gt 0 ]; do
   case "$1" in
-    --version) version="${2:-}"; shift 2 ;;
-    --out) out="${2:-}"; shift 2 ;;
-    --cpus) cpus="${2:-}"; shift 2 ;;
-    --memory) memory="${2:-}"; shift 2 ;;
-    --gradle-heap) gradle_heap="${2:-}"; shift 2 ;;
+    --version | --out | --cpus | --memory | --abi) [ $# -ge 2 ] || usage ;;
+  esac
+  case "$1" in
+    --version) version="$2"; shift 2 ;;
+    --out) out="$2"; shift 2 ;;
+    --cpus) cpus="$2"; shift 2 ;;
+    --memory) memory="$2"; shift 2 ;;
+    --abi) only_abi="$2"; shift 2 ;;
     --keep) keep=true; shift ;;
     -*) usage ;;
     *) [ -z "$commit" ] || usage; commit="$1"; shift ;;
   esac
 done
 [ -n "$commit" ] || usage
+case "$only_abi" in "" | arm64-v8a | armeabi-v7a) ;; *) die "--abi must be arm64-v8a or armeabi-v7a, not $only_abi." ;; esac
 [[ "$cpus" =~ ^[1-9][0-9]*$ ]] || die "--cpus must be a positive number."
 command -v docker >/dev/null || die "docker is missing."
 [ -f "$RECIPE" ] || die "no recipe at $RECIPE"
@@ -111,7 +115,11 @@ curl -fsSL https://gitlab.com/fdroid/fdroiddata/-/raw/master/config/categories.y
   grep -v '^  icon: ' >"$data/config/categories.yml" ||
   die "could not fetch fdroiddata's config/categories.yml."
 cp "$data/config/categories.yml" "$data/lint/config/categories.yml"
-codes="$((base * 10 + 1)) $((base * 10 + 2))"
+case "$only_abi" in
+  "") codes="$((base * 10 + 1)) $((base * 10 + 2))" ;;
+  armeabi-v7a) codes="$((base * 10 + 1))" ;;
+  arm64-v8a) codes="$((base * 10 + 2))" ;;
+esac
 
 # What runs in the container, as root.
 cat >"$input/run.sh" <<'RUN'
@@ -130,11 +138,6 @@ git -C "$fdroidserver" fetch -q --depth 1 https://gitlab.com/fdroid/fdroidserver
 echo "fdroidserver $(git -C "$fdroidserver" rev-parse HEAD)"
 cp -a /input/wambito.git "$home_vagrant/wambito.git"
 cp -a /input/fdroiddata "$home_vagrant/fdroiddata"
-# The app asks Gradle for up to 8 GB of heap (android/gradle.properties), more than this container
-# has: the kernel then kills the daemon mid-build. The user's gradle.properties wins over the
-# project's, so here, and only here, the heap fits the container.
-echo "org.gradle.jvmargs=-Xmx$GRADLE_HEAP -XX:MaxMetaspaceSize=1g -XX:ReservedCodeCacheSize=256m" \
-  >>"$home_vagrant/.gradle/gradle.properties"
 chown -R vagrant:vagrant "$home_vagrant" "$fdroidserver"
 chmod 0600 "$home_vagrant"/fdroiddata/config/*.yml "$home_vagrant"/fdroiddata/lint/config/*.yml
 fdroid() {
@@ -184,14 +187,9 @@ RUN
 chmod +x "$input/run.sh"
 
 echo "Building $APPID at $sha as $tag (codes $codes) into $out" >&2
-docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
-# --cpuset-cpus too, so that nproc (the native build's jobs) and Gradle see the same number.
-docker run -d --name "$CONTAINER" --platform linux/amd64 --cpus "$cpus" \
-  --cpuset-cpus "0-$((cpus - 1))" --memory "$memory" \
-  -v "$input:/input:ro" -v "$out:/out" \
-  -e FDROIDSERVER_REV="$FDROIDSERVER_REV" -e APPID="$APPID" -e CODES="$codes" \
-  -e GRADLE_HEAP="$gradle_heap" \
-  "$IMAGE" sleep infinity >/dev/null
+if docker container inspect "$CONTAINER" >/dev/null 2>&1; then
+  die "the container $CONTAINER exists (an earlier --keep run?): remove it with docker rm -f $CONTAINER."
+fi
 # shellcheck disable=SC2329 # called by the EXIT trap
 cleanup() {
   if [ "$keep" = true ]; then
@@ -200,7 +198,14 @@ cleanup() {
     docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
   fi
 }
+# Before the container starts, so that an interrupt never leaves it behind.
 trap cleanup EXIT
+# --cpuset-cpus too, so that nproc (the native build's jobs) and Gradle see the same number.
+docker run -d --name "$CONTAINER" --platform linux/amd64 --cpus "$cpus" \
+  --cpuset-cpus "0-$((cpus - 1))" --memory "$memory" \
+  -v "$input:/input:ro" -v "$out:/out" \
+  -e FDROIDSERVER_REV="$FDROIDSERVER_REV" -e APPID="$APPID" -e CODES="$codes" \
+  "$IMAGE" sleep infinity >/dev/null
 status=0
 docker exec "$CONTAINER" /input/run.sh 2>&1 | tee "$out/run.log" || status=$?
 [ "$status" -le 1 ] || status=2
