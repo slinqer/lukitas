@@ -39,28 +39,31 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
   `dart run tool/parity/compose.dart --max 2 [id]`.
 - Kotlin: `cd android && JAVA_HOME=<JDK 17> ./gradlew :app:testDebugUnitTest --console=plain`.
 - Integration tests (emulator + root dev stack): `scripts/run-integration-tests.sh`.
-- F-Droid's Vosk and JNA from source (`docs/mobile/fdroid.md`): `scripts/build-native-deps.sh
-  --vosk-src <dir> --jna-src <dir> --ndk <NDK 28.2.13676358> [--abi <one ABI>]` (Linux x86_64
-  only, a linux/amd64 container on a Mac; 46 min with `--jobs 4`, about half with `--abi`;
-  `scripts/test-build-native-deps-args.sh` (CI) tests its arguments) writes
-  `android/third_party/m2` (git-ignored), then build with `-Pwambito.nativeFromSource=true`
-  (`flutter build apk -P wambito.nativeFromSource=true`, or the env
-  `ORG_GRADLE_PROJECT_wambito.nativeFromSource=true` for `gradlew` and the check scripts). ARM
-  only, so off for the x86_64 emulator. `scripts/test-native-switch.sh` (CI) tests the switch.
-- F-Droid recipe: `fdroid/com.wambito.app.yml` (the source of truth, copied to fdroiddata when
-  submitting; one build per ABI, Vosk and JNA from `fdroid/srclibs/*.yml` built in `build:`, after
-  F-Droid's source scan). `scripts/fdroid-build-local.sh <commit> [--version X.Y.Z]
-  [--abi <one ABI>]` runs `fdroid lint`, `fdroid build` of both entries (or one) and
-  `fdroid scanner` in F-Droid's buildserver image against a scratch copy of that commit (Docker,
-  about an hour per ABI on 4 emulated cores; nothing is pushed). Change the recipe with the srclib
-  revisions in `build-native-deps.sh` together. Its `UpdateCheckData` reads `pubspec.yaml`'s
-  version at a `mobile-v*` tag (`docs/mobile/release.md`).
-- Gradle dependency locks (`android/app/gradle.lockfile`, and `gradle-fdroid.lockfile` for the
-  switch above): after changing a dependency, rewrite both with `./gradlew :app:dependencies
-  --write-locks` (the second with `-Pwambito.nativeFromSource=true`, needs the real
-  `third_party/m2`) and commit them; `scripts/check-gradle-locks.sh` (CI) checks the first
-  (`docs/mobile/setup.md`, "Dependency locks"). The Gradle wrapper jar is committed: the official
-  one for the version in `gradle-wrapper.properties` (`docs/mobile/fdroid.md`).
+- F-Droid (`docs/mobile/fdroid.md` explains the whole build):
+  - `scripts/build-native-deps.sh --vosk-src <dir> --jna-src <dir> --ndk <NDK 28.2.13676358>
+    [--abi <one ABI>] [--work <dir>]` builds Vosk and JNA from source (Linux x86_64 only, a
+    linux/amd64 container on a Mac; 46 min with `--jobs 4`, about half with `--abi`) into
+    `android/third_party/m2` (git-ignored). `scripts/test-build-native-deps-args.sh` (CI) tests
+    its arguments.
+  - The switch `-Pwambito.nativeFromSource=true` (`flutter build apk -P ...`, or the env
+    `ORG_GRADLE_PROJECT_wambito.nativeFromSource=true` for `gradlew` and the check scripts) takes
+    those artifacts. ARM only, so off for the x86_64 emulator. `scripts/test-native-switch.sh`
+    (CI) tests it.
+  - Recipe: `fdroid/com.wambito.app.yml` is the source of truth, copied to fdroiddata when
+    submitting; one build per ABI, srclibs in `fdroid/srclibs/*.yml`, natives built in `build:`
+    (after F-Droid's source scan). Change it together with the revisions in `build-native-deps.sh`.
+    `UpdateCheckData` reads `pubspec.yaml`'s version at a `mobile-v*` tag (`docs/mobile/release.md`).
+    The text for the merge request is `fdroid/MERGE_REQUEST.md`.
+  - `scripts/fdroid-build-local.sh <commit> [--version X.Y.Z] [--abi <one ABI>]` runs `fdroid
+    lint`, `fdroid build` and `fdroid scanner` in F-Droid's buildserver image against a scratch
+    copy of that commit (Docker, about an hour per ABI on 4 emulated cores; nothing is pushed).
+  - Gradle locks: `android/app/gradle.lockfile`, and `gradle-fdroid.lockfile` for the switch.
+    After changing a dependency, rewrite both with `./gradlew :app:dependencies --write-locks`
+    (the second with the switch, needs the real `third_party/m2`) and commit them;
+    `scripts/check-gradle-locks.sh` (CI) checks the first (`docs/mobile/setup.md`, "Dependency
+    locks").
+  - The Gradle wrapper jar is committed: the official one for the version in
+    `gradle-wrapper.properties`.
 - Release self-tests: `scripts/test-release.sh`, `scripts/check-fastlane.sh` (changelog ≤500 bytes,
   same version codes in all four locales), `scripts/check-permissions.sh`.
 
