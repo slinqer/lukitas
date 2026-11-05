@@ -52,7 +52,8 @@ class CaptureOfferBody extends StatelessWidget {
     final colors = context.lkColors;
     final model = session.model;
     if (model == null) return const SizedBox.shrink();
-    final megabytes = (model.bytes / 1e6).round();
+    // On a phone that gets the precise model, the one size shown is both downloads'.
+    final megabytes = ((model.bytes + (session.preciseModel?.bytes ?? 0)) / 1e6).round();
     final failure = session.downloadFailure;
     return _VoiceCard(
       outline: failure == null ? null : colors.over,
@@ -87,7 +88,8 @@ class CaptureOfferActions extends StatelessWidget {
   Widget build(BuildContext context) {
     final session = CaptureSession.of(context);
     final l10n = session.l10n;
-    final megabytes = ((session.model?.bytes ?? 0) / 1e6).round();
+    final megabytes = (((session.model?.bytes ?? 0) + (session.preciseModel?.bytes ?? 0)) / 1e6)
+        .round();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: WambitoTokens.space1,
@@ -113,6 +115,58 @@ class CaptureOfferActions extends StatelessWidget {
   }
 }
 
+/// The one-time offer of the precise model, for someone who has the basic one: what it is for and
+/// the size it adds.
+class CapturePreciseOfferBody extends StatelessWidget {
+  const CapturePreciseOfferBody({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final session = CaptureSession.of(context);
+    final l10n = session.l10n;
+    final colors = context.lkColors;
+    final megabytes = ((session.preciseModel?.bytes ?? 0) / 1e6).round();
+    return _VoiceCard(
+      title: Text(
+        l10n.captureOfferPrecise(megabytes),
+        style: LkText.body.copyWith(color: colors.ink, fontWeight: FontWeight.w900),
+      ),
+      children: [
+        Text(l10n.captureOfferPreciseBody, style: LkText.body.copyWith(color: colors.inkMuted)),
+      ],
+    );
+  }
+}
+
+/// "Mejorar" and "Ahora no".
+class CapturePreciseOfferActions extends StatelessWidget {
+  const CapturePreciseOfferActions({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final session = CaptureSession.of(context);
+    final l10n = session.l10n;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: WambitoTokens.space1,
+      children: [
+        PressButton(
+          key: const Key('capture.offer.precise.accept'),
+          horizontalPadding: WambitoTokens.space4,
+          onPressed: () => unawaited(session.improvePrecision()),
+          child: Text(LkText.upperCase(l10n.captureOfferPreciseAccept)),
+        ),
+        PressButton.text(
+          l10n.captureOfferPreciseDecline,
+          key: const Key('capture.offer.precise.decline'),
+          tone: PressTone.ghost,
+          onPressed: () => unawaited(session.declinePrecision()),
+        ),
+      ],
+    );
+  }
+}
+
 /// The download under way: how far it is, in words (read out as it changes) and on a bar.
 class CaptureDownloadingBody extends StatelessWidget {
   const CaptureDownloadingBody({super.key});
@@ -122,7 +176,7 @@ class CaptureDownloadingBody extends StatelessWidget {
     final session = CaptureSession.of(context);
     final l10n = session.l10n;
     final colors = context.lkColors;
-    final total = session.model?.bytes ?? 0;
+    final total = session.downloadTotal;
     final fraction = total == 0 ? 0.0 : (session.downloaded / total).clamp(0.0, 1.0);
     return _VoiceCard(
       title: Semantics(

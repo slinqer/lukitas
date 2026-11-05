@@ -82,6 +82,7 @@ Future<_Env> _pump(
           ),
         ),
         modelStoreProvider.overrideWithValue(FakeModelStore()),
+        preciseEligibleProvider.overrideWith((ref, locale) async => false),
       ],
     ],
   );

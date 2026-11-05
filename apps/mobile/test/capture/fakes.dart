@@ -177,7 +177,17 @@ class FakeCaptureRepository implements CaptureRepository {
 
 /// A model store whose download "succeeds" at once (or fails), with no files.
 class FakeModelStore extends ModelStore {
-  FakeModelStore() : super(files: _NoFiles(), http: Dio());
+  FakeModelStore({Map<String, VoiceModel>? models, this.installed = false, this.log})
+    : super(files: _NoFiles(), http: Dio(), models: models ?? voiceModels);
+
+  /// Whether the model counts as downloaded.
+  bool installed;
+
+  /// Where downloads are noted, shared between stores to tell which came first.
+  final List<String>? log;
+
+  /// While set, a download waits for it after its first progress (a download under way).
+  Completer<void>? gate;
 
   var downloads = 0;
 
@@ -189,7 +199,7 @@ class FakeModelStore extends ModelStore {
   Object? error;
 
   @override
-  Future<String?> installedPath(String locale) async => null;
+  Future<String?> installedPath(String locale) async => installed ? '/models/$locale' : null;
 
   @override
   Future<void> download(
@@ -199,9 +209,11 @@ class FakeModelStore extends ModelStore {
   }) async {
     downloads++;
     downloaded.add(locale);
+    log?.add(modelFor(locale)?.name ?? locale);
     final total = modelFor(locale)?.bytes ?? 0;
     onProgress?.call(total ~/ 2, total);
     await Future<void>.delayed(const Duration(milliseconds: 10));
+    await gate?.future;
     final failed = failure;
     if (failed != null) {
       failure = null;
@@ -213,6 +225,7 @@ class FakeModelStore extends ModelStore {
       throw other;
     }
     onProgress?.call(total, total);
+    installed = true;
   }
 }
 

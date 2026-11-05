@@ -1099,6 +1099,27 @@
   "@captureOfferDecline": {
     "description": "Quick capture: declines the voice download; the typing field shows."
   },
+  "captureOfferPrecise": "Mejorar la precisión (+{megabytes} MB)",
+  "@captureOfferPrecise": {
+    "description": "Quick capture: the one-time offer of the precise voice model to someone who has the basic one.",
+    "placeholders": {
+      "megabytes": {
+        "type": "int"
+      }
+    }
+  },
+  "captureOfferPreciseBody": "Wambito puede corregir lo que dices con un modelo más preciso. Se descarga una sola vez, queda en tu teléfono y funciona sin internet.",
+  "@captureOfferPreciseBody": {
+    "description": "Quick capture: what the precise model is, under its offer."
+  },
+  "captureOfferPreciseAccept": "Mejorar",
+  "@captureOfferPreciseAccept": {
+    "description": "Quick capture: accepts the precise model download."
+  },
+  "captureOfferPreciseDecline": "Ahora no",
+  "@captureOfferPreciseDecline": {
+    "description": "Quick capture: declines the precise model; it is not offered again."
+  },
   "captureDownloading": "Descargando la voz… {percent} %",
   "@captureDownloading": {
     "description": "Quick capture: download progress.",
@@ -1271,6 +1292,23 @@
   "settingsVoice": "Voz",
   "settingsDeleteVoice": "Borrar los modelos de voz",
   "settingsDeleteVoiceHint": "Libera espacio en el teléfono. La próxima vez que dictes, te pedimos descargarlos otra vez.",
+  "settingsVoicePrecise": "Mejorar la precisión (+{megabytes} MB)",
+  "@settingsVoicePrecise": {
+    "description": "Settings, voice: the switch that downloads or deletes the precise model.",
+    "placeholders": {
+      "megabytes": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsVoicePreciseHint": "Un modelo más preciso corrige lo que dices al terminar. Funciona sin internet.",
+  "@settingsVoicePreciseHint": {
+    "description": "Settings, voice: what the precise model does."
+  },
+  "settingsVoicePreciseFailed": "No pudimos descargar el modelo preciso. Inténtalo otra vez.",
+  "@settingsVoicePreciseFailed": {
+    "description": "Settings, voice: the precise model did not download."
+  },
   "settingsDeleteVoiceTitle": "¿Borrar los modelos de voz?",
   "settingsDeleteVoiceBody": "No podrás dictar hasta descargarlos de nuevo. Lo que ya anotaste no cambia.",
   "settingsDeleteVoiceConfirm": "Sí, borrar",

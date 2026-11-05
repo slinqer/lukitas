@@ -22,6 +22,7 @@ import 'capture_repository.dart';
 import 'capture_save.dart';
 import 'engine/speech_engine.dart';
 import 'models_download.dart';
+import 'precise_offer.dart';
 import 'parser/parse.dart' as p;
 import 'preview/capture_preview.dart';
 
@@ -51,7 +52,7 @@ class OpenCaptureSheets {
 
 final openCaptureSheetsProvider = Provider<OpenCaptureSheets>((ref) => OpenCaptureSheets());
 
-enum CaptureStage { starting, offer, downloading, listening, typing, preview }
+enum CaptureStage { starting, offer, preciseOffer, downloading, listening, typing, preview }
 
 /// Why the typing field shows instead of listening: one sentence over it.
 enum CaptureWhy { micDenied, noEngine, noVoiceYet, listenFailed, nothingHeard, nothingRead }
@@ -112,6 +113,13 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
 
   CancelToken? _download;
   var downloaded = 0;
+
+  /// What the download under way fetches in all (the bytes of Vosk's model, Canary's, or both): the
+  /// bar's whole.
+  var downloadTotal = 0;
+
+  /// This phone and language get the precise model (Canary): the offer adds its size.
+  var _eligible = false;
   ModelDownloadFailure? downloadFailure;
 
   CapturePreview? preview;
@@ -201,6 +209,11 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
   /// the sheet then opens on the typing field, as it does when the phone cannot listen.
   bool get hasVoice => ref.read(modelStoreProvider).hasModel(locale);
 
+  /// The precise model of the app's language, when the phone gets it; null otherwise. Its size is
+  /// added to the offer, and it is the one the one-time offer is about.
+  VoiceModel? get preciseModel =>
+      _eligible ? ref.read(preciseModelStoreProvider).modelFor(locale) : null;
+
   void cancelDownload() => _download?.cancel();
 
   void _set(VoidCallback change) {
@@ -219,7 +232,7 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
       CaptureStage.preview =>
         _pending != null ||
             (current != null && (current.cards.isNotEmpty || current.unread.isNotEmpty)),
-      CaptureStage.offer || CaptureStage.downloading => false,
+      CaptureStage.offer || CaptureStage.preciseOffer || CaptureStage.downloading => false,
     };
   }
 
@@ -248,8 +261,13 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
 
   Future<void> _start() async {
     // Both at once: nothing waits for the other.
-    final (available, warm) = await (engine.available(), engine.isWarm(locale: locale)).wait;
+    final (available, warm, eligible) = await (
+      engine.available(),
+      engine.isWarm(locale: locale),
+      _preciseEligible(),
+    ).wait;
     if (!mounted) return;
+    _eligible = eligible;
     canListen = available && hasVoice;
     _warm = canListen && warm;
     if (!widget.listen) {
@@ -258,8 +276,19 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
       type(CaptureWhy.noEngine);
     } else if (!hasVoice) {
       type(CaptureWhy.noVoiceYet);
+    } else if (await ref.read(preciseOfferProvider(locale)).shouldOffer()) {
+      // Someone with Vosk's model, once: the precise one, before the microphone opens.
+      if (mounted) _set(() => stage = CaptureStage.preciseOffer);
     } else {
       listen();
+    }
+  }
+
+  Future<bool> _preciseEligible() async {
+    try {
+      return await ref.read(preciseEligibleProvider(locale).future);
+    } on Object {
+      return false;
     }
   }
 
@@ -367,14 +396,25 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
 
   // -- the model download --------------------------------------------------------------------
 
-  Future<void> downloadModel() async {
+  CancelToken _beginDownload(int total) {
     final cancel = CancelToken();
     _set(() {
       _download = cancel;
       downloaded = 0;
+      downloadTotal = total;
       downloadFailure = null;
       stage = CaptureStage.downloading;
     });
+    return cancel;
+  }
+
+  /// The opt-in: Vosk's model and, on a phone that gets it, the precise one after it, on one bar.
+  /// Vosk goes first, so the voice works as soon as it lands: if the precise one then fails (or is
+  /// cancelled), the person listens with Vosk now and is offered the other once more later.
+  Future<void> downloadModel() async {
+    final voskBytes = model?.bytes ?? 0;
+    final canary = preciseModel;
+    final cancel = _beginDownload(voskBytes + (canary?.bytes ?? 0));
     try {
       await ref
           .read(modelStoreProvider)
@@ -394,8 +434,50 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
       return;
     }
     if (!mounted) return;
+    if (canary != null) await _downloadPrecise(cancel, after: voskBytes);
+    if (!mounted) return;
     _download = null;
     listen();
+  }
+
+  /// Downloads the precise model; false when it did not come ([after] bytes of the bar are done).
+  Future<bool> _downloadPrecise(CancelToken cancel, {required int after}) async {
+    try {
+      await ref
+          .read(preciseModelStoreProvider)
+          .download(
+            locale,
+            cancel: cancel,
+            onProgress: (received, _) => _set(() => downloaded = after + received),
+          );
+      return true;
+    } on Object {
+      return false;
+    }
+  }
+
+  /// "Mejorar": the one-time offer accepted. Only the precise model is fetched; whatever happens,
+  /// the person then listens. It is recorded as answered once it is installed: a failure leaves
+  /// the offer open for next time.
+  Future<void> improvePrecision() async {
+    final canary = preciseModel;
+    if (canary == null) {
+      listen();
+      return;
+    }
+    final cancel = _beginDownload(canary.bytes);
+    final done = await _downloadPrecise(cancel, after: 0);
+    if (!mounted) return;
+    if (done) await ref.read(preciseOfferProvider(locale)).answer(accepted: true);
+    if (!mounted) return;
+    _download = null;
+    listen();
+  }
+
+  /// "Ahora no": the one-time offer declined and remembered, then listening.
+  Future<void> declinePrecision() async {
+    await ref.read(preciseOfferProvider(locale)).answer(accepted: false);
+    if (mounted) listen();
   }
 
   // -- the preview ---------------------------------------------------------------------------

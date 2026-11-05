@@ -16,9 +16,8 @@ import '../settings/fakes.dart';
 import 'fakes.dart';
 
 class _Installed extends FakeModelStore {
-  _Installed({this.installed = true});
+  _Installed({super.installed = true});
 
-  bool installed;
   final asked = <String>[];
 
   @override

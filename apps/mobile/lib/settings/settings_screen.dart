@@ -19,6 +19,7 @@ import '../api/server_url.dart';
 import '../api/session.dart';
 import '../capture/capture_sheet.dart';
 import '../capture/models_download.dart';
+import '../capture/capture_language.dart' show captureLanguage;
 import '../capture_auto/auto_capture_section.dart';
 import '../feedback/feedback.dart';
 import '../home/shell_navigation.dart';
@@ -57,6 +58,11 @@ final voiceModelsInstalledProvider = FutureProvider.autoDispose<bool>((ref) asyn
   return false;
 });
 
+/// Whether the precise voice model is downloaded for [locale] (a `voiceLocale`).
+final preciseModelInstalledProvider = FutureProvider.autoDispose.family<bool, String>(
+  (ref, locale) async => await ref.watch(preciseModelStoreProvider).installedPath(locale) != null,
+);
+
 /// The account's email, for "Entraste como…" (null while it is not known: offline, or not loaded).
 final settingsEmailProvider = FutureProvider.autoDispose<String?>((ref) async {
   final email = (await ref.watch(settingsProfileProvider.future))?.email;
@@ -84,6 +90,9 @@ class SettingsScreen extends ConsumerStatefulWidget {
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   /// Signing out or changing server is under way (the old server is told, if it answers).
   bool _busy = false;
+
+  /// How far the precise model's download is (0 to 1); null when none runs.
+  double? _preciseProgress;
 
   // -- sign out ------------------------------------------------------------------------------
 
@@ -170,7 +179,40 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         toasts.say(l10n.settingsDeleteVoiceDone);
       },
     );
-    if (done && mounted) ref.invalidate(voiceModelsInstalledProvider);
+    if (done && mounted) {
+      ref.invalidate(voiceModelsInstalledProvider);
+      ref.invalidate(preciseModelInstalledProvider);
+    }
+  }
+
+  /// The precise model's switch: on downloads it (the bar's percentage replaces the hint), off
+  /// deletes it alone; Vosk's model stays.
+  Future<void> _setPrecise(String locale, {required bool on}) async {
+    if (_preciseProgress != null) return;
+    final toasts = ToastHost.of(context);
+    final l10n = AppLocalizations.of(context);
+    final store = ref.read(preciseModelStoreProvider);
+    try {
+      if (on) {
+        setState(() => _preciseProgress = 0);
+        await store.download(
+          locale,
+          onProgress: (received, total) {
+            if (mounted && total > 0) setState(() => _preciseProgress = received / total);
+          },
+        );
+      } else {
+        await store.deleteModel(locale);
+      }
+    } on Object {
+      toasts.say(
+        on ? l10n.settingsVoicePreciseFailed : l10n.settingsDeleteVoiceFailed,
+        error: true,
+      );
+    } finally {
+      if (mounted) setState(() => _preciseProgress = null);
+      ref.invalidate(preciseModelInstalledProvider(locale));
+    }
   }
 
   void _back() {
@@ -202,6 +244,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final sound = ref.watch(soundEnabledProvider);
     final vibration = ref.watch(vibrationEnabledProvider);
     final voiceInstalled = ref.watch(voiceModelsInstalledProvider).value ?? false;
+    final voice = captureLanguage(l10n.localeName);
+    final preciseEligible = ref.watch(preciseEligibleProvider(voice)).value ?? false;
+    final preciseInstalled = ref.watch(preciseModelInstalledProvider(voice)).value ?? false;
+    final preciseProgress = _preciseProgress;
     final webOnly = widget.webSectionsOnly;
     final profile = ref.watch(settingsProfileProvider).value;
     final signedInAs = _signedInAs(l10n, guest: guest && !webOnly);
@@ -376,6 +422,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               title: l10n.settingsVoice,
               lead: l10n.settingsDeleteVoiceHint,
               children: [
+                if (preciseEligible)
+                  SettingSwitch(
+                    key: const Key('settings.voicePrecise'),
+                    label: l10n.settingsVoicePrecise(
+                      ((preciseModels[voice]?.bytes ?? 0) / 1e6).round(),
+                    ),
+                    hint: preciseProgress == null
+                        ? l10n.settingsVoicePreciseHint
+                        : l10n.captureDownloading((preciseProgress * 100).floor()),
+                    value: preciseInstalled || preciseProgress != null,
+                    onChanged: (on) => unawaited(_setPrecise(voice, on: on)),
+                  ),
                 _SelfStart(
                   child: PressButton.text(
                     l10n.settingsDeleteVoice,
