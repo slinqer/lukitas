@@ -329,9 +329,23 @@ class CaptureWorkersTest {
         assertEquals(ApiResult.Failed, CaptureApi().confirm("http://127.0.0.1:${server.port}", "t", "t-1"))
     }
 
-    private fun runConfirm(id: String = "t-1"): ListenableWorker.Result = runBlocking {
+    @Test
+    fun `confirm takes a 4xx other than 401, 408 and 429 as refused for good`() {
+        val url = "http://127.0.0.1:${server.port}"
+        for (status in listOf(400, 403, 404, 409, 422)) {
+            patchStatus = status
+            assertEquals("status $status", ApiResult.Rejected, CaptureApi().confirm(url, "t", "t-1"))
+        }
+        for (status in listOf(408, 429)) {
+            patchStatus = status
+            assertEquals("status $status", ApiResult.Failed, CaptureApi().confirm(url, "t", "t-1"))
+        }
+    }
+
+    private fun runConfirm(id: String = "t-1", attempt: Int = 0): ListenableWorker.Result = runBlocking {
         TestListenableWorkerBuilder<ConfirmCaptureWorker>(context)
             .setInputData(workDataOf(ConfirmCaptureWorker.ID to id))
+            .setRunAttemptCount(attempt)
             .build()
             .doWork()
     }
@@ -361,6 +375,25 @@ class CaptureWorkersTest {
     }
 
     @Test
+    fun `confirm of a deleted transaction (404) drops the notification and does not retry`() {
+        showOne()
+        patchStatus = 404
+        val result = runConfirm()
+        assertEquals(ListenableWorker.Result.success(workDataOf(CAPTURE_OUTCOME to "rejected")), result)
+        assertTrue(notifications().activeNotifications.isEmpty())
+    }
+
+    @Test
+    fun `confirm gives up after its last attempt and leaves the notification for another Bien`() {
+        showOne()
+        patchStatus = 500
+        assertEquals(ListenableWorker.Result.retry(), runConfirm(attempt = ConfirmCaptureWorker.MAX_ATTEMPTS - 2))
+        val last = runConfirm(attempt = ConfirmCaptureWorker.MAX_ATTEMPTS - 1)
+        assertEquals(ListenableWorker.Result.success(workDataOf(CAPTURE_OUTCOME to "gave up")), last)
+        assertEquals(1, notifications().activeNotifications.size)
+    }
+
+    @Test
     fun `confirm with a refused session or none keeps the notification and does not retry`() {
         showOne()
         patchStatus = 401
@@ -382,13 +415,34 @@ class CaptureWorkersTest {
     }
 
     @Test
-    fun `the confirm is a unique job that appends, carries the id and waits for a network`() {
+    fun `each confirm is its own unique job, so one that keeps failing never holds another`() {
+        CaptureScheduler.enqueueConfirm(context, "t-1")
         CaptureScheduler.enqueueConfirm(context, "t-1")
         CaptureScheduler.enqueueConfirm(context, "t-2")
 
-        val jobs = WorkManager.getInstance(context).getWorkInfosForUniqueWork(CaptureScheduler.CONFIRM).get()
-        assertEquals(2, jobs.size)
-        assertTrue(jobs.all { it.constraints.requiredNetworkType == NetworkType.CONNECTED })
+        val work = WorkManager.getInstance(context)
+        for (id in listOf("t-1", "t-2")) {
+            val jobs = work.getWorkInfosForUniqueWork(CaptureScheduler.confirmName(id)).get()
+            assertEquals(1, jobs.size)
+            assertEquals(WorkInfo.State.ENQUEUED, jobs.single().state)
+            assertEquals(NetworkType.CONNECTED, jobs.single().constraints.requiredNetworkType)
+        }
+        assertEquals("wambito.capture.confirm.t-1", CaptureScheduler.confirmName("t-1"))
+    }
+
+    @Test
+    fun `a confirm chain left under the old shared name is cancelled`() {
+        val work = WorkManager.getInstance(context)
+        val stuck = androidx.work.OneTimeWorkRequestBuilder<ConfirmCaptureWorker>()
+            .setInputData(workDataOf(ConfirmCaptureWorker.ID to "t-gone"))
+            .setConstraints(androidx.work.Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+            .build()
+        work.enqueueUniqueWork(CaptureScheduler.CONFIRM, androidx.work.ExistingWorkPolicy.APPEND_OR_REPLACE, stuck).result.get()
+
+        CaptureScheduler.enqueueConfirm(context, "t-1")
+
+        val old = work.getWorkInfosForUniqueWork(CaptureScheduler.CONFIRM).get()
+        assertTrue(old.all { it.state == WorkInfo.State.CANCELLED })
     }
 
     @Test

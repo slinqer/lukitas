@@ -57,8 +57,19 @@ object CaptureScheduler {
     /** Persistent name: never renamed. */
     const val SEND = "wambito.capture.send"
 
-    /** Persistent name for "Bien" ([ConfirmCaptureWorker]). */
+    /**
+     * The one shared name the first builds gave every "Bien" (persistent: kept only to be
+     * cancelled). Appending made one job that kept failing hold every later Bien behind it, so each
+     * confirm now has its own name ([confirmName]) and this chain is cancelled at the next Bien; a
+     * notification it still held stays up for another tap.
+     */
     const val CONFIRM = "wambito.capture.confirm"
+
+    /** Persistent prefix: the unique name of the confirm of one transaction is [confirmName]. */
+    private const val CONFIRM_PREFIX = "$CONFIRM."
+
+    /** The unique work name of "Bien" on [id]: `wambito.capture.confirm.<id>`. */
+    fun confirmName(id: String): String = CONFIRM_PREFIX + id
 
     private val network = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
 
@@ -75,8 +86,9 @@ object CaptureScheduler {
     }
 
     /**
-     * "Bien" on [id]'s notification: confirms it once there is a network. APPEND_OR_REPLACE, like the
-     * send: a second tap while the first runs gets its own run after it.
+     * "Bien" on [id]'s notification: confirms it once there is a network. One unique job per id
+     * (KEEP: a second tap while the first waits or runs adds nothing), so a confirm that keeps
+     * failing never holds the confirm of another transaction.
      */
     fun enqueueConfirm(context: Context, id: String) {
         val request = OneTimeWorkRequestBuilder<ConfirmCaptureWorker>()
@@ -84,17 +96,21 @@ object CaptureScheduler {
             .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 30, TimeUnit.SECONDS)
             .setInputData(workDataOf(ConfirmCaptureWorker.ID to id))
             .build()
-        WorkManager.getInstance(context).enqueueUniqueWork(CONFIRM, ExistingWorkPolicy.APPEND_OR_REPLACE, request)
+        val work = WorkManager.getInstance(context)
+        work.cancelUniqueWork(CONFIRM)
+        work.enqueueUniqueWork(confirmName(id), ExistingWorkPolicy.KEEP, request)
     }
 }
 
 /**
  * Confirms one transaction (`POST /v1/transactions/review`) and takes its notification away.
  *
- *  * Confirmed, or refused for good by the server (a 4xx other than 401: there is nothing to
- *    confirm): the notification goes.
+ *  * Confirmed, or refused for good by the server (a 4xx other than 401, 408 and 429; a 404 is a
+ *    transaction deleted meanwhile or another account's): the notification goes.
  *  * 401 or no session: the notification stays, no retry (opening the app signs in again).
- *  * Offline or a server error: the notification stays and WorkManager retries with backoff.
+ *  * A server error, 408 or 429: the notification stays and WorkManager retries with backoff, at
+ *    most [MAX_ATTEMPTS] runs in all (the job waits for a network, so being offline uses none);
+ *    then it gives up and the notification stays for another Bien, or the inbox.
  *  * A server setting that cannot be read sends nothing, as in [SendCapturesWorker].
  */
 class ConfirmCaptureWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
@@ -115,7 +131,7 @@ class ConfirmCaptureWorker(context: Context, params: WorkerParameters) : Corouti
                 done("rejected")
             }
             ApiResult.Unauthorized -> done("session refused")
-            ApiResult.Failed -> Result.retry()
+            ApiResult.Failed -> if (runAttemptCount + 1 >= MAX_ATTEMPTS) done("gave up") else Result.retry()
         }
     }
 
@@ -124,6 +140,12 @@ class ConfirmCaptureWorker(context: Context, params: WorkerParameters) : Corouti
     companion object {
         /** The input data key of the transaction to confirm. */
         const val ID = "id"
+
+        /**
+         * Runs of one confirm before it gives up: with the 30 s exponential backoff, about two hours
+         * of a server that keeps failing.
+         */
+        const val MAX_ATTEMPTS = 8
     }
 }
 

@@ -41,12 +41,15 @@ class CaptureApi(
     /**
      * `POST /v1/captures` with the item's key as `Idempotency-Key`, so a send repeated after a
      * crash or a lost answer saves nothing twice. The body is exactly the six fields of
-     * [ParsedCapture]. A 4xx other than 401 is [ApiResult.Rejected]: the server refuses the capture
-     * itself, so sending it again can only fail again.
+     * [ParsedCapture]. 401 is [ApiResult.Unauthorized]; 403, 404, 408 and 429 are
+     * [ApiResult.Failed] (tried again: 403 and 404 are a server that lacks the endpoint yet, R10);
+     * any other 4xx is [ApiResult.Rejected]: the server refuses the capture itself, so sending it
+     * again can only fail again.
      */
     fun send(server: String, token: String, item: QueuedCapture): ApiResult<CaptureAnswer> {
         val body = item.capture.toJson()
-        return when (val answer = call(server, token, "POST", "/v1/captures", body.toString(), item.key)) {
+        val answer = call(server, token, "POST", "/v1/captures", body.toString(), item.key, endpointMayBeMissing = true)
+        return when (answer) {
             is ApiResult.Ok -> try {
                 val doc = JSONObject(answer.value)
                 val transaction = doc.getJSONObject("transaction")
@@ -73,10 +76,14 @@ class CaptureApi(
         }
     }
 
-    /** "Bien": `POST /v1/transactions/review` with `{"ids":[id]}`. Confirming twice is harmless. */
+    /**
+     * "Bien": `POST /v1/transactions/review` with `{"ids":[id]}`. Confirming twice is harmless. The
+     * endpoint ships with Bien, so a 404 is a transaction deleted meanwhile, or another account's
+     * (the session changed): [ApiResult.Rejected], like any 4xx other than 401, 408 and 429.
+     */
     fun confirm(server: String, token: String, id: String): ApiResult<Unit> {
         val body = JSONObject().put("ids", JSONArray().put(id)).toString()
-        return when (call(server, token, "POST", "/v1/transactions/review", body, null)) {
+        return when (call(server, token, "POST", "/v1/transactions/review", body, null, endpointMayBeMissing = false)) {
             is ApiResult.Ok -> ApiResult.Ok(Unit)
             ApiResult.Unauthorized -> ApiResult.Unauthorized
             ApiResult.Failed -> ApiResult.Failed
@@ -91,6 +98,7 @@ class CaptureApi(
         path: String,
         body: String,
         idempotencyKey: String?,
+        endpointMayBeMissing: Boolean,
     ): ApiResult<String> {
         val url = try {
             URL("${server.trimEnd('/')}/api$path")
@@ -120,9 +128,11 @@ class CaptureApi(
             when (connection.responseCode) {
                 200, 201 -> ApiResult.Ok(connection.inputStream.bufferedReader().use { it.readText() })
                 401 -> ApiResult.Unauthorized
-                // 408 and 429 ask to be tried again; 403 and 404 are a server that lacks the endpoint
-                // (a phone updated before its server): the capture waits for it instead of being lost.
-                403, 404, 408, 429 -> ApiResult.Failed
+                // 408 and 429 ask to be tried again.
+                408, 429 -> ApiResult.Failed
+                // For a capture, 403 and 404 are a server that lacks the endpoint (a phone updated
+                // before its server): the capture waits for it instead of being lost.
+                403, 404 -> if (endpointMayBeMissing) ApiResult.Failed else ApiResult.Rejected
                 in 400..499 -> ApiResult.Rejected
                 else -> ApiResult.Failed
             }

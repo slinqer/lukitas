@@ -49,8 +49,10 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
   `wambito.capture` (LOW; id = `notificationId(transactionId)`, so a merged answer updates it, and one
   already confirmed (`needsReview` false) is `dismiss`ed instead; a group
   summary from 2): "Bien" is an immutable broadcast to the non-exported `ConfirmReceiver` →
-  `CaptureScheduler.enqueueConfirm` → `ConfirmCaptureWorker` (POST review, then cancels the
-  notification), "Cambiar" opens `wambito://review/<id>` through the launch alias. Words in
+  `CaptureScheduler.enqueueConfirm` → `ConfirmCaptureWorker` (one unique job per transaction,
+  `wambito.capture.confirm.<id>`, KEEP; POST review, then cancels the notification; a 4xx other than
+  401/408/429, 404 included, drops it; at most `MAX_ATTEMPTS` = 8 runs, then the notification stays
+  for another tap), "Cambiar" opens `wambito://review/<id>` through the launch alias. Words in
   `CaptureText` (strings `capture_*`, language from `NoticeSettings`). Voice: Vosk, never Android's SpeechRecognizer. Passkeys: androidx.credentials.
 
 ## Generated
@@ -77,7 +79,8 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
   the slang lives in `lib/capture/parser/`, `lib/capture/engine/`, `lib/money/format.dart` and the ARBs.
 - Persistent state on phones: prefs file names, WorkManager unique names (`wambito.widget.refresh`,
   `wambito.widget.midnight`, `wambito.notice.due`, `wambito.notice.guest`, `wambito.capture.send`,
-  `wambito.capture.confirm`; prefs `wambito.capture.queue`, `wambito.capture.sources`; channel
+  `wambito.capture.confirm.<id>`; the old shared `wambito.capture.confirm` chain is only cancelled,
+  at every Bien; prefs `wambito.capture.queue`, `wambito.capture.sources`; channel
   `wambito.capture`; listener class `com.wambito.app.capture.CaptureListener`), widget receiver classes
   (renaming removes placed widgets), the snapshot key. Changing any needs a migration.
 - No `gradlew` is tracked; Kotlin-only runs can skip the Flutter compile with `-x compileFlutterBuildDebug`.
