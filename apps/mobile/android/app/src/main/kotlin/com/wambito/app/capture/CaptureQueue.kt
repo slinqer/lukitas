@@ -38,13 +38,22 @@ class CaptureQueue(context: Context) {
     fun owner(): String? = preferences.getString(OWNER, null)
 
     /**
-     * [userId] signed in: the queue is now theirs. Captures of another account, and those of no
-     * known account (they could be anyone's), are dropped; theirs stay to be sent.
+     * The session mark ([com.wambito.app.widget.SessionSource.mark]) the owner was set under. The
+     * mark changes on every token write, so a token stored after the last [adopt] (another account
+     * signing in, before the app says so) does not match it, and nothing is sent until it does.
      */
-    fun adopt(userId: String): Unit = synchronized(LOCK) {
+    fun ownerMark(): String? = preferences.getString(OWNER_MARK, null)
+
+    /**
+     * [userId] signed in, under the session [mark]: the queue is now theirs. Captures of another
+     * account, and those of no known account (they could be anyone's), are dropped; theirs stay to
+     * be sent.
+     */
+    fun adopt(userId: String, mark: String? = null): Unit = synchronized(LOCK) {
         val items = read()
         val mine = items.filter { it.userId == userId }
         val edit = preferences.edit().putString(OWNER, userId)
+        if (mark == null) edit.remove(OWNER_MARK) else edit.putString(OWNER_MARK, mark)
         if (mine.size != items.size) edit.putString(ITEMS, encodeAll(mine))
         edit.commit()
     }
@@ -56,7 +65,7 @@ class CaptureQueue(context: Context) {
 
     /** Signed out: the captures and whose they were are forgotten. */
     fun clear(): Unit = synchronized(LOCK) {
-        preferences.edit().putString(ITEMS, encodeAll(emptyList())).remove(OWNER).commit()
+        preferences.edit().putString(ITEMS, encodeAll(emptyList())).remove(OWNER).remove(OWNER_MARK).commit()
     }
 
     private fun read(): List<QueuedCapture> {
@@ -98,6 +107,7 @@ class CaptureQueue(context: Context) {
         internal const val FILE = "wambito.capture.queue"
         private const val ITEMS = "items"
         private const val OWNER = "owner"
+        private const val OWNER_MARK = "ownerMark"
         private const val USER = "user"
         private val LOCK = Any()
     }

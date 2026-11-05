@@ -91,7 +91,7 @@ object CaptureScheduler {
      */
     fun sendQueued(context: Context, userId: String) {
         val queue = CaptureQueue(context)
-        queue.adopt(userId)
+        queue.adopt(userId, CaptureHooks.of(context).session.mark())
         if (queue.all().isNotEmpty()) enqueueSend(context)
     }
 
@@ -152,8 +152,8 @@ class ConfirmCaptureWorker(context: Context, params: WorkerParameters) : Corouti
         const val ID = "id"
 
         /**
-         * Runs of one confirm before it gives up: with the 30 s exponential backoff, about two hours
-         * of a server that keeps failing.
+         * Runs of one confirm before it gives up: with the 30 s exponential backoff, the 7 waits
+         * between them come to about 1 h 4 min of a server that keeps failing.
          */
         const val MAX_ATTEMPTS = 8
     }
@@ -167,8 +167,9 @@ class ConfirmCaptureWorker(context: Context, params: WorkerParameters) : Corouti
  *    answer saves nothing twice.
  *  * 401 or no session: the queue stays, one "sign in" notice with the count, no retry (the next
  *    capture, or the next sign-in through [CaptureScheduler.sendQueued], enqueues a send again).
- *  * Only the captures of the queue's owner are sent: one tagged for another account (or none)
- *    waits for the app to say whose the queue is now, which drops it.
+ *  * Only the captures of the queue's owner are sent, and only while the session is the one
+ *    `sendQueued` bound the queue to ([CaptureQueue.ownerMark]): one tagged for another account
+ *    (or none), or a token written since, waits for the app to say whose the queue is now.
  *  * Offline or a server error: the queue stays and WorkManager retries with backoff.
  *  * A server setting that cannot be read sends nothing: the token never goes to the default server
  *    in place of the person's.
@@ -186,6 +187,9 @@ class SendCapturesWorker(context: Context, params: WorkerParameters) : Coroutine
             if (mark == null) CaptureHooks.notifier.signInNeeded(context, mine(queue).size)
             return done(if (mark == null) "signed out" else "token unreadable")
         }
+        // A token written since the app last said whose the queue is (another account signing in,
+        // before sendQueued): its owner may not be this session's, so nothing goes until it says.
+        if (mark != queue.ownerMark()) return done("session not bound")
         val server = serverOf(context, dependencies.session) ?: return done("server unreadable")
         return withContext(Dispatchers.IO) { sendAll(context, dependencies, queue, server, token, mark) }
     }

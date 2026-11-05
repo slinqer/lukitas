@@ -99,7 +99,7 @@ class CaptureWorkersTest {
         }
         session = FakeSession("token-1", "http://127.0.0.1:${server.port}")
         queue = CaptureQueue(context)
-        queue.adopt("user-1")
+        queue.adopt("user-1", session.mark())
         CaptureHooks.dependencies = { CaptureDependencies(session = session) }
         CaptureHooks.notifier = notifier
     }
@@ -253,6 +253,31 @@ class CaptureWorkersTest {
 
         assertTrue(posts().isEmpty())
         assertEquals(1, queue.all().size)
+    }
+
+    @Test
+    fun `a token written after the last sendQueued sends nothing until sendQueued`() {
+        queue.add(sampleCapture("Kept through a 401"))
+        // Another account's token is stored; the app has not said whose the queue is yet.
+        session.stored = "token-2"
+
+        assertEquals(ListenableWorker.Result.success().javaClass, runSend().javaClass)
+        assertTrue(posts().isEmpty())
+        assertEquals(1, queue.all().size)
+
+        CaptureScheduler.sendQueued(context, "user-1")
+        runSend()
+        assertEquals(1, posts().size)
+        assertEquals("Bearer token-2", posts().single().headers["authorization"])
+        assertTrue(queue.all().isEmpty())
+    }
+
+    @Test
+    fun `sendQueued binds the queue to the session of the moment`() {
+        CaptureScheduler.sendQueued(context, "user-1")
+        assertEquals("mark:token-1", queue.ownerMark())
+        queue.clear()
+        assertEquals(null, queue.ownerMark())
     }
 
     @Test
