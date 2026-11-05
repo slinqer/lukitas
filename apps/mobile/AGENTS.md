@@ -95,6 +95,13 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
     a dot, so `export` and a bare `NAME=value` prefix do not work) takes
     those artifacts. ARM only, so off for the x86_64 emulator. `scripts/test-native-switch.sh`
     (CI) tests it.
+  - sherpa-onnx 2.0.1 (the precise voice model's runtime; Play and GitHub builds only):
+    `scripts/fetch-sherpa-onnx.sh` downloads its AAR, checks the pinned SHA-256 and installs it in
+    `android/third_party/m2`; run it before any Gradle or `flutter build` (CI and `release.sh` do).
+    `scripts/test-fetch-sherpa-onnx.sh` (CI) tests it offline. Code that uses `com.k2fsa.sherpa.onnx`
+    goes in `android/app/src/precise/kotlin`, never in `src/main`: the switch swaps that folder for
+    `src/noPrecise/kotlin` (stand-ins), and both define `voice.PreciseRuntime.linked`. Adds ~31 MB
+    to the arm64 APK. `docs/mobile/setup.md` has the details.
   - Recipe: `fdroid/com.wambito.app.yml` is the source of truth, copied to fdroiddata when
     submitting; one build per ABI, srclibs in `fdroid/srclibs/*.yml`, natives built in `build:`
     (after F-Droid's source scan). Change it together with the revisions in `build-native-deps.sh`
@@ -108,9 +115,10 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
     copy of that commit (Docker, about an hour per ABI on 4 emulated cores; nothing is pushed).
   - Gradle locks: `android/app/gradle.lockfile`, and `gradle-fdroid.lockfile` for the switch.
     After changing a dependency, rewrite the first with `./gradlew :app:dependencies --write-locks`
-    and the second with the `sed` in `docs/mobile/setup.md` ("Dependency locks"; no native build),
+    and the second with the `sed` in `docs/mobile/setup.md` ("Dependency locks"; no native build; it also drops
+    the sherpa-onnx line),
     and commit both. `scripts/check-gradle-locks.sh` (CI) checks the first; `scripts/check-fdroid-lock.sh`
-    (CI, text only) checks that the second is the first with the two `-src` substitutions.
+    (CI, text only) checks that the second is the first with the two `-src` substitutions and no sherpa-onnx line.
   - The Gradle wrapper jar is committed: the official one for the version in
     `gradle-wrapper.properties`.
 - Release self-tests: `scripts/test-release.sh`, `scripts/check-fastlane.sh` (changelog ≤500 bytes,

@@ -21,6 +21,7 @@ Wambito is built for F-Droid from source on F-Droid's own build server, from the
 
 - After F-Droid publishes the first build, its signing-key fingerprint goes into `ANDROID_CERT_SHA256` next to ours, or App Links and passkeys do not work for F-Droid users (`release.md`; plan Task 10).
 - Not exercised at runtime on a from-source build: live speech recognition and anything on `armeabi-v7a` (installs, signs in and loads a model on an arm64 emulator only; the emulator's microphone hung). Check on a real phone before the first release.
+- No Canary (precise voice model) on F-Droid yet: its runtime, sherpa-onnx, is a prebuilt AAR from a GitHub release, which F-Droid does not accept. The from-source build leaves it out (`src/noPrecise`, no dependency), so F-Droid users get Vosk only. Building sherpa-onnx from source is the way in.
 - F-Droid's build timeout is unverified: the recipe asks for `timeout: 10800`.
 
 ## How the build works
@@ -38,7 +39,7 @@ The prebuilt native code in the APK comes from two Maven artifacts: `com.alphace
 
 ### The two lockfiles
 
-`android/app/gradle.lockfile` (default) and `android/app/gradle-fdroid.lockfile` (with the switch) pin every Gradle dependency. They differ only in the two `-src` lines, and `scripts/check-fdroid-lock.sh` (CI) checks exactly that, as text. Flutter's own `io.flutter:*` artifacts are left out of both: they depend on the ABI, and a one-ABI build would not resolve. How to regenerate them: `setup.md`, "Dependency locks". CI also resolves the default one again (`check-gradle-locks.sh`).
+`android/app/gradle.lockfile` (default) and `android/app/gradle-fdroid.lockfile` (with the switch) pin every Gradle dependency. They differ only in the two `-src` lines and in the default one's sherpa-onnx line (the switch leaves it out), and `scripts/check-fdroid-lock.sh` (CI) checks exactly that, as text. Flutter's own `io.flutter:*` artifacts are left out of both: they depend on the ABI, and a one-ABI build would not resolve. How to regenerate them: `setup.md`, "Dependency locks". CI also resolves the default one again (`check-gradle-locks.sh`).
 
 ### The Gradle wrapper jar
 

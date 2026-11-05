@@ -234,6 +234,8 @@ jobs:
       - run: scripts/check-fastlane.sh
       # build-native-deps.sh's arguments (--abi), checked before it needs its tools or sources.
       - run: scripts/test-build-native-deps-args.sh
+      # fetch-sherpa-onnx.sh (the precise voice model's runtime) refuses a file with the wrong SHA-256.
+      - run: scripts/test-fetch-sherpa-onnx.sh
       # The F-Droid recipe still agrees with .flutter-version and build-native-deps.sh's pinned
       # revisions and NDK, and gradle-fdroid.lockfile is gradle.lockfile with the two -src lines
       # (docs/mobile/fdroid.md). Their test shows each fails on a deliberate mismatch.
@@ -278,6 +280,9 @@ jobs:
             ~/.gradle/wrapper
           key: gradle-build-${{ runner.os }}-${{ hashFiles('apps/mobile/android/**/*.gradle*', 'apps/mobile/android/gradle/wrapper/gradle-wrapper.properties', 'apps/mobile/pubspec.lock') }}
           restore-keys: gradle-build-${{ runner.os }}-
+      # sherpa-onnx's AAR (GitHub release, SHA-256 checked) into android/third_party/m2, where Gradle
+      # looks for it; every step below that runs Gradle needs it. Not in the F-Droid build.
+      - run: scripts/fetch-sherpa-onnx.sh
       # No Google Play Services, Firebase, ML Kit, Play Core, ARCore… in any variant's resolved
       # dependencies or in the Gradle build files; then the same check, probed end to end on a copy
       # of the app with banned dependencies added.
@@ -365,6 +370,8 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get --enforce-lockfile
+      # sherpa-onnx's AAR, for the debug build the tests install (docs/mobile/setup.md).
+      - run: scripts/fetch-sherpa-onnx.sh
       - uses: actions/cache@v4
         with:
           path: |

@@ -70,6 +70,14 @@ sed 's/^net\.java\.dev\.jna:jna:5\.18\.1-src=/net.java.dev.jna:jna:5.18.1=/' "$F
 expect "lock: a fdroid lock with a plain JNA is caught" 1 "gradle-fdroid.lockfile" \
   lock_check "$LOCK" "$WORK/lock-plain.txt"
 
+grep '^com\.k2fsa\.sherpa\.onnx:sherpa-onnx:' "$LOCK" >"$WORK/sherpa-line.txt"
+expect "lock: the default lock has the sherpa-onnx line" 0 "sherpa-onnx:2.0.1" cat "$WORK/sherpa-line.txt"
+{ cat "$FLOCK"; cat "$WORK/sherpa-line.txt"; } >"$WORK/lock-sherpa.txt"
+expect "lock: a fdroid lock with sherpa-onnx is caught" 1 "gradle-fdroid.lockfile" \
+  lock_check "$LOCK" "$WORK/lock-sherpa.txt"
+expect "lock: a fdroid lock copied from the default one (with sherpa-onnx) is caught" 1 "gradle-fdroid.lockfile" \
+  lock_check "$LOCK" "$LOCK"
+
 cp "$LOCK" "$WORK/lock-new.txt"
 echo "com.example:added:1.0=releaseRuntimeClasspath" >>"$WORK/lock-new.txt"
 expect "lock: a dependency added to the default lock only is caught" 1 "gradle-fdroid.lockfile" \

@@ -4,10 +4,14 @@
 # and 5.18.1-src, from the local repository android/third_party/m2) instead of Maven Central's
 # prebuilt AARs. On a temporary copy of the app, with Gradle resolving for real, it lists the
 # release classpath three ways:
-#   (a) without the property: Maven's vosk-android 0.3.75 and JNA 5.18.1, nothing -src;
+#   (a) without the property: Maven's vosk-android 0.3.75 and JNA 5.18.1, nothing -src, and
+#       sherpa-onnx 2.0.1 from android/third_party/m2 (a stub AAR written here: the real one is
+#       scripts/fetch-sherpa-onnx.sh's);
 #   (b) with it and no android/third_party: the build stops and says to run build-native-deps.sh;
 #   (c) with it and stub -src POMs and AARs written here: 0.3.75-src and 5.18.1-src, and no plain
-#       JNA 5.18.1 (the stub Vosk POM asks for it, as Maven's does: the switch must exclude it).
+#       JNA 5.18.1 (the stub Vosk POM asks for it, as Maven's does: the switch must exclude it),
+#       and no sherpa-onnx even though its stub is in the same repository (the F-Droid build has no
+#       precise model).
 # The copy leaves out android/third_party, so a real one is never touched. It keeps the committed
 # lockfiles, so Gradle resolves against them: (a) app/gradle.lockfile, (c) app/gradle-fdroid.lockfile,
 # which the stubs satisfy because they carry the same coordinates and dependencies as the real -src
@@ -58,10 +62,26 @@ has() { grep -qF -- "$1" "$WORK/out.txt"; }
 # The lockfile's own constraints ("{strictly 5.18.1-src} -> 5.18.1-src (c)") are not dependencies.
 plain_jna() { grep -F 'net.java.dev.jna:jna:' "$WORK/out.txt" | grep -v ' (c)$' | grep -qvE 'net\.java\.dev\.jna:jna:5\.18\.1-src( \(\*\))?$'; }
 
-# (a) The default: Maven Central's artifacts.
-name="(a) without the property, Maven's vosk-android 0.3.75 and jna 5.18.1, nothing -src"
+# A stub sherpa-onnx where scripts/fetch-sherpa-onnx.sh installs the real AAR.
+M2="$COPY/android/third_party/m2"
+sherpa="$M2/com/k2fsa/sherpa/onnx/sherpa-onnx/2.0.1"
+mkdir -p "$sherpa"
+cat >"$sherpa/sherpa-onnx-2.0.1.pom" <<'POM'
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.k2fsa.sherpa.onnx</groupId>
+  <artifactId>sherpa-onnx</artifactId>
+  <version>2.0.1</version>
+  <packaging>aar</packaging>
+</project>
+POM
+printf 'stub\n' >"$sherpa/sherpa-onnx-2.0.1.aar"
+
+# (a) The default: Maven Central's artifacts, and sherpa-onnx from the local repository.
+name="(a) without the property, Maven's vosk-android 0.3.75 and jna 5.18.1, sherpa-onnx 2.0.1, nothing -src"
 if list && has 'com.alphacephei:vosk-android:0.3.75' && has 'net.java.dev.jna:jna:5.18.1' &&
-  ! has '-src'; then pass "$name"; else fail "$name"; fi
+  has 'com.k2fsa.sherpa.onnx:sherpa-onnx:2.0.1' && ! has '-src'; then pass "$name"; else fail "$name"; fi
 
 # (b) The switch on, nothing built.
 name="(b) with the property and no third_party, the build stops and says what to run"
@@ -74,7 +94,6 @@ else
 fi
 
 # (c) The switch on, with stub artifacts where build-native-deps.sh writes the real ones.
-M2="$COPY/android/third_party/m2"
 vosk="$M2/com/alphacephei/vosk-android/0.3.75-src"
 jna="$M2/net/java/dev/jna/jna/5.18.1-src"
 mkdir -p "$vosk" "$jna"
@@ -110,9 +129,9 @@ POM
 printf 'stub\n' >"$vosk/vosk-android-0.3.75-src.aar"
 printf 'stub\n' >"$jna/jna-5.18.1-src.aar"
 
-name="(c) with the property and stub -src artifacts, 0.3.75-src and 5.18.1-src, no plain jna 5.18.1"
+name="(c) with the property and stub -src artifacts, 0.3.75-src and 5.18.1-src, no plain jna, no sherpa-onnx"
 if list -Pwambito.nativeFromSource=true && has 'com.alphacephei:vosk-android:0.3.75-src' &&
-  has 'net.java.dev.jna:jna:5.18.1-src' && ! plain_jna; then pass "$name"; else fail "$name"; fi
+  has 'net.java.dev.jna:jna:5.18.1-src' && ! plain_jna && ! has 'sherpa'; then pass "$name"; else fail "$name"; fi
 
 if [ "$failures" -ne 0 ]; then
   echo "$failures check(s) failed."

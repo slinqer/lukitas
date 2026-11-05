@@ -161,7 +161,24 @@ if (nativeFromSource) {
     }
     repositories.remove(local)
     repositories.addFirst(local)
+} else {
+    // sherpa-onnx (the precise voice model's runtime, Apache-2.0) is not on Maven Central: its AAR
+    // comes from k2-fsa's GitHub release, checked and installed in the same local repository by
+    // scripts/fetch-sherpa-onnx.sh (docs/mobile/setup.md). That repository serves only it. The
+    // F-Droid build has none of this (above): no sherpa-onnx, so no precise model there yet.
+    repositories.exclusiveContent {
+        forRepository { repositories.maven { url = uri("../third_party/m2") } }
+        filter { includeVersion("com.k2fsa.sherpa.onnx", "sherpa-onnx", "2.0.1") }
+    }
 }
+
+// Code that uses sherpa-onnx's classes cannot sit in src/main: the F-Droid build does not have them.
+// It lives in src/precise/kotlin (compiled only without the switch); src/noPrecise/kotlin holds its
+// stand-ins (with the switch). Both define voice.PreciseRuntime, so src/main can ask whether the
+// precise runtime is linked in.
+android.sourceSets.getByName("main").java.srcDir(
+    if (nativeFromSource) "src/noPrecise/kotlin" else "src/precise/kotlin",
+)
 
 // Every dependency version of the app is pinned by a lockfile, so F-Droid and CI resolve the same
 // graph: app/gradle.lockfile, and app/gradle-fdroid.lockfile for the from-source graph above. A
@@ -193,6 +210,9 @@ dependencies {
         implementation("net.java.dev.jna:jna:5.18.1-src@aar")
     } else {
         implementation("com.alphacephei:vosk-android:0.3.75")
+        // The precise voice model's runtime (Canary through sherpa-onnx): Kotlin API and native
+        // libraries (onnxruntime inside), arm64-v8a, armeabi-v7a, x86, x86_64. Not in the F-Droid build.
+        implementation("com.k2fsa.sherpa.onnx:sherpa-onnx:2.0.1")
     }
     // The home-screen widget (widget/), drawn with Jetpack Glance, and its refresh job on
     // WorkManager (spec section 7.1). Both AndroidX, Apache-2.0, no Play Services; home_widget
