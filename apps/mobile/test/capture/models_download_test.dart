@@ -6,7 +6,9 @@ import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:wambito/capture/engine/voice_channel.dart';
 import 'package:wambito/capture/models_download.dart';
 
 /// A zip's bytes for the tests: what is in it does not matter, the unzip is faked.
@@ -458,4 +460,106 @@ void main() {
       expect(files.released, 1);
     },
   );
+
+  group('the precise model', () {
+    final canaryBytes = _payload;
+    final canary = _modelNamed(
+      'es',
+      'sherpa-onnx-nemo-canary-180m-flash-en-es-de-fr-int8',
+      canaryBytes,
+    );
+
+    ModelStore preciseStore() => ModelStore(
+      files: files,
+      http: Dio(),
+      releaseUrl: server.base,
+      models: {'es': canary, 'en': canary},
+    );
+
+    test('the constants name the v2 release and the one canary zip for es and en', () {
+      expect(
+        preciseModelsReleaseUrl.toString(),
+        'https://github.com/slinqer/wambito/releases/download/voice-models-v2',
+      );
+      expect(preciseModels.keys, unorderedEquals(['es', 'en']));
+      final model = preciseModels['es']!;
+      expect(identical(model, preciseModels['en']), isTrue);
+      expect(model.name, 'sherpa-onnx-nemo-canary-180m-flash-en-es-de-fr-int8');
+      expect(model.bytes, 150137764);
+      expect(model.unzippedBytes, 207170046);
+      expect(model.sha256, '65bf6fb27f22c506b217d1847c2a61ad0d8a734eed6a6842d4e735dfed10776b');
+    });
+
+    test('en and es share one precise download', () async {
+      final s = preciseStore();
+      await s.download('es');
+      expect(await s.installedPath('en'), isNotNull);
+      expect(await s.installedPath('en'), await s.installedPath('es'));
+    });
+
+    test('deleteModel removes only that model', () async {
+      final vosk = store();
+      await vosk.download('es');
+      final precise = preciseStore();
+      await precise.download('es');
+      final preciseDir = await precise.installedPath('es');
+      await precise.deleteModel('en');
+      expect(await precise.installedPath('es'), isNull);
+      expect(Directory(preciseDir!).existsSync(), isFalse);
+      expect(File('$preciseDir.ready').existsSync(), isFalse);
+      expect(await vosk.installedPath('es'), isNotNull);
+      expect(files.released, 1);
+    });
+
+    test('deleteModel also removes a partial download', () async {
+      final s = preciseStore();
+      server.cutAfter = 1000;
+      await expectLater(s.download('es'), throwsA(isA<ModelDownloadFailure>()));
+      final part = File('${root.path}/voice/${canary.fileName}.part');
+      expect(part.existsSync(), isTrue);
+      await s.deleteModel('es');
+      expect(part.existsSync(), isFalse);
+    });
+
+    test('no precise model for it or pt', () {
+      final s = ModelStore(files: files, http: Dio(), models: preciseModels);
+      expect(s.hasModel('it'), isFalse);
+      expect(s.hasModel('pt'), isFalse);
+      expect(s.hasModel('es'), isTrue);
+      expect(s.hasModel('en'), isTrue);
+    });
+
+    group('preciseEligibleProvider', () {
+      Future<bool> eligible(String locale, {required bool qualifies}) async {
+        final container = ProviderContainer(
+          overrides: [voiceChannelProvider.overrideWithValue(_QualifyingPlatform(qualifies))],
+        );
+        addTearDown(container.dispose);
+        return container.read(preciseEligibleProvider(locale).future);
+      }
+
+      test('is false when the device does not qualify', () async {
+        expect(await eligible('es', qualifies: false), isFalse);
+      });
+
+      test('is true for es and en on a device that qualifies, false for it and pt', () async {
+        expect(await eligible('es', qualifies: true), isTrue);
+        expect(await eligible('en', qualifies: true), isTrue);
+        expect(await eligible('it', qualifies: true), isFalse);
+        expect(await eligible('pt', qualifies: true), isFalse);
+      });
+    });
+  });
+}
+
+class _QualifyingPlatform implements VoicePlatform {
+  _QualifyingPlatform(this.qualifies);
+
+  final bool qualifies;
+
+  @override
+  Future<bool> deviceQualifies() async => qualifies;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError('$invocation');
 }

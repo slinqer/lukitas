@@ -78,6 +78,24 @@ const voiceModels = {
   ),
 };
 
+/// Where the precise model is downloaded from: the second release, with the Canary zip.
+final preciseModelsReleaseUrl = Uri.parse(
+  'https://github.com/slinqer/wambito/releases/download/voice-models-v2',
+);
+
+/// NVIDIA Canary 180M Flash int8 (CC-BY-4.0), the precise model that re-transcribes a recording on
+/// release. One model serves Spanish and English, so one download installs both.
+const _canary = VoiceModel(
+  locale: 'es',
+  name: 'sherpa-onnx-nemo-canary-180m-flash-en-es-de-fr-int8',
+  bytes: 150137764,
+  unzippedBytes: 207170046,
+  sha256: '65bf6fb27f22c506b217d1847c2a61ad0d8a734eed6a6842d4e735dfed10776b',
+);
+
+/// The precise model by language: only Spanish and English (Italian and Portuguese have none).
+const preciseModels = {'es': _canary, 'en': _canary};
+
 /// A download that did not end with a model ready to use.
 class ModelDownloadFailure implements Exception {
   const ModelDownloadFailure({this.corrupt = false, this.cancelled = false, this.noSpace = false});
@@ -279,6 +297,21 @@ class ModelStore {
     return match == null ? null : int.parse(match.group(1)!);
   }
 
+  /// Deletes [locale]'s model (folder, `.ready` and any `.part`), freeing the loaded ones first.
+  /// The other store's files in the same directory stay.
+  Future<void> deleteModel(String locale) async {
+    final model = modelFor(locale);
+    if (model == null) return;
+    await _files.releaseModels();
+    final dir = await _voiceDir();
+    final folder = Directory('$dir/${model.name}');
+    if (folder.existsSync()) await folder.delete(recursive: true);
+    for (final path in ['$dir/${model.name}.ready', '$dir/${model.fileName}.part']) {
+      final file = File(path);
+      if (file.existsSync()) await file.delete();
+    }
+  }
+
   /// Deletes every downloaded model (and partial download), freeing a loaded one first. Settings
   /// calls it (Task 14); the next 🎤 asks to download again.
   Future<void> deleteModels() async {
@@ -301,6 +334,28 @@ final modelStoreProvider = Provider<ModelStore>(
     ),
   ),
 );
+
+/// The precise model's store: the same download and verification, from the v2 release.
+final preciseModelStoreProvider = Provider<ModelStore>(
+  (ref) => ModelStore(
+    files: ref.watch(voiceChannelProvider),
+    http: Dio(
+      BaseOptions(
+        connectTimeout: const Duration(seconds: 15),
+        receiveTimeout: const Duration(seconds: 30),
+      ),
+    ),
+    releaseUrl: preciseModelsReleaseUrl,
+    models: preciseModels,
+  ),
+);
+
+/// Whether the precise model is offered for [locale] (a `voiceLocale`): the phone qualifies (arm64,
+/// enough RAM, sherpa-onnx linked) and the language is `es` or `en`.
+final preciseEligibleProvider = FutureProvider.family<bool, String>((ref, locale) async {
+  if (!preciseModels.containsKey(locale)) return false;
+  return ref.watch(voiceChannelProvider).deviceQualifies();
+});
 
 /// Deletes the downloaded voice models (Settings, Task 14, adds the button).
 Future<void> deleteModels(WidgetRef ref) => ref.read(modelStoreProvider).deleteModels();

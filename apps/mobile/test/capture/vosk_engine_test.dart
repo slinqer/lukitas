@@ -24,6 +24,11 @@ class _FakeChannel implements VoicePlatform {
   @override
   Future<bool> supported() async => supportedAnswer;
 
+  var qualifies = false;
+
+  @override
+  Future<bool> deviceQualifies() async => qualifies;
+
   @override
   Future<bool> requestPermission() async => permissionAnswer?.future ?? permission;
 
