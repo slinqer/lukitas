@@ -102,6 +102,11 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
   /// once.
   var _warm = false;
 
+  /// The precise model is re-transcribing what was said: the sheet shows the live text dimmed with
+  /// "Refinando…" until the final transcript arrives.
+  var refining = false;
+  StreamSubscription<bool>? _refiningSub;
+
   /// A transcript that came before home's figures did: read once they are here.
   String? _pending;
 
@@ -154,6 +159,7 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
     _withInput.mark(this, hasInput: false);
     WidgetsBinding.instance.removeObserver(this);
     unawaited(_listening?.cancel());
+    unawaited(_refiningSub?.cancel());
     _download?.cancel();
     preview?.dispose();
     field.dispose();
@@ -277,13 +283,16 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
       return;
     }
     unawaited(_listening?.cancel());
+    unawaited(_refiningSub?.cancel());
     _kept = field.text.trim();
     _set(() {
       stage = CaptureStage.listening;
       why = null;
       heard = '';
       ready = _warm;
+      refining = false;
     });
+    _refiningSub = engine.refining.listen((on) => _set(() => refining = on));
     _listening = engine
         .listen(locale: locale)
         .listen(
@@ -295,6 +304,8 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
           }),
           onError: (Object error) {
             _listening = null;
+            unawaited(_refiningSub?.cancel());
+            refining = false;
             final kind = error is SpeechFailure ? error.kind : SpeechFailureKind.failed;
             switch (kind) {
               case SpeechFailureKind.noModel when !hasVoice:
@@ -314,6 +325,8 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
           onDone: () {
             if (_listening == null || !mounted) return;
             _listening = null;
+            unawaited(_refiningSub?.cancel());
+            refining = false;
             final text = heard.trim();
             if (text.isEmpty) {
               type(CaptureWhy.nothingHeard);
@@ -336,6 +349,8 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
     _kept = '';
     final listening = _listening;
     _listening = null;
+    unawaited(_refiningSub?.cancel());
+    refining = false;
     if (listening != null) {
       unawaited(listening.cancel());
       unawaited(engine.stop());

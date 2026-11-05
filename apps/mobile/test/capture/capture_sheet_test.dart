@@ -477,6 +477,48 @@ void main() {
     await tester.pumpAndSettle();
   });
 
+  testWidgets('refining shows the label over the heard text', (tester) async {
+    final env = await _pump(tester);
+    env.engine.hold = true;
+    await _openMoving(tester);
+    env.engine.held!
+      ..add('')
+      ..add('gasté 15 mil');
+    await tester.pump();
+    expect(find.text('Refinando…'), findsNothing);
+    env.engine.refiningController.add(true);
+    await tester.pump();
+    expect(find.text('Refinando…'), findsOneWidget);
+    expect(find.text('gasté 15 mil'), findsOneWidget);
+    final heard = tester.widget<Text>(find.byKey(const Key('capture.heard')));
+    expect(heard.style?.color, isNot(equals(const Color(0xFF000000))));
+    env.engine.refiningController.add(false);
+    await tester.pump();
+    expect(find.text('Refinando…'), findsNothing);
+    await env.engine.held!.close();
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('the preview follows the refined text', (tester) async {
+    final env = await _pump(tester);
+    env.engine.hold = true;
+    await _openMoving(tester);
+    env.engine.held!
+      ..add('')
+      ..add('dos euros en cafe');
+    await tester.pump();
+    env.engine.refiningController.add(true);
+    await tester.pump();
+    env.engine.held!.add('Dos euros en café.');
+    await env.engine.held!.close();
+    env.engine.refiningController.add(false);
+    await tester.pumpAndSettle();
+    expect(find.text('Refinando…'), findsNothing);
+    expect(find.byKey(const Key('capture.card.0')), findsOneWidget);
+    expect(find.text('Dos euros en café.'), findsOneWidget);
+    expect(find.text(r'−$2'), findsOneWidget);
+  });
+
   testWidgets('going to the background stops listening at once and keeps what was heard', (
     tester,
   ) async {

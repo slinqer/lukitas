@@ -144,6 +144,23 @@ void main() {
       await t.pumpAndSettle();
     });
 
+    _golden('refining, the heard text dimmed ($theme)', (t) async {
+      final env = await _open(t, theme, hold: true);
+      env.engine.held!
+        ..add('')
+        ..add('gasté 15 mil en almuerzo');
+      await t.pump();
+      for (final level in [0.0, 0.05, 0.3, 0.55, 0.8, 0.6, 0.35, 0.5, 0.9, 0.7, 0.4, 0.2]) {
+        env.engine.levelsController.add(level);
+        await t.pump(const Duration(milliseconds: 40));
+      }
+      env.engine.refiningController.add(true);
+      await t.pump(const Duration(milliseconds: 400));
+      await _picture(t, 'refining', theme);
+      await env.engine.held!.close();
+      await t.pumpAndSettle();
+    });
+
     _golden('the preview with two cards ($theme)', (t) async {
       await _open(
         t,

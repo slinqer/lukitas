@@ -801,6 +801,7 @@
   "captureBeta": "Beta",
   "captureListeningPrompt": "What did you spend on?",
   "captureListeningNote": "I listen right here: what you say never leaves your phone.",
+  "captureRefining": "Refining…",
   "captureStop": "Done",
   "captureTypeInstead": "Type it",
   "captureListen": "Speak",

@@ -1017,6 +1017,10 @@
   "@captureListeningNote": {
     "description": "Quick capture: under the prompt while listening, for the first use only (until the first saved capture); the engine runs on the phone, with no network."
   },
+  "captureRefining": "Refinando…",
+  "@captureRefining": {
+    "description": "Quick capture: label under the heard text while the precise model re-transcribes it, after the microphone closes."
+  },
   "captureStop": "Listo",
   "@captureStop": {
     "description": "Quick capture: stops listening."

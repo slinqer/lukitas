@@ -32,7 +32,11 @@ class CaptureListeningBody extends StatelessWidget {
           message: session.ready ? l10n.captureListeningPrompt : l10n.capturePreparing,
           mood: WambiMood.happy,
         ),
-        CaptureWaves(ready: session.ready, levels: session.levels),
+        // The level stops while the precise model works (the box keeps its place, so nothing jumps).
+        CaptureWaves(
+          ready: session.ready,
+          levels: session.refining ? const Stream<double>.empty() : session.levels,
+        ),
         // The explanation of where the voice goes, for the first use only.
         if (session.noteActive)
           Text(
@@ -44,11 +48,26 @@ class CaptureListeningBody extends StatelessWidget {
         ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 48),
           child: Center(
-            child: Text(
-              session.heard,
-              key: const Key('capture.heard'),
-              textAlign: TextAlign.center,
-              style: LkText.body.copyWith(color: colors.ink),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: WambitoTokens.space1,
+              children: [
+                Text(
+                  session.heard,
+                  key: const Key('capture.heard'),
+                  textAlign: TextAlign.center,
+                  style: LkText.body.copyWith(
+                    color: session.refining ? colors.inkMuted : colors.ink,
+                  ),
+                ),
+                if (session.refining)
+                  Text(
+                    l10n.captureRefining,
+                    key: const Key('capture.refining'),
+                    textAlign: TextAlign.center,
+                    style: LkText.label.copyWith(color: colors.inkMuted),
+                  ),
+              ],
             ),
           ),
         ),
