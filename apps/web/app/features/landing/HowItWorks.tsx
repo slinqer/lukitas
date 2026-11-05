@@ -96,9 +96,10 @@ function Step({ demo, title, body }: { demo: ReactNode; title: string; body: str
 }
 
 /**
- * How Wambito, the app, works, in four steps, each with a small illustration built from the
+ * How Wambito, the app, works, in five steps, each with a small illustration built from the
  * app's own pieces: logging an expense by voice (the Android widget), where the money goes, budgets
- * that warn you, importing your history from other apps (Budge today).
+ * that warn you, importing your history from other apps (Budge today), and automatic capture from
+ * bank notifications (the card links to its own page).
  */
 export function HowItWorks() {
   const t = useTranslations("landing.how");
