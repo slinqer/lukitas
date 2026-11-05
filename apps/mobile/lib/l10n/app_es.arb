@@ -3522,6 +3522,103 @@
   "@autoCaptureExplainerBody": {
     "description": "Prominent disclosure before asking for notification access: which apps are read, that the text stays on the phone, what reaches the server."
   },
+  "autoCaptureHowLink": "¿Cómo funciona?",
+  "@autoCaptureHowLink": {
+    "description": "Settings: link that opens the how it works screen of automatic capture."
+  },
+  "autoCaptureHowNext": "Siguiente",
+  "@autoCaptureHowNext": {
+    "description": "How it works: button to the next step."
+  },
+  "autoCaptureHowDone": "Entendido",
+  "@autoCaptureHowDone": {
+    "description": "How it works: button on the last step, closes the screen."
+  },
+  "autoCaptureHowDisclosure": "Wambito lee las notificaciones de las apps que actives. El texto nunca sale de tu teléfono.",
+  "@autoCaptureHowDisclosure": {
+    "description": "How it works: short prominent disclosure under the steps, what is read and that the text stays on the phone. Names no language."
+  },
+  "autoCaptureHowPayTitle": "Pagas como siempre",
+  "@autoCaptureHowPayTitle": {
+    "description": "How it works: title of step \"pay\"."
+  },
+  "autoCaptureHowPayBody": "Con Revolut o Google Wallet. Tu banco te manda su notificación, como siempre.",
+  "@autoCaptureHowPayBody": {
+    "description": "How it works: body of step \"pay\"."
+  },
+  "autoCaptureHowReadsTitle": "Wambito la lee en tu teléfono",
+  "@autoCaptureHowReadsTitle": {
+    "description": "How it works: title of step \"reads\"."
+  },
+  "autoCaptureHowReadsBody": "El texto de la notificación nunca sale de tu teléfono. Solo sale el movimiento: el monto, el comercio, la fecha y la app.",
+  "@autoCaptureHowReadsBody": {
+    "description": "How it works: body of step \"reads\"."
+  },
+  "autoCaptureHowDecideTitle": "Te avisa y tú decides",
+  "@autoCaptureHowDecideTitle": {
+    "description": "How it works: title of step \"decide\"."
+  },
+  "autoCaptureHowDecideBody": "Te deja un aviso con Bien y Cambiar. El gasto ya cuenta en tu mes, marcado «por revisar».",
+  "@autoCaptureHowDecideBody": {
+    "description": "How it works: body of step \"decide\"."
+  },
+  "autoCaptureHowLearnsTitle": "Aprende tus categorías",
+  "@autoCaptureHowLearnsTitle": {
+    "description": "How it works: title of step \"learns\"."
+  },
+  "autoCaptureHowLearnsBody": "Cuando le pones categoría a un comercio, la próxima vez ya viene puesta.",
+  "@autoCaptureHowLearnsBody": {
+    "description": "How it works: body of step \"learns\"."
+  },
+  "autoCaptureHowNextTitle": "Hoy y lo que viene",
+  "@autoCaptureHowNextTitle": {
+    "description": "How it works: title of step \"next\"."
+  },
+  "autoCaptureHowNextBody": "Hoy funciona con Revolut y Google Wallet, en la app de Android. Agregaremos más apps y bancos con el tiempo.",
+  "@autoCaptureHowNextBody": {
+    "description": "How it works: body of step \"next\"."
+  },
+  "autoCaptureHowRegistered": "Anotado en Wambito",
+  "@autoCaptureHowRegistered": {
+    "description": "How it works demo: the title of the transaction Wambito noted."
+  },
+  "autoCaptureHowReview": "por revisar",
+  "@autoCaptureHowReview": {
+    "description": "How it works demo: the mark on a transaction that still needs review."
+  },
+  "autoCaptureHowToday": "Hoy",
+  "@autoCaptureHowToday": {
+    "description": "How it works demo: the day label of the demo transaction."
+  },
+  "autoCaptureHowNotice": "Anoté {amount} en {merchant} · {category}, ¿qué categoría?",
+  "@autoCaptureHowNotice": {
+    "description": "How it works demo: the text of Wambito notification. Same words as the real capture notice.",
+    "placeholders": {
+      "amount": {"type": "String", "example": "12,50 €"},
+      "merchant": {"type": "String", "example": "Pastelaria Aurora"},
+      "category": {"type": "String", "example": "Restaurante"}
+    }
+  },
+  "autoCaptureHowOk": "Bien",
+  "@autoCaptureHowOk": {
+    "description": "How it works demo: the notification action that confirms."
+  },
+  "autoCaptureHowChange": "Cambiar",
+  "@autoCaptureHowChange": {
+    "description": "How it works demo: the notification action that opens the editor."
+  },
+  "autoCaptureHowOtherExpenses": "Otros gastos",
+  "@autoCaptureHowOtherExpenses": {
+    "description": "How it works demo: the fallback expense category name."
+  },
+  "autoCaptureHowOtherIncome": "Otros ingresos",
+  "@autoCaptureHowOtherIncome": {
+    "description": "How it works demo: the fallback income category name."
+  },
+  "autoCaptureHowEatingOut": "Restaurante",
+  "@autoCaptureHowEatingOut": {
+    "description": "How it works demo: the core suggested category name for eating out."
+  },
   "autoCaptureExplainerConfirm": "Activar acceso",
   "@autoCaptureExplainerConfirm": {
     "description": "The explainer's button: goes to Android's notification access screen."
