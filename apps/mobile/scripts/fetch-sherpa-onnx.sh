@@ -60,8 +60,9 @@ if ! matches "$TMP/sherpa.aar"; then
 fi
 
 mkdir -p "$DEST"
-cp "$TMP/sherpa.aar" "$AAR"
-cat >"$POM" <<POMXML
+# Temporary names in the same directory, then mv: an interrupted run never leaves half an AAR.
+cp "$TMP/sherpa.aar" "$AAR.part"
+cat >"$POM.part" <<POMXML
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0">
   <modelVersion>4.0.0</modelVersion>
@@ -71,4 +72,6 @@ cat >"$POM" <<POMXML
   <packaging>aar</packaging>
 </project>
 POMXML
+mv "$AAR.part" "$AAR"
+mv "$POM.part" "$POM"
 echo "Installed sherpa-onnx $VERSION into $M2."
