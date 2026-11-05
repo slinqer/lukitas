@@ -234,7 +234,12 @@ const ROADMAP = {
       },
       {
         label: "En construcción",
-        items: ["Conecta tu IA", "App para iPhone", "Importa desde Buddy y otras apps"],
+        items: [
+          "Conecta tu IA",
+          "App para iPhone",
+          "Importa desde Buddy y otras apps",
+          "Captura automática de tus notificaciones",
+        ],
       },
       {
         label: "Próximo",
@@ -247,11 +252,7 @@ const ROADMAP = {
       },
       {
         label: "Más adelante",
-        items: [
-          "Captura automática de las alertas de tu banco",
-          "Sin servidor central",
-          "Anota por WhatsApp",
-        ],
+        items: ["Sin servidor central", "Anota por WhatsApp"],
       },
     ],
     navLink: "Lo que viene",
@@ -282,7 +283,12 @@ const ROADMAP = {
       },
       {
         label: "Being built",
-        items: ["Connect your AI", "iPhone app", "Import from Buddy and other apps"],
+        items: [
+          "Connect your AI",
+          "iPhone app",
+          "Import from Buddy and other apps",
+          "Automatic capture of your notifications",
+        ],
       },
       {
         label: "Next",
@@ -295,11 +301,7 @@ const ROADMAP = {
       },
       {
         label: "Later",
-        items: [
-          "Automatic capture of your bank's alerts",
-          "No central server",
-          "Log it on WhatsApp",
-        ],
+        items: ["No central server", "Log it on WhatsApp"],
       },
     ],
     navLink: "What's next",
@@ -330,7 +332,12 @@ const ROADMAP = {
       },
       {
         label: "In costruzione",
-        items: ["Collega la tua IA", "App per iPhone", "Importa da Buddy e da altre app"],
+        items: [
+          "Collega la tua IA",
+          "App per iPhone",
+          "Importa da Buddy e da altre app",
+          "Cattura automatica delle tue notifiche",
+        ],
       },
       {
         label: "Prossimo",
@@ -343,11 +350,7 @@ const ROADMAP = {
       },
       {
         label: "Più avanti",
-        items: [
-          "Cattura automatica degli avvisi della tua banca",
-          "Senza server centrale",
-          "Annota su WhatsApp",
-        ],
+        items: ["Senza server centrale", "Annota su WhatsApp"],
       },
     ],
     navLink: "In arrivo",
@@ -378,7 +381,12 @@ const ROADMAP = {
       },
       {
         label: "Em construção",
-        items: ["Liga a tua IA", "App para iPhone", "Importa do Buddy e de outras apps"],
+        items: [
+          "Liga a tua IA",
+          "App para iPhone",
+          "Importa do Buddy e de outras apps",
+          "Captura automática das tuas notificações",
+        ],
       },
       {
         label: "A seguir",
@@ -391,11 +399,7 @@ const ROADMAP = {
       },
       {
         label: "Mais à frente",
-        items: [
-          "Captura automática dos alertas do teu banco",
-          "Sem servidor central",
-          "Regista pelo WhatsApp",
-        ],
+        items: ["Sem servidor central", "Regista pelo WhatsApp"],
       },
     ],
     navLink: "O que vem aí",
@@ -1634,6 +1638,88 @@ for (const l of LOCALES) {
         ).toHaveAttribute("aria-current", "page");
       });
     }
+  });
+}
+
+/** Automatic capture: the landing's card and its "how it works" page, per language. */
+const CAPTURE = {
+  es: {
+    path: "/automatic-capture",
+    card: "¡Wambi anota los gastos por ti!",
+    badge: "Pronto · Solo en Android",
+    link: "¿Cómo funciona?",
+    title: "¿Cómo funciona la captura automática?",
+    soon: "Pronto en la app de Android.",
+  },
+  en: {
+    path: "/en/automatic-capture",
+    card: "Wambi logs your expenses for you!",
+    badge: "Soon · Android only",
+    link: "How does it work?",
+    title: "How does automatic capture work?",
+    soon: "Soon in the Android app.",
+  },
+  it: {
+    path: "/it/automatic-capture",
+    card: "Wambi annota le spese per te!",
+    badge: "Presto · Solo su Android",
+    link: "Come funziona?",
+    title: "Come funziona la cattura automatica?",
+    soon: "Presto nell’app Android.",
+  },
+  pt: {
+    path: "/pt/automatic-capture",
+    card: "O Wambi regista as despesas por ti!",
+    badge: "Em breve · Só no Android",
+    link: "Como funciona?",
+    title: "Como funciona a captura automática?",
+    soon: "Em breve na app Android.",
+  },
+} as const;
+
+for (const l of LOCALES) {
+  const c = CAPTURE[l.locale];
+
+  test.describe(`automatic capture (${l.locale})`, () => {
+    test("the landing's #how holds the card as its fifth item, with a real link to the page", async ({
+      page,
+    }) => {
+      await page.goto(l.path);
+      const items = page.locator("#how ul.is-how > li");
+      await expect(items).toHaveCount(5);
+      const card = items.nth(4);
+      await expect(card.getByRole("heading", { name: c.card })).toBeVisible();
+      await expect(card.getByText(c.badge, { exact: true })).toBeVisible();
+      await expect(card.getByRole("link", { name: c.link })).toHaveAttribute("href", c.path);
+    });
+
+    test("the page works without JavaScript: five steps, five scenes, the soon line", async ({
+      page,
+      request,
+    }) => {
+      const response = await request.get(c.path);
+      expect(response.status()).toBe(200);
+      expect(await response.text()).toContain(`<html lang="${l.locale}"`);
+      await page.goto(c.path);
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText(c.title);
+      await expect(page.getByRole("heading", { level: 2 })).toHaveCount(5);
+      await expect(page.locator("img.lk-capture-scene")).toHaveCount(5);
+      await expect(page.getByText(c.soon, { exact: true })).toBeVisible();
+      await expect(
+        page.getByRole("contentinfo").getByRole("link", { name: l.other.name }),
+      ).toHaveAttribute("href", CAPTURE[l.other.lang].path);
+    });
+
+    test.describe("at 320px", () => {
+      test.use({ viewport: { width: 320, height: 700 } });
+
+      test("nothing overflows on the page nor on #how", async ({ page }) => {
+        await page.goto(c.path);
+        await expectFitsTheViewport(page);
+        await page.goto(l.path);
+        await expectFitsTheViewport(page);
+      });
+    });
   });
 }
 

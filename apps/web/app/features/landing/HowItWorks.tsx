@@ -1,7 +1,11 @@
 import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from "react";
+import { Link } from "react-router";
 import { useTranslations } from "use-intl";
 import { formatMoney } from "../../i18n/format.ts";
 import { useLocale } from "../../i18n/IntlProvider.tsx";
+import { AUTOMATIC_CAPTURE_PATH } from "../../site/paths.ts";
+import { MainPicture } from "../capture/CaptureDemos.tsx";
+import "../capture/capture.css";
 
 /** Sample figures for the illustrations (cents, euros). */
 const DEMO = {
@@ -98,6 +102,7 @@ function Step({ demo, title, body }: { demo: ReactNode; title: string; body: str
  */
 export function HowItWorks() {
   const t = useTranslations("landing.how");
+  const capture = useTranslations("landing.capture");
   const { locale } = useLocale();
   const money = (cents: number) => formatMoney(cents, "EUR", locale);
   const dot = (color: string) => ({ "--dot": color }) as CSSProperties;
@@ -192,6 +197,19 @@ export function HowItWorks() {
             </div>
           }
         />
+        <li className="lk-landing-card is-wide">
+          <div className="lk-landing-demo" aria-hidden="true">
+            <MainPicture />
+          </div>
+          <h3>{capture("card.title")}</h3>
+          <p>{capture("card.body")}</p>
+          <div className="lk-landing-card-foot lk-landing-capture-foot">
+            <span className="lk-landing-soon">{capture("card.badge")}</span>
+            <Link to={AUTOMATIC_CAPTURE_PATH[locale]} className="lk-landing-capture-link">
+              {capture("card.link")}
+            </Link>
+          </div>
+        </li>
       </ul>
     </section>
   );

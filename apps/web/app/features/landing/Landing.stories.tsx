@@ -218,6 +218,7 @@ export const HowItWorksSection: Story = {
       "See where it goes",
       "Budgets that give you a heads-up",
       "Bring your history",
+      "Wambi logs your expenses for you!",
     ]);
     for (const demo of canvasElement.querySelectorAll(".lk-landing-demo")) {
       await expect(demo).toHaveAttribute("aria-hidden", "true");

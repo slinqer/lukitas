@@ -208,4 +208,55 @@
     stroke-linecap: round;
     stroke-linejoin: round;
   }
+
+  /* The page (/automatic-capture): title, lead, the steps, the "soon" line, the way back. */
+  .lk-capture-page {
+    display: grid;
+    gap: var(--space-5);
+    max-width: 40rem;
+    padding-bottom: var(--space-6);
+  }
+  .lk-capture-intro {
+    display: grid;
+    gap: var(--space-2);
+    padding-top: var(--space-4);
+  }
+  .lk-landing .lk-capture-intro h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 1.1;
+    margin: 0;
+    color: var(--good);
+  }
+  .lk-capture-intro p {
+    margin: 0;
+    line-height: 1.5;
+    color: var(--ink-muted);
+  }
+  .lk-landing .lk-capture-step h2 {
+    margin: 0;
+    font-size: 22px;
+  }
+  .lk-capture-soon {
+    margin: 0;
+    font-weight: 800;
+    color: var(--near);
+  }
+  .lk-capture-back {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    justify-self: start;
+    border-radius: 4px;
+    color: var(--ink);
+    font-weight: 800;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
+  .lk-capture-back:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
 }

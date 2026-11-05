@@ -24,6 +24,11 @@ export default [
   route("en/delete-account", "routes/en.delete-account.tsx"),
   route("it/delete-account", "routes/it.delete-account.tsx"),
   route("pt/delete-account", "routes/pt.delete-account.tsx"),
+  // How automatic capture works, prerendered per language too.
+  route("automatic-capture", "routes/automatic-capture.tsx"),
+  route("en/automatic-capture", "routes/en.automatic-capture.tsx"),
+  route("it/automatic-capture", "routes/it.automatic-capture.tsx"),
+  route("pt/automatic-capture", "routes/pt.automatic-capture.tsx"),
   // Every screen of the app (sign-in, welcome, /app/*) nests under this layout, which holds the
   // API client, its cache and the toasts. The landing stays outside it, so visitors do not download
   // that code. The demo (/demo/*) has its own layout with a demo ApiProvider, beside this one.

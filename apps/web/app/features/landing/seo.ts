@@ -97,6 +97,7 @@ const META_NAMESPACE = {
   roadmap: "roadmap.meta",
   privacy: "legal.privacy.meta",
   deleteAccount: "legal.delete_account.meta",
+  automaticCapture: "landing.capture.page.meta",
 } as const satisfies Record<Exclude<SitePage, "landing">, string>;
 
 /**

@@ -600,6 +600,7 @@ test.describe("landing-only build output", () => {
         "_headers",
         "apple-touch-icon.png",
         "assets",
+        "automatic-capture",
         // The logo image of the sign-in email, linked from the mails themselves (public/email).
         "email",
         "en",
@@ -623,6 +624,7 @@ test.describe("landing-only build output", () => {
     );
     for (const language of ["en", "it", "pt"]) {
       expect(readdirSync(`${CLIENT}${language}`).sort()).toEqual([
+        "automatic-capture",
         "delete-account",
         "index.html",
         "privacy",
@@ -631,7 +633,9 @@ test.describe("landing-only build output", () => {
       expect(readdirSync(`${CLIENT}${language}/privacy`)).toEqual(["index.html"]);
       expect(readdirSync(`${CLIENT}${language}/delete-account`)).toEqual(["index.html"]);
       expect(readdirSync(`${CLIENT}${language}/roadmap`)).toEqual(["index.html"]);
+      expect(readdirSync(`${CLIENT}${language}/automatic-capture`)).toEqual(["index.html"]);
     }
+    expect(readdirSync(`${CLIENT}automatic-capture`)).toEqual(["index.html"]);
     expect(readdirSync(`${CLIENT}roadmap`)).toEqual(["index.html"]);
     expect(readdirSync(`${CLIENT}privacy`)).toEqual(["index.html"]);
     expect(readdirSync(`${CLIENT}delete-account`)).toEqual(["index.html"]);

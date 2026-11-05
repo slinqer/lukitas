@@ -19,7 +19,7 @@ describe("sitemapXml", () => {
     ]) {
       expect(xml).toContain(`<loc>${ORIGIN}${path}</loc>`);
     }
-    expect(xml.match(/<url>/g)).toHaveLength(16);
+    expect(xml.match(/<url>/g)).toHaveLength(20);
   });
 
   it("lists the privacy and account deletion pages in every language", () => {
