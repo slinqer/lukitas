@@ -28,7 +28,6 @@ tool calls the API with the assistant's token.
 ## Traps
 
 - Every change here that clients can see goes under "Unreleased" in the root `CHANGELOG.md`.
-
 - Tool names, scopes and the `/mcp` path are a public contract: changing them breaks connected
   assistants.
 - Tool behaviour and wording live in `packages/ai-assistant-tools`, not here.
