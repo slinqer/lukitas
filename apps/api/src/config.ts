@@ -162,7 +162,7 @@ const configSchema = z
       .optional(),
     /**
      * The version this build is, as /health reports it (the personal install's up.sh passes
-     * `0.0.0-dev.<commit>`, the name the APK of that commit has). Blank or unset: none is reported.
+     * the root package.json's version plus the commit, e.g. `1.0.0+1e5ccc2`). Blank or unset: none is reported.
      */
     WAMBITO_VERSION: z
       .preprocess(

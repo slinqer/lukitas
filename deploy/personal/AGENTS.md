@@ -16,6 +16,9 @@ app and proxying), optional cloudflared. Full runbook: `README.md` here; short v
 ## Scripts
 
 - `up.sh` (build, migrate, start; `--no-tunnel`, `--skip-web`), `update.sh`, `smoke.sh`.
+- The server's version (`/health`, the app's Settings): the root `package.json` `"version"`, raised
+  by hand (`chore: version X.Y.Z`), plus `+<commit>` and `-dirty` (`server_version` in `lib.sh`).
+  Independent of the app's `mobile-v*` tags.
 - `auto-deploy.sh` (timer every 5 min): deploys `main` once CI's `check` and `e2e` passed, backup
   first, rolls back on a failed smoke test. Installed by `install-auto-deploy.sh`.
 - `backup.sh` / `restore.sh` / `install-backup.sh` / `uninstall-backup.sh`: age-encrypted dumps to
@@ -25,10 +28,10 @@ app and proxying), optional cloudflared. Full runbook: `README.md` here; short v
   before the rename, waiting (up to 30 min) for a running old backup or deploy instead of stopping
   it (`remove_old_units` in `lib.sh`, the only script that names them, split as `"luk""itas"`).
 
-## Test (CI runs all six)
+## Test (CI runs all seven)
 
 - `./test-retention.sh`, `./test-r2.sh`, `./test-auto-deploy.sh`, `./test-install-units.sh`,
-  `./test-caddy.sh`, `./test-compose-files.sh` (from this folder).
+  `./test-caddy.sh`, `./test-compose-files.sh`, `./test-version.sh` (from this folder).
 
 ## Traps
 

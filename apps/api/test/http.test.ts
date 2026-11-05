@@ -14,10 +14,10 @@ test("GET /health", async () => {
 });
 
 test("GET /health says which version is running, when the build named one", async () => {
-  const versioned = await createTestApp({ WAMBITO_VERSION: "0.0.0-dev.abc1234" });
+  const versioned = await createTestApp({ WAMBITO_VERSION: "1.0.0+abc1234" });
   try {
     const res = await versioned.request("GET", "/health");
-    expect(await res.json()).toEqual({ status: "ok", version: "0.0.0-dev.abc1234" });
+    expect(await res.json()).toEqual({ status: "ok", version: "1.0.0+abc1234" });
   } finally {
     await versioned.stop();
   }
