@@ -73,6 +73,15 @@ handle /assets/* {
 	file_server
 }
 
+# --- The emails' images and fonts (apps/web/public/email): mail clients fetch them from another
+# origin, and a font from another origin loads only with CORS. Cached a day: a changed image gets a
+# new name (Gmail's proxy keeps an image by its URL).
+handle /email/* {
+	header Access-Control-Allow-Origin "*"
+	header Cache-Control "public, max-age=86400"
+	file_server
+}
+
 # --- Android App Links and passkeys: the app's package and signing certificates. The file is
 # written when the container starts (web-entrypoint.sh, from ANDROID_CERT_SHA256) and is `[]`
 # when none is set, never a 404. Android fetches it without redirects and reads it as JSON.

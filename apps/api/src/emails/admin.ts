@@ -1,14 +1,5 @@
 import type { Mail } from "../mailer.ts";
-import {
-  BUTTON_HEIGHT,
-  BUTTON_WIDTH,
-  C,
-  DISPLAY,
-  escapeHtml,
-  PREHEADER_FILLER,
-  TEXT,
-  WAVE_SIZE,
-} from "./sign-in.ts";
+import { buttonRows, C, DISPLAY, emailDocument, escapeHtml, TEXT } from "./layout.ts";
 
 /** The notices an admin action sends to the affected person (spec §7.2). */
 export const ADMIN_MAIL_KINDS = [
@@ -307,9 +298,6 @@ export function adminMail(
   const lead = notice.lead(extra);
   const withLink = kind === "email_change_link" && extra.link !== undefined;
   const web = extra.webUrl.replace(/\/+$/, "");
-  const webHref = escapeHtml(web);
-  const image = escapeHtml(`${web}/email/wambi-wave.png`);
-  const link = withLink && extra.link ? escapeHtml(extra.link) : undefined;
 
   const text = [
     notice.heading,
@@ -325,77 +313,30 @@ export function adminMail(
   ].join("\n");
 
   const linkRows =
-    link === undefined
-      ? ""
-      : `<tr>
-<td align="center" style="padding:0 0 12px 0;">
-<!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${link}" style="height:${BUTTON_HEIGHT}px;v-text-anchor:middle;width:${BUTTON_WIDTH}px;" arcsize="28%" strokecolor="${C.brandEdge}" strokeweight="2px" fillcolor="${C.brand}"><w:anchorlock/><center style="color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:bold;letter-spacing:1px;">${escapeHtml(copy.button)}</center></v:roundrect><![endif]-->
-<!--[if !mso]><!-->
-<table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="max-width:100%;"><tr>
-<td align="center" bgcolor="${C.brand}" style="background-color:${C.brand};border-radius:16px;border-bottom:4px solid ${C.brandEdge};">
-<a href="${link}" target="_blank" style="display:inline-block;padding:16px 32px;font-family:${DISPLAY};font-size:17px;line-height:24px;font-weight:700;letter-spacing:1px;color:#ffffff;text-decoration:none;border-radius:16px;">${escapeHtml(copy.button)}</a>
-</td>
-</tr></table>
-<!--<![endif]-->
-</td>
+    withLink && extra.link
+      ? buttonRows({ link: extra.link, label: copy.button, fallback: copy.buttonFallback })
+      : "";
+
+  const cardRows = `<tr>
+<td align="center" class="w-ink" style="font-family:${DISPLAY};font-size:26px;line-height:32px;font-weight:700;color:${C.ink};padding:0 0 8px 0;">${escapeHtml(notice.heading)}</td>
 </tr>
 <tr>
-<td align="center" style="padding:0 0 24px 0;font-family:${TEXT};font-size:13px;line-height:20px;font-weight:600;color:${C.muted};">${escapeHtml(copy.buttonFallback)}<br><a href="${link}" target="_blank" style="color:${C.brand};text-decoration:underline;word-break:break-all;">${link}</a></td>
+<td align="center" class="w-muted" style="font-family:${TEXT};font-size:16px;line-height:24px;font-weight:600;color:${C.muted};padding:0 0 24px 0;">${escapeHtml(lead)}</td>
+</tr>
+${linkRows}<tr>
+<td align="center" class="w-ink w-rule" style="border-top:2px solid ${C.stroke};padding:20px 0 0 0;font-family:${TEXT};font-size:14px;line-height:21px;font-weight:700;color:${C.ink};">${escapeHtml(copy.privacy)}</td>
 </tr>
 `;
 
-  const html = `<!doctype html>
-<html lang="${lang}" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light only">
-<meta name="supported-color-schemes" content="light only">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>${escapeHtml(notice.subject)}</title>
-<!--[if mso]><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->
-</head>
-<body style="margin:0;padding:0;background-color:${C.bg};-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">
-<div style="display:none;font-size:1px;line-height:1px;mso-hide:all;color:${C.bg};">${escapeHtml(lead)}${PREHEADER_FILLER}</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.bg}" style="background-color:${C.bg};">
-<tr>
-<td align="center" style="padding:24px 16px 32px 16px;">
-<!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" align="center"><tr><td><![endif]-->
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;">
-<tr>
-<td align="center" style="padding:8px 0 0 0;">
-<img src="${image}" width="${WAVE_SIZE}" height="${WAVE_SIZE}" alt="${escapeHtml(copy.alt)}" style="display:block;width:${WAVE_SIZE}px;height:${WAVE_SIZE}px;border:0;text-decoration:none;font-family:${TEXT};font-size:14px;color:${C.muted};">
-</td>
-</tr>
-<tr>
-<td align="center" style="padding:4px 0 20px 0;font-family:${DISPLAY};font-size:36px;line-height:42px;font-weight:700;color:${C.candy};letter-spacing:0.5px;">Wambito</td>
-</tr>
-<tr>
-<td bgcolor="${C.surface}" style="background-color:${C.surface};border:2px solid ${C.stroke};border-bottom:5px solid ${C.edge};border-radius:24px;padding:32px 24px;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-<tr>
-<td align="center" style="font-family:${DISPLAY};font-size:26px;line-height:32px;font-weight:700;color:${C.ink};padding:0 0 8px 0;">${escapeHtml(notice.heading)}</td>
-</tr>
-<tr>
-<td align="center" style="font-family:${TEXT};font-size:16px;line-height:24px;font-weight:600;color:${C.muted};padding:0 0 24px 0;">${escapeHtml(lead)}</td>
-</tr>
-${linkRows}<tr>
-<td align="center" style="border-top:2px solid ${C.stroke};padding:20px 0 0 0;font-family:${TEXT};font-size:14px;line-height:21px;font-weight:700;color:${C.ink};">${escapeHtml(copy.privacy)}</td>
-</tr>
-</table>
-</td>
-</tr>
-<tr>
-<td align="center" style="padding:24px 16px 0 16px;font-family:${TEXT};font-size:13px;line-height:20px;font-weight:700;color:${C.muted};">${escapeHtml(copy.footer)}<br><a href="${webHref}" target="_blank" style="color:${C.brand};text-decoration:underline;">${escapeHtml(web.replace(/^https?:\/\//, ""))}</a></td>
-</tr>
-</table>
-<!--[if mso]></td></tr></table><![endif]-->
-</td>
-</tr>
-</table>
-</body>
-</html>
-`;
+  const html = emailDocument({
+    lang,
+    title: notice.subject,
+    preheader: lead,
+    web,
+    alt: copy.alt,
+    cardRows,
+    footer: copy.footer,
+  });
 
   return { subject: notice.subject, text, html };
 }

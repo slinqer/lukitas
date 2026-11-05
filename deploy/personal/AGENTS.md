@@ -10,8 +10,8 @@ app and proxying), optional cloudflared. Full runbook: `README.md` here; short v
   client IP from `Cf-Connecting-Ip`) + `cloudflared.yml`.
 - Direct (the VPS, `app.wambito.com`): `COMPOSE_FILE=docker-compose.yml:docker-compose.direct.yml`,
   `Caddyfile.direct` (Let's Encrypt, HSTS, client IP = TCP peer), no cloudflared.
-- Both import `routes.caddy`: `/mcp` → mcp, `/api/*` → api, `/.well-known/…`, assets, pages, the
-  landing paths redirect (302) to `LANDING_URL`.
+- Both import `routes.caddy`: `/mcp` → mcp, `/api/*` → api, `/.well-known/…`, assets, `/email/*`
+  (CORS, for the emails' fonts), pages, the landing paths redirect (302) to `LANDING_URL`.
 
 ## Scripts
 

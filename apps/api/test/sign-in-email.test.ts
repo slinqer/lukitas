@@ -140,31 +140,83 @@ describe("sign-in email", () => {
 
   test("Wambi waves at the top: the image URL is built from WEB_URL, with size and alt", () => {
     const mail = signInEmail({ ...input, locale: "es" });
-    const img = /<img[^>]*wambi-wave\.png[^>]*>/.exec(mail.html)?.[0] ?? "";
-    expect(img).toContain(`src="${WEB_URL}/email/wambi-wave.png"`);
+    const img = /<img[^>]*\/email\/wambi\.png[^>]*>/.exec(mail.html)?.[0] ?? "";
+    expect(img).toContain(`src="${WEB_URL}/email/wambi.png"`);
     expect(img).toContain('width="160"');
     expect(img).toContain('height="160"');
     expect(img).toMatch(/alt="[^"]+"/);
     // The first thing in the card area, before the heading.
-    expect(mail.html.indexOf("wambi-wave.png")).toBeLessThan(mail.html.indexOf("¡Hola!"));
+    expect(mail.html.indexOf("/email/wambi.png")).toBeLessThan(mail.html.indexOf("¡Hola!"));
   });
 
   test("a trailing slash on WEB_URL does not double up in the image or footer URLs", () => {
     const mail = signInEmail({ ...input, webUrl: `${WEB_URL}/`, locale: "en" });
-    expect(mail.html).toContain(`src="${WEB_URL}/email/wambi-wave.png"`);
+    expect(mail.html).toContain(`src="${WEB_URL}/email/wambi.png"`);
+    expect(mail.html).toContain(`src="${WEB_URL}/email/wambito-day.png"`);
+    expect(mail.html).toContain(`url(${WEB_URL}/email/fonts/fredoka-latin-700-normal.woff2)`);
     expect(mail.html).toContain(`href="${WEB_URL}"`);
   });
 
-  test("the HTML is email-safe: tables, inline styles, no scripts, no external CSS or fonts", () => {
+  test("the HTML is email-safe: tables, inline styles, no scripts, no external CSS", () => {
     const { html } = signInEmail({ ...input, locale: "es" });
     expect(html).toMatch(/^<!doctype html>/i);
     expect(html).toContain('role="presentation"');
     expect(html).toMatch(/max-width:\s*600px/);
     expect(html).not.toMatch(/<script/i);
     expect(html).not.toMatch(/<link[^>]+stylesheet/i);
-    expect(html).not.toMatch(/@import|@font-face/i);
+    expect(html).not.toMatch(/@import/i);
     expect(html).toMatch(/font-family:[^;"]*Fredoka[^;"]*Arial/);
     expect(html).toContain("#f7f4ff");
+  });
+
+  test("the brand fonts come from our own origin, never a font service", () => {
+    const { html } = signInEmail({ ...input, locale: "es" });
+    for (const file of [
+      "fredoka-latin-700-normal.woff2",
+      "nunito-latin-600-normal.woff2",
+      "nunito-latin-700-normal.woff2",
+    ]) {
+      expect(html).toContain(`url(${WEB_URL}/email/fonts/${file}) format("woff2")`);
+    }
+    expect(html.match(/@font-face/g)).toHaveLength(3);
+    expect(html).not.toMatch(/fonts\.googleapis|fonts\.gstatic/);
+  });
+
+  test("the wordmark is the landing's: an image of the gradient, with Wambito as alt", () => {
+    const { html } = signInEmail({ ...input, locale: "es" });
+    const day = /<img[^>]*wambito-day\.png[^>]*>/.exec(html)?.[0] ?? "";
+    expect(day).toContain('alt="Wambito"');
+    expect(day).toMatch(/width="165"/);
+    expect(day).toMatch(/height="50"/);
+    // The night wordmark is there for dark mode, hidden unless the client turns it on.
+    const night = /<img[^>]*wambito-night\.png[^>]*>/.exec(html)?.[0] ?? "";
+    expect(night).toContain('alt=""');
+    expect(html).toMatch(/class="w-night"[^>]*style="display:none;/);
+  });
+
+  test("dark mode: the client may switch to the night palette of tokens.json", () => {
+    const { html } = signInEmail({ ...input, locale: "es" });
+    expect(html).toContain('<meta name="color-scheme" content="light dark">');
+    expect(html).toContain('<meta name="supported-color-schemes" content="light dark">');
+    const dark = /@media \(prefers-color-scheme: ?dark\) ?\{([\s\S]*?)\n\}/.exec(html)?.[1] ?? "";
+    expect(dark).toContain("#15122b"); // bg
+    expect(dark).toContain("#241f48"); // surface
+    expect(dark).toContain("#f3f0ff"); // ink
+    expect(dark).toContain("#7c4dff"); // brand
+    expect(dark).toContain("#3f22a3"); // brand edge
+    expect(dark).toMatch(/\.w-day ?\{display: ?none ?!important/);
+    expect(dark).toMatch(/\.w-night ?\{display: ?block ?!important/);
+    // Outlook.com marks its dark mode with data-ogsc / data-ogsb instead.
+    expect(html).toContain("[data-ogsc] .w-ink");
+    expect(html).toContain("[data-ogsb] .w-bg");
+  });
+
+  test("the button keeps the landing's pressed-key edge and glow, in both themes", () => {
+    const { html } = signInEmail({ ...input, locale: "es" });
+    const button = /<td[^>]*class="w-btn"[^>]*>/.exec(html)?.[0] ?? "";
+    expect(button).toContain("border-bottom:6px solid #4a2bbf");
+    expect(button).toContain("box-shadow:0 10px 24px rgba(123,61,240,0.28)");
+    expect(html).toMatch(/\.w-btn ?\{[^}]*border-bottom-color: ?#3f22a3 ?!important/);
   });
 
   test("a hidden preheader comes first in the body", () => {
@@ -271,7 +323,8 @@ describe("claim email (a guest saves their progress)", () => {
 
   test("the same layout as sign-in: the mascot, the brand palette, email-safe HTML", () => {
     const { html } = claimEmail({ ...claim, locale: "es" });
-    expect(html).toContain(`src="${WEB_URL}/email/wambi-wave.png"`);
+    expect(html).toContain(`src="${WEB_URL}/email/wambi.png"`);
+    expect(html).toContain(`src="${WEB_URL}/email/wambito-day.png"`);
     expect(html).toContain("#f7f4ff");
     expect(html).toContain('role="presentation"');
     expect(html).not.toMatch(/<script/i);

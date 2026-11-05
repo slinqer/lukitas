@@ -45,7 +45,7 @@ describe("email code + magic link", () => {
     await sendCode("expiry@wambito.test");
     const mail = t.mailer.lastTo("expiry@wambito.test");
     expect(mail?.text).toContain(`vencen en ${CODE_TTL_SECONDS / 60} minutos.`);
-    expect(mail?.html).toContain('src="http://localhost:5173/email/wambi-wave.png"');
+    expect(mail?.html).toContain('src="http://localhost:5173/email/wambi.png"');
   });
 
   test("the passkey relying party is named Wambito, and its id stays the web host", async () => {

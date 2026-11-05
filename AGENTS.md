@@ -80,6 +80,7 @@ phone. Read the `AGENTS.md` of the area you work in; read code only to confirm.
   - `apps/web/app/api/schema.d.ts`: `pnpm --filter @wambito/web api:types --file`;
   - `apps/mcp/src/api/schema.d.ts`: `pnpm --filter @wambito/mcp api:types`;
   - `apps/mobile/lib/api/gen`: `apps/mobile/scripts/gen-api.sh`;
+  - `apps/web/public/email/*` (email images, fonts): `node docs/brand/tools/gen-email-images.cjs`;
   - Flutter l10n (`app_localizations*.dart`, git-ignored): `flutter pub get`.
 - Write the failing test first. Everything in English.
 - Commits: Conventional Commits, repo style `feat(area): …`, `fix(android): …`, `docs: …`, a

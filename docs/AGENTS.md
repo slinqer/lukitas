@@ -13,6 +13,9 @@ Human docs. Live docs are kept current; `superpowers/` is history.
   `docs/brand/tools/gen-icon.cjs` holds the one geometry and writes all of them plus the icon PNGs
   (`mipmap-*`, F-Droid `icon.png`, web `favicon.ico`/`apple-touch-icon.png`) and
   `drawable/ic_launcher_{foreground,monochrome}.xml`; never hand-edit those (usage in its header).
+  `docs/brand/tools/gen-email-images.cjs` writes the emails' `apps/web/public/email/*` (Wambi,
+  the wordmark day/night, the fonts) from the landing's sprite and Fredoka; a changed image needs
+  a new name (Gmail's proxy caches by URL).
   Colours: tokens `brand-plum`, `brand-gold`.
 - `docs/deploy/`: `personal.md` (private install, short; the runbook is
   `deploy/personal/README.md`), `landing.md` (Cloudflare landing), `api.md` (client addresses,
