@@ -155,7 +155,18 @@ describe("quick-capture cases file", () => {
     }
     const prefixes = new Set(cases.map((c) => c.id.split("-")[0]));
     expect([...prefixes].sort()).toEqual(
-      ["amount", "category", "date", "focus", "kind", "real", "spike", "split", "unread"].sort(),
+      [
+        "amount",
+        "canary",
+        "category",
+        "date",
+        "focus",
+        "kind",
+        "real",
+        "spike",
+        "split",
+        "unread",
+      ].sort(),
     );
     expect(cases.filter((c) => c.id.startsWith("real-vosk-")).length).toBeGreaterThanOrEqual(10);
   });

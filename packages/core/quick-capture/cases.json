@@ -9315,5 +9315,144 @@
       ],
       "unread": []
     }
+  },
+  {
+    "id": "canary-c01",
+    "input": "Metro uno cincuenta.",
+    "locale": "es",
+    "currency": "EUR",
+    "today": "2026-11-05",
+    "timeZone": "Europe/Madrid",
+    "categories": [{ "id": "cat-transporte", "name": "Transporte", "kind": "expense" }],
+    "usual": [],
+    "expected": {
+      "drafts": [
+        {
+          "amount": 150,
+          "kind": "expense",
+          "name": "metro",
+          "categoryId": null,
+          "date": "2026-11-05"
+        }
+      ],
+      "unread": []
+    }
+  },
+  {
+    "id": "canary-c02",
+    "input": "almuerzo en el trabajo nueve cincuenta",
+    "locale": "es",
+    "currency": "EUR",
+    "today": "2026-11-05",
+    "timeZone": "Europe/Madrid",
+    "categories": [{ "id": "cat-transporte", "name": "Transporte", "kind": "expense" }],
+    "usual": [],
+    "expected": {
+      "drafts": [
+        {
+          "amount": 950,
+          "kind": "expense",
+          "name": "almuerzo trabajo",
+          "categoryId": null,
+          "date": "2026-11-05"
+        }
+      ],
+      "unread": []
+    }
+  },
+  {
+    "id": "canary-c03",
+    "input": "taxi doce noventa y nueve",
+    "locale": "es",
+    "currency": "EUR",
+    "today": "2026-11-05",
+    "timeZone": "Europe/Madrid",
+    "categories": [{ "id": "cat-transporte", "name": "Transporte", "kind": "expense" }],
+    "usual": [],
+    "expected": {
+      "drafts": [
+        {
+          "amount": 1299,
+          "kind": "expense",
+          "name": "taxi",
+          "categoryId": null,
+          "date": "2026-11-05"
+        }
+      ],
+      "unread": []
+    }
+  },
+  {
+    "id": "canary-c04",
+    "input": "Dos euros en café.",
+    "locale": "es",
+    "currency": "EUR",
+    "today": "2026-11-05",
+    "timeZone": "Europe/Madrid",
+    "categories": [{ "id": "cat-transporte", "name": "Transporte", "kind": "expense" }],
+    "usual": [],
+    "expected": {
+      "drafts": [
+        {
+          "amount": 200,
+          "kind": "expense",
+          "name": "café",
+          "categoryId": null,
+          "date": "2026-11-05"
+        }
+      ],
+      "unread": []
+    }
+  },
+  {
+    "id": "canary-c05",
+    "input": "Parking, cuatro euros, dentista ciento veinte",
+    "locale": "es",
+    "currency": "EUR",
+    "today": "2026-11-05",
+    "timeZone": "Europe/Madrid",
+    "categories": [{ "id": "cat-transporte", "name": "Transporte", "kind": "expense" }],
+    "usual": [],
+    "expected": {
+      "drafts": [
+        {
+          "amount": 400,
+          "kind": "expense",
+          "name": "parking",
+          "categoryId": null,
+          "date": "2026-11-05"
+        },
+        {
+          "amount": 12000,
+          "kind": "expense",
+          "name": "dentista",
+          "categoryId": null,
+          "date": "2026-11-05"
+        }
+      ],
+      "unread": []
+    }
+  },
+  {
+    "id": "canary-c06",
+    "input": "almuerzo quince mil",
+    "locale": "es",
+    "currency": "COP",
+    "today": "2026-11-05",
+    "timeZone": "America/Bogota",
+    "categories": [{ "id": "cat-transporte", "name": "Transporte", "kind": "expense" }],
+    "usual": [],
+    "expected": {
+      "drafts": [
+        {
+          "amount": 1500000,
+          "kind": "expense",
+          "name": "almuerzo",
+          "categoryId": null,
+          "date": "2026-11-05"
+        }
+      ],
+      "unread": []
+    }
   }
 ]

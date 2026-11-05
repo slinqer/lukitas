@@ -22,7 +22,7 @@ ParseResult parseSentence(String text, ParseContext ctx) {
   // and of every later one, until another verb or date word.
   var kind = Kind.expense;
   var date = ctx.today;
-  for (final movement in splitMovements(readItems(text, ctx.locale))) {
+  for (final movement in splitMovements(readItems(text, ctx.locale, currency: ctx.currency))) {
     if (movement.items.isEmpty) continue;
     final verb = movement.items.where((i) => i.type == ItemType.verb).firstOrNull;
     if (verb != null) kind = verb.income ? Kind.income : Kind.expense;

@@ -205,10 +205,16 @@ const _centWordsPt = {'centimo', 'centimos', 'centavo', 'centavos', 'cent'};
 const _bigScale = 1 << 62;
 
 class _Reader {
-  _Reader(this.tokens, this.locale);
+  _Reader(this.tokens, this.locale, this.currency);
 
   final List<Token> tokens;
   final String locale;
+
+  /// The account currency (ISO 4217), or null when the caller does not know it.
+  final String? currency;
+
+  /// Currencies whose cents are spoken in daily life: `uno cincuenta` is 1,50 only in these.
+  bool get _dailyCents => currency == 'EUR' || currency == 'USD';
 
   bool get _en => locale == 'en';
   bool get _it => locale == 'it';
@@ -504,6 +510,22 @@ class _Reader {
             k = c.$2;
           }
         }
+        // es "uno cincuenta": the same, only where cents are used daily (EUR, USD); in COP
+        // `quince cincuenta` stays two amounts.
+        if (locale == 'es' &&
+            _dailyCents &&
+            lastScale == _bigScale &&
+            !isNumber(j) &&
+            s.isIntegerIn(1, 99)) {
+          final c = isNumber(k) ? null : _smallEs(k);
+          if (c != null && c.$1 >= 10 && c.$1 <= 99 && scaleAt(c.$2) == null) {
+            final after = word(c.$2);
+            if (after != 'cientos' && after != 'ciento') {
+              total = total + Dec(c.$1, 2);
+              k = c.$2;
+            }
+          }
+        }
         j = k;
         any = true;
       }
@@ -580,8 +602,9 @@ const _maxIntegerDigits = 15;
 }
 
 /// The longest amount that starts at token [i], or null when none starts there.
-AmountMatch? readAmount(List<Token> tokens, int i, String locale) =>
-    _Reader(tokens, locale).read(i);
+/// [currency] is the account currency; some rules (`uno cincuenta`) depend on it.
+AmountMatch? readAmount(List<Token> tokens, int i, String locale, {String? currency}) =>
+    _Reader(tokens, locale, currency).read(i);
 
 /// The amount, in currency units, when all of [text] is exactly one amount; otherwise null.
 /// Used by the tests of the number rules.

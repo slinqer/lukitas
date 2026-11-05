@@ -32,7 +32,7 @@ class Item {
 }
 
 /// The items of [text], in order.
-List<Item> readItems(String text, String locale) {
+List<Item> readItems(String text, String locale, {String? currency}) {
   final tokens = tokenize(text, locale);
   final items = <Item>[];
   var i = 0;
@@ -43,7 +43,7 @@ List<Item> readItems(String text, String locale) {
       i++;
       continue;
     }
-    final amount = readAmount(tokens, i, locale);
+    final amount = readAmount(tokens, i, locale, currency: currency);
     if (amount != null) {
       final last = tokens[amount.end - 1];
       items.add(
