@@ -161,6 +161,8 @@ export const transactions = pgTable(
     captureSource: text("capture_source"),
     /** When the notification was posted on the phone; the duplicate window runs on it. */
     capturedAt: timestamp("captured_at", { withTimezone: true }),
+    /** `merchantKey` of the merchant as notified, so renaming the row still teaches that merchant. */
+    captureMerchantKey: text("capture_merchant_key"),
     deletedAt: timestamp("deleted_at", { withTimezone: true }),
     ...timestamps,
   },

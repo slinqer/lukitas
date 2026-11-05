@@ -18,7 +18,8 @@ Hono + Better Auth + Drizzle (`@wambito/db`), OpenAPI document "Wambito API". Ev
   fallback categories; the Idempotency-Key is required.
 - Reviewing captures: `PATCH /v1/transactions/{id}` with `needsReview: false` and `POST
   /v1/transactions/review` (all or nothing, 404 on any foreign id) confirm them; list filter
-  `needsReview=true|false`. `learn` (`services/captures.ts`) upserts the merchant → category memory
+  `needsReview=true|false`. `learn` (`services/captures.ts`) upserts the merchant → category memory,
+  keyed on `transactions.capture_merchant_key` (the merchant as notified; the name only when null),
   only when a `capture` row flips to confirmed in that request, with an active, same-kind category
   that has no `system_key`.
 - `src/scripts/seed.ts`: creates `dev@wambito.test`.

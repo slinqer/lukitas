@@ -2624,6 +2624,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "capture_merchant_key": {
+          "name": "capture_merchant_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "deleted_at": {
           "name": "deleted_at",
           "type": "timestamp with time zone",

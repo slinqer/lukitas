@@ -12,6 +12,7 @@ ALTER TABLE "categories" ADD COLUMN "system_key" text;--> statement-breakpoint
 ALTER TABLE "transactions" ADD COLUMN "needs_review" boolean DEFAULT false NOT NULL;--> statement-breakpoint
 ALTER TABLE "transactions" ADD COLUMN "capture_source" text;--> statement-breakpoint
 ALTER TABLE "transactions" ADD COLUMN "captured_at" timestamp with time zone;--> statement-breakpoint
+ALTER TABLE "transactions" ADD COLUMN "capture_merchant_key" text;--> statement-breakpoint
 ALTER TABLE "merchant_categories" ADD CONSTRAINT "merchant_categories_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "merchant_categories" ADD CONSTRAINT "merchant_categories_category_id_categories_id_fk" FOREIGN KEY ("category_id") REFERENCES "public"."categories"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE UNIQUE INDEX "merchant_categories_key" ON "merchant_categories" USING btree ("user_id","merchant_key");--> statement-breakpoint

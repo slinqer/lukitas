@@ -69,14 +69,18 @@ export async function fallbackCategory(
   return created.id;
 }
 
-/** The category remembered for this merchant, when it is still active. */
-async function rememberedCategory(tx: Tx, merchant: string, kind: Kind): Promise<string | null> {
-  let key: string;
+/** `merchantKey`, or null for a merchant with no letters or digits worth remembering (R5). */
+function keyOf(merchant: string): string | null {
   try {
-    key = merchantKey(merchant);
+    return merchantKey(merchant);
   } catch {
-    return null; // no letters or digits worth remembering: use the fallback
+    return null;
   }
+}
+
+/** The category remembered for this merchant key, when it is still active. */
+async function rememberedCategory(tx: Tx, key: string | null, kind: Kind): Promise<string | null> {
+  if (key === null) return null; // nothing to look up: use the fallback
   const [row] = await tx
     .select({ id: categories.id })
     .from(merchantCategories)
@@ -139,7 +143,8 @@ export async function saveCapture(
     };
   }
 
-  const remembered = await rememberedCategory(tx, input.merchant, input.kind);
+  const key = keyOf(input.merchant);
+  const remembered = await rememberedCategory(tx, key, input.kind);
   const categoryId = remembered ?? (await fallbackCategory(tx, user.id, input.kind, user.locale));
   const [category] = await tx.select().from(categories).where(eq(categories.id, categoryId));
   const [row] = await tx
@@ -156,6 +161,7 @@ export async function saveCapture(
       source: "capture",
       captureSource: input.source,
       capturedAt,
+      captureMerchantKey: key,
       needsReview: true,
     })
     .returning();
@@ -181,15 +187,14 @@ function noteFor(input: CreateCapture, accountCurrency: string): string | null {
  * Remembers the category a person confirmed for a capture's merchant. Called when, in this
  * request, a `capture` row goes from needing review to confirmed; `row` is the updated row. Only
  * a category that is active, of the transaction's kind and not a fallback is remembered (RLS
- * scopes the lookup to this person), and a merchant with nothing alphanumeric is skipped.
+ * scopes the lookup to this person), and a merchant with nothing alphanumeric is skipped. The key
+ * is the merchant as notified (`capture_merchant_key`), so a row renamed before or while it is
+ * confirmed still teaches the merchant the next notification names; the row's name is used only
+ * when the key was never stored.
  */
 export async function learn(tx: Tx, userId: string, row: TransactionRow): Promise<void> {
-  let key: string;
-  try {
-    key = merchantKey(row.name);
-  } catch {
-    return;
-  }
+  const key = row.captureMerchantKey ?? keyOf(row.name);
+  if (key === null) return;
   const [category] = await tx
     .select({ id: categories.id })
     .from(categories)

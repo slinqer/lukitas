@@ -348,6 +348,74 @@ describe("review", () => {
     expect(next.category).toEqual({ name: "Comida", fallback: false });
   });
 
+  test("renaming while confirming still teaches the notified merchant", async () => {
+    const u = await t.signIn("rename@wambito.test");
+    const market = await mkCategory(u, "Supermercado");
+    const first = await json(await capture({ merchant: "LIDL 0042 LISBOA" }, { user: u }));
+    const res = await patch(u, first.transaction.id, {
+      name: "Lidl",
+      categoryId: market,
+      needsReview: false,
+    });
+    expect(res.status).toBe(200);
+    expect(((await res.json()) as { name: string }).name).toBe("Lidl");
+    const next = await json(
+      await capture({ merchant: "LIDL 0042 LISBOA", ...at("2026-11-06T10:00:00Z") }, { user: u }),
+    );
+    expect(next.result).toBe("created");
+    expect(next.transaction.categoryId).toBe(market);
+  });
+
+  test("a rename before the review still teaches the notified merchant", async () => {
+    const u = await t.signIn("rename-review@wambito.test");
+    const market = await mkCategory(u, "Supermercado");
+    const first = await json(await capture({ merchant: "LIDL 0042 LISBOA" }, { user: u }));
+    await patch(u, first.transaction.id, { name: "Lidl", categoryId: market });
+    expect((await review(u, [first.transaction.id])).status).toBe(200);
+    const [m] = await memory(u);
+    expect(m?.categoryId).toBe(market);
+    const next = await json(
+      await capture({ merchant: "LIDL 0042 LISBOA", ...at("2026-11-06T10:00:00Z") }, { user: u }),
+    );
+    expect(next.transaction.categoryId).toBe(market);
+  });
+
+  test("a capture row without a notified key learns from its name", async () => {
+    const u = await t.signIn("legacy-key@wambito.test");
+    const market = await mkCategory(u, "Supermercado");
+    const first = await json(await capture({ merchant: "Legacy Shop" }, { user: u }));
+    await t.admin
+      .update(transactions)
+      .set({ captureMerchantKey: null })
+      .where(eq(transactions.id, first.transaction.id));
+    await patch(u, first.transaction.id, {
+      name: "Renamed Shop",
+      categoryId: market,
+      needsReview: false,
+    });
+    const [m] = await memory(u);
+    expect(m?.merchantKey).toBe("renamed shop");
+  });
+
+  test("review of a deleted capture answers 404 and changes nothing", async () => {
+    const u = await t.signIn("review-deleted@wambito.test");
+    const gone = await json(await capture({ amount: 51 }, { user: u }));
+    await t.request("DELETE", `/v1/transactions/${gone.transaction.id}`, { headers: u.headers });
+    const res = await review(u, [gone.transaction.id]);
+    expect(res.status).toBe(404);
+    const [row] = await t.admin
+      .select()
+      .from(transactions)
+      .where(eq(transactions.id, gone.transaction.id));
+    expect(row?.needsReview).toBe(true);
+  });
+
+  test("review of another account's capture alone answers 404", async () => {
+    const u = await t.signIn("review-foreign@wambito.test");
+    const theirs = await json(await capture({ amount: 52 }, { user: b }));
+    expect((await review(u, [theirs.transaction.id])).status).toBe(404);
+  });
+
   test("confirming a fallback learns nothing", async () => {
     const u = await t.signIn("fallback@wambito.test");
     const first = await json(await capture({}, { user: u }));
