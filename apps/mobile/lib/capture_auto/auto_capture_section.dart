@@ -131,15 +131,6 @@ class _AutoCaptureSectionState extends ConsumerState<AutoCaptureSection>
       title: l10n.autoCaptureTitle,
       lead: l10n.autoCaptureLead,
       children: [
-        Align(
-          alignment: Alignment.centerLeft,
-          child: PressLink.text(
-            l10n.autoCaptureHowLink,
-            key: const Key('autoCapture.how'),
-            tone: PressTone.secondary,
-            onPressed: () => unawaited(showHowCaptureWorks(context, askAccess: false)),
-          ),
-        ),
         for (final source in CaptureSource.values)
           SettingSwitch(
             key: Key('autoCapture.${source.wire}'),
@@ -184,6 +175,16 @@ class _AutoCaptureSectionState extends ConsumerState<AutoCaptureSection>
             key: const Key('autoCapture.active'),
             style: LkText.bodySm.copyWith(color: colors.inkMuted),
           ),
+        // Under the apps it reads: what they do, step by step.
+        Align(
+          alignment: Alignment.centerLeft,
+          child: PressLink.text(
+            l10n.autoCaptureHowLink,
+            key: const Key('autoCapture.how'),
+            tone: PressTone.secondary,
+            onPressed: () => unawaited(showHowCaptureWorks(context, askAccess: false)),
+          ),
+        ),
       ],
     );
   }

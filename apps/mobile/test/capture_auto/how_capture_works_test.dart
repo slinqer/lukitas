@@ -198,7 +198,75 @@ void main() {
     expect(find.text('Pagas como siempre'), findsNothing);
   });
 
+  testWidgets('Cómo funciona sits under the apps it explains', (t) async {
+    await _pump(t);
+    await _show(t, const Key('autoCapture.how'));
+    final link = t.getRect(find.byKey(const Key('autoCapture.how')));
+    for (final source in CaptureSource.values) {
+      final row = t.getRect(find.byKey(Key('autoCapture.${source.wire}')));
+      expect(link.top, greaterThanOrEqualTo(row.bottom), reason: source.wire);
+    }
+  });
+
+  testWidgets('every step keeps the same height, the last one too', (t) async {
+    await _pump(t);
+    await _show(t, const Key('autoCapture.how'));
+    await t.tap(find.byKey(const Key('autoCapture.how')));
+    await t.pumpAndSettle();
+
+    final heights = <double>[];
+    for (var i = 0; i < 5; i++) {
+      heights.add(t.getSize(find.byType(PageView)).height);
+      if (i < 4) await _tap(t, const Key('autoCapture.how.next'));
+    }
+    expect(heights.toSet(), hasLength(1), reason: '$heights');
+  });
+
+  testWidgets('the sheet keeps its size up to the last step, disclosure included', (t) async {
+    await _pump(t);
+    // A screen where the steps fit, so the sheet takes its content's height.
+    t.view
+      ..physicalSize = const Size(412, 732) * 2.625
+      ..devicePixelRatio = 2.625;
+    addTearDown(t.view.reset);
+    await t.pumpAndSettle();
+    await _switchOn(t);
+    final title = find.descendant(
+      of: find.byType(HowCaptureWorks),
+      matching: find.text('Captura automática'),
+    );
+
+    final tops = <double>[];
+    for (var i = 0; i < 5; i++) {
+      tops.add(t.getRect(title).top);
+      if (i < 4) await _tap(t, const Key('autoCapture.how.next'));
+    }
+    expect(tops.toSet(), hasLength(1), reason: 'the sheet moved: $tops');
+  });
+
   for (final locale in const [Locale('es'), Locale('pt')]) {
+    // A short phone (the emulator's 412×732, with Android's status bar and button bar taking their
+    // part): every step, demo included, shows whole between the sheet's title and its footer,
+    // without scrolling.
+    testWidgets('fits a short phone without scrolling ($locale)', (t) async {
+      await _pump(t, locale: locale);
+      t.view
+        ..physicalSize = const Size(412, 732) * 2.625
+        ..devicePixelRatio = 2.625
+        ..padding = const FakeViewPadding(top: 24 * 2.625, bottom: 48 * 2.625)
+        ..viewPadding = const FakeViewPadding(top: 24 * 2.625, bottom: 48 * 2.625);
+      addTearDown(t.view.reset);
+      await t.pumpAndSettle();
+      await _show(t, const Key('autoCapture.how'));
+      await t.tap(find.byKey(const Key('autoCapture.how')));
+      await t.pumpAndSettle();
+
+      final pages = t.getRect(find.byType(PageView));
+      final footer = t.getRect(find.byKey(const Key('autoCapture.how.dot.0')));
+      expect(pages.top, greaterThanOrEqualTo(0));
+      expect(pages.bottom, lessThanOrEqualTo(footer.top), reason: 'the tallest step is cut');
+    });
+
     testWidgets('fits a 360 dp phone ($locale)', (t) async {
       await _pump(t, locale: locale);
       t.view

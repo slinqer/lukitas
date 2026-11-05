@@ -4,8 +4,6 @@
 //
 // It is also the prominent disclosure before notification access: on the first switch on the last
 // step repeats what is read and that the text stays on the phone, right above "Activar acceso".
-import 'dart:ui' show lerpDouble;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -40,8 +38,8 @@ Future<bool> showHowCaptureWorks(BuildContext context, {required bool askAccess}
   return go ?? false;
 }
 
-/// Holds the steps' state (the page in view and each page's height) for the sheet it wraps: the
-/// pages in its body and the dots and button in its stuck footer.
+/// Holds the steps' state (the page in view) for the sheet it wraps: the pages in its body and the
+/// dots and button in its stuck footer.
 class HowCaptureWorks extends StatefulWidget {
   const HowCaptureWorks({super.key, required this.askAccess, required this.child});
 
@@ -59,15 +57,7 @@ class _HowCaptureWorksState extends State<HowCaptureWorks> {
   final _controller = PageController();
   int _page = 0;
 
-  /// Each page's own height, measured as it is laid out: the pages sit in a sheet that scrolls as a
-  /// whole, so the page view takes the height of the page in view (between two while swiping).
-  final _heights = <int, double>{};
-
   static final _last = CaptureHowStep.values.length - 1;
-
-  /// The height before any page is measured: the scene, its gap, a title line and two body lines,
-  /// so the first frame does not draw an empty page view.
-  static const _fallbackHeight = 200 + 2 * WambitoTokens.space2 + 22 * 1.2 + 2 * 15 * 1.45;
 
   @override
   void dispose() {
@@ -89,24 +79,6 @@ class _HowCaptureWorksState extends State<HowCaptureWorks> {
 
   void _turned(int page) => setState(() => _page = page);
 
-  void _measured(int page, double height) {
-    if (_heights[page] == height || !mounted) return;
-    setState(() => _heights[page] = height);
-  }
-
-  double _height() {
-    final known =
-        _heights[_page] ??
-        (_heights.isEmpty ? _fallbackHeight : _heights.values.reduce((a, b) => a > b ? a : b));
-    if (!_controller.hasClients || !_controller.position.haveDimensions) return known;
-    final page = _controller.page ?? _page.toDouble();
-    final low = page.floor().clamp(0, _last);
-    final high = page.ceil().clamp(0, _last);
-    final from = _heights[low] ?? known;
-    final to = _heights[high] ?? from;
-    return lerpDouble(from, to, page - low)!;
-  }
-
   @override
   Widget build(BuildContext context) => _HowScope(state: this, page: _page, child: widget.child);
 }
@@ -123,37 +95,34 @@ class _HowScope extends InheritedWidget {
   static _HowCaptureWorksState of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<_HowScope>()!.state;
 
-  // The measured heights live in the state too: any rebuild of it may change what the parts draw.
   @override
-  bool updateShouldNotify(_HowScope old) => true;
+  bool updateShouldNotify(_HowScope old) => old.page != page;
 }
 
-/// The pages, one step each, swiped sideways.
+/// The pages, one step each, swiped sideways. Every step is as tall as the tallest one (the hidden
+/// copies under the page view give the height), so the sheet keeps its size from step to step.
 class _HowPages extends StatelessWidget {
   const _HowPages();
 
   @override
   Widget build(BuildContext context) {
     final how = _HowScope.of(context);
+    final compact = MediaQuery.sizeOf(context).height < CaptureHowStepView.compactBelow;
     return Padding(
-      padding: const EdgeInsets.only(top: WambitoTokens.space3),
-      child: AnimatedBuilder(
-        animation: how._controller,
-        builder: (context, child) => SizedBox(height: how._height(), child: child),
-        child: PageView.builder(
-          controller: how._controller,
-          itemCount: CaptureHowStep.values.length,
-          onPageChanged: how._turned,
-          itemBuilder: (context, page) => OverflowBox(
-            alignment: Alignment.topCenter,
-            minHeight: 0,
-            maxHeight: double.infinity,
-            child: _MeasureHeight(
-              onHeight: (height) => how._measured(page, height),
+      padding: EdgeInsets.only(top: compact ? WambitoTokens.space1 : WambitoTokens.space3),
+      child: _Tallest(
+        children: [
+          for (final step in CaptureHowStep.values) CaptureHowStepView(step: step),
+          PageView.builder(
+            controller: how._controller,
+            itemCount: CaptureHowStep.values.length,
+            onPageChanged: how._turned,
+            itemBuilder: (context, page) => Align(
+              alignment: Alignment.topCenter,
               child: CaptureHowStepView(step: CaptureHowStep.values[page]),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -170,23 +139,32 @@ class _HowFooter extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final colors = context.lkColors;
     final page = how._page;
+    final last = page == _HowCaptureWorksState._last;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: WambitoTokens.space2,
       children: [
         _Dots(count: CaptureHowStep.values.length, current: page, onTap: how._go),
-        if (page < _HowCaptureWorksState._last)
+        // The disclosure's room is kept on every step (shown on the last one only), so the sheet
+        // does not grow when it appears.
+        Visibility(
+          visible: last,
+          maintainSize: true,
+          maintainAnimation: true,
+          maintainState: true,
+          child: CssParagraph(
+            l10n.autoCaptureHowDisclosure,
+            key: last ? const Key('autoCapture.how.disclosure') : null,
+            style: LkText.body.copyWith(color: colors.ink),
+          ),
+        ),
+        if (!last)
           PressButton.text(
             l10n.autoCaptureHowNext,
             key: const Key('autoCapture.how.next'),
             onPressed: () => how._go(page + 1),
           )
         else ...[
-          CssParagraph(
-            l10n.autoCaptureHowDisclosure,
-            key: const Key('autoCapture.how.disclosure'),
-            style: LkText.body.copyWith(color: colors.ink),
-          ),
           if (how.widget.askAccess)
             PressButton.text(
               l10n.autoCaptureExplainerConfirm,
@@ -211,6 +189,10 @@ class CaptureHowStepView extends StatelessWidget {
 
   final CaptureHowStep step;
 
+  /// Screens shorter than this (logical pixels) get the compact step: a smaller scene beside the
+  /// words. The parity goldens (915 tall) and most phones keep the scene above.
+  static const compactBelow = 820.0;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -229,31 +211,117 @@ class CaptureHowStepView extends StatelessWidget {
       CaptureHowStep.learns => const LearnDemo(),
       CaptureHowStep.next => null,
     };
+    // On a short screen the scene shrinks and sits beside the words, so a step (demo included)
+    // fits in the sheet without scrolling; on a tall one it stands above them, as on the web.
+    final compact = MediaQuery.sizeOf(context).height < compactBelow;
+    final scene = Image.asset(
+      'assets/wambi/capture-step${step.index + 1}.webp',
+      width: compact ? 72 : 200,
+      height: compact ? 72 : 200,
+      fit: BoxFit.contain,
+      excludeFromSemantics: true,
+    );
+    final words = [
+      Semantics(
+        header: true,
+        child: Text(
+          title,
+          style: LkText.title.copyWith(fontSize: compact ? 20 : 22, height: 1.2, color: colors.ink),
+        ),
+      ),
+      Text(body, style: LkText.body.copyWith(height: 1.45, color: colors.inkMuted)),
+    ];
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: WambitoTokens.space2,
       children: [
-        Center(
-          child: Image.asset(
-            'assets/wambi/capture-step${step.index + 1}.webp',
-            width: 200,
-            height: 200,
-            fit: BoxFit.contain,
-            excludeFromSemantics: true,
-          ),
-        ),
-        Semantics(
-          header: true,
-          child: Text(
-            title,
-            style: LkText.title.copyWith(fontSize: 22, height: 1.2, color: colors.ink),
-          ),
-        ),
-        Text(body, style: LkText.body.copyWith(height: 1.45, color: colors.inkMuted)),
+        if (compact)
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: WambitoTokens.space3,
+            children: [
+              scene,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: WambitoTokens.space1,
+                  children: words,
+                ),
+              ),
+            ],
+          )
+        else ...[
+          Center(child: scene),
+          ...words,
+        ],
         ?demo,
       ],
     );
+  }
+}
+
+/// Sizes to the tallest of its children but the last, which it lays out at that height and is the
+/// only one painted, hit or read: the others only measure. Its element shows finders only the last
+/// child too, so a test finds each step's text once.
+class _Tallest extends MultiChildRenderObjectWidget {
+  const _Tallest({required super.children});
+
+  @override
+  MultiChildRenderObjectElement createElement() => _TallestElement(this);
+
+  @override
+  RenderObject createRenderObject(BuildContext context) => _RenderTallest();
+}
+
+class _TallestElement extends MultiChildRenderObjectElement {
+  _TallestElement(super.widget);
+
+  @override
+  void debugVisitOnstageChildren(ElementVisitor visitor) {
+    if (children.isNotEmpty) visitor(children.last);
+  }
+}
+
+class _TallestParentData extends ContainerBoxParentData<RenderBox> {}
+
+class _RenderTallest extends RenderBox
+    with
+        ContainerRenderObjectMixin<RenderBox, _TallestParentData>,
+        RenderBoxContainerDefaultsMixin<RenderBox, _TallestParentData> {
+  @override
+  void setupParentData(RenderBox child) {
+    if (child.parentData is! _TallestParentData) child.parentData = _TallestParentData();
+  }
+
+  @override
+  void performLayout() {
+    final width = constraints.maxWidth;
+    var height = 0.0;
+    var child = firstChild;
+    while (child != null && child != lastChild) {
+      child.layout(BoxConstraints.tightFor(width: width), parentUsesSize: true);
+      if (child.size.height > height) height = child.size.height;
+      child = childAfter(child);
+    }
+    size = constraints.constrain(Size(width, height));
+    lastChild?.layout(BoxConstraints.tight(size));
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    final shown = lastChild;
+    if (shown != null) context.paintChild(shown, offset);
+  }
+
+  @override
+  bool hitTestChildren(BoxHitTestResult result, {required Offset position}) =>
+      lastChild?.hitTest(result, position: position) ?? false;
+
+  @override
+  void visitChildrenForSemantics(RenderObjectVisitor visitor) {
+    final shown = lastChild;
+    if (shown != null) visitor(shown);
   }
 }
 
@@ -300,37 +368,5 @@ class _Dots extends StatelessWidget {
           ),
       ],
     );
-  }
-}
-
-/// Tells [onHeight] its child's height after each layout that changes it (after the frame: a
-/// height is state of the page view above, which cannot change during layout).
-class _MeasureHeight extends SingleChildRenderObjectWidget {
-  const _MeasureHeight({required this.onHeight, required super.child});
-
-  final ValueChanged<double> onHeight;
-
-  @override
-  RenderObject createRenderObject(BuildContext context) => _RenderMeasureHeight(onHeight);
-
-  @override
-  void updateRenderObject(BuildContext context, _RenderMeasureHeight renderObject) {
-    renderObject.onHeight = onHeight;
-  }
-}
-
-class _RenderMeasureHeight extends RenderProxyBox {
-  _RenderMeasureHeight(this.onHeight);
-
-  ValueChanged<double> onHeight;
-  double? _reported;
-
-  @override
-  void performLayout() {
-    super.performLayout();
-    final height = size.height;
-    if (height == _reported) return;
-    _reported = height;
-    WidgetsBinding.instance.addPostFrameCallback((_) => onHeight(height));
   }
 }
