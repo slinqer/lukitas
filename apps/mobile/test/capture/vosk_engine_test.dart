@@ -164,6 +164,59 @@ void main() {
     expect(heard.last, 'medio palo en el éxito');
   });
 
+  test(
+    'a mid-sentence grammar endpoint does not repeat the words the partial still holds',
+    () async {
+      final heard = <String>[];
+      final done = engine.listen(locale: 'es').listen(heard.add).asFuture<void>();
+      await pumpEventQueue();
+      channel.send(const VoiceEvent.partial('dos euros'));
+      // The grammar pass ends an utterance after "dos euros"; the free pass has not, so its next
+      // partial still starts at "dos".
+      channel.send(
+        VoiceEvent.result(VoicePass.grammar, _result([('dos', 0.30, 0.50), ('euros', 0.50, 0.90)])),
+      );
+      channel.send(const VoiceEvent.partial('dos euros en'));
+      channel.send(const VoiceEvent.partial('dos euros en café'));
+      await pumpEventQueue();
+      await channel.finish(
+        free: _result([
+          ('dos', 0.30, 0.50),
+          ('euros', 0.50, 0.90),
+          ('en', 1.00, 1.10),
+          ('café', 1.10, 1.50),
+        ]),
+      );
+      await done;
+      expect(heard.where((t) => t.isNotEmpty), [
+        'dos euros',
+        'dos euros en',
+        'dos euros en café',
+        'dos euros en café',
+      ]);
+    },
+  );
+
+  test('after a free endpoint, the next partial follows the words already heard', () async {
+    final heard = <String>[];
+    final done = engine.listen(locale: 'es').listen(heard.add).asFuture<void>();
+    await pumpEventQueue();
+    channel.send(const VoiceEvent.partial('almuerzo'));
+    channel.send(VoiceEvent.result(VoicePass.free, _result([('almuerzo', 0, 0.5)])));
+    channel.send(
+      VoiceEvent.result(VoicePass.grammar, _result([('quince', 0.6, 0.9), ('mil', 1.0, 1.3)])),
+    );
+    channel.send(const VoiceEvent.partial('quince mil'));
+    await pumpEventQueue();
+    await channel.finish(free: _result([('quince', 0.6, 0.9), ('mil', 1.0, 1.3)]));
+    await done;
+    expect(heard.where((t) => t.isNotEmpty), [
+      'almuerzo',
+      'almuerzo quince mil',
+      'almuerzo quince mil',
+    ]);
+  });
+
   test('results from several endpoints add up, in time order', () async {
     final heard = engine.listen(locale: 'es').toList();
     await pumpEventQueue();
