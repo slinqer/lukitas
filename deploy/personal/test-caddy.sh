@@ -84,6 +84,8 @@ cat >"$tmp/upstream/Caddyfile" <<'EOF'
 EOF
 printf '<!doctype html><title>index</title>\n' >"$tmp/srv/index.html"
 printf '<!doctype html><title>app</title>\n' >"$tmp/srv/__spa-fallback.html"
+mkdir -p "$tmp/srv/email/fonts"
+printf 'font\n' >"$tmp/srv/email/fonts/f.woff2"
 
 upstream="caddytest-upstream-$id"
 containers="$containers $upstream"
@@ -169,6 +171,11 @@ cases_tunnel() {
   check "tunnel: MCP, without Cloudflare, the peer" "$CLIENT_IP" \
     "$(curl_web -X POST -H 'Content-Type: application/json' -d '{}' \
       -H 'X-Forwarded-For: 198.51.100.9' http://web:80/mcp)"
+  # The emails' fonts load in mail clients only with CORS.
+  check "tunnel: email fonts allow any origin" "*" \
+    "$(curl_web -I http://web:80/email/fonts/f.woff2 | header_of Access-Control-Allow-Origin)"
+  check "tunnel: email files cached a day" "public, max-age=86400" \
+    "$(curl_web -I http://web:80/email/fonts/f.woff2 | header_of Cache-Control)"
   check "tunnel: schema not public" 404 \
     "$(curl_web -o /dev/null -w '%{http_code}' http://web:80/api/openapi.json)"
   check "tunnel: landing redirect" "302 $LANDING_URL/pt?x=1" \

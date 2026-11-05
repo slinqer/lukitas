@@ -49,6 +49,15 @@ describe("adminMail", () => {
     expect(mail.html).toContain(`href="${extra.link}"`);
   });
 
+  test("the same layout as sign-in: Wambi, the wordmark image, the fonts and dark mode", () => {
+    const { html } = adminMail("email_change_link", "es", extra);
+    expect(html).toContain(`src="${WEB}/email/wambi.png"`);
+    expect(html).toContain(`src="${WEB}/email/wambito-day.png"`);
+    expect(html).toContain(`url(${WEB}/email/fonts/fredoka-latin-700-normal.woff2)`);
+    expect(html).toContain('<meta name="color-scheme" content="light dark">');
+    expect(html).toMatch(/<td[^>]*class="w-btn"[^>]*border-bottom:6px solid #4a2bbf/);
+  });
+
   test("a notice without a link has no button", () => {
     expect(adminMail("sessions_revoked", "en", extra).html).not.toContain(
       '<a href="http://localhost:5173/confirm',
