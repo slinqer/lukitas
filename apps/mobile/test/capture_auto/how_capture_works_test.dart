@@ -267,6 +267,28 @@ void main() {
       expect(pages.bottom, lessThanOrEqualTo(footer.top), reason: 'the tallest step is cut');
     });
 
+    // A tall phone that is not "short" (a Galaxy S25 Ultra at its default display size: 412×892,
+    // status bar and gesture bar) and the first switch on, whose footer keeps the disclosure's room:
+    // the first step, demo included, still shows whole above the footer.
+    testWidgets('fits a tall phone on the first switch on ($locale)', (t) async {
+      await _pump(t, locale: locale);
+      t.view
+        ..physicalSize = const Size(412, 892) * 2.625
+        ..devicePixelRatio = 2.625
+        ..padding = const FakeViewPadding(top: 36 * 2.625, bottom: 24 * 2.625)
+        ..viewPadding = const FakeViewPadding(top: 36 * 2.625, bottom: 24 * 2.625);
+      addTearDown(t.view.reset);
+      await t.pumpAndSettle();
+      await _switchOn(t);
+
+      for (var i = 0; i < 5; i++) {
+        final pages = t.getRect(find.byType(PageView));
+        final footer = t.getRect(find.byKey(const Key('autoCapture.how.dot.0')));
+        expect(pages.bottom, lessThanOrEqualTo(footer.top), reason: 'step $i is cut');
+        if (i < 4) await _tap(t, const Key('autoCapture.how.next'));
+      }
+    });
+
     testWidgets('fits a 360 dp phone ($locale)', (t) async {
       await _pump(t, locale: locale);
       t.view
