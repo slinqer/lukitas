@@ -727,5 +727,12 @@
   "autoCaptureStuck": "Non te lo permette?",
   "autoCaptureStepsTitle": "Impostazioni con restrizioni",
   "autoCaptureSteps": "1. Tocca Apri info app.\n2. Tocca ⋮ in alto a destra e scegli Consenti impostazioni con restrizioni.\n3. Torna qui e tocca Attiva.",
-  "autoCaptureOpenInfo": "Apri info app"
+  "autoCaptureOpenInfo": "Apri info app",
+  "homeReviewCount": "{count, plural, =1{1 da rivedere} other{{count} da rivedere}}",
+  "reviewTitle": "Da rivedere",
+  "reviewOk": "Va bene",
+  "reviewChange": "Cambia",
+  "reviewConfirmAll": "Conferma tutti",
+  "reviewMark": "{source, select, revolut{da rivedere · da Revolut} google_wallet{da rivedere · da Google Wallet} other{da rivedere}}",
+  "reviewEmpty": "Niente da rivedere"
 }

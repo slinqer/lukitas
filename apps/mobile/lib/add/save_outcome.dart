@@ -10,6 +10,7 @@ import '../home/home_repository.dart';
 import '../l10n/app_localizations.dart';
 import '../money/format.dart';
 import '../recurring/recurring_repository.dart';
+import '../review/review_controller.dart';
 import '../ui/toast.dart';
 import 'add_form.dart';
 
@@ -107,6 +108,7 @@ Future<void> deleteMovement({
     toasts.say(failure.offline ? l10n.errorNetwork : l10n.errorGeneric, error: true);
     return;
   }
+  if (transaction.needsReview) container.invalidate(reviewProvider);
   toasts.say(
     l10n.transactionDeleted(transaction.name),
     actionLabel: l10n.undo,
@@ -126,6 +128,7 @@ Future<void> _bringBack(
     toasts.say(failure.offline ? l10n.errorNetwork : l10n.errorGeneric, error: true);
     return;
   }
+  if (transaction.needsReview) container.invalidate(reviewProvider);
   container.read(feedbackProvider)(FeedbackEvent.undo);
   toasts.say(l10n.transactionRestored(transaction.name));
 }

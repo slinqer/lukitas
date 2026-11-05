@@ -10,6 +10,7 @@ import '../home/home_repository.dart';
 import '../home/saved_feedback.dart';
 import '../l10n/app_localizations.dart';
 import '../offline/pending_saves.dart';
+import '../review/review_controller.dart';
 import '../ui/amount_field.dart';
 import '../ui/name_field.dart';
 import '../ui/toast.dart';
@@ -224,7 +225,10 @@ class AddSheetState extends ConsumerState<AddSheet> {
     final categoryName = current.selected?.name ?? '';
     final unnamed = current.name.trim().isEmpty;
 
-    final patch = editing == null ? null : current.patch();
+    // A detected movement confirms with its edit (even one with nothing changed).
+    final patch = editing == null
+        ? null
+        : (editing.needsReview ? current.patch().confirming() : current.patch());
     if (patch != null && patch.isEmpty) {
       navigator.pop();
       return;
@@ -247,6 +251,7 @@ class AddSheetState extends ConsumerState<AddSheet> {
         unawaited(feelSaved(container, homeController.saved(saved), [saved]));
       } else {
         unawaited(homeController.updated(saved));
+        if (editing.needsReview) container.invalidate(reviewProvider);
       }
       if (mounted) navigator.pop();
       if (editing == null) {

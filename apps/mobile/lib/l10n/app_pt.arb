@@ -727,5 +727,12 @@
   "autoCaptureStuck": "Não deixa?",
   "autoCaptureStepsTitle": "Definições restritas",
   "autoCaptureSteps": "1. Toca em Abrir informações da app.\n2. Toca em ⋮ no canto superior direito e escolhe Permitir definições restritas.\n3. Volta aqui e toca em Ativar.",
-  "autoCaptureOpenInfo": "Abrir informações da app"
+  "autoCaptureOpenInfo": "Abrir informações da app",
+  "homeReviewCount": "{count, plural, =0{0 por rever} =1{1 por rever} other{{count} por rever}}",
+  "reviewTitle": "Por rever",
+  "reviewOk": "Certo",
+  "reviewChange": "Alterar",
+  "reviewConfirmAll": "Confirmar tudo",
+  "reviewMark": "{source, select, revolut{por rever · do Revolut} google_wallet{por rever · do Google Wallet} other{por rever}}",
+  "reviewEmpty": "Nada por rever"
 }

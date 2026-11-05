@@ -12,6 +12,7 @@ import 'package:wambito/home/home_controller.dart';
 import 'package:wambito/home/home_repository.dart';
 import 'package:wambito/home/widget_snapshot.dart';
 import 'package:wambito/recurring/recurring_repository.dart';
+import 'package:wambito/review/review_repository.dart';
 import 'package:wambito/router.dart';
 import 'package:wambito/settings/assistants_repository.dart';
 import 'package:wambito/settings/server_status.dart';
@@ -23,6 +24,7 @@ import '../entry/fakes.dart';
 import '../feedback/fakes.dart';
 import '../home/fakes.dart';
 import '../recurring/fakes.dart';
+import '../review/fakes.dart' show FakeReviewRepository;
 import 'fakes.dart';
 
 /// Opens URLs into a list instead of a browser.
@@ -128,6 +130,9 @@ Future<SettingsEnv> pumpSettingsApp(
     urlOpenerProvider.overrideWithValue(opener),
     modelStoreProvider.overrideWithValue(models),
     feedbackPlatformProvider.overrideWithValue(FakeFeedbackPlatform()),
+    reviewRepositoryProvider.overrideWithValue(
+      FakeReviewRepository(homeRepo ?? FakeHomeRepository()),
+    ),
     homeRepositoryProvider.overrideWithValue(homeRepo ?? FakeHomeRepository()),
     recurringRepositoryProvider.overrideWithValue(
       FakeRecurringRepository(homeRepo ?? FakeHomeRepository()),

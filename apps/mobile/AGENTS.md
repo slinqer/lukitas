@@ -20,8 +20,16 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
   override `--dart-define=WAMBITO_SERVER=…` (`lib/api/server_address.dart`) or in Settings.
 - Storage: secure storage for session and settings; widget snapshot JSON under
   `wambito.widget.snapshot` in `HomeWidgetPreferences` (`lib/home/widget_snapshot.dart`).
-- Deep links `wambito://{add,capture,due,progress,home}` (`lib/launch/launch_links.dart`), plus
-  `wambito://review/<id>` (Android side done in `LaunchLinks.kt`; the Dart side comes with the review screen).
+- `lib/review/`: the inbox of transactions detected from notifications (`needsReview`). `reviewProvider`
+  (`review_controller.dart`, read once, invalidated by home on refresh/resume) feeds home's
+  "N gastos por revisar" row (`ReviewHomeRow`) and `/review` (`ReviewScreen`): Bien and Confirmar
+  todos call `ReviewRepository.confirm` (POST /v1/transactions/review, all or nothing); Cambiar opens
+  the add sheet's edit flow, whose save adds `needsReview: false` (`TransactionPatch.confirming`) so it
+  confirms and teaches in one PATCH. Rows carry the mark "por revisar · de Revolut" (`reviewMarkOf`).
+  Tests fake the server with `test/review/fakes.dart` (`pumpHome`/`pumpSettingsApp` override it).
+- Deep links `wambito://{add,capture,due,progress,home,review}` (`lib/launch/launch_links.dart`);
+  `wambito://review` and `wambito://review/<id>` (one segment, `launchReviewIdOf`) push `/review` or
+  `/review/<id>` over home, which opens that transaction in the editor.
 
 ## Android (`android/app/src/main/kotlin/com/wambito/app/`)
 

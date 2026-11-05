@@ -100,6 +100,7 @@ class FakeAddRepository implements AddRepository {
         b.status = patch.pending! ? TransactionStatusEnum.pending : TransactionStatusEnum.paid;
       }
       if (patch.setNote) b.note = patch.note;
+      if (patch.confirm) b.needsReview = false;
     });
     server.items[index] = updated;
     await hold?.future;

@@ -16,6 +16,7 @@ class TransactionPatch {
     this.pending,
     this.setNote = false,
     this.note,
+    this.confirm = false,
   });
 
   final String? name;
@@ -34,13 +35,30 @@ class TransactionPatch {
   final bool setNote;
   final String? note;
 
+  /// Also confirms a detected movement (`needsReview: false`), so an edit from the review inbox
+  /// confirms and teaches the merchant's category in one request.
+  final bool confirm;
+
+  /// The same patch, confirming.
+  TransactionPatch confirming() => TransactionPatch(
+    name: name,
+    amount: amount,
+    categoryId: categoryId,
+    date: date,
+    pending: pending,
+    setNote: setNote,
+    note: note,
+    confirm: true,
+  );
+
   bool get isEmpty =>
       name == null &&
       amount == null &&
       categoryId == null &&
       date == null &&
       pending == null &&
-      !setNote;
+      !setNote &&
+      !confirm;
 
   Map<String, Object?> toJson() => {
     if (name != null) 'name': name,
@@ -49,6 +67,7 @@ class TransactionPatch {
     if (date != null) 'date': date,
     if (pending != null) 'status': pending! ? 'pending' : 'paid',
     if (setNote) 'note': note,
+    if (confirm) 'needsReview': false,
   };
 }
 

@@ -13,8 +13,10 @@ import 'package:wambito/home/home_controller.dart';
 import 'package:wambito/home/home_cache.dart';
 import 'package:wambito/home/home_repository.dart';
 import 'package:wambito/home/widget_snapshot.dart';
+import 'package:wambito/review/review_repository.dart';
 
 import '../home/fakes.dart';
+import '../review/fakes.dart' show FakeReviewRepository;
 
 /// An auth server in memory: records every call, answers with made-up tokens, and fails a call
 /// when told to.
@@ -295,6 +297,7 @@ Future<ProviderContainer> pumpApp(
       passkeysProvider.overrideWithValue(passkeys ?? FakePasskeys(isSupported: false)),
       // Home, once reached, reads an empty month from memory instead of the network.
       homeRepositoryProvider.overrideWithValue(FakeHomeRepository()),
+      reviewRepositoryProvider.overrideWithValue(FakeReviewRepository(FakeHomeRepository())),
       widgetStoreProvider.overrideWithValue(FakeWidgetStore()),
       homeCacheStoreProvider.overrideWithValue(FakeCacheStore()),
       widgetSnapshotWriterProvider.overrideWithValue(

@@ -1924,5 +1924,12 @@
   "autoCaptureStuck": "Can't turn it on?",
   "autoCaptureStepsTitle": "Restricted settings",
   "autoCaptureSteps": "1. Tap Open app info.\n2. Tap ⋮ at the top right and choose Allow restricted settings.\n3. Come back here and tap Turn on.",
-  "autoCaptureOpenInfo": "Open app info"
+  "autoCaptureOpenInfo": "Open app info",
+  "homeReviewCount": "{count, plural, =1{1 to review} other{{count} to review}}",
+  "reviewTitle": "To review",
+  "reviewOk": "OK",
+  "reviewChange": "Change",
+  "reviewConfirmAll": "Confirm all",
+  "reviewMark": "{source, select, revolut{to review · from Revolut} google_wallet{to review · from Google Wallet} other{to review}}",
+  "reviewEmpty": "Nothing to review"
 }

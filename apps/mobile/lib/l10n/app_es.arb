@@ -3545,5 +3545,26 @@
   "autoCaptureOpenInfo": "Abrir información de la app",
   "@autoCaptureOpenInfo": {
     "description": "Opens the app's info screen in Android."
+  },
+  "homeReviewCount": "{count, plural, =1{1 gasto por revisar} other{{count} gastos por revisar}}",
+  "reviewTitle": "Por revisar",
+  "reviewOk": "Bien",
+  "reviewChange": "Cambiar",
+  "reviewConfirmAll": "Confirmar todos",
+  "reviewMark": "{source, select, revolut{por revisar · de Revolut} google_wallet{por revisar · de Google Wallet} other{por revisar}}",
+  "reviewEmpty": "Nada por revisar",
+  "@homeReviewCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@reviewMark": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
   }
 }

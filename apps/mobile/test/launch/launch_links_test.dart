@@ -20,6 +20,7 @@ import '../capture/fakes.dart';
 import '../entry/fakes.dart' show FakeAuthApi;
 import '../home/fakes.dart';
 import '../home/fixtures.dart';
+import '../review/fakes.dart' show detected;
 import '../settings/harness.dart';
 
 /// The links Android hands the app: one it was started with, and later ones.
@@ -81,6 +82,16 @@ void main() {
       expect(launchActionOf(null), isNull);
     });
 
+    test('wambito://review, with at most one id after it', () {
+      expect(launchActionOf('wambito://review'), LaunchAction.review);
+      expect(launchActionOf('wambito://review/'), LaunchAction.review);
+      expect(launchActionOf('wambito://review/abc-1'), LaunchAction.review);
+      expect(launchReviewIdOf('wambito://review/abc-1'), 'abc-1');
+      expect(launchReviewIdOf('wambito://review'), isNull);
+      expect(launchActionOf('wambito://review/a/b'), isNull);
+      expect(launchActionOf('wambito://due/abc'), isNull);
+    });
+
     test('a link in another scheme is not a launch link', () {
       expect(launchActionOf('other://add'), isNull);
       expect(launchActionOf('other://capture'), isNull);
@@ -95,6 +106,41 @@ void main() {
       }
       expect(launchLinkOf(LaunchAction.capture).toString(), 'wambito://capture');
     });
+  });
+
+  testWidgets('wambito://review/<id> at a cold start opens that one once the session has loaded', (
+    tester,
+  ) async {
+    final home = FakeHomeRepository(
+      items: [detected('d1', '2026-10-21', -1000, name: 'Cafe Juan')],
+    );
+    final env = await pumpSettingsApp(
+      tester,
+      homeRepo: home,
+      overrides: [
+        launchLinkSourceProvider.overrideWithValue(FakeLaunchLinks('wambito://review/d1')),
+      ],
+    );
+    expect(env.router.state.uri.path, '/review/d1');
+    expect(find.byType(AddSheet), findsOneWidget);
+  });
+
+  testWidgets('wambito://review while the app runs opens the inbox over home', (tester) async {
+    final links = FakeLaunchLinks();
+    final home = FakeHomeRepository(
+      items: [detected('d1', '2026-10-21', -1000, name: 'Cafe Juan')],
+    );
+    final env = await pumpSettingsApp(
+      tester,
+      homeRepo: home,
+      location: '/settings',
+      overrides: [launchLinkSourceProvider.overrideWithValue(links)],
+    );
+    links.open('wambito://review');
+    await tester.pumpAndSettle();
+    expect(env.router.state.uri.path, '/review');
+    expect(find.text('Cafe Juan'), findsOneWidget);
+    expect(find.byType(AddSheet), findsNothing);
   });
 
   testWidgets('＋ at a cold start: the add sheet opens on home once the session has loaded', (
