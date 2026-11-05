@@ -46,6 +46,12 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
   `-Pwambito.nativeFromSource=true` (`flutter build apk -P wambito.nativeFromSource=true`, or the
   env `ORG_GRADLE_PROJECT_wambito.nativeFromSource=true` for `gradlew` and the check scripts). ARM
   only, so off for the x86_64 emulator. `scripts/test-native-switch.sh` (CI) tests the switch.
+- F-Droid recipe: `fdroid/com.wambito.app.yml` (the source of truth, copied to fdroiddata when
+  submitting; one build per ABI, Vosk and JNA from `fdroid/srclibs/*.yml` built in `build:`, after
+  F-Droid's source scan). `scripts/fdroid-build-local.sh <commit> [--version X.Y.Z]` runs
+  `fdroid lint`, `fdroid build` of both entries and `fdroid scanner` in F-Droid's buildserver image
+  against a scratch copy of that commit (Docker, about an hour per ABI on 4 emulated cores; nothing
+  is pushed). Change the recipe with the srclib revisions in `build-native-deps.sh` together.
 - Gradle dependency locks (`android/app/gradle.lockfile`, and `gradle-fdroid.lockfile` for the
   switch above): after changing a dependency, rewrite both with `./gradlew :app:dependencies
   --write-locks` (the second with `-Pwambito.nativeFromSource=true`, needs the real
