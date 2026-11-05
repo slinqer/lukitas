@@ -102,6 +102,7 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
     a dot, so `export` and a bare `NAME=value` prefix do not work) takes
     those artifacts. ARM only, so off for the x86_64 emulator. `scripts/test-native-switch.sh`
     (CI) tests it.
+  - `scripts/package-canary.sh [--check]` builds the precise model's zip for the voice-models-v2 release from sherpa-onnx's archive (reproducible, not committed; prints its size and SHA-256).
   - sherpa-onnx 2.0.1 (the precise voice model's runtime; Play and GitHub builds only):
     `scripts/fetch-sherpa-onnx.sh` downloads its AAR, checks the pinned SHA-256 and installs it in
     `android/third_party/m2`; run it before any Gradle or `flutter build` (CI and `release.sh` do).
