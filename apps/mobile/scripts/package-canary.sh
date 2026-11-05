@@ -6,6 +6,9 @@
 # decoder.int8.onnx and tokens.txt are kept, inside one folder named after the model (ModelStore
 # expects exactly that). Fixed timestamps, order and `zip -X` make the zip reproducible.
 #
+# Publish the zip from one run and pin that hash; --check proves reproducibility on one machine
+# only (the bytes can differ with another zip build).
+#
 # Nothing is published and the zip is not committed: it goes to the output folder (default
 # ${TMPDIR:-/tmp}/wambito-canary), and its size, unzipped size and SHA-256 are printed, for
 # `preciseModels` in the app.
@@ -43,6 +46,11 @@ sha256() {
 size() { wc -c <"$1" | tr -d ' '; }
 
 mkdir -p "$out"
+out="$(cd "$out" && pwd)"
+if [ -n "$from" ]; then from="$(cd "$(dirname "$from")" && pwd)/$(basename "$from")"; fi
+for tool in tar bzip2 zip curl; do
+  command -v "$tool" >/dev/null 2>&1 || { echo "missing tool: $tool" >&2; exit 2; }
+done
 src="${from:-$out/$NAME.tar.bz2}"
 if [ -z "$from" ] && { [ ! -f "$src" ] || [ "$(sha256 "$src")" != "$SRC_SHA256" ]; }; then
   curl -fL --retry 3 -o "$src" "$URL" || { echo "download failed: $URL" >&2; exit 2; }
@@ -62,7 +70,7 @@ build() { # build <zip path>
   mkdir "$stage/$NAME"
   for f in "${FILES[@]}"; do
     cp "$work/$NAME/$f" "$stage/$NAME/$f"
-    touch -t 202601010000 "$stage/$NAME/$f"
+    TZ=UTC touch -t 202601010000 "$stage/$NAME/$f"
   done
   rm -f "$zip"
   (cd "$stage" && TZ=UTC zip -X -D -q "$zip" "${FILES[@]/#/$NAME/}")
