@@ -3,8 +3,8 @@
 # version of the app, so F-Droid and CI resolve the same graph) is missing or stale. It resolves
 # every configuration of :app again with --write-locks and then requires the committed file to be
 # exactly what Gradle wrote. The default graph only: gradle-fdroid.lockfile, the graph with
-# -Pwambito.nativeFromSource=true, needs android/third_party/m2 (scripts/build-native-deps.sh),
-# which CI does not have; docs/mobile/setup.md has the command that rewrites both.
+# -Pwambito.nativeFromSource=true, is the default lock with two -src substitutions, which
+# scripts/check-fdroid-lock.sh checks as text; docs/mobile/setup.md has the command that rewrites both.
 #
 # Usage, from anywhere: apps/mobile/scripts/check-gradle-locks.sh
 # Exit codes: 0 the lock is current, 1 it is missing or stale, 2 Gradle failed.

@@ -9,9 +9,11 @@
 #   (c) with it and stub -src POMs and AARs written here: 0.3.75-src and 5.18.1-src, and no plain
 #       JNA 5.18.1 (the stub Vosk POM asks for it, as Maven's does: the switch must exclude it).
 # The copy leaves out android/third_party, so a real one is never touched. It keeps the committed
-# lockfiles, so Gradle checks them too: (a) against app/gradle.lockfile, (c) against
-# app/gradle-fdroid.lockfile, which the stubs satisfy because they carry the same coordinates and
-# dependencies as the real -src build (a stub that drifted from it would fail here on the lock).
+# lockfiles, so Gradle resolves against them: (a) app/gradle.lockfile, (c) app/gradle-fdroid.lockfile,
+# which the stubs satisfy because they carry the same coordinates and dependencies as the real -src
+# build. A `:app:dependencies` listing is not guaranteed to exit non-zero on a stale lock, and this
+# test covers only the release classpath, so it is not what keeps the F-Droid lock in sync with the
+# default one: scripts/check-fdroid-lock.sh does (text check, CI).
 #
 # Usage, from anywhere: apps/mobile/scripts/test-native-switch.sh
 # Exit codes: 0 every check passed, 1 a check failed, 2 the copy could not be set up.
@@ -21,8 +23,8 @@ MOBILE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 
-# The copy keeps the Gradle wrapper and local.properties when they exist (they are not committed;
-# Flutter writes them otherwise) and leaves build outputs behind.
+# The copy keeps the gradlew script and local.properties when they exist (they are not committed;
+# Flutter writes them otherwise; the wrapper jar is committed) and leaves build outputs behind.
 COPY="$WORK/mobile"
 rsync -a --exclude /build --exclude /.dart_tool --exclude /android/.gradle \
   --exclude /android/.kotlin --exclude /android/app/build --exclude /android/third_party \

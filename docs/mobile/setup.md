@@ -255,13 +255,16 @@ the locks and commit them:
 cd apps/mobile/android
 export JAVA_HOME=~/development/jdk/jdk-17.0.21+9/Contents/Home
 ./gradlew :app:dependencies --write-locks
-# the F-Droid graph needs the real third_party/m2 (scripts/build-native-deps.sh)
-./gradlew :app:dependencies --write-locks -Pwambito.nativeFromSource=true
+# the F-Droid lock is the default one with the two -src lines; no native build is needed
+sed -e 's/^\(com\.alphacephei:vosk-android:0\.3\.75\)=/\1-src=/' \
+    -e 's/^\(net\.java\.dev\.jna:jna:5\.18\.1\)=/\1-src=/' \
+    app/gradle.lockfile > app/gradle-fdroid.lockfile
 ```
 
 `apps/mobile/scripts/check-gradle-locks.sh` (CI's `mobile-build`) rewrites the default lock and fails
-when it differs from the committed one. CI has no `third_party/m2`, so the F-Droid lock is not
-checked there: rewrite it by hand whenever the first changes.
+when it differs from the committed one. `scripts/check-fdroid-lock.sh` (CI's `mobile` job, text only)
+fails when `gradle-fdroid.lockfile` is not the default lock with exactly those two `-src`
+substitutions, so rewrite it with the `sed` above whenever the first changes.
 
 ## Physical phone
 
