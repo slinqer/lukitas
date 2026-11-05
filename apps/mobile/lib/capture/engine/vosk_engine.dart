@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/services.dart';
 
@@ -111,6 +112,19 @@ class _Session {
 
   String get _merged => mergePasses(_free, _grammar, _locale);
 
+  /// What goes before the free pass's partial on screen: the merged words up to the free pass's
+  /// last endpoint. The partial covers everything after it, so grammar words the grammar pass
+  /// settled at an endpoint of its own past that point are already in the partial; showing them
+  /// too repeated them ("dos euros dos euros en café").
+  String get _settled {
+    if (_free.isEmpty) return '';
+    final upTo = _free.map((w) => w.end).reduce(math.max);
+    return mergePasses(_free, [
+      for (final g in _grammar)
+        if (g.start < upTo) g,
+    ], _locale);
+  }
+
   void _onEvent(VoiceEvent event) {
     if (out.isClosed) return;
     switch (event) {
@@ -127,7 +141,7 @@ class _Session {
           _nothing?.cancel();
           _pause?.cancel();
         }
-        final heard = [_merged, text].where((t) => t.isNotEmpty).join(' ');
+        final heard = [_settled, text].where((t) => t.isNotEmpty).join(' ');
         if (heard.isNotEmpty) out.add(heard);
       case VoiceResult(:final pass, :final json):
         final words = wordsOfResult(json);
