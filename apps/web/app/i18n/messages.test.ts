@@ -389,3 +389,70 @@ describe("the privacy answer claims only what open code shows", () => {
     });
   }
 });
+
+describe("the automatic capture copy", () => {
+  const site = {
+    es: flatten(siteEs as Tree),
+    en: flatten(siteEn as Tree),
+    it: flatten(siteIt as Tree),
+    pt: flatten(sitePt as Tree),
+  } as const;
+  const STEPS = ["pay", "reads", "decide", "learns", "next"];
+  // Every word is checked in every locale: a word of any language counts.
+  const LANGUAGE_WORDS = [
+    "portugu[eê]s",
+    "portuguese",
+    "portoghese",
+    "espa[nñ]ol",
+    "spanish",
+    "espanhol",
+    "spagnolo",
+    "ingl[eê]s",
+    "english",
+    "inglese",
+    "italiano",
+    "italian",
+    "idiomas?",
+    "languages?",
+    "lingua",
+    "lingue",
+    "l[ií]nguas?",
+  ].map((word) => new RegExp(`\\b${word}\\b`, "i"));
+
+  const captureCopy = (locale: (typeof LANGUAGES)[number]) =>
+    Object.entries(site[locale]).filter(
+      ([key]) => key.startsWith("landing.capture.") || key.startsWith("roadmap.items.bank_alerts."),
+    );
+
+  for (const locale of LANGUAGES) {
+    it(`${locale}: has every step, with a title and a body`, () => {
+      const keys = new Set(
+        Object.keys(site[locale])
+          .filter((key) => key.startsWith("landing.capture.steps."))
+          .map((key) => key.split(".")[3]),
+      );
+      expect([...keys].sort()).toEqual([...STEPS].sort());
+      for (const step of STEPS) {
+        expect(site[locale][`landing.capture.steps.${step}.title`], step).toBeTruthy();
+        expect(site[locale][`landing.capture.steps.${step}.body`], step).toBeTruthy();
+      }
+    });
+
+    it(`${locale}: names no language`, () => {
+      const lines = captureCopy(locale);
+      expect(lines.length).toBeGreaterThan(20);
+      for (const [key, line] of lines) {
+        for (const word of LANGUAGE_WORDS) expect(line, `${key} ${word}`).not.toMatch(word);
+      }
+    });
+
+    it(`${locale}: says Android, Revolut and Google Wallet`, () => {
+      const copy = site[locale];
+      expect(copy["landing.capture.card.badge"]).toContain("Android");
+      expect(copy["landing.capture.card.body"]).toContain("Revolut");
+      expect(copy["landing.capture.card.body"]).toContain("Google Wallet");
+      expect(copy["landing.capture.steps.next.body"]).toContain("Revolut");
+      expect(copy["landing.capture.steps.next.body"]).toContain("Google Wallet");
+    });
+  }
+});

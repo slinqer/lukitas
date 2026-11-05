@@ -51,7 +51,7 @@ export const ROADMAP_ITEMS: readonly RoadmapItem[] = [
   item("stores", "next", "📦"),
   item("ai_one_click", "next", "⚡"),
   item("donations", "next", "💛"),
-  item("bank_alerts", "later", "🏦"),
+  item("bank_alerts", "building", "🏦"),
   item("no_central_server", "later", "🔗"),
   item("whatsapp", "later", "💬"),
 ];

@@ -69,8 +69,8 @@
         "body": "Your data is encrypted on your device: not even the server will be able to read it."
       },
       "bank_alerts": {
-        "title": "Automatic capture of your bank's alerts",
-        "body": "Bancolombia, Nequi and more: alerts become transactions for you to review."
+        "title": "Automatic capture of your notifications",
+        "body": "Revolut and Google Wallet first; more apps and banks over time."
       },
       "import_others": {
         "title": "Import from Buddy and other apps",
@@ -211,6 +211,56 @@
         "body": "Import your transactions from other finance apps: Budge today, Buddy and others soon.",
         "demo_file": "budge.csv",
         "demo_rows": "{count, plural, one {# transaction ready} other {# transactions ready}}"
+      }
+    },
+    "capture": {
+      "card": {
+        "title": "Wambi logs your expenses for you!",
+        "body": "Reads Revolut and Google Wallet notifications and logs your expenses so you only review them.",
+        "badge": "Soon · Android only",
+        "link": "How does it work?"
+      },
+      "page": {
+        "title": "How does automatic capture work?",
+        "lead": "Your bank's notification turns into a Wambito transaction by itself.",
+        "soon": "Soon in the Android app.",
+        "back": "Back to home",
+        "meta": {
+          "title": "Wambito · Automatic capture",
+          "description": "How Wambito logs your expenses from Revolut and Google Wallet notifications, in the Android app."
+        }
+      },
+      "steps": {
+        "pay": {
+          "title": "You pay as usual",
+          "body": "With Revolut or Google Wallet. Your bank sends its notification, as always."
+        },
+        "reads": {
+          "title": "Wambito reads it on your phone",
+          "body": "The notification text never leaves your phone. Only the transaction does: the amount, the merchant, the date and the app."
+        },
+        "decide": {
+          "title": "It tells you and you decide",
+          "body": "It leaves you a notice with OK and Change. The expense already counts in your month, marked “to review”."
+        },
+        "learns": {
+          "title": "It learns your categories",
+          "body": "When you give a merchant a category, next time it comes already set."
+        },
+        "next": {
+          "title": "Today and what's next",
+          "body": "Today it works with Revolut and Google Wallet, in the Android app. We'll add more apps and banks over time."
+        }
+      },
+      "demo": {
+        "registered": "Noted in Wambito",
+        "review": "to review",
+        "today": "Today",
+        "notice": "Noted {amount} at {merchant} · {category}, which category?",
+        "ok": "OK",
+        "change": "Change",
+        "other_expenses": "Other expenses",
+        "eating_out": "Eating out"
       }
     },
     "open_source": {

@@ -69,8 +69,8 @@
         "body": "Tus datos se cifran en tu dispositivo: ni el servidor podrá leerlos."
       },
       "bank_alerts": {
-        "title": "Captura automática de las alertas de tu banco",
-        "body": "Bancolombia, Nequi y más: las alertas se vuelven movimientos para que los revises."
+        "title": "Captura automática de tus notificaciones",
+        "body": "Revolut y Google Wallet primero; más apps y bancos con el tiempo."
       },
       "import_others": {
         "title": "Importa desde Buddy y otras apps",
@@ -211,6 +211,56 @@
         "body": "Importa tus movimientos desde otras apps de finanzas: hoy desde Budge, y pronto desde Buddy y otras.",
         "demo_file": "budge.csv",
         "demo_rows": "{count, plural, one {# movimiento listo} other {# movimientos listos}}"
+      }
+    },
+    "capture": {
+      "card": {
+        "title": "¡Wambi anota los gastos por ti!",
+        "body": "Lee las notificaciones de Revolut y Google Wallet y anota tus gastos para que solo los revises.",
+        "badge": "Pronto · Solo en Android",
+        "link": "¿Cómo funciona?"
+      },
+      "page": {
+        "title": "¿Cómo funciona la captura automática?",
+        "lead": "La notificación de tu banco se convierte sola en un movimiento de Wambito.",
+        "soon": "Pronto en la app de Android.",
+        "back": "Volver al inicio",
+        "meta": {
+          "title": "Wambito · Captura automática",
+          "description": "Cómo Wambito anota tus gastos a partir de las notificaciones de Revolut y Google Wallet, en la app de Android."
+        }
+      },
+      "steps": {
+        "pay": {
+          "title": "Pagas como siempre",
+          "body": "Con Revolut o Google Wallet. Tu banco te manda su notificación, como siempre."
+        },
+        "reads": {
+          "title": "Wambito la lee en tu teléfono",
+          "body": "El texto de la notificación nunca sale de tu teléfono. Solo sale el movimiento: el monto, el comercio, la fecha y la app."
+        },
+        "decide": {
+          "title": "Te avisa y tú decides",
+          "body": "Te deja un aviso con Bien y Cambiar. El gasto ya cuenta en tu mes, marcado «por revisar»."
+        },
+        "learns": {
+          "title": "Aprende tus categorías",
+          "body": "Cuando le pones categoría a un comercio, la próxima vez ya viene puesta."
+        },
+        "next": {
+          "title": "Hoy y lo que viene",
+          "body": "Hoy funciona con Revolut y Google Wallet, en la app de Android. Agregaremos más apps y bancos con el tiempo."
+        }
+      },
+      "demo": {
+        "registered": "Anotado en Wambito",
+        "review": "por revisar",
+        "today": "Hoy",
+        "notice": "Anoté {amount} en {merchant} · {category}, ¿qué categoría?",
+        "ok": "Bien",
+        "change": "Cambiar",
+        "other_expenses": "Otros gastos",
+        "eating_out": "Restaurante"
       }
     },
     "open_source": {
