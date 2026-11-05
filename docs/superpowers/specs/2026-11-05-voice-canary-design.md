@@ -143,9 +143,11 @@ onnxruntime** built from source too:
   more), possibly hours, inside F-Droid's `timeout: 10800`. Its "minimal build" with a reduced set of
   operators (only those Canary's two ONNX files use) is much smaller and is the first thing to try.
 
-So the **first task is a spike**: build onnxruntime (minimal, Canary's operators) and sherpa-onnx from
-pinned sources for arm64 in a `linux/amd64` container with NDK 28.2, time it, check the result runs
-Canary on the phone. If it does not fit, the options, in order:
+The app is built first with sherpa-onnx's published Android libraries (Play and GitHub builds), and
+the founder tries it on their phone (§8). Only then comes a **spike** for F-Droid: build onnxruntime
+(minimal, Canary's operators) and sherpa-onnx from pinned sources for arm64 in a `linux/amd64`
+container with NDK 28.2, time it, check the result runs Canary on the phone. If it does not fit, the
+options, in order:
 
 1. The F-Droid build ships without Canary (Vosk only) until it does; Play and GitHub builds use
    sherpa-onnx's published Android libraries. The switch already exists
@@ -164,13 +166,11 @@ cincuenta" = 9,50 €), without breaking the cases that already pin two movement
 words, not digits, and adds punctuation and capitals ("Dos euros en café."); the shared cases get a
 few in that shape.
 
-## 8. A test build to compare Canary and Parakeet
+## 8. The founder's trial
 
-Before Canary is locked in, the founder tries both on their own phone in daily use. A debug-only
-build carries a hidden switch (Settings, debug builds only) between Canary and Parakeet TDT 0.6B v3,
-both through sherpa-onnx (the spike's exports), and shows under the preview which model wrote the
-text and how long it took. It is not shipped. What it decides: whether Parakeet's quality is close
-enough for §6.2 to be a real option.
+Canary only, no model switch (founder ruling). Once steps 2–6 of §11 are done, a release build
+with sherpa-onnx's published libraries goes on the founder's phone for daily use. Parakeet is not
+in the app; it stays option 2 of §6, to test only if the F-Droid build of onnxruntime fails.
 
 ## 9. Later: Gemma reads the text
 
@@ -194,13 +194,16 @@ does not apply in use.
 
 ## 11. Order of the work
 
-1. F-Droid spike: onnxruntime (minimal) + sherpa-onnx from source, timed (§6).
-2. Parser: "uno cincuenta" (§7), its own PR.
-3. Debug test build with the Canary/Parakeet switch (§8), for the founder's phone.
-4. Kotlin: the recording buffer, the Canary recognizer in a `ModelCache`, the new events (§4.2).
-5. Dart: events, the refining state, the 3 s fallback (§4.1, §4.3).
-6. Download: `voice-models-v2`, the joint opt-in, the one-time offer, Settings → Voz (§4.4).
-7. Licences and About (§5); the F-Droid recipe and `build-native-deps.sh` (§6).
+1. Parser: "uno cincuenta" (§7), its own PR.
+2. sherpa-onnx's published Android libraries in the app (Kotlin API, `libsherpa-onnx-jni.so`,
+   `libonnxruntime.so`, arm64), behind the existing native-from-source switch.
+3. Kotlin: the recording buffer, the Canary recognizer in a `ModelCache`, the new events (§4.2).
+4. Dart: events, the refining state, the 3 s fallback (§4.1, §4.3).
+5. Download: `voice-models-v2`, the joint opt-in, the one-time offer, Settings → Voz (§4.4).
+6. Licences and About (§5).
+7. The founder's trial on their phone (§8).
+8. F-Droid spike: onnxruntime (minimal) + sherpa-onnx from source, timed (§6); then the recipe and
+   `build-native-deps.sh`, or the fallback of §6.
 
 Tests, as everywhere here, come first: Kotlin unit tests for the buffer and the refine (a fake
 recognizer, so no native library), Dart tests for the events, the 3 s limit and the sheet's stages,
