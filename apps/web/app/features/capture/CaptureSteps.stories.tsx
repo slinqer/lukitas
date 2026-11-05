@@ -37,15 +37,23 @@ export const Steps: Story = {
   },
 };
 
-/** Under reduced motion nothing runs: no CSS animation, no transition. */
-export const StepsReducedMotion: Story = {
+/**
+ * No motion anywhere: these steps never animate or transition, with or without a reduced-motion
+ * preference. (`reducedMotion: true` only switches Motion's MotionConfig; it does not emulate the
+ * CSS media query, so this is a guard on the styles themselves, `::before`/`::after` included.)
+ */
+export const StepsNoMotion: Story = {
   parameters: { reducedMotion: true },
   play: async ({ canvasElement }) => {
     await expect(canvasElement.getAnimations({ subtree: true })).toHaveLength(0);
     for (const el of canvasElement.querySelectorAll("*")) {
-      const style = getComputedStyle(el);
-      await expect(style.animationName === "none" || style.animationDuration === "0s").toBe(true);
-      await expect(style.transitionDuration.split(",").every((d) => d.trim() === "0s")).toBe(true);
+      for (const pseudo of [undefined, "::before", "::after"]) {
+        const style = getComputedStyle(el, pseudo);
+        await expect(style.animationName).toBe("none");
+        await expect(style.transitionDuration.split(",").every((d) => d.trim() === "0s")).toBe(
+          true,
+        );
+      }
     }
   },
 };

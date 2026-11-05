@@ -260,7 +260,8 @@
         "ok": "OK",
         "change": "Change",
         "other_expenses": "Other expenses",
-        "eating_out": "Eating out"
+        "eating_out": "Eating out",
+        "other_income": "Other income"
       }
     },
     "open_source": {

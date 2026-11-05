@@ -260,7 +260,8 @@
         "ok": "Va bene",
         "change": "Cambia",
         "other_expenses": "Altre spese",
-        "eating_out": "Ristorante"
+        "eating_out": "Ristorante",
+        "other_income": "Altre entrate"
       }
     },
     "open_source": {

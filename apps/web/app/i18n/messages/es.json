@@ -260,7 +260,8 @@
         "ok": "Bien",
         "change": "Cambiar",
         "other_expenses": "Otros gastos",
-        "eating_out": "Restaurante"
+        "eating_out": "Restaurante",
+        "other_income": "Otros ingresos"
       }
     },
     "open_source": {

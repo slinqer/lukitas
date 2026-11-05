@@ -19,6 +19,7 @@ export const Night: Story = {
     await expect(canvas.getAllByText("Pastelaria Aurora")).toHaveLength(2);
     await expect(canvas.getByText("Anotado en Wambito")).toBeInTheDocument();
     await expect(canvas.getByText("por revisar")).toBeInTheDocument();
+    await expect(canvas.getAllByText(/^(💳 )?−12,50\s€$/)).toHaveLength(2);
     await expect(canvas.queryByText("Nómina")).toBeNull();
   },
 };
@@ -27,6 +28,9 @@ export const Night: Story = {
 export const Income: Story = {
   args: { income: true },
   play: async ({ canvasElement }) => {
-    await expect(within(canvasElement).getAllByText("Nómina")).toHaveLength(2);
+    const canvas = within(canvasElement);
+    await expect(canvas.getAllByText("Nómina")).toHaveLength(2);
+    await expect(canvas.getAllByText(/^(💳 )?\+1\.?200,00\s€$/)).toHaveLength(2);
+    await expect(canvas.getByText(/Otros ingresos/)).toBeInTheDocument();
   },
 };

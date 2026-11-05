@@ -15,9 +15,11 @@ const DEMO = {
 
 function useMoney() {
   const { locale } = useLocale();
-  return (cents: number) =>
-    formatMoney(cents, "EUR", locale, cents > 0 ? { sign: "always" } : undefined);
+  // Negative amounts carry their minus; only the income amount gets a plus.
+  return (cents: number, opts?: { sign?: "always" }) => formatMoney(cents, "EUR", locale, opts);
 }
+
+const plus = (cents: number) => (cents > 0 ? ({ sign: "always" } as const) : undefined);
 
 const Check = () => (
   <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -41,7 +43,7 @@ function Notification({ title, cents }: { title: string; cents: number }) {
       <span className="lk-capture-notif-app">{DEMO.bank}</span>
       <span className="lk-capture-notif-time">{DEMO.time}</span>
       <span className="lk-capture-notif-title">{title}</span>
-      <span className="lk-capture-notif-line">💳 {money(cents)}</span>
+      <span className="lk-capture-notif-line">💳 {money(cents, plus(cents))}</span>
     </div>
   );
 }
@@ -68,7 +70,7 @@ function RegisteredRow({
         </span>
       </span>
       <span className={`lk-amount ${cents < 0 ? "lk-capture-expense" : "lk-capture-income"}`}>
-        {money(cents)}
+        {money(cents, plus(cents))}
       </span>
     </div>
   );
@@ -97,7 +99,9 @@ export function MainPicture({ income = false }: { income?: boolean }) {
   return (
     <div className="lk-capture-demo" aria-hidden="true">
       <Pair title={DEMO.merchant} cents={DEMO.expense} category={t("other_expenses")} />
-      {income ? <Pair title={DEMO.payroll} cents={DEMO.income} /> : null}
+      {income ? (
+        <Pair title={DEMO.payroll} cents={DEMO.income} category={t("other_income")} />
+      ) : null}
     </div>
   );
 }
@@ -128,7 +132,7 @@ export function NoticeDemo() {
         <span className="lk-capture-notif-time">{DEMO.time}</span>
         <span className="lk-capture-notif-line">
           {t("notice", {
-            amount: money(-DEMO.expense),
+            amount: money(DEMO.expense),
             merchant: DEMO.merchant,
             category: t("other_expenses"),
           })}
