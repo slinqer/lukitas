@@ -69,8 +69,8 @@
         "body": "Your data is encrypted on your device: not even the server will be able to read it."
       },
       "bank_alerts": {
-        "title": "Automatic capture of your bank's alerts",
-        "body": "Bancolombia, Nequi and more: alerts become transactions for you to review."
+        "title": "Automatic capture of your bank's notifications",
+        "body": "On Android, Wambito reads your bank's notifications and logs your expenses and income for you to review."
       },
       "import_others": {
         "title": "Import from Buddy and other apps",

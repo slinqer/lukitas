@@ -5,8 +5,8 @@
  * No dates anywhere: only a status.
  */
 
-/** Left to right on a desktop, top to bottom on a phone. */
-export const ROADMAP_STATUSES = ["done", "building", "next", "later"] as const;
+/** Left to right on a desktop, top to bottom on a phone: what is coming first, what is done last. */
+export const ROADMAP_STATUSES = ["building", "next", "later", "done"] as const;
 
 export type RoadmapStatus = (typeof ROADMAP_STATUSES)[number];
 
@@ -44,14 +44,14 @@ export const ROADMAP_ITEMS: readonly RoadmapItem[] = [
   item("recurring", "done", "🔁"),
   item("languages", "done", "🌍"),
   item("self_host", "done", "🏠"),
-  item("connect_ai", "building", "✨"),
-  item("iphone_app", "building", "📱"),
+  item("connect_ai", "done", "✨"),
+  item("bank_alerts", "building", "🏦"),
+  item("stores", "building", "📦"),
   item("import_others", "building", "📂"),
+  item("iphone_app", "next", "📱"),
   item("e2e_encryption", "next", "🔒"),
-  item("stores", "next", "📦"),
   item("ai_one_click", "next", "⚡"),
   item("donations", "next", "💛"),
-  item("bank_alerts", "later", "🏦"),
   item("no_central_server", "later", "🔗"),
   item("whatsapp", "later", "💬"),
   item("on_device_ai", "later", "🧠"),

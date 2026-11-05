@@ -139,5 +139,24 @@
       align-items: start;
       gap: var(--space-5);
     }
+    /*
+     * Each column scrolls on its own, so the whole board fits the screen without scrolling the page.
+     * 18rem is what sits above the lists (header, title, intro, column label) plus the bottom space;
+     * a short screen still gets a usable list.
+     */
+    .lk-roadmap-list {
+      max-height: max(20rem, calc(100dvh - 18rem));
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+      scrollbar-color: var(--stroke) transparent;
+      /* Room for the cards' shadow and the scrollbar, so neither is clipped. */
+      padding: 2px var(--space-2) var(--space-2) 2px;
+      border-radius: var(--radius-md);
+    }
+    .lk-roadmap-list:focus-visible {
+      outline: 2px solid var(--brand);
+      outline-offset: 2px;
+    }
   }
 }

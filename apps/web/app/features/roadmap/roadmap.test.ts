@@ -80,15 +80,17 @@ describe("roadmap items", () => {
 });
 
 describe("roadmapColumns", () => {
-  it("groups the items by status, in the order done, building, next, later", () => {
+  it("groups the items by status, in the order building, next, later, done", () => {
     const columns = roadmapColumns([
       { id: "a", status: "later", glyph: "x", title: "t", body: "b" },
+      { id: "d", status: "done", glyph: "x", title: "t", body: "b" },
       { id: "b", status: "building", glyph: "x", title: "t", body: "b" },
       { id: "c", status: "later", glyph: "x", title: "t", body: "b" },
     ]);
     expect(columns.map((column) => [column.status, column.items.map((i) => i.id)])).toEqual([
       ["building", ["b"]],
       ["later", ["a", "c"]],
+      ["done", ["d"]],
     ]);
   });
 
@@ -96,14 +98,20 @@ describe("roadmapColumns", () => {
     const columns = roadmapColumns();
     expect(columns.length).toBeGreaterThan(0);
     for (const column of columns) expect(column.items.length).toBeGreaterThan(0);
-    expect(columns.map((column) => column.status)).toEqual(["done", "building", "next", "later"]);
+    expect(columns.map((column) => column.status)).toEqual(["building", "next", "later", "done"]);
   });
 });
 
 describe("the roadmap's statuses", () => {
-  it("has working offline done and connecting your AI being built", () => {
+  it("has working offline and connecting your AI done", () => {
     expect(roadmapItem("offline").status).toBe("done");
-    expect(roadmapItem("connect_ai").status).toBe("building");
+    expect(roadmapItem("connect_ai").status).toBe("done");
+  });
+
+  it("builds the store listings and plans the iPhone app next", () => {
+    expect(roadmapItem("stores").status).toBe("building");
+    expect(roadmapItem("bank_alerts").status).toBe("building");
+    expect(roadmapItem("iphone_app").status).toBe("next");
   });
 
   it("plans the on-device AI recap for later", () => {

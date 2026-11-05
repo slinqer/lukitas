@@ -69,8 +69,8 @@
         "body": "I tuoi dati vengono cifrati sul tuo dispositivo: nemmeno il server potrà leggerli."
       },
       "bank_alerts": {
-        "title": "Cattura automatica degli avvisi della tua banca",
-        "body": "Bancolombia, Nequi e altre: gli avvisi diventano movimenti da controllare."
+        "title": "Cattura automatica delle notifiche della tua banca",
+        "body": "Su Android, Wambito legge le notifiche della tua banca e annota spese ed entrate da controllare."
       },
       "import_others": {
         "title": "Importa da Buddy e da altre app",
