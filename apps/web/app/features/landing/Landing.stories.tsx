@@ -194,6 +194,15 @@ export const NoMoreSpreadsheetSection: Story = {
     });
     await expect(art).toHaveAttribute("src", "/wambi/shredder.webp");
     await expect(art).toHaveAttribute("loading", "lazy");
+    // The scroll film: eight poses, from shredding the sheet to showing Wambito on a phone, decorative (the still says it).
+    const poses = canvasElement.querySelectorAll<HTMLImageElement>(".lk-landing-nosheet-pose");
+    await expect(poses).toHaveLength(8);
+    for (const [index, pose] of [...poses].entries()) {
+      await expect(pose).toHaveAttribute("src", `/wambi/shredder/${index + 1}.webp`);
+      await expect(pose).toHaveAttribute("alt", "");
+      await expect(pose).toHaveAttribute("loading", "lazy");
+    }
+    await expect(canvas.getAllByRole("img")).toHaveLength(1);
     // Three pains of a spreadsheet, each beside how Wambito solves it; screen readers hear which is which.
     const rows = canvas.getAllByRole("listitem");
     await expect(rows).toHaveLength(3);
@@ -408,6 +417,18 @@ export const ScrollReveal: Story = {
     };
     await expect(startX("#spreadsheet .lk-landing-compare-row .is-before")).toBe("-24px");
     await expect(startX("#spreadsheet .lk-landing-compare-row .is-after")).toBe("24px");
+    // Wambi's poses cross-fade with the scroll of the spreadsheet's stage, one after the other.
+    const poses = [...canvasElement.querySelectorAll("#spreadsheet .lk-landing-nosheet-pose")];
+    await expect(poses).toHaveLength(8);
+    for (const pose of poses) {
+      await expect(scrollDriven(pose)).toHaveLength(1);
+    }
+    // `rangeStart` is not in TypeScript's DOM types yet.
+    type Ranged = Animation & { rangeStart?: { offset?: unknown } };
+    const starts = poses.map((pose) =>
+      String((scrollDriven(pose)[0] as Ranged | undefined)?.rangeStart?.offset ?? ""),
+    );
+    await expect(new Set(starts).size).toBe(8);
     await expect(scrollDriven(canvasElement.querySelector("#hero"))).toHaveLength(0);
     await expect(scrollDriven(canvasElement.querySelector(".lk-landing-closing"))).toHaveLength(0);
   },
