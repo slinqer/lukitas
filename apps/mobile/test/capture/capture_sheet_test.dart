@@ -14,6 +14,7 @@ import 'package:wambito/capture/mic_level.dart';
 import 'package:wambito/capture/models_download.dart';
 import 'package:wambito/feedback/stored_flag.dart';
 import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/ui/lk_theme.dart';
 import 'package:wambito/ui/press_button.dart';
 import 'package:wambito/ui/toast.dart';
 
@@ -491,7 +492,11 @@ void main() {
     expect(find.text('Refinando…'), findsOneWidget);
     expect(find.text('gasté 15 mil'), findsOneWidget);
     final heard = tester.widget<Text>(find.byKey(const Key('capture.heard')));
-    expect(heard.style?.color, isNot(equals(const Color(0xFF000000))));
+    final muted = tester.element(find.byKey(const Key('capture.heard'))).lkColors.inkMuted;
+    expect(heard.style?.color, muted);
+    expect(find.bySemanticsLabel('Refinando…'), findsOneWidget);
+    final live = tester.getSemantics(find.byKey(const Key('capture.refining')));
+    expect(live.flagsCollection.isLiveRegion, isTrue);
     env.engine.refiningController.add(false);
     await tester.pump();
     expect(find.text('Refinando…'), findsNothing);
@@ -510,13 +515,73 @@ void main() {
     env.engine.refiningController.add(true);
     await tester.pump();
     env.engine.held!.add('Dos euros en café.');
-    await env.engine.held!.close();
     env.engine.refiningController.add(false);
-    await tester.pumpAndSettle();
+    await tester.pump();
     expect(find.text('Refinando…'), findsNothing);
+    await env.engine.held!.close();
+    await tester.pumpAndSettle();
     expect(find.byKey(const Key('capture.card.0')), findsOneWidget);
     expect(find.text('Dos euros en café.'), findsOneWidget);
     expect(find.text(r'−$2'), findsOneWidget);
+  });
+
+  Future<_Env> refiningNow(WidgetTester tester) async {
+    final env = await _pump(tester);
+    env.engine.hold = true;
+    await _openMoving(tester);
+    env.engine.held!
+      ..add('')
+      ..add('gasté 15 mil');
+    await tester.pump();
+    env.engine.refiningController.add(true);
+    await tester.pump();
+    expect(find.text('Refinando…'), findsOneWidget);
+    return env;
+  }
+
+  testWidgets('a listen error while refining takes the label away', (tester) async {
+    final env = await refiningNow(tester);
+    env.engine.held!.addError(const SpeechFailure(SpeechFailureKind.failed));
+    await tester.pumpAndSettle();
+    expect(find.text('Refinando…'), findsNothing);
+    expect(find.byKey(const Key('capture.field')), findsOneWidget);
+  });
+
+  testWidgets('Escribir while refining takes the label away', (tester) async {
+    final env = await refiningNow(tester);
+    await tester.tap(find.byKey(const Key('capture.type')));
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('Refinando…'), findsNothing);
+    expect(find.byKey(const Key('capture.field')), findsOneWidget);
+    unawaited(env.engine.held?.close());
+    await tester.pump(const Duration(milliseconds: 300));
+  });
+
+  testWidgets('closing the sheet while refining throws nothing', (tester) async {
+    final env = await refiningNow(tester);
+    Navigator.of(tester.element(find.byKey(const Key('capture.stop')))).pop();
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('capture.stop')), findsNothing);
+    env.engine.refiningController.add(false);
+    env.engine.refiningController.add(true);
+    await tester.pump();
+    unawaited(env.engine.held?.close());
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('a new listen starts with no label', (tester) async {
+    final env = await refiningNow(tester);
+    await tester.tap(find.byKey(const Key('capture.type')));
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.tap(find.byKey(const Key('capture.listen')));
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('Refinando…'), findsNothing);
+    env.engine.held!.add('');
+    await tester.pump();
+    expect(find.text('Refinando…'), findsNothing);
+    await env.engine.held!.close();
+    await tester.pumpAndSettle();
   });
 
   testWidgets('going to the background stops listening at once and keeps what was heard', (

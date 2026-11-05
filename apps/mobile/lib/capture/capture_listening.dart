@@ -61,11 +61,14 @@ class CaptureListeningBody extends StatelessWidget {
                   ),
                 ),
                 if (session.refining)
-                  Text(
-                    l10n.captureRefining,
-                    key: const Key('capture.refining'),
-                    textAlign: TextAlign.center,
-                    style: LkText.label.copyWith(color: colors.inkMuted),
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(
+                      l10n.captureRefining,
+                      key: const Key('capture.refining'),
+                      textAlign: TextAlign.center,
+                      style: LkText.label.copyWith(color: colors.inkMuted),
+                    ),
                   ),
               ],
             ),
