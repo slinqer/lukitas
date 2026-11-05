@@ -3546,7 +3546,7 @@
   "@autoCaptureHowPayTitle": {
     "description": "How it works: title of step \"pay\"."
   },
-  "autoCaptureHowPayBody": "Con Revolut o Google Wallet. Tu banco te manda su notificación, como siempre.",
+  "autoCaptureHowPayBody": "Usas tu banco como de costumbre y te llega su notificación.",
   "@autoCaptureHowPayBody": {
     "description": "How it works: body of step \"pay\"."
   },

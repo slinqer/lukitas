@@ -727,7 +727,7 @@
   "autoCaptureHowStepOf": "Passo {step} di {total}",
   "autoCaptureHowDisclosure": "Wambito legge le notifiche delle app che attivi. Il testo non lascia mai il tuo telefono.",
   "autoCaptureHowPayTitle": "Paghi come sempre",
-  "autoCaptureHowPayBody": "Con Revolut o Google Wallet. La tua banca ti manda la sua notifica, come sempre.",
+  "autoCaptureHowPayBody": "Usi la tua banca come al solito e ti arriva la sua notifica.",
   "autoCaptureHowReadsTitle": "Wambito la legge sul tuo telefono",
   "autoCaptureHowReadsBody": "Il testo della notifica non lascia mai il tuo telefono. Esce solo il movimento: l’importo, l’esercente, la data e l’app.",
   "autoCaptureHowDecideTitle": "Ti avvisa e decidi tu",

@@ -233,7 +233,7 @@
       "steps": {
         "pay": {
           "title": "You pay as usual",
-          "body": "With Revolut or Google Wallet. Your bank sends its notification, as always."
+          "body": "You use your bank as usual and get its notification."
         },
         "reads": {
           "title": "Wambito reads it on your phone",
