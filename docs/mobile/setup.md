@@ -207,6 +207,30 @@ The Android JVM tests (`cd apps/mobile/android && ./gradlew :app:testDebugUnitTe
 widget's Glance rendering tests on Robolectric, which downloads its Android image from Maven
 Central on the first run.
 
+### Dependency locks
+
+Gradle dependency locking pins every dependency version of the Android app (`lockAllConfigurations()`
+in `android/app/build.gradle.kts`), so F-Droid and CI resolve the same graph. Two files, both committed:
+
+- `android/app/gradle.lockfile`: the default graph (Vosk and JNA from Maven Central);
+- `android/app/gradle-fdroid.lockfile`: the graph with `-Pwambito.nativeFromSource=true` (Vosk and JNA
+  from source, `docs/mobile/fdroid.md`); it differs from the first only in the two `-src` versions.
+
+A new or changed dependency, or a Flutter or plugin upgrade, fails the build until you regenerate
+the locks and commit them:
+
+```bash
+cd apps/mobile/android
+export JAVA_HOME=~/development/jdk/jdk-17.0.21+9/Contents/Home
+./gradlew :app:dependencies --write-locks
+# the F-Droid graph needs the real third_party/m2 (scripts/build-native-deps.sh)
+./gradlew :app:dependencies --write-locks -Pwambito.nativeFromSource=true
+```
+
+`apps/mobile/scripts/check-gradle-locks.sh` (CI's `mobile-build`) rewrites the default lock and fails
+when it differs from the committed one. CI has no `third_party/m2`, so the F-Droid lock is not
+checked there: rewrite it by hand whenever the first changes.
+
 `integration_test/notices_test.dart` covers the two local notices (Task 16). The first test needs the
 notification permission not yet given (a fresh install), the second needs it given: install with
 `adb -s emulator-5554 install -r -g build/app/outputs/flutter-apk/app-debug.apk` and

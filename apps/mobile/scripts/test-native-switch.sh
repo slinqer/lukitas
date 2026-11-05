@@ -8,7 +8,10 @@
 #   (b) with it and no android/third_party: the build stops and says to run build-native-deps.sh;
 #   (c) with it and stub -src POMs and AARs written here: 0.3.75-src and 5.18.1-src, and no plain
 #       JNA 5.18.1 (the stub Vosk POM asks for it, as Maven's does: the switch must exclude it).
-# The copy leaves out android/third_party, so a real one is never touched.
+# The copy leaves out android/third_party, so a real one is never touched. It keeps the committed
+# lockfiles, so Gradle checks them too: (a) against app/gradle.lockfile, (c) against
+# app/gradle-fdroid.lockfile, which the stubs satisfy because they carry the same coordinates and
+# dependencies as the real -src build (a stub that drifted from it would fail here on the lock).
 #
 # Usage, from anywhere: apps/mobile/scripts/test-native-switch.sh
 # Exit codes: 0 every check passed, 1 a check failed, 2 the copy could not be set up.
@@ -50,7 +53,8 @@ list() {
 }
 has() { grep -qF -- "$1" "$WORK/out.txt"; }
 # A JNA line other than exactly 5.18.1-src (a plain 5.18.1, or a -src that lost to it: "-> 5.18.1").
-plain_jna() { grep -F 'net.java.dev.jna:jna:' "$WORK/out.txt" | grep -qvE 'net\.java\.dev\.jna:jna:5\.18\.1-src( \(\*\))?$'; }
+# The lockfile's own constraints ("{strictly 5.18.1-src} -> 5.18.1-src (c)") are not dependencies.
+plain_jna() { grep -F 'net.java.dev.jna:jna:' "$WORK/out.txt" | grep -v ' (c)$' | grep -qvE 'net\.java\.dev\.jna:jna:5\.18\.1-src( \(\*\))?$'; }
 
 # (a) The default: Maven Central's artifacts.
 name="(a) without the property, Maven's vosk-android 0.3.75 and jna 5.18.1, nothing -src"

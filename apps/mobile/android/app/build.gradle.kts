@@ -163,6 +163,17 @@ if (nativeFromSource) {
     repositories.addFirst(local)
 }
 
+// Every dependency version of the app is pinned by a lockfile, so F-Droid and CI resolve the same
+// graph: app/gradle.lockfile, and app/gradle-fdroid.lockfile for the from-source graph above. A
+// changed or new dependency fails the build until the locks are rewritten (docs/mobile/setup.md,
+// "Dependency locks").
+dependencyLocking {
+    lockAllConfigurations()
+    if (nativeFromSource) {
+        lockFile.set(layout.projectDirectory.file("gradle-fdroid.lockfile"))
+    }
+}
+
 dependencies {
     // Passkeys through the platform's Credential Manager (Android 14+), never through the
     // library's Play Services bridge, which scripts/check-no-google.sh refuses.

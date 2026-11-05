@@ -45,6 +45,12 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
   `-Pwambito.nativeFromSource=true` (`flutter build apk -P wambito.nativeFromSource=true`, or the
   env `ORG_GRADLE_PROJECT_wambito.nativeFromSource=true` for `gradlew` and the check scripts). ARM
   only, so off for the x86_64 emulator. `scripts/test-native-switch.sh` (CI) tests the switch.
+- Gradle dependency locks (`android/app/gradle.lockfile`, and `gradle-fdroid.lockfile` for the
+  switch above): after changing a dependency, rewrite both with `./gradlew :app:dependencies
+  --write-locks` (the second with `-Pwambito.nativeFromSource=true`, needs the real
+  `third_party/m2`) and commit them; `scripts/check-gradle-locks.sh` (CI) checks the first
+  (`docs/mobile/setup.md`, "Dependency locks"). The Gradle wrapper jar is committed: the official
+  one for the version in `gradle-wrapper.properties` (`docs/mobile/fdroid.md`).
 - Release self-tests: `scripts/test-release.sh`, `scripts/check-fastlane.sh` (changelog ≤500 bytes,
   same version codes in all four locales), `scripts/check-permissions.sh`.
 
