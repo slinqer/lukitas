@@ -77,6 +77,10 @@ jobs:
       # the development defaults. The e2e's global setup waits for the API and Mailpit.
       - run: cp .env.example .env
       - run: docker compose up -d --build
+      # The admin the admin panel's e2e signs in with (dev-admin, in ADMIN_USER_IDS by default),
+      # once the API answers (it applies the migrations first, so the tables exist).
+      - run: timeout 120 sh -c 'until curl -sf http://localhost:3000/api/health; do sleep 1; done'
+      - run: docker compose exec -T api pnpm --filter @wambito/api seed:admin
       # App flows against `pnpm dev` (Playwright starts it) and the stack, at phone and desktop
       # sizes, axe on every screen included.
       - run: pnpm --filter @wambito/web e2e

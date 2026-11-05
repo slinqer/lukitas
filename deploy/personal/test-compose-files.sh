@@ -71,6 +71,11 @@ api_url="$(compose config --format json | jq -r .services.api.environment.DATABA
 api_user="${api_url#postgres://}"
 check "the API's DATABASE_URL user" wambito_app "${api_user%%:*}"
 check "the API's database" wambito "${api_url##*/}"
+# The admin settings reach the API (empty means no admins: the panel answers 404).
+with_env admin ADMIN_USER_IDS=some-id ADMIN_ALLOWED_IPS=203.0.113.0/24
+check "the API gets ADMIN_USER_IDS" some-id "$(compose config --format json | jq -r .services.api.environment.ADMIN_USER_IDS)"
+check "the API gets ADMIN_ALLOWED_IPS" 203.0.113.0/24 "$(compose config --format json | jq -r .services.api.environment.ADMIN_ALLOWED_IPS)"
+with_env unset
 check "the images" "wambito-api:personal wambito-mcp:personal wambito-web:personal" \
   "$(compose config --format json | jq -r '[.services.api.image, .services.mcp.image, .services.web.image] | join(" ")')"
 check "the postgres user and database" "wambito wambito" \
@@ -120,6 +125,19 @@ check "direct: printed command" \
 with_env direct-port COMPOSE_FILE=docker-compose.yml:docker-compose.direct.yml WEB_PORT=9099
 check "direct ports: WEB_PORT moves the local listener" "127.0.0.1:9099->8080/tcp" \
   "$(web_ports | grep '^127\.0\.0\.1:' || true)"
+
+# --- Sign-in: open to everyone unless SIGN_IN_ALLOWLIST names someone. ----------------------------
+ENV_FILE="$tmp/open.env"
+printf '%s\n' POSTGRES_PASSWORD=test APP_DB_PASSWORD=test BETTER_AUTH_SECRET=test >"$ENV_FILE"
+if open_json="$(compose config --format json 2>/dev/null)"; then
+  check "no SIGN_IN_ALLOWLIST: open sign-in (empty)" "" \
+    "$(jq -r '.services.api.environment.SIGN_IN_ALLOWLIST // ""' <<<"$open_json")"
+else
+  fail "no SIGN_IN_ALLOWLIST: compose refuses the .env"
+fi
+with_env allowlist
+check "SIGN_IN_ALLOWLIST is passed on" you@example.com \
+  "$(compose config --format json | jq -r .services.api.environment.SIGN_IN_ALLOWLIST)"
 
 # --- What COMPOSE_FILE may name. ------------------------------------------------------------------
 refused() { # NAME VALUE: compose_files exits non-zero for COMPOSE_FILE=VALUE

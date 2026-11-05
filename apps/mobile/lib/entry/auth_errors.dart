@@ -12,6 +12,7 @@ enum AuthError {
   invalidEmail,
   tooManyRequests,
   signInNotAllowed,
+  accountSuspended,
   guestSignupDisabled,
   emailTaken,
   tooManySignInAttempts,
@@ -35,6 +36,7 @@ const _codes = {
   'invalid_or_expired_code': AuthError.invalidOrExpiredCode,
   'too_many_attempts': AuthError.tooManyAttempts,
   'sign_in_not_allowed': AuthError.signInNotAllowed,
+  'account_suspended': AuthError.accountSuspended,
   'guest_signup_disabled': AuthError.guestSignupDisabled,
   'email_taken': AuthError.emailTaken,
 };
@@ -45,6 +47,9 @@ const retryableErrors = {
   AuthError.internalError,
   AuthError.tooManySignInAttempts,
 };
+
+/// Errors about the account, the same whatever the sign-in path: the passkey and the link keep them.
+const _accountErrors = {AuthError.accountSuspended};
 
 /// The message for a failed auth call, as the web picks it.
 AuthError authErrorFor(AuthFailure failure, AuthAction action) {
@@ -78,14 +83,18 @@ AuthError unexpectedPasskeyErrorFor(Object error) {
 AuthError? passkeyErrorFor(AuthFailure failure) {
   if (failure.code == 'AUTH_CANCELLED') return null;
   final error = authErrorFor(failure, AuthAction.signIn);
-  return retryableErrors.contains(error) ? error : AuthError.passkeyFailed;
+  return retryableErrors.contains(error) || _accountErrors.contains(error)
+      ? error
+      : AuthError.passkeyFailed;
 }
 
 /// The message for a magic link that did not sign in: whatever was wrong with the code, the
 /// person can only ask for a new one, unless retrying can help.
 AuthError linkErrorFor(AuthFailure failure) {
   final error = authErrorFor(failure, AuthAction.signIn);
-  return retryableErrors.contains(error) ? error : AuthError.invalidOrExpiredCode;
+  return retryableErrors.contains(error) || _accountErrors.contains(error)
+      ? error
+      : AuthError.invalidOrExpiredCode;
 }
 
 /// Whether [error] is about the code itself (the field is marked and emptied).
@@ -102,6 +111,7 @@ extension AuthErrorMessage on AuthError {
     AuthError.invalidEmail => l10n.errorInvalidEmail,
     AuthError.tooManyRequests => l10n.errorTooManyRequests,
     AuthError.signInNotAllowed => l10n.errorSignInNotAllowed,
+    AuthError.accountSuspended => l10n.errorAccountSuspended,
     AuthError.guestSignupDisabled => l10n.errorGuestSignupDisabled,
     AuthError.emailTaken => l10n.errorEmailTaken,
     AuthError.tooManySignInAttempts => l10n.errorTooManySignInAttempts,

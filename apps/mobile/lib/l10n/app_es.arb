@@ -229,6 +229,10 @@
   "@errorSignInNotAllowed": {
     "description": "Error: the email is not on this install's allowlist."
   },
+  "errorAccountSuspended": "Tu cuenta está suspendida. Escríbenos a privacy@wambito.com.",
+  "@errorAccountSuspended": {
+    "description": "Error: an admin suspended this account; sign-in is refused."
+  },
   "errorGuestSignupDisabled": "Por ahora no se pueden crear cuentas de invitado.",
   "@errorGuestSignupDisabled": {
     "description": "Error: guest sign-up is off on this server."

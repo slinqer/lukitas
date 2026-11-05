@@ -49,6 +49,7 @@
   "errorTooManyAttempts": "Troppi tentativi con questo codice. Chiedine uno nuovo.",
   "errorTooManyRequests": "Hai chiesto troppi codici di fila. Aspetta qualche minuto e riprova.",
   "errorSignInNotAllowed": "Wambito non è ancora aperta al pubblico. Se vuoi provarla, scrivi a chi ti ha invitato.",
+  "errorAccountSuspended": "Il tuo account è sospeso. Scrivici a privacy@wambito.com.",
   "errorGuestSignupDisabled": "Per ora non si possono creare account ospite.",
   "errorEmailTaken": "Questa email ha già un account. Entra con quella.",
   "errorPasskeyFailed": "Non siamo riusciti a farti entrare con l'impronta. Riprova o usa la tua email.",

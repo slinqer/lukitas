@@ -195,6 +195,19 @@ void main() {
       expect(find.text('Revisa tu correo'), findsNothing);
     });
 
+    testWidgets('a suspended account says so when the code is entered', (tester) async {
+      await pumpApp(tester, auth: auth);
+      await tester.tap(find.text('ENTRAR CON MI CORREO'));
+      await tester.pumpAndSettle();
+      await _enterEmail(tester, 'ana@correo.com');
+      auth.failures['verifyCode'] = const AuthFailure(code: 'account_suspended', status: 403);
+
+      await _enterCode(tester, '123456');
+
+      expect(find.text('Tu cuenta está suspendida. Escríbenos a privacy@wambito.com.'), findsOneWidget);
+      expect(find.byType(HomeScreen), findsNothing);
+    });
+
     testWidgets('a mistyped email is caught before asking the server', (tester) async {
       await pumpApp(tester, auth: auth);
 
@@ -264,6 +277,32 @@ void main() {
         tester.widget<EditableText>(find.byKey(const Key('entry.email'))).controller.text,
         'ana@correo.com',
       );
+    });
+  });
+
+  group('a suspended account', () {
+    testWidgets('the magic link says the account is suspended', (tester) async {
+      final container = await pumpApp(tester, auth: auth);
+      auth.failures['verifyCode'] = const AuthFailure(code: 'account_suspended', status: 403);
+
+      container.read(routerProvider).go('/auth/verify?email=ana%40correo.com&code=654321');
+      await tester.pumpAndSettle();
+
+      expect(find.text('Tu cuenta está suspendida. Escríbenos a privacy@wambito.com.'), findsOneWidget);
+      expect(find.byType(HomeScreen), findsNothing);
+    });
+
+    testWidgets('the passkey says the account is suspended, not that the passkey failed', (
+      tester,
+    ) async {
+      await pumpApp(tester, auth: auth, passkeys: FakePasskeys());
+      auth.failures['passkeySignIn'] = const AuthFailure(code: 'account_suspended', status: 403);
+
+      await tester.tap(find.text('ENTRAR CON HUELLA'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Tu cuenta está suspendida. Escríbenos a privacy@wambito.com.'), findsOneWidget);
+      expect(find.byType(HomeScreen), findsNothing);
     });
   });
 

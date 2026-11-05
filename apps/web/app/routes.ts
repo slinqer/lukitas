@@ -15,6 +15,15 @@ export default [
   route("en/roadmap", "routes/en.roadmap.tsx"),
   route("it/roadmap", "routes/it.roadmap.tsx"),
   route("pt/roadmap", "routes/pt.roadmap.tsx"),
+  // The privacy policy and the account deletion page, prerendered per language too.
+  route("privacy", "routes/privacy.tsx"),
+  route("en/privacy", "routes/en.privacy.tsx"),
+  route("it/privacy", "routes/it.privacy.tsx"),
+  route("pt/privacy", "routes/pt.privacy.tsx"),
+  route("delete-account", "routes/delete-account.tsx"),
+  route("en/delete-account", "routes/en.delete-account.tsx"),
+  route("it/delete-account", "routes/it.delete-account.tsx"),
+  route("pt/delete-account", "routes/pt.delete-account.tsx"),
   // Every screen of the app (sign-in, welcome, /app/*) nests under this layout, which holds the
   // API client, its cache and the toasts. The landing stays outside it, so visitors do not download
   // that code. The demo (/demo/*) has its own layout with a demo ApiProvider, beside this one.
@@ -27,6 +36,8 @@ export default [
         layout("routes/app-layout.tsx", [
           route("sign-in", "routes/sign-in.tsx"),
           route("auth/verify", "routes/auth.verify.tsx"),
+          // The link of an email change (admin panel spec §5.2): works signed in or not.
+          route("confirm-email", "routes/confirm-email.tsx"),
           // After an email sign-in: "¿Entrar con tu huella la próxima vez?", once per user per device.
           route("passkey-offer", "routes/passkey-offer.tsx"),
           route("welcome/:step?", "routes/welcome.tsx"),
@@ -47,6 +58,14 @@ export default [
             route("insights", "routes/app.insights.tsx"),
             route("settings", "routes/app.settings.tsx"),
           ]),
+        ]),
+        // The admin panel (admin panel spec §3): its own layout, with the app's API client and its
+        // own Spanish/English messages; signed in, and the API decides who is an admin (anyone
+        // else sees the not-found page). Its code loads only on /admin, and the landing-only
+        // release leaves it out with the app.
+        route("admin", "routes/admin.tsx", [
+          index("routes/admin._index.tsx"),
+          route("users/:id", "routes/admin.users.$id.tsx"),
         ]),
         // Try before signing up (spec §2.6b): the same screens as /app (the same route modules,
         // under their own ids), as the made-up "Valentina (demo)", on a backend in the page. No

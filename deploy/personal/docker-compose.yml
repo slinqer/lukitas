@@ -78,12 +78,17 @@ services:
       SMTP_URL: ${SMTP_URL:-}
       SMTP_TLS_INSECURE: ${SMTP_TLS_INSECURE:-false}
       RESEND_API_KEY: ${RESEND_API_KEY:-}
-      SIGN_IN_ALLOWLIST: ${SIGN_IN_ALLOWLIST:?Set SIGN_IN_ALLOWLIST in .env}
+      # Empty or unset: anyone may sign in. Emails, comma-separated: only those.
+      SIGN_IN_ALLOWLIST: ${SIGN_IN_ALLOWLIST:-}
       # Guest sign-up from the Android app (an account without an email). On unless set to false.
       GUEST_SIGNUP: ${GUEST_SIGNUP:-true}
       # The Android app's signing-certificate fingerprints (the web's assetlinks.json reads the same
       # value): passkeys made in the app are accepted for these. Empty: passkeys from the web only.
       ANDROID_CERT_SHA256: ${ANDROID_CERT_SHA256:-}
+      # The admin panel (docs/admin.md). Empty: no admins, so the panel answers 404. The IP
+      # allowlist (comma-separated IPs or CIDRs) is off when empty.
+      ADMIN_USER_IDS: ${ADMIN_USER_IDS:-}
+      ADMIN_ALLOWED_IPS: ${ADMIN_ALLOWED_IPS:-}
       # Caddy puts the client address Cloudflare reports into X-Forwarded-For. Only that hop is
       # trusted: Caddy's fixed address in this network.
       CLIENT_IP_HEADER: x-forwarded-for

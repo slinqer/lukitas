@@ -9,6 +9,7 @@ import 'package:wambito/api/gen/src/auth/api_key_auth.dart';
 import 'package:wambito/api/gen/src/auth/basic_auth.dart';
 import 'package:wambito/api/gen/src/auth/bearer_auth.dart';
 import 'package:wambito/api/gen/src/auth/oauth.dart';
+import 'package:wambito/api/gen/src/api/admin_api.dart';
 import 'package:wambito/api/gen/src/api/default_api.dart';
 
 class WambitoApi {
@@ -124,6 +125,12 @@ class WambitoApi {
         (element) => element is ApiKeyAuthInterceptor,
       ) as ApiKeyAuthInterceptor).apiKeys.remove(name);
     }
+  }
+
+  /// Get AdminApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  AdminApi getAdminApi() {
+    return AdminApi(dio, serializers);
   }
 
   /// Get DefaultApi instance, base route and serializer can be overridden by a given but be careful,

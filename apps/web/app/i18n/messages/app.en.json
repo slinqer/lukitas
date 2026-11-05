@@ -191,9 +191,11 @@
     "invalid_email": "Enter a valid email, like ana@example.com.",
     "invalid_code": "That code isn't right. Check it and try again.",
     "invalid_or_expired_code": "This code no longer works: it expired or was already used. Ask for a new one.",
+    "link_expired": "This link has expired or was already used.",
     "too_many_attempts": "Too many tries with this code. Ask for a new one.",
     "too_many_requests": "You asked for a lot of codes in a row. Wait a few minutes and try again.",
     "sign_in_not_allowed": "Wambito isn't open to the public yet. If you'd like to try it, message the person who invited you.",
+    "account_suspended": "Your account is suspended. Write to privacy@wambito.com.",
     "guest_signup_disabled": "Guest accounts are turned off for now.",
     "email_taken": "That email already has an account. Sign in with it.",
     "not_a_guest": "Your account already has an email.",
@@ -718,5 +720,21 @@
     "paid": "Paid",
     "hint": "Tap it to edit or delete it.",
     "hint_pending": "Tap it to edit or delete it; Pending marks it paid."
+  },
+  "confirm_email": {
+    "meta_title": "Confirm your new email · Wambito",
+    "title": "Confirm your new email",
+    "lead": "Tap the button to change the email on your Wambito account.",
+    "confirm": "Confirm my new email",
+    "confirming": "Confirming…",
+    "done_title": "Done. Sign in with your new email.",
+    "done_lead": "For your security we signed out your open sessions. Sign in again with the new email.",
+    "sign_in": "Go to sign in",
+    "expired_title": "This link no longer works",
+    "expired_lead": "It expired or was already used. If you still need the change, write to privacy@wambito.com.",
+    "taken_title": "That email already has an account",
+    "taken_lead": "We can't change it to an email another account already uses. Write to privacy@wambito.com.",
+    "no_token_title": "The link is incomplete",
+    "no_token_lead": "Open the full link from the email we sent you."
   }
 }

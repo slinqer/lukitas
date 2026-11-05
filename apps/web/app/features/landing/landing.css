@@ -60,10 +60,6 @@
     line-height: 1.5;
     color: var(--ink-muted);
   }
-  /* The button under a section's cards. */
-  .lk-landing-more {
-    margin-top: var(--space-4);
-  }
   .lk-landing-spot.is-closing {
     width: 128px;
     height: 128px;
@@ -674,6 +670,109 @@
     color: var(--ink-muted);
   }
 
+  /*
+   * No more spreadsheet: the heading with Wambi shredding a spreadsheet beside it (at every width),
+   * then three pains of a spreadsheet, each beside how Wambito solves it.
+   */
+  .lk-landing-nosheet {
+    display: grid;
+    gap: var(--space-5);
+  }
+  .lk-landing-nosheet-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .lk-landing-nosheet h2 {
+    margin: 0 0 var(--space-2);
+  }
+  .lk-landing-nosheet-art {
+    width: clamp(120px, 32vw, 280px);
+    height: auto;
+  }
+  /* The smallest phones: a smaller Wambi and heading, so the text keeps room beside him. */
+  @media (max-width: 359px) {
+    .lk-landing-nosheet-art {
+      width: 96px;
+    }
+    .lk-landing .lk-landing-nosheet h2 {
+      font-size: 22px;
+    }
+  }
+  /* Each pair close together, the pairs further apart, so the eye reads them two by two. */
+  .lk-landing-compare ul {
+    display: grid;
+    gap: var(--space-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  /* The column labels only show where the rows are two columns. */
+  .lk-landing-compare-row {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .lk-landing-compare-row p {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-lg);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.45;
+  }
+  /* The spreadsheet's side: the page color and muted text, a tired dashed edge. */
+  .lk-landing-compare-row .is-before {
+    background: var(--bg);
+    border: 2px dashed var(--stroke);
+    color: var(--ink-muted);
+  }
+  /* Wambito's side: a solid row in the app's own look, edged in green. */
+  .lk-landing-compare-row .is-after {
+    background: var(--surface-row);
+    border: 2px solid var(--good);
+    color: var(--ink);
+  }
+  .lk-landing-mark {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 24px;
+    height: 24px;
+    margin-top: -1px;
+    border-radius: 50%;
+  }
+  .lk-landing-mark svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: var(--surface);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .lk-landing-mark.is-before {
+    background: var(--over);
+  }
+  .lk-landing-mark.is-after {
+    background: var(--good);
+  }
+  @media (min-width: 640px) {
+    .lk-landing-compare-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+    }
+    .lk-landing-compare ul {
+      gap: var(--space-3);
+    }
+    .lk-landing-compare-row p {
+      align-items: center;
+    }
+  }
+
   /* Open source: one card with the code icon, a short paragraph and the link to the repository. */
   .lk-landing-open {
     display: grid;
@@ -784,8 +883,7 @@
   }
 
   @media (min-width: 640px) {
-    .lk-landing-cards.is-ways,
-    .lk-landing-cards.is-next {
+    .lk-landing-cards.is-ways {
       grid-template-columns: repeat(3, 1fr);
     }
     .lk-landing-cards.is-how {
@@ -850,6 +948,18 @@
     .lk-landing-perks {
       justify-content: flex-start;
     }
+    /* The heading and Wambi in the middle, not pushed to the card's edges. */
+    .lk-landing-nosheet-head {
+      grid-template-columns: minmax(0, 34rem) auto;
+      justify-content: center;
+      gap: var(--space-6);
+    }
+    .lk-landing .lk-landing-nosheet h2 {
+      font-size: 40px;
+    }
+    .lk-landing-compare-row p {
+      font-size: 16px;
+    }
     .lk-landing-open {
       grid-template-columns: auto 1fr auto;
       align-items: center;
@@ -866,5 +976,431 @@
   .lk-landing-faq details,
   .lk-landing-faq summary::after {
     transition-duration: 0s;
+  }
+}
+
+/*
+ * Scroll reveals: as things scroll in, they rise into place, driven by the scroll itself (CSS view
+ * timelines: no JavaScript, and they track the scroll both ways, so nothing loops). Only movement:
+ * opacity stays 1, so text never sits half transparent (contrast holds at every scroll position).
+ * They use `translate`/`scale`/`rotate`, never `transform`, so the press effects keep working.
+ * The hero and the closing hold still: the traveling Wambi lands on their spots. Without view
+ * timelines (older browsers) or under reduced motion, everything simply sits in place.
+ */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .lk-landing-section-head,
+    .lk-landing-cards > .lk-landing-card,
+    .lk-landing-open,
+    .lk-landing-faq > li,
+    .lk-landing-nosheet-head,
+    .lk-landing-compare-row > p,
+    .lk-landing-nosheet-art {
+      animation: lk-landing-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 5% cover 30%;
+    }
+    /* Cards side by side enter one after the other, not as one block. */
+    .lk-landing-cards > .lk-landing-card:nth-child(2),
+    .lk-landing-faq > li:nth-child(even) {
+      animation-range: entry 15% cover 35%;
+    }
+    .lk-landing-cards > .lk-landing-card:nth-child(3) {
+      animation-range: entry 25% cover 40%;
+    }
+    .lk-landing-cards > .lk-landing-card:nth-child(4) {
+      animation-range: entry 35% cover 45%;
+    }
+    /* Before / after: the spreadsheet's pain slides in from the left, Wambito's answer from the right, a beat later. */
+    .lk-landing-compare-row > .is-before {
+      animation-name: lk-landing-from-left;
+    }
+    .lk-landing-compare-row > .is-after {
+      animation-name: lk-landing-from-right;
+      animation-range: entry 15% cover 35%;
+    }
+    /* Wambi tips forward into the shredder as the block scrolls in. */
+    .lk-landing-nosheet-art {
+      animation-name: lk-landing-tip;
+      animation-range: entry 0% cover 45%;
+    }
+  }
+}
+
+/*
+ * Never smaller: whatever has not scrolled in yet sits in its "from" state, so a shrunk start would
+ * make buttons and FAQ questions smaller than 44px. The before/after rows slide in from the sides,
+ * but only 24px: on a phone they sit 32px from the screen's edge (the page's gutter plus the card's
+ * padding), so even their start never sticks out of it.
+ */
+@keyframes lk-landing-rise {
+  from {
+    translate: 0 48px;
+  }
+  to {
+    translate: none;
+  }
+}
+@keyframes lk-landing-from-left {
+  from {
+    translate: -24px 24px;
+    rotate: -1deg;
+  }
+  to {
+    translate: none;
+    rotate: none;
+  }
+}
+@keyframes lk-landing-from-right {
+  from {
+    translate: 24px 32px;
+    rotate: 1deg;
+  }
+  to {
+    translate: none;
+    rotate: none;
+  }
+}
+@keyframes lk-landing-tip {
+  from {
+    translate: 0 40px;
+    rotate: -8deg;
+    scale: 0.85;
+  }
+  to {
+    translate: none;
+    rotate: none;
+    scale: none;
+  }
+}
+
+/*
+ * Button hover halo (mouse and pen only: `hover: hover`). A soft light inside the button follows the
+ * pointer (`--lk-glow-x/y`, set by pointer-glow.ts; without JavaScript it sits in the middle) and the
+ * halo around it leans toward the pointer's side (`--lk-lean-x/y`, -1..1). The button lifts 2px; a
+ * press still sinks it. Registered so the light and the halo fade in rather than snap.
+ */
+@property --lk-light {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+@property --lk-halo {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+@media (hover: hover) {
+  .lk-landing .lk-btn {
+    --lk-glow: 255 255 255;
+    background-image: radial-gradient(
+      circle 90px at var(--lk-glow-x, 50%) var(--lk-glow-y, 50%),
+      rgb(var(--lk-glow) / var(--lk-light)),
+      transparent 75%
+    );
+    transition:
+      transform var(--press) ease,
+      translate var(--sheet) ease,
+      box-shadow var(--sheet) ease,
+      border-color var(--sheet) ease,
+      --lk-light var(--sheet) ease,
+      --lk-halo var(--sheet) ease;
+  }
+  .lk-landing .lk-btn-secondary {
+    --lk-glow: 139 92 255;
+  }
+  .lk-landing .lk-btn:hover {
+    --lk-light: 0.2;
+    --lk-halo: 0.55;
+    translate: 0 -2px;
+  }
+  .lk-landing .lk-btn-secondary:hover {
+    --lk-light: 0.22;
+    --lk-halo: 0.35;
+    border-color: var(--brand-glow);
+  }
+  .lk-landing .lk-btn-primary:hover {
+    box-shadow:
+      var(--edge-brand),
+      calc(var(--lk-lean-x, 0) * 12px) calc(var(--lk-lean-y, 0) * 8px + 6px) 36px
+      rgb(139 92 255 / var(--lk-halo));
+  }
+  .lk-landing .lk-btn-secondary:hover {
+    box-shadow:
+      var(--edge-sm),
+      calc(var(--lk-lean-x, 0) * 12px) calc(var(--lk-lean-y, 0) * 8px + 6px) 32px
+      rgb(139 92 255 / var(--lk-halo));
+  }
+  /* A press sinks the button onto its edge, light still on. */
+  .lk-landing .lk-btn:hover:active {
+    translate: none;
+  }
+  .lk-landing .lk-btn-primary:hover:active {
+    box-shadow:
+      0 1px 0 var(--brand-edge),
+      0 4px 24px rgb(139 92 255 / var(--lk-halo));
+  }
+  .lk-landing .lk-btn-secondary:hover:active {
+    box-shadow:
+      0 1px 0 var(--surface-edge),
+      0 4px 20px rgb(139 92 255 / var(--lk-halo));
+  }
+}
+@media (hover: hover) and (prefers-reduced-motion: reduce) {
+  /* The light still shows, without the lift or the fade. */
+  .lk-landing .lk-btn {
+    transition-duration: 0s;
+  }
+  .lk-landing .lk-btn:hover {
+    translate: none;
+  }
+}
+
+/*
+ * "How it works" cards come alive under the pointer (on phones, on tap): each illustration plays
+ * its small story once per hover, slowly enough to follow, never in a loop.
+ * - By voice: the mic pulses, what you said slides in, then the expense, then "saved" bounces.
+ * - Where it goes: the donut sweeps in clockwise from the top, as the insights donut does in the
+ *   app, and the legend lights up in the order the donut draws it.
+ * - Budgets: the bars fill from empty; the one near its limit turns from green to yellow on the
+ *   way, and its "left" amount with it.
+ * - Import: the file pushes the arrow while the count runs from 0 (HowItWorks.tsx), then a check
+ *   pops to confirm.
+ * Movement and color only (opacity stays 1), and none under reduced motion.
+ */
+@property --lk-sweep {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 360deg;
+}
+.lk-landing-donut {
+  mask: conic-gradient(#000 var(--lk-sweep), transparent 0);
+}
+.lk-landing-cards.is-how .lk-bar > span {
+  transform-origin: left center;
+}
+.lk-landing-voice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.lk-landing-mic {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--brand);
+}
+.lk-landing-mic svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: var(--on-brand);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.lk-landing-said {
+  padding: 6px 12px;
+  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) 4px;
+  background: var(--surface);
+  font-size: 14px;
+  font-weight: 800;
+  font-style: italic;
+}
+.lk-landing-imported {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-variant-numeric: tabular-nums;
+}
+.lk-landing-imported-check {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--good);
+}
+.lk-landing-imported-check svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: var(--surface);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* While counting, the check waits. */
+.lk-landing-imported[data-state="counting"] .lk-landing-imported-check {
+  scale: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* After each count the check pops in (a fresh element each run, so it plays every time). */
+  .lk-landing-imported:not([data-runs="0"]) .lk-landing-imported-check {
+    animation: lk-landing-pop 700ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  /* `hover: hover`: a mouse or pen; elsewhere a tap (`:active`) plays it. */
+  @media (hover: hover) {
+    .lk-landing-cards.is-how > .lk-landing-card:hover .lk-landing-mic {
+      animation: lk-landing-pulse 900ms ease-out;
+    }
+    .lk-landing-cards.is-how > .lk-landing-card:hover .lk-landing-said {
+      animation: lk-landing-slide-in 700ms cubic-bezier(0.2, 0.8, 0.2, 1) 200ms both;
+    }
+    .lk-landing-cards.is-how > .lk-landing-card:hover .lk-landing-demo-row {
+      animation: lk-landing-slide-in 700ms cubic-bezier(0.2, 0.8, 0.2, 1) 700ms both;
+    }
+    .lk-landing-cards.is-how > .lk-landing-card:hover .lk-landing-saved {
+      animation: lk-landing-pop 700ms cubic-bezier(0.34, 1.56, 0.64, 1) 1200ms both;
+    }
+    .lk-landing-cards.is-how > .lk-landing-card:hover .lk-landing-donut {
+      animation: lk-landing-sweep 1400ms ease-out;
+    }
+    .lk-landing-cards.is-how > .lk-landing-card:hover .lk-landing-legend li::before {
+      animation: lk-landing-pop 600ms cubic-bezier(0.34, 1.56, 0.64, 1) var(--lk-delay, 0ms) both;
+    }
+    .lk-landing-cards.is-how > .lk-landing-card:hover .lk-bar > span {
+      animation: lk-landing-fill 1600ms cubic-bezier(0.25, 0.7, 0.3, 1) var(--lk-delay, 0ms) both;
+    }
+    .lk-landing-cards.is-how > .lk-landing-card:hover .lk-bar.is-near > span {
+      animation-name: lk-landing-fill-near;
+    }
+    .lk-landing-cards.is-how > .lk-landing-card:hover .lk-status.is-near {
+      animation: lk-landing-warn 1600ms linear var(--lk-delay, 0ms) both;
+    }
+    .lk-landing-cards.is-how > .lk-landing-card:hover .lk-landing-file {
+      animation: lk-landing-push 900ms ease-in-out;
+    }
+    .lk-landing-cards.is-how > .lk-landing-card:hover .lk-landing-arrow {
+      animation: lk-landing-nudge 900ms ease-in-out 120ms;
+    }
+  }
+  @media (hover: none) {
+    .lk-landing-cards.is-how > .lk-landing-card:active .lk-landing-mic {
+      animation: lk-landing-pulse 900ms ease-out;
+    }
+    .lk-landing-cards.is-how > .lk-landing-card:active .lk-landing-saved,
+    .lk-landing-cards.is-how > .lk-landing-card:active .lk-landing-legend li::before {
+      animation: lk-landing-pop 600ms cubic-bezier(0.34, 1.56, 0.64, 1) var(--lk-delay, 0ms) both;
+    }
+    .lk-landing-cards.is-how > .lk-landing-card:active .lk-landing-donut {
+      animation: lk-landing-sweep 1400ms ease-out;
+    }
+    .lk-landing-cards.is-how > .lk-landing-card:active .lk-bar > span {
+      animation: lk-landing-fill 1600ms cubic-bezier(0.25, 0.7, 0.3, 1) var(--lk-delay, 0ms) both;
+    }
+    .lk-landing-cards.is-how > .lk-landing-card:active .lk-bar.is-near > span {
+      animation-name: lk-landing-fill-near;
+    }
+    .lk-landing-cards.is-how > .lk-landing-card:active .lk-landing-arrow {
+      animation: lk-landing-nudge 900ms ease-in-out;
+    }
+  }
+}
+
+/* The legend lights up in the order the donut draws it; the second budget fills a beat later. */
+.lk-landing-legend li:nth-child(2)::before {
+  --lk-delay: 450ms;
+}
+.lk-landing-legend li:nth-child(3)::before {
+  --lk-delay: 750ms;
+}
+.lk-landing-legend li:nth-child(4)::before {
+  --lk-delay: 1000ms;
+}
+.lk-landing-budget + .lk-landing-budget {
+  --lk-delay: 300ms;
+}
+
+@keyframes lk-landing-sweep {
+  from {
+    --lk-sweep: 0deg;
+  }
+  to {
+    --lk-sweep: 360deg;
+  }
+}
+@keyframes lk-landing-pop {
+  0% {
+    scale: 0.6;
+  }
+  60% {
+    scale: 1.12;
+  }
+  100% {
+    scale: 1;
+  }
+}
+@keyframes lk-landing-pulse {
+  0% {
+    scale: 1;
+    box-shadow: 0 0 0 0 rgb(139 92 255 / 0.6);
+  }
+  40% {
+    scale: 1.15;
+  }
+  100% {
+    scale: 1;
+    box-shadow: 0 0 0 14px rgb(139 92 255 / 0);
+  }
+}
+@keyframes lk-landing-slide-in {
+  from {
+    translate: -24px 0;
+    scale: 0.9;
+  }
+  to {
+    translate: none;
+    scale: none;
+  }
+}
+@keyframes lk-landing-fill {
+  from {
+    scale: 0 1;
+  }
+  to {
+    scale: 1 1;
+  }
+}
+/* Green while there is room, yellow once it nears its limit. */
+@keyframes lk-landing-fill-near {
+  0% {
+    scale: 0 1;
+    background-color: var(--good);
+  }
+  55% {
+    background-color: var(--good);
+  }
+  75% {
+    background-color: var(--near);
+  }
+  100% {
+    scale: 1 1;
+    background-color: var(--near);
+  }
+}
+@keyframes lk-landing-warn {
+  0%,
+  55% {
+    color: var(--good);
+  }
+  75%,
+  100% {
+    color: var(--near);
+  }
+}
+@keyframes lk-landing-push {
+  50% {
+    translate: 8px 0;
+  }
+}
+@keyframes lk-landing-nudge {
+  50% {
+    translate: 12px 0;
   }
 }

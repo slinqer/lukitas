@@ -1,0 +1,190 @@
+{
+  "admin": {
+    "meta_title": "Wambito · Admin",
+    "verify": {
+      "title": "Confirm it's you",
+      "lead": "The admin panel asks for your passkey every 15 minutes. Your device will ask for your PIN, fingerprint or face.",
+      "button": "Confirm with your passkey",
+      "busy": "Waiting for the passkey…",
+      "failed": "The passkey could not be confirmed. Try again.",
+      "no_passkey": {
+        "title": "You need a passkey",
+        "body": "To use the panel, add a passkey to your account in settings.",
+        "link": "Go to settings"
+      }
+    },
+    "errors": {
+      "admin_verification_required": "Confirm with your passkey to continue.",
+      "passkey_verification_failed": "The passkey could not be confirmed. Try again.",
+      "user_not_found": "No account matches.",
+      "is_guest": "This is a guest account: it has no email to change.",
+      "cannot_target_self": "You can't do this to your own account. Use the app's settings, or ask another admin.",
+      "email_taken": "Another account already has that email.",
+      "sign_in_not_allowed": "That address can't sign in yet. Add it to the sign-in allowlist (SIGN_IN_ALLOWLIST) first."
+    },
+    "home": {
+      "title": "Admin",
+      "loading": "Loading…",
+      "error": "The figures could not be loaded.",
+      "retry": "Try again",
+      "cards": {
+        "total": "Accounts",
+        "with_email": "With email",
+        "guests": "Guests",
+        "active": "Active in 30 days",
+        "signups": "Sign-ups in 7 days",
+        "previous": "The previous 7 days: {count}"
+      },
+      "chart": {
+        "title": "Sign-ups per week",
+        "subtitle": "The last 12 weeks, Monday to Sunday (UTC).",
+        "with_email": "With email",
+        "guests": "Guests",
+        "week": "Week",
+        "week_of": "{date}"
+      },
+      "suspended": "Suspended accounts: {count}",
+      "audit": {
+        "title": "Audit log",
+        "empty": "No actions recorded yet.",
+        "more": "Load more",
+        "loading_more": "Loading…",
+        "more_failed": "Could not load more.",
+        "target": "Account {id}",
+        "no_reason": "No reason",
+        "actions": {
+          "admin": {
+            "verified": "Passkey confirmed"
+          },
+          "email": {
+            "change_requested": "Email change requested",
+            "change_confirmed": "Email change confirmed"
+          },
+          "account": {
+            "delete": "Account deleted",
+            "suspend": "Account suspended",
+            "reactivate": "Account reactivated"
+          },
+          "sessions": {
+            "revoke": "Sessions signed out"
+          },
+          "assistant": {
+            "revoke": "Assistant disconnected"
+          },
+          "passkey": {
+            "remove": "Passkey removed"
+          }
+        }
+      },
+      "lookup": {
+        "title": "Look up an account",
+        "label": "Account email or id",
+        "button": "Look up",
+        "busy": "Looking…",
+        "miss": "No account with that email or id"
+      }
+    },
+    "account": {
+      "back": "Back",
+      "title": "Account",
+      "loading": "Loading…",
+      "error": "The account could not be loaded.",
+      "retry": "Try again",
+      "guest": "Guest",
+      "fields": {
+        "id": "Id",
+        "created": "Created",
+        "last_active": "Last active",
+        "never": "Never",
+        "locale": "Language",
+        "sessions": "Open sessions",
+        "status": "Status",
+        "active": "Active",
+        "suspended_since": "Suspended since {date}"
+      },
+      "passkeys": {
+        "title": "Passkeys",
+        "empty": "No passkeys.",
+        "unnamed": "Unnamed passkey",
+        "created": "Added {date}",
+        "device": {
+          "singleDevice": "On one device",
+          "multiDevice": "Synced"
+        },
+        "remove": "Remove {name}",
+        "remove_verb": "Remove"
+      },
+      "assistants": {
+        "title": "Connected assistants",
+        "empty": "No assistant connected.",
+        "consented": "Connected {date}",
+        "revoke": "Disconnect {name}",
+        "revoke_verb": "Disconnect"
+      },
+      "audit_title": "This account's log",
+      "actions": {
+        "title": "Actions",
+        "change_email": "Change the email",
+        "sign_out": "Sign out everywhere",
+        "suspend": "Suspend",
+        "reactivate": "Reactivate",
+        "delete": "Delete the account"
+      },
+      "own": "This is your own account: you can't delete or suspend it from here.",
+      "sheet": {
+        "reason_label": "Reason",
+        "reason_hint": "No personal data here. It stays in the audit log.",
+        "counter": "{count}/300",
+        "reason_invalid": "Write a reason, 1 to 300 characters.",
+        "confirm_mismatch": "The confirmation doesn't match the account.",
+        "busy": "One moment…",
+        "new_email_label": "New email",
+        "confirm_label": "To confirm, type the account's email",
+        "confirm_label_guest": "To confirm, type the account's id",
+        "confirm_hint": "Type {value}",
+        "change_email": {
+          "title": "Change the email",
+          "lead": "We'll send a link to the new email. The change happens when the person opens it, within 24 hours.",
+          "submit": "Send the link",
+          "done": "Link sent."
+        },
+        "sign_out": {
+          "title": "Sign out everywhere",
+          "lead": "Every session ends, on every device.",
+          "submit": "End the sessions",
+          "done": "Sessions ended."
+        },
+        "suspend": {
+          "title": "Suspend the account",
+          "lead": "Its sessions end, its assistants are disconnected, and it can't sign in until you reactivate it.",
+          "submit": "Suspend the account",
+          "done": "Account suspended."
+        },
+        "reactivate": {
+          "title": "Reactivate the account",
+          "lead": "The person can sign in again as usual.",
+          "submit": "Reactivate the account",
+          "done": "Account reactivated."
+        },
+        "delete": {
+          "title": "Delete the account",
+          "lead": "The account and all its data go at once. Backups that hold it age out within 14 days.",
+          "submit": "Yes, delete the account",
+          "done": "Account deleted."
+        },
+        "assistant": {
+          "title": "Disconnect {name}",
+          "lead": "The assistant loses access to the account.",
+          "submit": "Disconnect",
+          "done": "Assistant disconnected."
+        },
+        "passkey": {
+          "title": "Remove {name}",
+          "lead": "It can no longer be used to sign in.",
+          "submit": "Remove the passkey",
+          "done": "Passkey removed."
+        }
+      }
+    }
+  }
+}

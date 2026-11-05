@@ -61,8 +61,15 @@
     {
       "idx": 8,
       "version": "7",
-      "when": 1793822411482,
-      "tag": "0008_automatic_capture",
+      "when": 1793808983891,
+      "tag": "0008_admin",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793873780807,
+      "tag": "0009_automatic_capture",
       "breakpoints": true
     }
   ]

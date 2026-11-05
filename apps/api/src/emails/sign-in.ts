@@ -161,7 +161,7 @@ const ASSISTANT_COPY = {
 } satisfies Record<Locale, Copy>;
 
 /** The day palette of docs/design/system/project/tokens.json. Dark backgrounds break in many clients. */
-const C = {
+export const C = {
   bg: "#f7f4ff",
   surface: "#ffffff",
   sunken: "#ece6ff",
@@ -176,22 +176,22 @@ const C = {
 } as const;
 
 // Clients do not load web fonts: ask for the brand fonts, fall back to what every system has.
-const DISPLAY = `'Fredoka','Baloo 2',Arial,Helvetica,sans-serif`;
-const TEXT = `'Nunito',Arial,Helvetica,sans-serif`;
+export const DISPLAY = `'Fredoka','Baloo 2',Arial,Helvetica,sans-serif`;
+export const TEXT = `'Nunito',Arial,Helvetica,sans-serif`;
 const MONO = `'SFMono-Regular',Menlo,Consolas,'Courier New',monospace`;
 
-const escapeHtml = (s: string) =>
+export const escapeHtml = (s: string) =>
   s.replace(
     /[&<>"']/g,
     (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] ?? c,
   );
 
-const WAVE_SIZE = 160;
-const BUTTON_WIDTH = 300;
-const BUTTON_HEIGHT = 56;
+export const WAVE_SIZE = 160;
+export const BUTTON_WIDTH = 300;
+export const BUTTON_HEIGHT = 56;
 
 /** Pads the preheader so clients do not pull body text in after it. */
-const PREHEADER_FILLER = "&#847;&zwnj;&nbsp;".repeat(60);
+export const PREHEADER_FILLER = "&#847;&zwnj;&nbsp;".repeat(60);
 
 interface CodeEmailInput {
   code: string;

@@ -1,0 +1,190 @@
+{
+  "admin": {
+    "meta_title": "Wambito · Administración",
+    "verify": {
+      "title": "Confirma que eres tú",
+      "lead": "El panel de administración pide tu passkey cada 15 minutos. Tu dispositivo te pedirá el PIN, la huella o la cara.",
+      "button": "Confirmar con tu passkey",
+      "busy": "Esperando la passkey…",
+      "failed": "No se pudo confirmar la passkey. Inténtalo otra vez.",
+      "no_passkey": {
+        "title": "Necesitas una passkey",
+        "body": "Para usar el panel, añade una passkey a tu cuenta en los ajustes.",
+        "link": "Ir a ajustes"
+      }
+    },
+    "errors": {
+      "admin_verification_required": "Confirma con tu passkey para seguir.",
+      "passkey_verification_failed": "No se pudo confirmar la passkey. Inténtalo otra vez.",
+      "user_not_found": "Ninguna cuenta coincide.",
+      "is_guest": "Es una cuenta de invitado: no tiene correo que cambiar.",
+      "cannot_target_self": "No puedes hacer esto con tu propia cuenta. Usa los ajustes de la app o pídeselo a otra persona administradora.",
+      "email_taken": "Otra cuenta ya tiene ese correo.",
+      "sign_in_not_allowed": "Ese correo todavía no puede entrar. Añádelo primero a la lista de acceso (SIGN_IN_ALLOWLIST)."
+    },
+    "home": {
+      "title": "Administración",
+      "loading": "Cargando…",
+      "error": "No se pudieron cargar las cifras.",
+      "retry": "Reintentar",
+      "cards": {
+        "total": "Cuentas",
+        "with_email": "Con correo",
+        "guests": "Invitados",
+        "active": "Activas en 30 días",
+        "signups": "Altas en 7 días",
+        "previous": "Los 7 días anteriores: {count}"
+      },
+      "chart": {
+        "title": "Altas por semana",
+        "subtitle": "Las últimas 12 semanas, de lunes a domingo (UTC).",
+        "with_email": "Con correo",
+        "guests": "Invitados",
+        "week": "Semana",
+        "week_of": "{date}"
+      },
+      "suspended": "Cuentas suspendidas: {count}",
+      "audit": {
+        "title": "Registro de auditoría",
+        "empty": "Aún no hay acciones registradas.",
+        "more": "Cargar más",
+        "loading_more": "Cargando…",
+        "more_failed": "No se pudo cargar más.",
+        "target": "Cuenta {id}",
+        "no_reason": "Sin motivo",
+        "actions": {
+          "admin": {
+            "verified": "Passkey confirmada"
+          },
+          "email": {
+            "change_requested": "Cambio de correo pedido",
+            "change_confirmed": "Cambio de correo confirmado"
+          },
+          "account": {
+            "delete": "Cuenta eliminada",
+            "suspend": "Cuenta suspendida",
+            "reactivate": "Cuenta reactivada"
+          },
+          "sessions": {
+            "revoke": "Sesiones cerradas"
+          },
+          "assistant": {
+            "revoke": "Asistente desconectado"
+          },
+          "passkey": {
+            "remove": "Passkey eliminada"
+          }
+        }
+      },
+      "lookup": {
+        "title": "Buscar una cuenta",
+        "label": "Correo o id de la cuenta",
+        "button": "Buscar",
+        "busy": "Buscando…",
+        "miss": "Ninguna cuenta con ese correo o id"
+      }
+    },
+    "account": {
+      "back": "Volver",
+      "title": "Cuenta",
+      "loading": "Cargando…",
+      "error": "No se pudo cargar la cuenta.",
+      "retry": "Reintentar",
+      "guest": "Invitado",
+      "fields": {
+        "id": "Id",
+        "created": "Creada",
+        "last_active": "Última actividad",
+        "never": "Nunca",
+        "locale": "Idioma",
+        "sessions": "Sesiones abiertas",
+        "status": "Estado",
+        "active": "Activa",
+        "suspended_since": "Suspendida desde el {date}"
+      },
+      "passkeys": {
+        "title": "Passkeys",
+        "empty": "Sin passkeys.",
+        "unnamed": "Passkey sin nombre",
+        "created": "Añadida el {date}",
+        "device": {
+          "singleDevice": "En un dispositivo",
+          "multiDevice": "Sincronizada"
+        },
+        "remove": "Quitar {name}",
+        "remove_verb": "Quitar"
+      },
+      "assistants": {
+        "title": "Asistentes conectados",
+        "empty": "Ningún asistente conectado.",
+        "consented": "Conectado el {date}",
+        "revoke": "Desconectar {name}",
+        "revoke_verb": "Desconectar"
+      },
+      "audit_title": "Registro de esta cuenta",
+      "actions": {
+        "title": "Acciones",
+        "change_email": "Cambiar el correo",
+        "sign_out": "Cerrar sesión en todas partes",
+        "suspend": "Suspender",
+        "reactivate": "Reactivar",
+        "delete": "Eliminar la cuenta"
+      },
+      "own": "Es tu propia cuenta: no puedes eliminarla ni suspenderla desde aquí.",
+      "sheet": {
+        "reason_label": "Motivo",
+        "reason_hint": "Sin datos personales aquí. Queda en el registro de auditoría.",
+        "counter": "{count}/300",
+        "reason_invalid": "Escribe un motivo, de 1 a 300 caracteres.",
+        "confirm_mismatch": "La confirmación no coincide con la cuenta.",
+        "busy": "Un momento…",
+        "new_email_label": "Nuevo correo",
+        "confirm_label": "Para confirmar, escribe el correo de la cuenta",
+        "confirm_label_guest": "Para confirmar, escribe el id de la cuenta",
+        "confirm_hint": "Escribe {value}",
+        "change_email": {
+          "title": "Cambiar el correo",
+          "lead": "Enviaremos un enlace al nuevo correo. El cambio se hace cuando la persona lo abre, en 24 horas como mucho.",
+          "submit": "Enviar el enlace",
+          "done": "Enlace enviado."
+        },
+        "sign_out": {
+          "title": "Cerrar sesión en todas partes",
+          "lead": "Se cierran todas sus sesiones, en todos sus dispositivos.",
+          "submit": "Cerrar las sesiones",
+          "done": "Sesiones cerradas."
+        },
+        "suspend": {
+          "title": "Suspender la cuenta",
+          "lead": "Se cierran sus sesiones, se desconectan sus asistentes y no podrá entrar hasta que la reactives.",
+          "submit": "Suspender la cuenta",
+          "done": "Cuenta suspendida."
+        },
+        "reactivate": {
+          "title": "Reactivar la cuenta",
+          "lead": "Podrá volver a entrar como siempre.",
+          "submit": "Reactivar la cuenta",
+          "done": "Cuenta reactivada."
+        },
+        "delete": {
+          "title": "Eliminar la cuenta",
+          "lead": "Se borran la cuenta y todos sus datos, al momento. Las copias de seguridad que la contienen caducan en 14 días.",
+          "submit": "Sí, eliminar la cuenta",
+          "done": "Cuenta eliminada."
+        },
+        "assistant": {
+          "title": "Desconectar {name}",
+          "lead": "El asistente pierde el acceso a la cuenta.",
+          "submit": "Desconectar",
+          "done": "Asistente desconectado."
+        },
+        "passkey": {
+          "title": "Quitar {name}",
+          "lead": "Ya no se podrá entrar con esta passkey.",
+          "submit": "Quitar la passkey",
+          "done": "Passkey quitada."
+        }
+      }
+    }
+  }
+}

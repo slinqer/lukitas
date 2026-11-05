@@ -17,6 +17,8 @@ Human docs. Live docs are kept current; `superpowers/` is history.
 - `docs/deploy/`: `personal.md` (private install, short; the runbook is
   `deploy/personal/README.md`), `landing.md` (Cloudflare landing), `api.md` (client addresses,
   rate limits).
+- `docs/admin.md`: the admin panel: who is an admin (`ADMIN_USER_IDS`, `ADMIN_ALLOWED_IPS`), Ley 1581
+  deadlines and procedures, the dry run.
 - `docs/mobile/`: `setup.md` (toolchain, JDK 17, emulator, tests), `release.md` (signing, APK
   build; the founder copies its commands), `parity.md` (web/app visual parity ledger), `fdroid.md`
   (F-Droid blockers).

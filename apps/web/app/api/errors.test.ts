@@ -33,6 +33,22 @@ describe("problemMessage", () => {
     expect(problemMessage(closed, tEn)).not.toBe(en.errors.generic);
   });
 
+  it("explains that the account is suspended, in each language", () => {
+    const off = problem("account_suspended", 403);
+    expect(problemMessage(off, tEs)).toBe(
+      "Tu cuenta está suspendida. Escríbenos a privacy@wambito.com.",
+    );
+    expect(problemMessage(off, tEn)).toBe(
+      "Your account is suspended. Write to privacy@wambito.com.",
+    );
+    for (const locale of ["it", "pt"] as const) {
+      const messages = CATALOGS[locale];
+      const t = createTranslator({ locale, messages, onError: () => {} });
+      expect(problemMessage(off, t)).toBe(messages.errors.account_suspended);
+      expect(messages.errors.account_suspended).toContain("privacy@wambito.com");
+    }
+  });
+
   it("explains that guest accounts are turned off, in each language", () => {
     const off = problem("guest_signup_disabled", 403);
     expect(problemMessage(off, tEs)).toBe("Por ahora no se pueden crear cuentas de invitado.");

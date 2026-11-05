@@ -8,6 +8,9 @@ export const API_BASE_URL = "/api";
 
 const SIGN_IN_PATH = "/sign-in";
 
+/** The admin routes' 401 for a session whose passkey verification is missing or stale. */
+export const ADMIN_VERIFICATION_REQUIRED = "admin_verification_required";
+
 export type ApiClient = ReturnType<typeof createClient<paths>>;
 
 interface Where {
@@ -43,7 +46,9 @@ export interface ApiClientOptions {
 /**
  * The typed API client. Any non-2xx response rejects with an `ApiProblem` (so callers and
  * TanStack Query see failures as errors, not as `{ error }` values), a lost connection rejects with
- * `network_error`, and a 401 also sends the browser to sign-in.
+ * `network_error`, and a 401 also sends the browser to sign-in (except the admin panel's
+ * `admin_verification_required`, which the panel handles). It sends cookies, never an
+ * `authorization` header: the admin routes refuse one.
  */
 export function createApiClient({
   fetch: fetchImpl,
@@ -53,8 +58,11 @@ export function createApiClient({
   const middleware: Middleware = {
     async onResponse({ response }) {
       if (response.ok) return;
-      if (response.status === 401) onUnauthorized();
-      throw await problemFromResponse(response);
+      const problem = await problemFromResponse(response);
+      // The admin panel's 401 means "confirm with a passkey again", not "signed out": the panel
+      // asks for the passkey itself (admin/use-admin.ts).
+      if (response.status === 401 && problem.code !== ADMIN_VERIFICATION_REQUIRED) onUnauthorized();
+      throw problem;
     },
     onError({ error }) {
       // Only a failed `fetch` (a TypeError) is a connection problem; anything else is a bug in

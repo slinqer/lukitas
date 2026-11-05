@@ -16,13 +16,31 @@ export const ROADMAP_PATH: Record<Locale, string> = {
   pt: "/pt/roadmap",
 };
 
-/** The public, prerendered pages of the site. */
-export type SitePage = "landing" | "roadmap";
+/** Each locale's privacy policy. */
+export const PRIVACY_PATH: Record<Locale, string> = {
+  es: "/privacy",
+  en: "/en/privacy",
+  it: "/it/privacy",
+  pt: "/pt/privacy",
+};
 
-export const SITE_PAGES: readonly SitePage[] = ["landing", "roadmap"];
+/** Each locale's account deletion page. */
+export const DELETE_ACCOUNT_PATH: Record<Locale, string> = {
+  es: "/delete-account",
+  en: "/en/delete-account",
+  it: "/it/delete-account",
+  pt: "/pt/delete-account",
+};
+
+/** The public, prerendered pages of the site. */
+export type SitePage = "landing" | "roadmap" | "privacy" | "deleteAccount";
+
+export const SITE_PAGES: readonly SitePage[] = ["landing", "roadmap", "privacy", "deleteAccount"];
 
 /** Where each public page lives, per language. */
 export const PAGE_PATH: Record<SitePage, Record<Locale, string>> = {
   landing: LANDING_PATH,
   roadmap: ROADMAP_PATH,
+  privacy: PRIVACY_PATH,
+  deleteAccount: DELETE_ACCOUNT_PATH,
 };

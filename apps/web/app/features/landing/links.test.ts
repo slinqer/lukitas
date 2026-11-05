@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import * as links from "./links.ts";
 import { appLinkProps, demoLinkProps, GITHUB_HREF } from "./links.ts";
 
 const APP = "https://app.wambito.com";
@@ -48,5 +49,11 @@ describe("demoLinkProps", () => {
   it("is left out in landing-only mode without an app URL: there is no demo to open", () => {
     expect(demoLinkProps("es", true)).toBeNull();
     expect(demoLinkProps("en", true, undefined)).toBeNull();
+  });
+});
+
+describe("privacy link", () => {
+  it("is no longer an anchor on the landing: the policy has its own page", () => {
+    expect(Object.keys(links)).not.toContain("PRIVACY_HREF");
   });
 });

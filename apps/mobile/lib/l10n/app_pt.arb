@@ -49,6 +49,7 @@
   "errorTooManyAttempts": "Demasiadas tentativas com este código. Pede um novo.",
   "errorTooManyRequests": "Pediste muitos códigos seguidos. Espera uns minutos e tenta outra vez.",
   "errorSignInNotAllowed": "Wambito ainda não está aberta ao público. Se a quiseres experimentar, escreve a quem te convidou.",
+  "errorAccountSuspended": "A tua conta está suspensa. Escreve-nos para privacy@wambito.com.",
   "errorGuestSignupDisabled": "Por agora não é possível criar contas de convidado.",
   "errorEmailTaken": "Esse email já tem uma conta. Entra com ele.",
   "errorPasskeyFailed": "Não conseguimos fazer-te entrar com a impressão digital. Tenta outra vez ou usa o teu email.",

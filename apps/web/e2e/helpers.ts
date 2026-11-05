@@ -138,6 +138,25 @@ export async function sessionUser(page: Page): Promise<{ id: string; email: stri
   return body?.user ?? null;
 }
 
+/**
+ * A software authenticator in the page's browser (Chrome's WebAuthn domain over CDP): creates and
+ * uses passkeys without a person, verifying the user at once. Call it before the page asks for one.
+ */
+export async function addVirtualAuthenticator(page: Page): Promise<void> {
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send("WebAuthn.enable");
+  await cdp.send("WebAuthn.addVirtualAuthenticator", {
+    options: {
+      protocol: "ctap2",
+      transport: "internal",
+      hasResidentKey: true,
+      hasUserVerification: true,
+      isUserVerified: true,
+      automaticPresenceSimulation: true,
+    },
+  });
+}
+
 /** The four languages of the app. */
 export type Lang = "es" | "en" | "it" | "pt";
 
@@ -242,7 +261,9 @@ export const WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"
 /**
  * Runs axe on the page once it is at rest, and fails with every violation and its nodes. At rest:
  * no finite animation or CSS transition still running (entrances, sheets, toasts, a pressed
- * button's colors), so colors are checked as they end up, not halfway.
+ * button's colors), so colors are checked as they end up, not halfway. Scroll-driven animations
+ * (the landing's reveals) are not waited for: they follow the scroll, not the clock, and stay
+ * "running" until their element has scrolled past.
  */
 export async function expectNoAxeViolations(page: Page, screen = page.url(), tags = WCAG_TAGS) {
   await page.waitForFunction(() =>
@@ -250,6 +271,7 @@ export async function expectNoAxeViolations(page: Page, screen = page.url(), tag
       .getAnimations()
       .every(
         (a) =>
+          !(a.timeline instanceof DocumentTimeline) ||
           a.playState !== "running" ||
           a.effect?.getComputedTiming().iterations === Number.POSITIVE_INFINITY,
       ),
