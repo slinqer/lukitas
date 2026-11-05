@@ -97,6 +97,10 @@ class FakeSpeechEngine implements SpeechEngine {
 
   @override
   Stream<double> get levels => levelsController.stream;
+
+  /// The fake never refines.
+  @override
+  Stream<bool> get refining => const Stream.empty();
 }
 
 /// The batch routes in memory, on top of the same movements the fake home repository serves.

@@ -54,6 +54,9 @@ class _FixedTranscript implements SpeechEngine {
 
   @override
   Stream<double> get levels => const Stream.empty();
+
+  @override
+  Stream<bool> get refining => const Stream.empty();
 }
 
 /// The real batch route, whose first answer is lost on the way back: the server saved the rows,

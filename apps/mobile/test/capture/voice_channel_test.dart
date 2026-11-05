@@ -79,4 +79,16 @@ void main() {
       expect(calls, ['listen', 'cancel', 'listen']);
     },
   );
+
+  test('fromMap reads refining, refined and refine_failed', () {
+    expect(VoiceEvent.fromMap({'type': 'refining'}), isA<VoiceRefining>());
+    expect(
+      VoiceEvent.fromMap({'type': 'refined', 'text': 'Dos euros.'}),
+      isA<VoiceRefined>().having((e) => e.text, 'text', 'Dos euros.'),
+    );
+    expect(
+      VoiceEvent.fromMap({'type': 'refine_failed', 'code': 'timeout'}),
+      isA<VoiceRefineFailed>().having((e) => e.code, 'code', 'timeout'),
+    );
+  });
 }

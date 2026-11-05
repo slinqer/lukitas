@@ -17,7 +17,7 @@ class _FakeChannel implements VoicePlatform {
 
   /// When set, the permission answer waits for it.
   Completer<bool>? permissionAnswer;
-  final starts = <({String modelPath, String grammar})>[];
+  final starts = <({String modelPath, String grammar, String? precisePath, String? language})>[];
   var stops = 0;
   StreamController<VoiceEvent>? events;
 
@@ -33,8 +33,18 @@ class _FakeChannel implements VoicePlatform {
   Future<bool> requestPermission() async => permissionAnswer?.future ?? permission;
 
   @override
-  Stream<VoiceEvent> start({required String modelPath, required String grammar}) {
-    starts.add((modelPath: modelPath, grammar: grammar));
+  Stream<VoiceEvent> start({
+    required String modelPath,
+    required String grammar,
+    String? precisePath,
+    String? language,
+  }) {
+    starts.add((
+      modelPath: modelPath,
+      grammar: grammar,
+      precisePath: precisePath,
+      language: language,
+    ));
     events = StreamController<VoiceEvent>();
     return events!.stream;
   }
@@ -46,19 +56,27 @@ class _FakeChannel implements VoicePlatform {
 
   /// The paths a model was asked to be loaded from, and whether one is loaded.
   final warmUps = <String>[];
+
+  /// The precise model path and language each [warmUp] and [isWarm] came with.
+  final preciseWarmUps = <({String? precisePath, String? language})>[];
+  final preciseWarmChecks = <({String? precisePath, String? language})>[];
   String? loaded;
   var warmFails = false;
 
   @override
-  Future<bool> warmUp(String modelPath) async {
+  Future<bool> warmUp(String modelPath, {String? precisePath, String? language}) async {
     if (warmFails) throw PlatformException(code: 'failed');
     warmUps.add(modelPath);
+    preciseWarmUps.add((precisePath: precisePath, language: language));
     loaded = modelPath;
     return true;
   }
 
   @override
-  Future<bool> isWarm(String modelPath) async => loaded == modelPath;
+  Future<bool> isWarm(String modelPath, {String? precisePath, String? language}) async {
+    preciseWarmChecks.add((precisePath: precisePath, language: language));
+    return loaded == modelPath;
+  }
 
   @override
   Future<String> modelsDirectory() async => '/models';
@@ -99,12 +117,14 @@ String _result(List<(String, double, double)> words) =>
 void main() {
   late _FakeChannel channel;
   late _Store store;
+  late _Store precise;
   late VoskEngine engine;
 
   setUp(() {
     channel = _FakeChannel();
     store = _Store('/models/voice/vosk-model-small-es-0.42');
-    engine = VoskEngine(channel: channel, models: store);
+    precise = _Store(null);
+    engine = VoskEngine(channel: channel, models: store, precise: precise);
   });
 
   test('available asks the platform whether Vosk runs on this phone', () async {
@@ -330,6 +350,159 @@ void main() {
     expect(channel.stops, 1);
     await channel.finish();
     await tester.pump();
+  });
+
+  group('the precise pass', () {
+    const canary = '/models/voice/canary-es';
+
+    /// Listens with the precise model installed, collecting what the stream says.
+    ({List<String> heard, Future<void> done}) listenPrecise() {
+      precise.path = canary;
+      final heard = <String>[];
+      final done = engine.listen(locale: 'es').listen(heard.add).asFuture<void>();
+      return (heard: heard, done: done);
+    }
+
+    final dos = _result([('dos', 0.30, 0.50), ('euros', 0.50, 0.90), ('en', 1.0, 1.1)]);
+
+    test('start gets the precise path and the language when it is installed', () async {
+      final l = listenPrecise();
+      await pumpEventQueue();
+      expect(channel.starts.single.precisePath, canary);
+      expect(channel.starts.single.language, 'es');
+      await channel.finish();
+      await l.done;
+    });
+
+    test('no precise model: start gets no precisePath, and the stream behaves as today', () async {
+      final heard = <String>[];
+      final done = engine.listen(locale: 'es').listen(heard.add).asFuture<void>();
+      await pumpEventQueue();
+      expect(channel.starts.single.precisePath, isNull);
+      await channel.finish(free: dos);
+      await done;
+      expect(heard.last, 'dos euros en');
+    });
+
+    test('the refined text is the last transcript', () async {
+      final l = listenPrecise();
+      await pumpEventQueue();
+      channel.send(const VoiceEvent.partial('dos euros'));
+      channel.send(VoiceEvent.result(VoicePass.free, dos));
+      channel.send(VoiceEvent.result(VoicePass.grammar, '{"text":""}'));
+      channel.send(const VoiceEvent.refining());
+      channel.send(const VoiceEvent.refined('Dos euros en café.'));
+      channel.send(const VoiceEvent.done());
+      await channel.events!.close();
+      await l.done;
+      expect(l.heard.last, 'Dos euros en café.');
+      expect(l.heard, isNot(contains('dos euros en')), reason: 'Vosk text is not shown at the end');
+    });
+
+    test('refine_failed keeps Vosk\'s text', () async {
+      final l = listenPrecise();
+      await pumpEventQueue();
+      channel.send(VoiceEvent.result(VoicePass.free, dos));
+      channel.send(const VoiceEvent.refining());
+      channel.send(const VoiceEvent.refineFailed('failed'));
+      channel.send(const VoiceEvent.done());
+      await channel.events!.close();
+      await l.done;
+      expect(l.heard.last, 'dos euros en');
+    });
+
+    test('a blank refined text keeps Vosk\'s text', () async {
+      final l = listenPrecise();
+      await pumpEventQueue();
+      channel.send(VoiceEvent.result(VoicePass.free, dos));
+      channel.send(const VoiceEvent.refining());
+      channel.send(const VoiceEvent.refined('  \n'));
+      channel.send(const VoiceEvent.done());
+      await channel.events!.close();
+      await l.done;
+      expect(l.heard.last, 'dos euros en');
+    });
+
+    test('done right after refining, with no refined, keeps Vosk\'s text', () async {
+      final l = listenPrecise();
+      await pumpEventQueue();
+      channel.send(VoiceEvent.result(VoicePass.free, dos));
+      channel.send(const VoiceEvent.refining());
+      channel.send(const VoiceEvent.done());
+      await channel.events!.close();
+      await l.done;
+      expect(l.heard.last, 'dos euros en');
+    });
+
+    testWidgets('falls back to Vosk\'s text after 3 s, and ignores what comes later', (
+      tester,
+    ) async {
+      precise.path = canary;
+      final heard = <String>[];
+      var closed = false;
+      engine.listen(locale: 'es').listen(heard.add, onDone: () => closed = true);
+      await tester.pump();
+      channel.send(VoiceEvent.result(VoicePass.free, dos));
+      channel.send(const VoiceEvent.refining());
+      await tester.pump(const Duration(milliseconds: 2900));
+      expect(closed, isFalse);
+      await tester.pump(const Duration(milliseconds: 200));
+      // The stream's own end is delivered by the real event loop.
+      await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 20)));
+      expect(closed, isTrue);
+      expect(heard.last, 'dos euros en');
+      final count = heard.length;
+      expect(channel.events!.hasListener, isFalse, reason: 'the platform stream is let go');
+      // Too late: nothing more reaches the person.
+      channel.send(const VoiceEvent.refined('Dos euros en café.'));
+      channel.send(const VoiceEvent.done());
+      await tester.pump();
+      expect(heard.length, count);
+    });
+
+    test('refining reports true from the event until the stream closes, then false', () async {
+      final states = <bool>[];
+      engine.refining.listen(states.add);
+      final l = listenPrecise();
+      await pumpEventQueue();
+      channel.send(VoiceEvent.result(VoicePass.free, dos));
+      await pumpEventQueue();
+      expect(states, isEmpty);
+      channel.send(const VoiceEvent.refining());
+      await pumpEventQueue();
+      expect(states, [true]);
+      channel.send(const VoiceEvent.refined('Dos euros.'));
+      channel.send(const VoiceEvent.done());
+      await channel.events!.close();
+      await l.done;
+      await pumpEventQueue();
+      expect(states, [true, false]);
+    });
+
+    test('a listen that never refines never reports refining', () async {
+      final states = <bool>[];
+      engine.refining.listen(states.add);
+      final done = engine.listen(locale: 'es').listen((_) {}).asFuture<void>();
+      await pumpEventQueue();
+      await channel.finish(free: dos);
+      await done;
+      await pumpEventQueue();
+      expect(states, isEmpty);
+    });
+
+    test('warmUp loads canary too when installed, and isWarm asks for it', () async {
+      precise.path = canary;
+      await engine.warmUp(locale: 'es');
+      expect(channel.warmUps, ['/models/voice/vosk-model-small-es-0.42']);
+      expect(channel.preciseWarmUps.single, (precisePath: canary, language: 'es'));
+      await engine.isWarm(locale: 'es');
+      expect(channel.preciseWarmChecks.single, (precisePath: canary, language: 'es'));
+    });
+
+    test('warmUp without canary installed passes no precise path', () async {
+      await engine.warmUp(locale: 'es');
+      expect(channel.preciseWarmUps.single.precisePath, isNull);
+    });
   });
 
   group('keeping the model loaded', () {

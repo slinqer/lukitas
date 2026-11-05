@@ -71,6 +71,9 @@ class _Listening implements SpeechEngine {
 
   @override
   Stream<double> get levels => const Stream.empty();
+
+  @override
+  Stream<bool> get refining => const Stream.empty();
 }
 
 Future<void> _pumpUntil(
@@ -165,7 +168,13 @@ void main() {
         tester,
         overrides: [
           modelStoreProvider.overrideWithValue(store),
-          speechEngineProvider.overrideWithValue(VoskEngine(channel: channel, models: store)),
+          speechEngineProvider.overrideWithValue(
+            VoskEngine(
+              channel: channel,
+              models: store,
+              precise: ModelStore(files: channel, http: Dio(), models: preciseModels),
+            ),
+          ),
         ],
       );
       final listening = find.byKey(const Key('capture.stop'));

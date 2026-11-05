@@ -31,6 +31,15 @@ sealed class VoiceEvent {
   /// The model or the microphone failed.
   const factory VoiceEvent.error(String code) = VoiceError;
 
+  /// Vosk's results are in and the precise model is rewriting the recording.
+  const factory VoiceEvent.refining() = VoiceRefining;
+
+  /// The precise model's text for the whole sentence.
+  const factory VoiceEvent.refined(String text) = VoiceRefined;
+
+  /// The precise pass gave nothing: [code] is `timeout` or `failed`. Vosk's text stands.
+  const factory VoiceEvent.refineFailed(String code) = VoiceRefineFailed;
+
   static VoiceEvent? fromMap(Object? map) {
     if (map is! Map) return null;
     return switch (map['type']) {
@@ -43,6 +52,9 @@ sealed class VoiceEvent {
       'level' => VoiceEvent.level((map['value'] as num?)?.toDouble() ?? 0),
       'done' => const VoiceEvent.done(),
       'error' => VoiceEvent.error(map['code'] as String? ?? 'failed'),
+      'refining' => const VoiceEvent.refining(),
+      'refined' => VoiceEvent.refined(map['text'] as String? ?? ''),
+      'refine_failed' => VoiceEvent.refineFailed(map['code'] as String? ?? 'failed'),
       _ => null,
     };
   }
@@ -77,6 +89,20 @@ class VoiceError extends VoiceEvent {
   final String code;
 }
 
+class VoiceRefining extends VoiceEvent {
+  const VoiceRefining();
+}
+
+class VoiceRefined extends VoiceEvent {
+  const VoiceRefined(this.text);
+  final String text;
+}
+
+class VoiceRefineFailed extends VoiceEvent {
+  const VoiceRefineFailed(this.code);
+  final String code;
+}
+
 /// The Android side of listening: the microphone, the two recognizers, and the model files.
 abstract interface class VoicePlatform implements ModelFiles {
   /// Whether Vosk's native library loads on this phone.
@@ -91,15 +117,22 @@ abstract interface class VoicePlatform implements ModelFiles {
 
   /// Loads the model at [modelPath] in the background and keeps it loaded while the process lives
   /// (until memory pressure or [releaseModels]); true once it is. Never opens the microphone.
-  Future<bool> warmUp(String modelPath);
+  /// With [precisePath] (and its [language]) the precise model is loaded too.
+  Future<bool> warmUp(String modelPath, {String? precisePath, String? language});
 
-  /// Whether the model at [modelPath] is loaded and the microphone is allowed: listening then
-  /// starts at once.
-  Future<bool> isWarm(String modelPath);
+  /// Whether the model at [modelPath] (and the precise one, when given) is loaded and the
+  /// microphone is allowed: listening then starts at once.
+  Future<bool> isWarm(String modelPath, {String? precisePath, String? language});
 
   /// Records (16 kHz mono PCM16, `VOICE_RECOGNITION`) into a free and a grammar-biased recognizer
-  /// on the model at [modelPath], until [stop].
-  Stream<VoiceEvent> start({required String modelPath, required String grammar});
+  /// on the model at [modelPath], until [stop]. With [precisePath] and [language] the recording is
+  /// kept and rewritten by the precise model once recording ends ([VoiceRefining] and after).
+  Stream<VoiceEvent> start({
+    required String modelPath,
+    required String grammar,
+    String? precisePath,
+    String? language,
+  });
 
   /// Stops recording: the final results follow, then [VoiceDone].
   Future<void> stop();
@@ -139,18 +172,46 @@ class VoiceChannel implements VoicePlatform {
       await _methods.invokeMethod<bool>('requestPermission') ?? false;
 
   @override
-  Future<bool> warmUp(String modelPath) async =>
-      await _methods.invokeMethod<bool>('warmUp', {'modelPath': modelPath}) ?? false;
+  Future<bool> warmUp(String modelPath, {String? precisePath, String? language}) async =>
+      await _methods.invokeMethod<bool>(
+        'warmUp',
+        _args(modelPath, precisePath: precisePath, language: language),
+      ) ??
+      false;
 
   @override
-  Future<bool> isWarm(String modelPath) async =>
-      await _methods.invokeMethod<bool>('isWarm', {'modelPath': modelPath}) ?? false;
+  Future<bool> isWarm(String modelPath, {String? precisePath, String? language}) async =>
+      await _methods.invokeMethod<bool>(
+        'isWarm',
+        _args(modelPath, precisePath: precisePath, language: language),
+      ) ??
+      false;
+
+  /// The channel's arguments; the precise ones only when there is a precise model.
+  static Map<String, Object> _args(
+    String modelPath, {
+    String? grammar,
+    String? precisePath,
+    String? language,
+  }) => {
+    'modelPath': modelPath,
+    'grammar': ?grammar,
+    'precisePath': ?precisePath,
+    'language': ?language,
+  };
 
   @override
-  Stream<VoiceEvent> start({required String modelPath, required String grammar}) async* {
+  Stream<VoiceEvent> start({
+    required String modelPath,
+    required String grammar,
+    String? precisePath,
+    String? language,
+  }) async* {
     await _dropStaleEvents();
     yield* _events
-        .receiveBroadcastStream({'modelPath': modelPath, 'grammar': grammar})
+        .receiveBroadcastStream(
+          _args(modelPath, grammar: grammar, precisePath: precisePath, language: language),
+        )
         .map(VoiceEvent.fromMap)
         .where((e) => e != null)
         .cast<VoiceEvent>();

@@ -32,6 +32,10 @@ abstract class SpeechEngine {
   /// The microphone's level while [listen] runs, 0 (silence) to 1 (loud), about 25 times a second.
   /// Only the level: audio never leaves the engine. Silent when nothing listens.
   Stream<double> get levels;
+
+  /// True from the moment the precise model starts rewriting a sentence until the [listen] stream
+  /// closes, then false. Silent when nothing listens or when no precise pass runs.
+  Stream<bool> get refining;
 }
 
 enum SpeechFailureKind {
@@ -57,6 +61,9 @@ class SpeechFailure implements Exception {
 
 /// The phone's speech engine.
 final speechEngineProvider = Provider<SpeechEngine>(
-  (ref) =>
-      VoskEngine(channel: ref.watch(voiceChannelProvider), models: ref.watch(modelStoreProvider)),
+  (ref) => VoskEngine(
+    channel: ref.watch(voiceChannelProvider),
+    models: ref.watch(modelStoreProvider),
+    precise: ref.watch(preciseModelStoreProvider),
+  ),
 );

@@ -36,7 +36,11 @@ void main() {
       final path = await store.installedPath('es');
       expect(path, endsWith('/voice/vosk-model-small-es-0.42'));
 
-      final engine = VoskEngine(channel: channel, models: store);
+      final engine = VoskEngine(
+        channel: channel,
+        models: store,
+        precise: ModelStore(files: channel, http: Dio(), models: preciseModels),
+      );
       expect(await engine.available(), isTrue);
       final heard = <String>[];
       Object? failure;
@@ -65,7 +69,11 @@ void main() {
     const channel = VoiceChannel();
     final store = ModelStore(files: channel, http: Dio());
     await store.deleteModels();
-    final engine = VoskEngine(channel: channel, models: store);
+    final engine = VoskEngine(
+      channel: channel,
+      models: store,
+      precise: ModelStore(files: channel, http: Dio(), models: preciseModels),
+    );
     await expectLater(
       engine.listen(locale: 'es'),
       emitsError(isA<SpeechFailure>().having((f) => f.kind, 'kind', SpeechFailureKind.noModel)),
