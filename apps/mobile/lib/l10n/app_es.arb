@@ -3625,7 +3625,7 @@
   },
   "autoCaptureExplainerConfirm": "Activar acceso",
   "@autoCaptureExplainerConfirm": {
-    "description": "The explainer's button: goes to Android's notification access screen."
+    "description": "The last step's button in the how-it-works sheet when switching a source on: goes to Android's notification access screen."
   },
   "autoCaptureMissing": "Falta el permiso",
   "@autoCaptureMissing": {
