@@ -59,14 +59,14 @@ const ROADMAP = {
   es: {
     path: "/roadmap",
     title: "Lo que viene",
-    columns: ["Ya está", "En construcción", "Próximo", "Más adelante"],
+    columns: ["En construcción", "Próximo", "Más adelante", "Ya está"],
     navLink: "Lo que viene",
     toggleToDay: "Cambiar a modo día",
   },
   en: {
     path: "/en/roadmap",
     title: "What's next",
-    columns: ["Live", "Being built", "Next", "Later"],
+    columns: ["Being built", "Next", "Later", "Live"],
     navLink: "What's next",
     toggleToDay: "Switch to day mode",
   },

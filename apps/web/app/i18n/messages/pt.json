@@ -69,8 +69,8 @@
         "body": "Os teus dados são cifrados no teu dispositivo: nem o servidor os poderá ler."
       },
       "bank_alerts": {
-        "title": "Captura automática das tuas notificações",
-        "body": "Primeiro o Revolut e o Google Wallet; mais apps e bancos com o tempo."
+        "title": "Captura automática das notificações do teu banco",
+        "body": "No Android, o Wambito lê as notificações do teu banco e regista os teus gastos e receitas para reveres."
       },
       "import_others": {
         "title": "Importa do Buddy e de outras apps",
@@ -115,6 +115,10 @@
       "whatsapp": {
         "title": "Regista pelo WhatsApp",
         "body": "Envias uma mensagem e fica registado."
+      },
+      "on_device_ai": {
+        "title": "O resumo do mês com IA no teu telemóvel",
+        "body": "O Wambi conta-te o teu mês com uma IA que corre no teu telemóvel: os teus gastos não saem dali."
       }
     }
   },
