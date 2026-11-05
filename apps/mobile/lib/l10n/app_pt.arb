@@ -721,7 +721,6 @@
   "autoCaptureTitle": "Captura automática",
   "autoCaptureLead": "Regista as tuas despesas e receitas a partir das notificações do Revolut e do Google Wallet.",
   "autoCaptureActive": "Ativa",
-  "autoCaptureExplainerBody": "O Wambito lê as notificações das apps que ativares (Revolut, Google Wallet) para registar as tuas despesas e receitas. O texto é processado no teu telemóvel e nunca sai dele: ao servidor chegam só o valor, o comerciante, a data e a fonte. Podes desligar quando quiseres.",
   "autoCaptureHowLink": "Como funciona?",
   "autoCaptureHowNext": "Seguinte",
   "autoCaptureHowDone": "Entendido",

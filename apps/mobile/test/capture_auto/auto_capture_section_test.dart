@@ -1,10 +1,11 @@
-// "Captura automática" in Settings: the explainer before the first switch on, the missing-permission
+// "Captura automática" in Settings: the steps ("¿Cómo funciona?") before the first switch on, the missing-permission
 // row and the restricted-settings steps, the status read again when the app resumes, and no section
 // where there is no Android side.
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wambito/capture_auto/auto_capture_section.dart';
 import 'package:wambito/capture_auto/capture_platform.dart';
+import 'package:wambito/capture_auto/how_capture_works.dart';
 
 import '../settings/harness.dart';
 import 'fakes.dart';
@@ -32,21 +33,31 @@ Future<void> _show(WidgetTester t, Key key) async {
   await t.pumpAndSettle();
 }
 
+/// Goes through the steps to the last one, where "Activar acceso" is.
+Future<void> _toLastStep(WidgetTester t) async {
+  for (var i = 0; i < 4; i++) {
+    await t.ensureVisible(find.byKey(const Key('autoCapture.how.next')));
+    await t.pumpAndSettle();
+    await t.tap(find.byKey(const Key('autoCapture.how.next')));
+    await t.pumpAndSettle();
+  }
+  await t.ensureVisible(find.byKey(const Key('autoCapture.explainer.confirm')));
+  await t.pumpAndSettle();
+}
+
 void main() {
-  testWidgets('the first switch on shows the explainer before opening the access screen', (
-    t,
-  ) async {
+  testWidgets('the first switch on shows the steps before opening the access screen', (t) async {
     final (_, fake) = await _pump(t);
     await _show(t, const Key('autoCapture.revolut'));
     await t.tap(find.byKey(const Key('autoCapture.revolut')));
     await t.pumpAndSettle();
 
-    expect(said('(Revolut, Google Wallet)'), findsOneWidget);
-    expect(said('nunca sale de él'), findsOneWidget);
-    expect(said('el monto, el comercio, la fecha y la fuente'), findsOneWidget);
+    expect(find.byType(HowCaptureWorks), findsOneWidget);
     expect(fake.callsNamed('setSource'), isEmpty);
     expect(fake.callsNamed('openAccessSettings'), isEmpty);
 
+    await _toLastStep(t);
+    expect(said('El texto nunca sale de tu teléfono'), findsOneWidget);
     await t.tap(find.byKey(const Key('autoCapture.explainer.confirm')));
     await t.pumpAndSettle();
 
@@ -54,11 +65,12 @@ void main() {
     expect(order, ['setSource revolut true', 'openAccessSettings']);
   });
 
-  testWidgets('the explainer shows once: the next switch on goes straight to Android', (t) async {
+  testWidgets('the steps show once: the next switch on goes straight to Android', (t) async {
     final (env, fake) = await _pump(t);
     await _show(t, const Key('autoCapture.revolut'));
     await t.tap(find.byKey(const Key('autoCapture.revolut')));
     await t.pumpAndSettle();
+    await _toLastStep(t);
     await t.tap(find.byKey(const Key('autoCapture.explainer.confirm')));
     await t.pumpAndSettle();
     expect(env.container.read(autoCaptureExplainedProvider), isTrue);
@@ -66,11 +78,11 @@ void main() {
     await t.tap(find.byKey(const Key('autoCapture.google_wallet')));
     await t.pumpAndSettle();
 
-    expect(find.byKey(const Key('autoCapture.explainer.confirm')), findsNothing);
+    expect(find.byType(HowCaptureWorks), findsNothing);
     expect(fake.sources, {'revolut', 'google_wallet'});
   });
 
-  testWidgets('declining the explainer changes nothing', (t) async {
+  testWidgets('closing the steps changes nothing', (t) async {
     final (_, fake) = await _pump(t);
     await _show(t, const Key('autoCapture.revolut'));
     await t.tap(find.byKey(const Key('autoCapture.revolut')));

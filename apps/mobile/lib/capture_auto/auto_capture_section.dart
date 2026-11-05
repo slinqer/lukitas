@@ -16,10 +16,10 @@ import '../ui/lk_theme.dart';
 import '../ui/press_button.dart';
 import '../ui/press_link.dart';
 import '../ui/sheet.dart';
-import 'auto_capture_explainer.dart';
 import 'capture_platform.dart';
+import 'how_capture_works.dart';
 
-/// Whether the explainer was already shown (the first switch on shows it, once).
+/// Whether the steps were already shown before a switch on (the first switch on shows them, once).
 class AutoCaptureExplained extends StoredFlag {
   @override
   FlagStore get store => ref.read(flagStoreProvider('setting.capture.explained'));
@@ -83,7 +83,7 @@ class _AutoCaptureSectionState extends ConsumerState<AutoCaptureSection>
       await explained.ready;
       if (!mounted) return;
       if (!ref.read(autoCaptureExplainedProvider)) {
-        final go = await showAutoCaptureExplainer(context);
+        final go = await showHowCaptureWorks(context, askAccess: true);
         if (!go || !mounted) return;
         await explained.set(true);
       }
@@ -131,6 +131,15 @@ class _AutoCaptureSectionState extends ConsumerState<AutoCaptureSection>
       title: l10n.autoCaptureTitle,
       lead: l10n.autoCaptureLead,
       children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: PressLink.text(
+            l10n.autoCaptureHowLink,
+            key: const Key('autoCapture.how'),
+            tone: PressTone.secondary,
+            onPressed: () => unawaited(showHowCaptureWorks(context, askAccess: false)),
+          ),
+        ),
         for (final source in CaptureSource.values)
           SettingSwitch(
             key: Key('autoCapture.${source.wire}'),

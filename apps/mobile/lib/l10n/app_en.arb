@@ -1918,7 +1918,6 @@
   "autoCaptureTitle": "Automatic capture",
   "autoCaptureLead": "Log your spending and income from Revolut and Google Wallet notifications.",
   "autoCaptureActive": "On",
-  "autoCaptureExplainerBody": "Wambito reads the notifications of the apps you turn on (Revolut, Google Wallet) to log your spending and income. The text is processed on your phone and never leaves it: only the amount, the merchant, the date and the source reach the server. You can turn it off whenever you like.",
   "autoCaptureHowLink": "How does it work?",
   "autoCaptureHowNext": "Next",
   "autoCaptureHowDone": "Got it",

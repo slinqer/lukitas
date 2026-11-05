@@ -3518,10 +3518,6 @@
   "@autoCaptureActive": {
     "description": "Settings: automatic capture is on and has access."
   },
-  "autoCaptureExplainerBody": "Wambito lee las notificaciones de las apps que actives (Revolut, Google Wallet) para anotar tus gastos e ingresos. El texto se procesa en tu teléfono y nunca sale de él: al servidor solo llegan el monto, el comercio, la fecha y la fuente. Puedes apagarlo cuando quieras.",
-  "@autoCaptureExplainerBody": {
-    "description": "Prominent disclosure before asking for notification access: which apps are read, that the text stays on the phone, what reaches the server."
-  },
   "autoCaptureHowLink": "¿Cómo funciona?",
   "@autoCaptureHowLink": {
     "description": "Settings: link that opens the how it works screen of automatic capture."
