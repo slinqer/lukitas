@@ -42,7 +42,14 @@ import { createSuggestions, useHasTransactions } from "../onboarding/onboarding-
 import { SUGGESTED_CATEGORIES } from "../onboarding/suggested-categories.ts";
 import { useAppPath } from "./app-path.ts";
 import { HomeHeader } from "./HomeHeader.tsx";
-import { type DayGroup, groupByDay, homeWambiLine, overallState } from "./home-model.ts";
+import {
+  type DayGroup,
+  groupByDay,
+  homeWambiLine,
+  overallState,
+  reviewMark,
+  toReviewOnly,
+} from "./home-model.ts";
 import {
   type HomeView,
   requestedView,
@@ -652,9 +659,61 @@ function Transactions({
     );
   }
   const byId = new Map(categories.map((c) => [c.id, c]));
+  return <ReviewedList items={items} byId={byId} today={today} currency={currency} pages={pages} />;
+}
+
+/**
+ * The days of a month's list with the "Por revisar" filter above them while some transactions
+ * detected from notifications wait for a look: it keeps only those, and then "Confirmar todos"
+ * confirms them as they are.
+ */
+function ReviewedList({
+  items,
+  byId,
+  today,
+  currency,
+  pages,
+}: {
+  items: TransactionDto[];
+  byId: Map<string, CategoryDto>;
+  today: string;
+  currency: string;
+  pages: MorePages;
+}) {
+  const t = useTranslations("home");
+  const { actions } = useTransactionSheet();
+  const [only, setOnly] = useState(false);
+  const toReview = toReviewOnly(items);
+  const filtering = only && toReview.length > 0;
+  // Once nothing is left to review the filter goes away; a later capture starts unfiltered.
+  useEffect(() => {
+    if (toReview.length === 0) setOnly(false);
+  }, [toReview.length]);
+
   return (
     <>
-      {groupByDay(items, today).map((group) => (
+      {toReview.length > 0 && (
+        <div className="flex flex-wrap items-center gap-(--space-2)">
+          <PressButton
+            variant="secondary"
+            size="sm"
+            aria-pressed={filtering}
+            aria-label={t("review_filter_label")}
+            onClick={() => setOnly(!filtering)}
+          >
+            {t("review_filter", { count: toReview.length })}
+          </PressButton>
+          {filtering && (
+            <PressButton
+              size="sm"
+              onClick={() => void actions.confirmAll(toReview).catch(() => {})}
+            >
+              {t("review_confirm_all")}
+            </PressButton>
+          )}
+        </div>
+      )}
+      {groupByDay(filtering ? toReview : items, today).map((group) => (
         <Day key={group.date} group={group} byId={byId} currency={currency} />
       ))}
       <ShowMore pages={pages} />
@@ -759,6 +818,7 @@ export function Day({
       </h3>
       {group.items.map((tx) => {
         const category = byId.get(tx.categoryId);
+        const mark = reviewMark(tx);
         // A row the API has not confirmed yet cannot be edited or paid.
         const draft = tx.id.startsWith("pending-");
         // Swipes are shortcuts: left deletes, right edits (or pays a pending one).
@@ -789,6 +849,18 @@ export function Day({
               currency={currency}
               status={tx.status}
               paidHere={paidHere.has(tx.id)}
+              {...(mark && !draft
+                ? {
+                    review: {
+                      mark: t("review_mark", { source: mark }),
+                      confirm: t("review_ok"),
+                      confirmLabel: t("review_ok_label", {
+                        name: tx.name.trim() || category?.name || "",
+                      }),
+                      onConfirm: () => void actions.confirm(tx).catch(() => {}),
+                    },
+                  }
+                : {})}
               onOpen={() => {
                 if (!draft) openEdit(tx);
               }}

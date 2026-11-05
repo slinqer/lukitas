@@ -7,6 +7,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { monthOf, type TransactionDto } from "@wambito/core";
+import { reviewBatches } from "../features/home/home-model.ts";
 import { useApi } from "./ApiProvider.tsx";
 import { ApiProblem } from "./errors.ts";
 import {
@@ -436,6 +437,37 @@ export function useMarkPaid() {
       ({ id, month }) => ({
         months: [month],
         apply: () => optimisticUpdate(qc, month, id, { status: "paid" }),
+      }),
+    ),
+  );
+}
+
+/**
+ * Confirms detected transactions at once ("Confirmar todos"), the mark gone from the lists as
+ * soon as it is asked. The API takes 50 ids at most, so more go in batches; a batch that fails
+ * puts every mark back.
+ */
+export function useConfirmReview() {
+  const api = useApi();
+  const qc = useQueryClient();
+  return useMutation(
+    mutation(
+      qc,
+      async ({ items }: { items: TransactionDto[] }) => {
+        for (const ids of reviewBatches(items.map((tx) => tx.id))) {
+          dataOf(await api.POST("/v1/transactions/review", { body: { ids } }));
+        }
+      },
+      ({ items }) => ({
+        months: [...new Set(items.map((tx) => monthOf(tx.date)))],
+        apply: () => {
+          const rollbacks = items.map((tx) =>
+            optimisticUpdate(qc, monthOf(tx.date), tx.id, { needsReview: false }),
+          );
+          return () => {
+            for (const rollback of rollbacks.reverse()) rollback();
+          };
+        },
       }),
     ),
   );

@@ -186,7 +186,10 @@ export function optimisticUpdate(
   month: string,
   id: string,
   patch: Partial<
-    Pick<TransactionDto, "name" | "amount" | "categoryId" | "date" | "status" | "note">
+    Pick<
+      TransactionDto,
+      "name" | "amount" | "categoryId" | "date" | "status" | "note" | "needsReview"
+    >
   >,
 ): Rollback {
   const before = findCached(qc, month, id);
