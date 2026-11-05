@@ -58,6 +58,8 @@ jobs:
       # The personal install's two ways (tunnel by default, direct with COMPOSE_FILE): compose files,
       # published ports, Caddy config and services started (`docker compose config`, needs jq).
       - run: deploy/personal/test-compose-files.sh
+      # The version /health reports (the root package.json's plus the commit), on throwaway repos.
+      - run: deploy/personal/test-version.sh
 
   e2e:
     runs-on: ubuntu-latest

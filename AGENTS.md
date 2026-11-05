@@ -41,7 +41,7 @@ phone. Read the `AGENTS.md` of the area you work in; read code only to confirm.
 - `check`: install, Playwright chromium, the two guards and the old-name guard's test, `pnpm lint`,
   generated-file checks (web `tokens`, web and mcp `api:types` + `git diff --exit-code`),
   `pnpm typecheck`, `pnpm test`, then `deploy/personal/test-*.sh` (retention, r2, auto-deploy,
-  caddy, compose-files).
+  caddy, compose-files, version).
 - `e2e`: root stack with `E2E_NOW=2026-10-21T15:00:00Z`, then web `e2e`, `e2e:landing`,
   `e2e:landing-only`, `e2e:landing-only-app`.
 - `deploy-landing`: push to `main` after `check` + `e2e`; `wrangler deploy` from `deploy/landing`.

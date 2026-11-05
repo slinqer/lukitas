@@ -27,6 +27,21 @@ cfg() {
   printf '%s' "${value:-$default}"
 }
 
+# server_version REPO: the version the API reports on /health (up.sh; the app's Settings shows it):
+# the root package.json's "version", raised by hand, then "+" and the commit, with "-dirty" when
+# tracked files have uncommitted changes. Dies when the version is missing or not X.Y.Z. Read with
+# sed, so the host needs no Node (test-version.sh).
+server_version() {
+  local repo="$1" version commit
+  version="$(sed -nE 's/^  "version"[[:space:]]*:[[:space:]]*"([^"]*)".*/\1/p' "$repo/package.json" | head -n 1)"
+  printf '%s' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ||
+    die "the root package.json needs a top-level \"version\": \"X.Y.Z\" (found '${version}')"
+  commit="$(git -C "$repo" rev-parse --short=7 HEAD)"
+  version="$version+$commit"
+  [ -z "$(git -C "$repo" status --porcelain --untracked-files=no)" ] || version="$version-dirty"
+  printf '%s' "$version"
+}
+
 # --- The scheduled units (install-backup.sh, install-auto-deploy.sh; test-install-units.sh) -------
 # Where the systemd units go. The test points UNIT_DIR at a temporary folder.
 UNIT_DIR="${UNIT_DIR:-/etc/systemd/system}"

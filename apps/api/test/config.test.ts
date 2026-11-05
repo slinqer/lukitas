@@ -189,9 +189,9 @@ describe("WAMBITO_VERSION", () => {
       loadConfig({
         ...base,
         CLIENT_IP_HEADER: "fly-client-ip",
-        WAMBITO_VERSION: "0.0.0-dev.abc1234",
+        WAMBITO_VERSION: "1.0.0+abc1234",
       }).WAMBITO_VERSION,
-    ).toBe("0.0.0-dev.abc1234");
+    ).toBe("1.0.0+abc1234");
   });
 });
 
