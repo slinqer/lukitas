@@ -55,4 +55,15 @@ void main() {
     expect(manifest, isNot(contains('firebase')));
     expect(manifest, isNot(contains('com.google.android.c2dm')));
   });
+
+  test('manifest declares CaptureListener with the bind permission, and asks for nothing new', () {
+    final service = RegExp(
+      r'<service[^>]*\.capture\.CaptureListener[\s\S]*?</service>',
+    ).firstMatch(manifest)!.group(0)!;
+    expect(service, contains('android:exported="true"'));
+    expect(service, contains('android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"'));
+    expect(service, contains('android.service.notification.NotificationListenerService'));
+    // Bound through its service permission: no uses-permission line for it.
+    expect(manifest, isNot(contains('<uses-permission android:name="android.permission.BIND_NOTIFICATION')));
+  });
 }

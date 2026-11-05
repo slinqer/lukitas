@@ -20,15 +20,15 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** The privacy policy in Spanish, night theme: the version date and eleven sections. */
+/** The privacy policy in Spanish, night theme: the version date and twelve sections. */
 export const Privacy: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole("heading", { level: 1 })).toHaveTextContent(
       "Política de privacidad",
     );
-    await expect(canvas.getByText("Versión del 4 de noviembre de 2026")).toBeVisible();
-    await expect(canvas.getAllByRole("heading", { level: 2 })).toHaveLength(11);
+    await expect(canvas.getByText("Versión del 5 de noviembre de 2026")).toBeVisible();
+    await expect(canvas.getAllByRole("heading", { level: 2 })).toHaveLength(12);
     const mail = canvas.getAllByRole("link", { name: "privacy@wambito.com" });
     await expect(mail[0]).toHaveAttribute("href", "mailto:privacy@wambito.com");
     await expect(canvas.getByRole("link", { name: "borrar tu cuenta" })).toHaveAttribute(

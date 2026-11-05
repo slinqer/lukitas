@@ -43,6 +43,8 @@ export function transaction(
     recurrenceId: null,
     importId: null,
     source: "app",
+    needsReview: false,
+    captureSource: null,
     createdAt: stamp,
     updatedAt: stamp,
     ...extra,

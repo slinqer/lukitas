@@ -176,6 +176,63 @@ export const Transactions: Story = {
   },
 };
 
+/** Detected transactions carry their mark; the filter keeps them, OK and "Confirmar todos" confirm. */
+export const DetectedTransactions: Story = {
+  render: (args) => <HomeStage onRequest={args.onRequest} detected />,
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    await hero(canvas);
+    await userEvent.click(canvas.getByRole("tab", { name: "Movimientos" }));
+    const panel = within(canvas.getByRole("tabpanel", { name: "Movimientos" }));
+    await expect(await panel.findByText("por revisar · de Revolut")).toBeVisible();
+    await expect(panel.getByText("por revisar · de Google Wallet")).toBeVisible();
+    // The filter keeps only them.
+    const filter = panel.getByRole("button", { name: /^Por revisar · 2$/ });
+    await expect(filter).toHaveTextContent("Por revisar · 2");
+    await userEvent.click(filter);
+    await expect(panel.queryByRole("button", { name: /^desayuno/ })).toBeNull();
+    // OK confirms one: only that PATCH goes out and its mark is gone.
+    await userEvent.click(panel.getByRole("button", { name: "Bien: Mercadona" }));
+    await waitFor(() => expect(panel.queryByText("por revisar · de Revolut")).toBeNull());
+    await waitFor(() =>
+      expect(calls(args.onRequest).map(([line]) => line)).toContainEqual(
+        expect.stringMatching(/^PATCH \/api\/v1\/transactions\/\S+ \{"needsReview":false\}$/),
+      ),
+    );
+    // Confirmar todos confirms the rest in one request.
+    await userEvent.click(panel.getByRole("button", { name: "Confirmar todos" }));
+    await waitFor(() => expect(panel.queryByText(/por revisar/)).toBeNull());
+    await waitFor(() =>
+      expect(calls(args.onRequest).map(([line]) => line)).toContainEqual(
+        expect.stringMatching(/^POST \/api\/v1\/transactions\/review \{"ids":\["\S+"\]\}$/),
+      ),
+    );
+    await expect(await panel.findByRole("button", { name: /^desayuno/ })).toBeVisible();
+  },
+};
+
+/** Saving the edit of a detected transaction confirms it in the same PATCH, as on the phone. */
+export const EditConfirmsDetected: Story = {
+  render: (args) => <HomeStage onRequest={args.onRequest} detected />,
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    await hero(canvas);
+    await userEvent.click(canvas.getByRole("tab", { name: "Movimientos" }));
+    const panel = within(canvas.getByRole("tabpanel", { name: "Movimientos" }));
+    await userEvent.click(await panel.findByRole("button", { name: /^Mercadona/ }));
+    const edit = within(await screen.findByRole("dialog", { name: "Editar movimiento" }));
+    await userEvent.click(edit.getByRole("button", { name: "Guardar cambios" }));
+    await dialogGone();
+    await waitFor(() =>
+      expect(calls(args.onRequest).map(([line]) => line)).toContainEqual(
+        expect.stringMatching(/^PATCH \/api\/v1\/transactions\/\S+ \{"needsReview":false\}$/),
+      ),
+    );
+    await waitFor(() => expect(panel.queryByText("por revisar · de Revolut")).toBeNull());
+    await expect(panel.getByText("por revisar · de Google Wallet")).toBeVisible();
+  },
+};
+
 /** The choice of list is remembered on this device, and a sideways swipe switches it. */
 export const ViewRememberedAndSwiped: Story = {
   render: (args) => <HomeStage onRequest={args.onRequest} />,

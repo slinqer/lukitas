@@ -15,6 +15,9 @@ import '../feedback/feedback.dart';
 import '../l10n/app_localizations.dart';
 import '../money/format.dart';
 import '../offline/pending_saves.dart';
+import '../review/review_controller.dart';
+import '../review/review_home_row.dart';
+import '../review/review_mark.dart';
 import '../theme/surfaces.dart';
 import '../theme/text_styles.dart';
 import '../theme/theme.dart';
@@ -197,6 +200,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     if (state == AppLifecycleState.resumed) {
       unawaited(_controller.refresh());
       ref.invalidate(hasTransactionsProvider);
+      ref.invalidate(reviewProvider);
     }
   }
 
@@ -247,6 +251,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       toasts.say(_failureMessage(l10n, failure), error: true);
       return;
     }
+    if (tx.needsReview) ref.invalidate(reviewProvider);
     toasts.say(
       l10n.transactionDeleted(tx.name),
       actionLabel: l10n.undo,
@@ -261,6 +266,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       toasts.say(_failureMessage(l10n, failure), error: true);
       return;
     }
+    if (tx.needsReview && mounted) ref.invalidate(reviewProvider);
     if (mounted) ref.read(feedbackProvider)(FeedbackEvent.undo);
     toasts.say(l10n.transactionRestored(tx.name));
   }
@@ -421,7 +427,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     final current = today.substring(0, 7);
     final shown = home.shown;
     final wambi = shown == null ? null : _wambi(l10n, home, shown, today);
-    final entries = shown == null ? const <_Entry>[] : _entries(home, shown, ref.watch(pendingSavesProvider.select((s) => s.saves)), l10n, today);
+    final entries = shown == null
+        ? const <_Entry>[]
+        : _entries(
+            home,
+            shown,
+            ref.watch(pendingSavesProvider.select((s) => s.saves)),
+            l10n,
+            today,
+          );
     final colors = context.lkColors;
 
     return LayoutBuilder(
@@ -437,7 +451,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             ShellRoom.sides(context).left;
         return SwipeScope(
           child: RefreshIndicator(
-            onRefresh: _controller.refresh,
+            onRefresh: () {
+              ref.invalidate(reviewProvider);
+              return _controller.refresh();
+            },
             child: CustomScrollView(
               controller: _scroll,
               physics: const AlwaysScrollableScrollPhysics(),
@@ -484,6 +501,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                 ? monthInSentence(shown.month, locale)
                                 : null,
                           ),
+                          // Only while something waits: an empty slot would still add its gap.
+                          if (ref.watch(
+                            reviewProvider.select((s) => (s.value ?? const []).isNotEmpty),
+                          ))
+                            const ReviewHomeRow(),
                           ?_nudges(shown, l10n),
                         ] else
                           const HomeHeroPlaceholder(),
@@ -764,7 +786,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               l10n.swipePaid,
             )
           : SwipeRight(SwipeRightKind.edit, () => onEdit(tx), l10n.swipeEdit),
-      child: _txRow(data, tx, home.paidHere.contains(tx.id), onEdit, () => _pay(tx)),
+      child: _txRow(
+        data,
+        tx,
+        home.paidHere.contains(tx.id),
+        onEdit,
+        () => _pay(tx),
+        reviewMark: reviewMarkOf(l10n, tx),
+      ),
     );
   }
 }
@@ -777,6 +806,7 @@ Widget _txRow(
   void Function(Transaction) onEdit,
   Future<void> Function()? onPay, {
   bool unsent = false,
+  String? reviewMark,
 }) {
   final category = data.categories[tx.categoryId];
   return TransactionRow(
@@ -794,6 +824,7 @@ Widget _txRow(
     onOpen: () => onEdit(tx),
     onPay: onPay,
     unsent: unsent,
+    reviewMark: reviewMark,
   );
 }
 

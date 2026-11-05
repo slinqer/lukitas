@@ -225,6 +225,8 @@ function build(seed: DemoSeed, now: Date): State {
           recurrenceId: rule.id,
           importId: null,
           source: "recurrence",
+          needsReview: false,
+          captureSource: null,
           deleted: false,
           occurrenceMonth: month,
         });
@@ -247,6 +249,8 @@ function build(seed: DemoSeed, now: Date): State {
         recurrenceId: null,
         importId: null,
         source: "app",
+        needsReview: false,
+        captureSource: null,
         deleted: false,
         occurrenceMonth: null,
       });
@@ -441,6 +445,8 @@ export function createDemoBackend(seed: DemoSeed, now: () => Date = () => new Da
           recurrenceId: rule.id,
           importId: null,
           source: "recurrence",
+          needsReview: false,
+          captureSource: null,
           createdAt: at,
           updatedAt: at,
           deleted: false,
@@ -502,6 +508,7 @@ export function createDemoBackend(seed: DemoSeed, now: () => Date = () => new Da
     const category = params.get("category");
     if (category !== null && !UUID.test(category)) throw invalid("category", "Invalid UUID");
     const status = enumParam(params, "status", ["paid", "pending"] as const);
+    const needsReview = enumParam(params, "needsReview", ["true", "false"] as const);
     const cursor = params.get("cursor");
     const after = cursor === null ? null : decodeCursor(cursor);
     const limit = intParam(params, "limit", 1, 200, 50);
@@ -512,6 +519,7 @@ export function createDemoBackend(seed: DemoSeed, now: () => Date = () => new Da
           (!month || inMonth(t, month)) &&
           (category === null || t.categoryId === category) &&
           (!status || t.status === status) &&
+          (needsReview !== "true" || t.needsReview) &&
           (!after || t.date < after.date || (t.date === after.date && t.id < after.id)),
       )
       .sort(byNewest);
@@ -621,6 +629,8 @@ export function createDemoBackend(seed: DemoSeed, now: () => Date = () => new Da
       recurrenceId: rule?.id ?? null,
       importId: null,
       source: input.source,
+      needsReview: false,
+      captureSource: null,
       createdAt: at,
       updatedAt: at,
       deleted: false,

@@ -19,6 +19,16 @@ account deletion page (prerendered, es/en/it/pt; `app/features/legal/`), the sig
   `AccountScreen` + `ActionSheet` (`/admin/users/:id`: the account and its actions; a sheet's
   fields live in the component, so a reason survives re-verification). Stories `Admin/*`,
   web-only, not in parity.json.
+- `/automatic-capture` (+ `/en|it|pt/automatic-capture`; `routes.ts`, prerendered like the privacy
+  pages; paths in `app/site/paths.ts`: `AUTOMATIC_CAPTURE_PATH`, SitePage `automaticCapture`): how
+  automatic capture works. `app/features/capture/`: `CaptureSteps.tsx` (`CAPTURE_STEPS`,
+  `CaptureStepView`, `CaptureSteps`), `CaptureDemos.tsx` (`MainPicture` with `income`,
+  `ChipsDemo`, `NoticeDemo`, `LearnDemo`), `CapturePage.tsx`, `capture.css`; scenes
+  `public/wambi/capture-step1..5.webp`. The landing card is the fifth `#how` item
+  (`features/landing/HowItWorks.tsx`). Copy under `landing.capture.*`; `messages.test.ts` forbids
+  naming a language in it. `Capture/Step` and `Capture/MainPicture` (night) are parity stories in
+  `apps/mobile/test/parity/parity.json`; `Capture/Steps` is web-only (the Flutter twin is
+  `apps/mobile/lib/capture_auto/`).
 - `/confirm-email?token=…` (`routes/confirm-email.tsx`, `features/confirm-email/`, under the app
   layout, public): the page of an admin-started email change. It posts the token only when the
   person taps the button (a mail scanner opening the link spends nothing), then sends them to

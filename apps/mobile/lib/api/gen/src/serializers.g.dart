@@ -21,6 +21,13 @@ Serializers _$serializers =
           ..add(AdminUserPasskeysInner.serializer)
           ..add(Assistant.serializer)
           ..add(AssistantList.serializer)
+          ..add(CaptureResult.serializer)
+          ..add(CaptureResultCategory.serializer)
+          ..add(CaptureResultResultEnum.serializer)
+          ..add(CaptureResultTransaction.serializer)
+          ..add(CaptureResultTransactionCaptureSourceEnum.serializer)
+          ..add(CaptureResultTransactionSource_Enum.serializer)
+          ..add(CaptureResultTransactionStatusEnum.serializer)
           ..add(Category.serializer)
           ..add(CategoryKindEnum.serializer)
           ..add(CategoryReport.serializer)
@@ -31,6 +38,9 @@ Serializers _$serializers =
           ..add(CostOfLivingReport.serializer)
           ..add(CostOfLivingReportCategoriesInner.serializer)
           ..add(CostOfLivingReportCategoriesInnerTypeEnum.serializer)
+          ..add(CreateCapture.serializer)
+          ..add(CreateCaptureKindEnum.serializer)
+          ..add(CreateCaptureSource_Enum.serializer)
           ..add(CreateCategory.serializer)
           ..add(CreateCategoryKindEnum.serializer)
           ..add(CreateRecurrence.serializer)
@@ -61,11 +71,13 @@ Serializers _$serializers =
           ..add(Profile.serializer)
           ..add(Recurrence.serializer)
           ..add(RecurrenceFrequencyEnum.serializer)
+          ..add(ReviewTransactions.serializer)
           ..add(SetBudget.serializer)
           ..add(Summary.serializer)
           ..add(SummaryCategoriesInner.serializer)
           ..add(SummaryCategoriesInnerStateEnum.serializer)
           ..add(Transaction.serializer)
+          ..add(TransactionCaptureSourceEnum.serializer)
           ..add(TransactionList.serializer)
           ..add(TransactionPage.serializer)
           ..add(TransactionSource_Enum.serializer)
@@ -83,6 +95,7 @@ Serializers _$serializers =
           ..add(UpdateRecurrence.serializer)
           ..add(UpdateRecurrenceFrequencyEnum.serializer)
           ..add(UpdateTransaction.serializer)
+          ..add(UpdateTransactionNeedsReviewEnum.serializer)
           ..add(UpdateTransactionStatusEnum.serializer)
           ..addBuilderFactory(
             const FullType(BuiltList, const [const FullType(AdminAuditEntry)]),
@@ -132,6 +145,10 @@ Serializers _$serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, const [const FullType(ProblemErrorsInner)]),
             () => ListBuilder<ProblemErrorsInner>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, const [const FullType(String)]),
+            () => ListBuilder<String>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, const [const FullType(String)]),

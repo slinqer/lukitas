@@ -217,6 +217,57 @@
         "demo_rows": "{count, plural, one {# movimento pronto} other {# movimentos prontos}}"
       }
     },
+    "capture": {
+      "card": {
+        "title": "O Wambi regista as despesas por ti!",
+        "body": "Lê as notificações do Revolut e do Google Wallet e regista as tuas despesas para só teres de as rever.",
+        "badge": "Em breve · Só no Android",
+        "link": "Como funciona?"
+      },
+      "page": {
+        "title": "Como funciona a captura automática?",
+        "lead": "A notificação do teu banco passa sozinha a movimento do Wambito.",
+        "soon": "Em breve na app Android.",
+        "back": "Voltar ao início",
+        "meta": {
+          "title": "Wambito · Captura automática",
+          "description": "Como o Wambito regista as tuas despesas a partir das notificações do Revolut e do Google Wallet, na app Android."
+        }
+      },
+      "steps": {
+        "pay": {
+          "title": "Pagas como sempre",
+          "body": "Usas o teu banco como de costume e recebes a notificação dele."
+        },
+        "reads": {
+          "title": "O Wambito lê-a no teu telemóvel",
+          "body": "O texto da notificação nunca sai do teu telemóvel. Só sai o movimento: o montante, o comerciante, a data e a app."
+        },
+        "decide": {
+          "title": "Avisa-te e tu decides",
+          "body": "Deixa-te um aviso com Certo e Alterar. A despesa já conta no teu mês, marcada «por rever»."
+        },
+        "learns": {
+          "title": "Aprende as tuas categorias",
+          "body": "Quando dás uma categoria a um comerciante, da próxima vez já vem posta."
+        },
+        "next": {
+          "title": "Hoje e o que vem",
+          "body": "Hoje funciona com o Revolut e o Google Wallet, na app Android. Vamos acrescentar mais apps e bancos com o tempo."
+        }
+      },
+      "demo": {
+        "registered": "Registado no Wambito",
+        "review": "por rever",
+        "today": "Hoje",
+        "notice": "Anotei {amount} em {merchant} · {category}, que categoria?",
+        "ok": "Certo",
+        "change": "Alterar",
+        "other_expenses": "Outras despesas",
+        "eating_out": "Restaurante",
+        "other_income": "Outras receitas"
+      }
+    },
     "open_source": {
       "title": "Código aberto",
       "body": "Qualquer pessoa pode ler o código de Wambito: não há nada escondido nele. É software livre, com licença AGPL-3.0.",
@@ -275,7 +326,7 @@
         "description": "Como o Wambito trata os teus dados: o que guarda, onde, quem os vê e como pedir que os apaguemos."
       },
       "title": "Política de privacidade",
-      "version": "Versão de 4 de novembro de 2026",
+      "version": "Versão de 5 de novembro de 2026",
       "sections": {
         "controller": {
           "title": "Quem responde pelos teus dados",
@@ -300,6 +351,10 @@
         "voice": {
           "title": "A tua voz",
           "body": "Na app Android podes ditar uma despesa. A voz é processada no teu telemóvel, com o Vosk, e o áudio nunca sai dele. Os modelos de voz são transferidos uma vez, quando tu pedes, a partir das versões do projeto no GitHub. Ao nosso servidor só chega o movimento que guardas, como se o tivesses escrito."
+        },
+        "capture": {
+          "title": "Captura automática",
+          "body": "Na app Android podes ligar a captura automática: vem desligada. Se a ligares e deres ao Wambito acesso às notificações, lê só as das apps que escolheres, Revolut e Google Wallet, e ignora todas as outras. O texto da notificação é processado no telemóvel e nunca sai do teu telemóvel: não o guardamos nem o enviamos. Ao nosso servidor só chega o movimento retirado dela: o valor e a moeda, o comerciante, a data e a hora, e a app de onde veio. Chega marcado «por rever», e podes confirmá-lo, alterá-lo ou apagá-lo. Para te sugerir a categoria, lembramo-nos da que deste a cada comerciante. Podes desligá-la quando quiseres em Definições → Captura automática, ou retirar ao Wambito o acesso às notificações nas definições do Android."
         },
         "assistants": {
           "title": "Assistentes de IA",

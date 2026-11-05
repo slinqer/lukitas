@@ -36,6 +36,19 @@ void main() {
     ]);
   });
 
+  test('rows cached before needsReview existed read as not waiting for review', () async {
+    final store = FakeCacheStore();
+    await HomeCache(store, token: 't1').write(sample());
+    final doc = jsonDecode(store.value!) as Map<String, Object?>;
+    for (final t in doc['items']! as List<Object?>) {
+      (t! as Map<String, Object?>).remove('needsReview');
+    }
+    store.value = jsonEncode(doc);
+
+    final back = (await HomeCache(store, token: 't1').read())!;
+    expect(back.items.map((t) => t.needsReview), [false, false]);
+  });
+
   test('the session token is never stored, only its SHA-256', () async {
     final store = FakeCacheStore();
     await HomeCache(store, token: 'secret-bearer-token').write(sample());

@@ -147,6 +147,7 @@ void main() {
         'categoryId': 'c1',
         'recurrenceId': null,
         'importId': null,
+        'needsReview': false,
         'source': 'app',
         'createdAt': '2026-10-01T10:00:00.000Z',
         'updatedAt': '2026-10-01T10:00:00.000Z',

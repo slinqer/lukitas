@@ -19,6 +19,7 @@ import '../api/server_url.dart';
 import '../api/session.dart';
 import '../capture/capture_sheet.dart';
 import '../capture/models_download.dart';
+import '../capture_auto/auto_capture_section.dart';
 import '../feedback/feedback.dart';
 import '../home/shell_navigation.dart';
 import '../l10n/app_localizations.dart';
@@ -308,6 +309,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             timeZone: profile?.timezone ?? ref.watch(deviceHintsProvider).timezone,
             guest: guest,
           ),
+        // Android only: hidden where the capture channel does not exist.
+        if (!webOnly) const AutoCaptureSection(),
         // The web's "Tus datos" (Settings.tsx): the import links to its page; the export joins it.
         SettingsSection(
           key: const Key('settings.card.data'),

@@ -173,6 +173,7 @@ void main() {
             ..date = '2026-10-22'
             ..status = TransactionStatusEnum.paid
             ..categoryId = 'c'
+            ..needsReview = false
             ..source_ = TransactionSource_Enum.app
             ..createdAt = ''
             ..updatedAt = '',

@@ -329,7 +329,9 @@ test.describe("2.5D Wambi", () => {
             rect.right > figure.left &&
             rect.top < figure.bottom &&
             rect.bottom > figure.top;
-          if (hit) found.push(`${top}px (${layer.dataset.spot}): ${text}`);
+          // Text below or above the screen cannot be stood over: nobody sees either of them.
+          const onScreen = rect.bottom > 0 && rect.top < window.innerHeight;
+          if (hit && onScreen) found.push(`${top}px (${layer.dataset.spot}): ${text}`);
         }
       }
       return [...new Set(found)];

@@ -29,4 +29,19 @@
     <string name="notice_channel_due_description">Alle 9:00, un avviso con i pagamenti ricorrenti in scadenza quel giorno.</string>
     <string name="notice_channel_guest">Avviso se non hai un\'email</string>
     <string name="notice_channel_guest_description">Un avviso se passano 45 giorni senza aprire Wambito e il tuo account non ha un\'email.</string>
+    <!-- Automatic capture (capture/CapturePoster.kt). -->
+    <string name="capture_noted">Ho annotato %1$s da %2$s · %3$s, va bene?</string>
+    <string name="capture_noted_fallback">Ho annotato %1$s da %2$s · %3$s, quale categoria?</string>
+    <plurals name="capture_summary">
+        <item quantity="one">%d da rivedere</item>
+        <item quantity="other">%d da rivedere</item>
+    </plurals>
+    <plurals name="capture_sign_in">
+        <item quantity="one">Accedi per salvare %d movimento rilevato</item>
+        <item quantity="other">Accedi per salvare %d movimenti rilevati</item>
+    </plurals>
+    <string name="capture_confirm">Va bene</string>
+    <string name="capture_change">Cambia</string>
+    <string name="capture_channel">Movimenti rilevati</string>
+    <string name="capture_channel_description">Un avviso per ogni spesa o entrata che Wambito rileva nelle tue app della banca.</string>
 </resources>

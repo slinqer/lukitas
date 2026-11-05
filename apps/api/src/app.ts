@@ -10,6 +10,7 @@ import { assistantScopes } from "./http/scopes.ts";
 import { requireUser } from "./http/session.ts";
 import { adminRoutes } from "./routes/admin.ts";
 import { assistantRoutes } from "./routes/assistants.ts";
+import { captureRoutes } from "./routes/captures.ts";
 import { categoryRoutes } from "./routes/categories.ts";
 import { emailChangeRoutes } from "./routes/email-change.ts";
 import { importRoutes } from "./routes/imports.ts";
@@ -74,6 +75,7 @@ export function createApp(deps: AppDeps) {
   app.route("/", assistantRoutes(deps));
   app.route("/", categoryRoutes(deps));
   app.route("/", transactionRoutes(deps));
+  app.route("/", captureRoutes(deps));
   app.route("/", recurrenceRoutes(deps));
   app.route("/", summaryRoutes(deps));
   app.route("/", reportRoutes(deps));

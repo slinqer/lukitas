@@ -18,6 +18,7 @@ Transaction tx(
     ..date = date
     ..status = status == 'pending' ? TransactionStatusEnum.pending : TransactionStatusEnum.paid
     ..categoryId = categoryId
+    ..needsReview = false
     ..source_ = TransactionSource_Enum.app
     ..createdAt = '2026-10-01T10:00:00.000Z'
     ..updatedAt = '2026-10-01T10:00:00.000Z',

@@ -36,6 +36,8 @@ const tx = (over: Partial<TransactionDto> & Pick<TransactionDto, "id">): Transac
   recurrenceId: null,
   importId: null,
   source: "app",
+  needsReview: false,
+  captureSource: null,
   createdAt: "2026-10-05T10:00:00.000Z",
   updatedAt: "2026-10-05T10:00:00.000Z",
   ...over,
@@ -298,6 +300,25 @@ describe("a month listed in several pages", () => {
     optimisticUpdate(qc, MONTH, "new", { categoryId: OTHER });
     expect(pagesOf(food)).toEqual([["c"], ["z"]]);
     expect(pagesOf(other)).toEqual([["new"]]);
+  });
+
+  it("keeps the list to review in step: a confirmed row leaves it and does not come back", () => {
+    const review = ["transactions", MONTH, "review"];
+    qc.setQueryData(
+      ["transactions", MONTH],
+      paged([tx({ id: "r", needsReview: true, captureSource: "revolut" }), row("a")]),
+    );
+    qc.setQueryData(review, paged([tx({ id: "r", needsReview: true, captureSource: "revolut" })]));
+
+    const rollback = optimisticUpdate(qc, MONTH, "r", { needsReview: false });
+    expect(pagesOf(review)).toEqual([[]]);
+    expect(pagesOf(["transactions", MONTH])?.flat()).toContain("r");
+    rollback();
+    expect(pagesOf(review)).toEqual([["r"]]);
+
+    // Only a row still to review is added to it.
+    optimisticAdd(qc, tx({ id: "plain" }));
+    expect(pagesOf(review)).toEqual([["r"]]);
   });
 
   it("finds a row cached only in a category's list (the detail opened first)", () => {

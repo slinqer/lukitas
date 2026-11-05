@@ -50,7 +50,12 @@
     "sign_out": "Cerrar sesión",
     "nudge_import_action": "Traer mi historial",
     "sign_out_failed": "No pudimos cerrar tu sesión. Inténtalo de nuevo.",
-    "nudge_budgets_action": "Ir a Categorías"
+    "nudge_budgets_action": "Ir a Categorías",
+    "review_mark": "{source, select, revolut{por revisar · de Revolut} google_wallet{por revisar · de Google Wallet} other{por revisar}}",
+    "review_filter": "Por revisar · {count}",
+    "review_ok": "Bien",
+    "review_ok_label": "Bien: {name}",
+    "review_confirm_all": "Confirmar todos"
   },
   "transaction": {
     "add_expense": "Agregar gasto",
@@ -84,7 +89,9 @@
     "paid": "Pagado: {name} · {amount}",
     "no_categories_expense": "Aún no tienes categorías de gasto.",
     "no_categories_income": "Aún no tienes categorías de ingreso.",
-    "archived": "archivada"
+    "archived": "archivada",
+    "review_confirmed": "Confirmado: {name}",
+    "review_confirmed_all": "{count, plural, one{# movimiento confirmado} other{# movimientos confirmados}}"
   },
   "wambi": {
     "first_of_day": {

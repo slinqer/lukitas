@@ -50,7 +50,12 @@
     "sign_out": "Sign out",
     "nudge_import_action": "Bring my history",
     "sign_out_failed": "We couldn't sign you out. Try again.",
-    "nudge_budgets_action": "Go to Categories"
+    "nudge_budgets_action": "Go to Categories",
+    "review_mark": "{source, select, revolut{to review · from Revolut} google_wallet{to review · from Google Wallet} other{to review}}",
+    "review_filter": "To review · {count}",
+    "review_ok": "OK",
+    "review_ok_label": "OK: {name}",
+    "review_confirm_all": "Confirm all"
   },
   "transaction": {
     "add_expense": "Add expense",
@@ -84,7 +89,9 @@
     "paid": "Paid: {name} · {amount}",
     "no_categories_expense": "You have no spending categories yet.",
     "no_categories_income": "You have no income categories yet.",
-    "archived": "archived"
+    "archived": "archived",
+    "review_confirmed": "Confirmed: {name}",
+    "review_confirmed_all": "{count, plural, one{# transaction confirmed} other{# transactions confirmed}}"
   },
   "wambi": {
     "first_of_day": {

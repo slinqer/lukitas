@@ -27,9 +27,12 @@ class AuthFailure implements Exception {
 /// has the welcome to do. The web decides the welcome with `onboardingCompletedAt` (apps/web/app/
 /// auth/session.ts, `requireOnboarded`); a guest has none, as the web has no guests.
 class AccountStanding {
-  const AccountStanding({required this.guest, required this.onboardingPending});
+  const AccountStanding({required this.guest, required this.onboardingPending, this.userId});
 
   final bool guest;
+
+  /// The account's id, when the answer had it.
+  final String? userId;
 
   /// A signed-up account whose `onboardingCompletedAt` is still null.
   final bool onboardingPending;
@@ -218,6 +221,7 @@ class HttpAuthApi implements AuthApi {
     return AccountStanding(
       guest: profile.isAnonymous,
       onboardingPending: !profile.isAnonymous && profile.onboardingCompletedAt == null,
+      userId: profile.id,
     );
   });
 

@@ -34,9 +34,11 @@ import {
   CreateTransactionsBatch,
   DeleteTransactionsBatch,
   idempotencyKeyHeader,
+  ReviewTransactions,
   Transaction,
   UpdateTransaction,
 } from "../http/schemas.ts";
+import { learn } from "../services/captures.ts";
 import { materializeRecurrences } from "../services/materialize.ts";
 import { currentMonth } from "../services/time.ts";
 import {
@@ -57,6 +59,11 @@ const listQuery = z
     q: z.string().trim().min(1).max(100).optional(),
     category: z.uuid().optional(),
     status: z.enum(["paid", "pending"]).optional(),
+    /** `true`: only detected transactions waiting for review; `false`: only the rest. */
+    needsReview: z
+      .enum(["true", "false"])
+      .transform((v) => v === "true")
+      .optional(),
     cursor: z.string().optional(),
     limit: z.coerce.number().int().min(1).max(200).default(50),
   })
@@ -142,6 +149,7 @@ export function transactionRoutes(deps: AppDeps) {
       }
       if (q.category) filters.push(eq(transactions.categoryId, q.category));
       if (q.status) filters.push(eq(transactions.status, q.status));
+      if (q.needsReview !== undefined) filters.push(eq(transactions.needsReview, q.needsReview));
       if (q.cursor) {
         const { date, id } = decodeCursor(q.cursor);
         filters.push(
@@ -235,6 +243,7 @@ export function transactionRoutes(deps: AppDeps) {
   );
   // A retried batch would save everything twice, so here the key is mandatory.
   app.use("/v1/transactions/batch", idempotent(deps.db, { required: true }));
+  app.use("/v1/transactions/review", idempotent(deps.db));
 
   /**
    * The one insert path for single and batch create: category check, account lock, currency. One
@@ -367,6 +376,51 @@ export function transactionRoutes(deps: AppDeps) {
 
   app.openapi(
     createRoute({
+      method: "post",
+      path: "/v1/transactions/review",
+      operationId: "reviewTransactions",
+      description:
+        "Confirms detected transactions at once, learning the category of each. All or nothing: an id that is not the caller's, or was deleted, answers 404 and nothing changes. Ids already confirmed are left as they are.",
+      request: {
+        headers: idempotencyKeyHeader({ required: false }),
+        body: jsonBody(ReviewTransactions),
+      },
+      responses: {
+        200: jsonResponse(TransactionList, "The transactions, in request order"),
+        ...problems(404, 422),
+      },
+    }),
+    async (c) => {
+      const { ids } = c.req.valid("json");
+      const unique = [...new Set(ids)];
+      const rows = await withUser(deps.db, c.get("userId"), async (tx) => {
+        const found = await tx
+          .select()
+          .from(transactions)
+          .where(and(inArray(transactions.id, unique), isNull(transactions.deletedAt)));
+        if (found.length !== unique.length) {
+          throw new ApiError(404, "not_found", "Transaction not found");
+        }
+        const byId = new Map<string, TransactionRow>(found.map((r) => [r.id, r]));
+        for (const before of found) {
+          if (!before.needsReview) continue;
+          const [updated] = await tx
+            .update(transactions)
+            .set({ needsReview: false })
+            .where(eq(transactions.id, before.id))
+            .returning();
+          if (!updated) continue;
+          byId.set(updated.id, updated);
+          if (before.source === "capture") await learn(tx, before.userId, updated);
+        }
+        return ids.map((id) => byId.get(id) as TransactionRow);
+      });
+      return c.json({ items: rows.map(toTransactionDto) }, 200);
+    },
+  );
+
+  app.openapi(
+    createRoute({
       method: "patch",
       path: "/v1/transactions/{id}",
       operationId: "updateTransaction",
@@ -377,13 +431,16 @@ export function transactionRoutes(deps: AppDeps) {
       const { id } = c.req.valid("param");
       const input = c.req.valid("json");
       const row = await withUser(deps.db, c.get("userId"), async (tx) => {
-        await findLive(tx, id);
+        const before = await findLive(tx, id);
         if (input.categoryId) await requireActiveCategory(tx, input.categoryId);
         const [updated] = await tx
           .update(transactions)
           .set(input)
           .where(eq(transactions.id, id))
           .returning();
+        if (before.source === "capture" && before.needsReview && input.needsReview === false) {
+          await learn(tx, before.userId, updated as TransactionRow);
+        }
         return updated as TransactionRow;
       });
       return c.json(toTransactionDto(row), 200);

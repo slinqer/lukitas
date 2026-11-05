@@ -194,6 +194,18 @@ class LaunchLinksTest {
     }
 
     @Test
+    fun `the review link carries the transaction id and only comes through the alias`() {
+        assertEquals("wambito://review", LaunchLinks.REVIEW.toString())
+        assertEquals(Uri.parse("wambito://review/t-1"), LaunchLinks.review("t-1"))
+        assertEquals("wambito://review/t-1", LaunchLinks.linkOf(LaunchLinks.intent(context, LaunchLinks.review("t-1"))))
+        // The other links take no path; review takes exactly one segment.
+        assertNull(LaunchLinks.linkOf(viaAlias("wambito://review")))
+        assertNull(LaunchLinks.linkOf(viaAlias("wambito://review/a/b")))
+        assertNull(LaunchLinks.linkOf(viaAlias("wambito://add/t-1")))
+        assertNull(LaunchLinks.linkOf(Intent(Intent.ACTION_VIEW, Uri.parse("wambito://review/t-1"))))
+    }
+
+    @Test
     fun `Android resolves that intent to MainActivity through the manifest's App Link filter`() {
         val resolved = context.packageManager.resolveActivity(fromBrowser(), 0)
         assertEquals(MainActivity::class.java.name, resolved?.activityInfo?.name)

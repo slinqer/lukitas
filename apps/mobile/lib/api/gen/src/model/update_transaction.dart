@@ -18,6 +18,7 @@ part 'update_transaction.g.dart';
 /// * [date]
 /// * [status]
 /// * [note]
+/// * [needsReview]
 @BuiltValue()
 abstract class UpdateTransaction implements Built<UpdateTransaction, UpdateTransactionBuilder> {
   @BuiltValueField(wireName: r'name')
@@ -38,6 +39,10 @@ abstract class UpdateTransaction implements Built<UpdateTransaction, UpdateTrans
 
   @BuiltValueField(wireName: r'note')
   String? get note;
+
+  @BuiltValueField(wireName: r'needsReview')
+  UpdateTransactionNeedsReviewEnum? get needsReview;
+  // enum needsReviewEnum {  false,  };
 
   UpdateTransaction._();
 
@@ -88,6 +93,13 @@ class _$UpdateTransactionSerializer implements PrimitiveSerializer<UpdateTransac
     if (object.note != null) {
       yield r'note';
       yield serializers.serialize(object.note, specifiedType: const FullType.nullable(String));
+    }
+    if (object.needsReview != null) {
+      yield r'needsReview';
+      yield serializers.serialize(
+        object.needsReview,
+        specifiedType: const FullType(UpdateTransactionNeedsReviewEnum),
+      );
     }
   }
 
@@ -158,6 +170,14 @@ class _$UpdateTransactionSerializer implements PrimitiveSerializer<UpdateTransac
           if (valueDes == null) continue;
           result.note = valueDes;
           break;
+        case r'needsReview':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(UpdateTransactionNeedsReviewEnum),
+          ) as UpdateTransactionNeedsReviewEnum?;
+          if (valueDes == null) continue;
+          result.needsReview = valueDes;
+          break;
         default:
           unhandled.add(key);
           unhandled.add(value);
@@ -201,4 +221,19 @@ class UpdateTransactionStatusEnum extends EnumClass {
   static BuiltSet<UpdateTransactionStatusEnum> get values => _$updateTransactionStatusEnumValues;
   static UpdateTransactionStatusEnum valueOf(String name) =>
       _$updateTransactionStatusEnumValueOf(name);
+}
+
+class UpdateTransactionNeedsReviewEnum extends EnumClass {
+  @BuiltValueEnumConst(wireName: r'false')
+  static const UpdateTransactionNeedsReviewEnum false_ = _$updateTransactionNeedsReviewEnum_false_;
+
+  static Serializer<UpdateTransactionNeedsReviewEnum> get serializer =>
+      _$updateTransactionNeedsReviewEnumSerializer;
+
+  const UpdateTransactionNeedsReviewEnum._(String name) : super(name);
+
+  static BuiltSet<UpdateTransactionNeedsReviewEnum> get values =>
+      _$updateTransactionNeedsReviewEnumValues;
+  static UpdateTransactionNeedsReviewEnum valueOf(String name) =>
+      _$updateTransactionNeedsReviewEnumValueOf(name);
 }

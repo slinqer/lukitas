@@ -14,6 +14,12 @@ Human docs. Live docs are kept current; `superpowers/` is history.
   (`mipmap-*`, F-Droid `icon.png`, web `favicon.ico`/`apple-touch-icon.png`) and
   `drawable/ic_launcher_{foreground,monochrome}.xml`; never hand-edit those (usage in its header).
   Colours: tokens `brand-plum`, `brand-gold`.
+  Scenes `wambi-capture-step{1..5}.webp` are Codex-generated (`codex exec` image generation) from
+  `wambi-pointing.webp` and checked by eye as one set on night and day; masters 1024 px. The apps
+  ship byte-identical 512 px copies (`magick … -resize 512x512 -quality 90 -define
+  webp:alpha-quality=100`) in `apps/web/public/wambi` and `apps/mobile/assets/wambi`. Make a new
+  scene the same way and add it only if on-model (same face, gold, purple limbs, pink sneakers; no
+  text, letters, numbers or logos).
 - `docs/deploy/`: `personal.md` (private install, short; the runbook is
   `deploy/personal/README.md`), `landing.md` (Cloudflare landing), `api.md` (client addresses,
   rate limits).

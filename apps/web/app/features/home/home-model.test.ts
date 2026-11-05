@@ -6,6 +6,7 @@ import {
   homeWambiLine,
   orderByUse,
   overallState,
+  reviewMark,
 } from "./home-model.ts";
 
 function tx(id: string, date: string, amount: number, status: "paid" | "pending" = "paid") {
@@ -21,6 +22,8 @@ function tx(id: string, date: string, amount: number, status: "paid" | "pending"
     recurrenceId: null,
     importId: null,
     source: "web",
+    needsReview: false,
+    captureSource: null,
     createdAt: "2026-10-01T10:00:00.000Z",
     updatedAt: "2026-10-01T10:00:00.000Z",
   } satisfies TransactionDto;
@@ -271,5 +274,27 @@ describe("overallState", () => {
     expect(overallState(100, 80)).toBe("near");
     expect(overallState(100, 101)).toBe("over");
     expect(overallState(0, 0)).toBe("ok");
+  });
+});
+
+// -- Detected transactions -------------------------------------------------------------------------
+
+function detected(id: string, captureSource: TransactionDto["captureSource"], needsReview = true) {
+  return { ...tx(id, "2026-10-21", -1240), source: "capture" as const, captureSource, needsReview };
+}
+
+describe("reviewMark", () => {
+  it("is null for a transaction that needs no review", () => {
+    expect(reviewMark(tx("lunch", "2026-10-21", -1240))).toBeNull();
+    expect(reviewMark(detected("done", "revolut", false))).toBeNull();
+  });
+
+  it("names where a detected transaction came from", () => {
+    expect(reviewMark(detected("a", "revolut"))).toBe("revolut");
+    expect(reviewMark(detected("b", "google_wallet"))).toBe("google_wallet");
+  });
+
+  it("still marks one whose source is unknown", () => {
+    expect(reviewMark(detected("c", null))).toBe("other");
   });
 });

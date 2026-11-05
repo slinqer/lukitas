@@ -175,7 +175,7 @@ export const updateTransaction = defineTool({
   name: "update_transaction",
   title: "Update a transaction",
   description:
-    "Changes one transaction's name, amount, category, date or note, or marks it as paid. Get its id from list_transactions. The amount is positive; the sign always follows the category's kind.",
+    "Changes one transaction's name, amount, category, date or note, marks it as paid, or confirms a detected one (confirm: true; only when the person says so). Get its id from list_transactions. The amount is positive; the sign always follows the category's kind.",
   scope: "finance:write",
   annotations: {
     readOnlyHint: false,
@@ -192,6 +192,7 @@ export const updateTransaction = defineTool({
       date: dateInput.optional(),
       status: z.enum(["paid", "pending"]).optional().describe("paid to mark it as paid"),
       note: noteInput.nullable().optional().describe("null clears the note"),
+      confirm: z.literal(true).optional().describe("Marks a detected transaction as reviewed"),
     })
     .refine(({ id: _id, ...fields }) => Object.values(fields).some((v) => v !== undefined), {
       message: "Provide at least one field to change",
@@ -206,6 +207,7 @@ export const updateTransaction = defineTool({
     if (input.date !== undefined) patch.date = input.date;
     if (input.status !== undefined) patch.status = input.status;
     if (input.note !== undefined) patch.note = input.note;
+    if (input.confirm) patch.needsReview = false;
     if (category) patch.categoryId = category.id;
     // Without a new category its kind is not known before the write (Wambito has no
     // get-by-id): guess expense, the common case, and fix the sign below if it is income.

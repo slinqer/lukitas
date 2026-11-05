@@ -28,8 +28,27 @@ final BuiltSet<UpdateTransactionStatusEnum> _$updateTransactionStatusEnumValues 
       _$updateTransactionStatusEnum_pending,
     ]);
 
+const UpdateTransactionNeedsReviewEnum _$updateTransactionNeedsReviewEnum_false_ =
+    const UpdateTransactionNeedsReviewEnum._('false_');
+
+UpdateTransactionNeedsReviewEnum _$updateTransactionNeedsReviewEnumValueOf(String name) {
+  switch (name) {
+    case 'false_':
+      return _$updateTransactionNeedsReviewEnum_false_;
+    default:
+      throw ArgumentError(name);
+  }
+}
+
+final BuiltSet<UpdateTransactionNeedsReviewEnum> _$updateTransactionNeedsReviewEnumValues =
+    BuiltSet<UpdateTransactionNeedsReviewEnum>(const <UpdateTransactionNeedsReviewEnum>[
+      _$updateTransactionNeedsReviewEnum_false_,
+    ]);
+
 Serializer<UpdateTransactionStatusEnum> _$updateTransactionStatusEnumSerializer =
     _$UpdateTransactionStatusEnumSerializer();
+Serializer<UpdateTransactionNeedsReviewEnum> _$updateTransactionNeedsReviewEnumSerializer =
+    _$UpdateTransactionNeedsReviewEnumSerializer();
 
 class _$UpdateTransactionStatusEnumSerializer
     implements PrimitiveSerializer<UpdateTransactionStatusEnum> {
@@ -64,6 +83,33 @@ class _$UpdateTransactionStatusEnumSerializer
   );
 }
 
+class _$UpdateTransactionNeedsReviewEnumSerializer
+    implements PrimitiveSerializer<UpdateTransactionNeedsReviewEnum> {
+  static const Map<String, Object> _toWire = const <String, Object>{'false_': 'false'};
+  static const Map<Object, String> _fromWire = const <Object, String>{'false': 'false_'};
+
+  @override
+  final Iterable<Type> types = const <Type>[UpdateTransactionNeedsReviewEnum];
+  @override
+  final String wireName = 'UpdateTransactionNeedsReviewEnum';
+
+  @override
+  Object serialize(
+    Serializers serializers,
+    UpdateTransactionNeedsReviewEnum object, {
+    FullType specifiedType = FullType.unspecified,
+  }) => _toWire[object.name] ?? object.name;
+
+  @override
+  UpdateTransactionNeedsReviewEnum deserialize(
+    Serializers serializers,
+    Object serialized, {
+    FullType specifiedType = FullType.unspecified,
+  }) => UpdateTransactionNeedsReviewEnum.valueOf(
+    _fromWire[serialized] ?? (serialized is String ? serialized : ''),
+  );
+}
+
 class _$UpdateTransaction extends UpdateTransaction {
   @override
   final String? name;
@@ -77,6 +123,8 @@ class _$UpdateTransaction extends UpdateTransaction {
   final UpdateTransactionStatusEnum? status;
   @override
   final String? note;
+  @override
+  final UpdateTransactionNeedsReviewEnum? needsReview;
 
   factory _$UpdateTransaction([void Function(UpdateTransactionBuilder)? updates]) =>
       (UpdateTransactionBuilder()..update(updates))._build();
@@ -88,6 +136,7 @@ class _$UpdateTransaction extends UpdateTransaction {
     this.date,
     this.status,
     this.note,
+    this.needsReview,
   }) : super._();
   @override
   UpdateTransaction rebuild(void Function(UpdateTransactionBuilder) updates) =>
@@ -105,7 +154,8 @@ class _$UpdateTransaction extends UpdateTransaction {
         categoryId == other.categoryId &&
         date == other.date &&
         status == other.status &&
-        note == other.note;
+        note == other.note &&
+        needsReview == other.needsReview;
   }
 
   @override
@@ -117,6 +167,7 @@ class _$UpdateTransaction extends UpdateTransaction {
     _$hash = $jc(_$hash, date.hashCode);
     _$hash = $jc(_$hash, status.hashCode);
     _$hash = $jc(_$hash, note.hashCode);
+    _$hash = $jc(_$hash, needsReview.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -129,7 +180,8 @@ class _$UpdateTransaction extends UpdateTransaction {
           ..add('categoryId', categoryId)
           ..add('date', date)
           ..add('status', status)
-          ..add('note', note))
+          ..add('note', note)
+          ..add('needsReview', needsReview))
         .toString();
   }
 }
@@ -161,6 +213,11 @@ class UpdateTransactionBuilder implements Builder<UpdateTransaction, UpdateTrans
   String? get note => _$this._note;
   set note(String? note) => _$this._note = note;
 
+  UpdateTransactionNeedsReviewEnum? _needsReview;
+  UpdateTransactionNeedsReviewEnum? get needsReview => _$this._needsReview;
+  set needsReview(UpdateTransactionNeedsReviewEnum? needsReview) =>
+      _$this._needsReview = needsReview;
+
   UpdateTransactionBuilder() {
     UpdateTransaction._defaults(this);
   }
@@ -174,6 +231,7 @@ class UpdateTransactionBuilder implements Builder<UpdateTransaction, UpdateTrans
       _date = $v.date;
       _status = $v.status;
       _note = $v.note;
+      _needsReview = $v.needsReview;
       _$v = null;
     }
     return this;
@@ -202,6 +260,7 @@ class UpdateTransactionBuilder implements Builder<UpdateTransaction, UpdateTrans
           date: date,
           status: status,
           note: note,
+          needsReview: needsReview,
         );
     replace(_$result);
     return _$result;

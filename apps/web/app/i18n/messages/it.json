@@ -217,6 +217,57 @@
         "demo_rows": "{count, plural, one {# movimento pronto} other {# movimenti pronti}}"
       }
     },
+    "capture": {
+      "card": {
+        "title": "Wambi annota le spese per te!",
+        "body": "Legge le notifiche di Revolut e Google Wallet e annota le tue spese, così devi solo rivederle.",
+        "badge": "Presto · Solo su Android",
+        "link": "Come funziona?"
+      },
+      "page": {
+        "title": "Come funziona la cattura automatica?",
+        "lead": "La notifica della tua banca diventa da sola un movimento di Wambito.",
+        "soon": "Presto nell’app Android.",
+        "back": "Torna alla home",
+        "meta": {
+          "title": "Wambito · Cattura automatica",
+          "description": "Come Wambito annota le tue spese dalle notifiche di Revolut e Google Wallet, nell’app Android."
+        }
+      },
+      "steps": {
+        "pay": {
+          "title": "Paghi come sempre",
+          "body": "Usi la tua banca come al solito e ti arriva la sua notifica."
+        },
+        "reads": {
+          "title": "Wambito la legge sul tuo telefono",
+          "body": "Il testo della notifica non lascia mai il tuo telefono. Esce solo il movimento: l’importo, l’esercente, la data e l’app."
+        },
+        "decide": {
+          "title": "Ti avvisa e decidi tu",
+          "body": "Ti lascia un avviso con Va bene e Cambia. La spesa conta già nel tuo mese, segnata «da rivedere»."
+        },
+        "learns": {
+          "title": "Impara le tue categorie",
+          "body": "Quando dai una categoria a un esercente, la prossima volta è già impostata."
+        },
+        "next": {
+          "title": "Oggi e cosa arriva",
+          "body": "Oggi funziona con Revolut e Google Wallet, nell’app Android. Aggiungeremo altre app e banche col tempo."
+        }
+      },
+      "demo": {
+        "registered": "Annotato in Wambito",
+        "review": "da rivedere",
+        "today": "Oggi",
+        "notice": "Ho annotato {amount} da {merchant} · {category}, quale categoria?",
+        "ok": "Va bene",
+        "change": "Cambia",
+        "other_expenses": "Altre spese",
+        "eating_out": "Ristorante",
+        "other_income": "Altre entrate"
+      }
+    },
     "open_source": {
       "title": "Open source",
       "body": "Chiunque può leggere il codice di Wambito: non c'è niente di nascosto. È software libero, con licenza AGPL-3.0.",
@@ -275,7 +326,7 @@
         "description": "Come Wambito tratta i tuoi dati: cosa conserva, dove, chi può vederli e come chiederne la cancellazione."
       },
       "title": "Informativa sulla privacy",
-      "version": "Versione del 4 novembre 2026",
+      "version": "Versione del 5 novembre 2026",
       "sections": {
         "controller": {
           "title": "Chi è responsabile dei tuoi dati",
@@ -300,6 +351,10 @@
         "voice": {
           "title": "La tua voce",
           "body": "Nell’app Android puoi dettare una spesa. La voce viene elaborata sul tuo telefono, con Vosk, e l’audio non lo lascia mai. I modelli vocali si scaricano una volta, quando lo chiedi tu, dalle release del progetto su GitHub. Al nostro server arriva solo il movimento che salvi, come se lo avessi scritto."
+        },
+        "capture": {
+          "title": "Cattura automatica",
+          "body": "Nell’app Android puoi attivare la cattura automatica: parte spenta. Se la attivi e dai a Wambito l’accesso alle notifiche, legge solo quelle delle app che scegli, Revolut e Google Wallet, e ignora tutte le altre. Il testo della notifica viene elaborato sul telefono e non lascia mai il tuo telefono: non lo conserviamo né lo inviamo. Al nostro server arriva solo il movimento ricavato: l’importo e la valuta, l’esercente, la data e l’ora, e l’app da cui è arrivato. Arriva segnato «da rivedere», e puoi confermarlo, cambiarlo o eliminarlo. Per suggerirti la categoria, ricordiamo quella che hai dato a ogni esercente. Puoi spegnerla quando vuoi in Impostazioni → Cattura automatica, o togliere a Wambito l’accesso alle notifiche nelle impostazioni di Android."
         },
         "assistants": {
           "title": "Assistenti IA",

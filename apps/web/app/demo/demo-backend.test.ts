@@ -307,6 +307,14 @@ describe("GET /api/v1/transactions pages like the API", () => {
 });
 
 describe("recurrences materialize on read, as the API's materializeRecurrences", () => {
+  it("answers the needsReview filter: the demo has nothing detected to review", async () => {
+    const { api } = demo();
+    const { data } = await api.GET("/v1/transactions", {
+      params: { query: { month: "2026-10", needsReview: "true" } },
+    });
+    expect(data?.items).toEqual([]);
+  });
+
   it("adds the month's pending salary once, and paying it moves it to the paid totals", async () => {
     const { api } = demo();
     // A report is a read too: before any screen opened October, it already sees the salary.

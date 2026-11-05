@@ -34,6 +34,7 @@ class TransactionRow extends StatefulWidget {
     this.onPay,
     this.paidHere = false,
     this.unsent = false,
+    this.reviewMark,
   });
 
   /// The transaction's name; blank shows the category name instead.
@@ -64,6 +65,10 @@ class TransactionRow extends StatefulWidget {
   /// Saved with no network and not on the server yet: a cloud with a line through it says so.
   final bool unsent;
 
+  /// Detected from a notification and not looked at yet: "por revisar · de Revolut", in the status
+  /// line. Null for any other row.
+  final String? reviewMark;
+
   @override
   State<TransactionRow> createState() => _TransactionRowState();
 }
@@ -85,6 +90,7 @@ class _TransactionRowState extends State<TransactionRow> {
       :onPay,
       :paidHere,
       :unsent,
+      :reviewMark,
     ) = widget;
     final l10n = AppLocalizations.of(context);
     final lk = context.lk;
@@ -122,9 +128,7 @@ class _TransactionRowState extends State<TransactionRow> {
         order: const NumericFocusOrder(0),
         child: Pressable(
           onPressed: onOpen,
-          label: unsent
-              ? '$title $money $categoryName ${l10n.unsentLabel}'
-              : '$title $money $categoryName',
+          label: [title, money, categoryName, ?reviewMark, if (unsent) l10n.unsentLabel].join(' '),
           hint: SwipeHint.maybeOf(context),
           keepChildSemantics: true,
           builder: (context, state) {
@@ -223,6 +227,17 @@ class _TransactionRowState extends State<TransactionRow> {
                                     ),
                                   ),
                                 ),
+                                if (reviewMark != null)
+                                  ExcludeSemantics(
+                                    child: Text(
+                                      reviewMark,
+                                      key: const Key('row.review'),
+                                      style: statusStyle.copyWith(
+                                        color: colors.near,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
+                                  ),
                                 ?badge,
                                 if (unsent)
                                   Icon(

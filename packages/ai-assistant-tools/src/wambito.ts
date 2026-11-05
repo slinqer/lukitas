@@ -29,6 +29,8 @@ export interface TransactionQuery {
   to?: string;
   categoryId?: string;
   status?: "paid" | "pending";
+  /** true: only detected transactions the person has not confirmed yet. */
+  needsReview?: boolean;
   q?: string;
   cursor?: string;
   limit: number;

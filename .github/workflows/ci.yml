@@ -158,6 +158,8 @@ jobs:
               - 'apps/api/src/**'
               - 'apps/api/package.json'
               - 'apps/web/scripts/gen-api.ts'
+              - 'apps/web/app/i18n/messages/*.json'
+              - 'apps/web/public/wambi/capture-step*.webp'
               - 'docs/design/system/project/tokens.json'
               - 'packages/core/**'
               - 'pnpm-lock.yaml'

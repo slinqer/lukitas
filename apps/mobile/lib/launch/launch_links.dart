@@ -8,6 +8,7 @@ import '../add/add_sheet.dart';
 import '../api/session.dart';
 import '../capture/capture_sheet.dart';
 import '../home/home_controller.dart';
+import '../review/review_controller.dart';
 import '../router.dart';
 
 /// What a `wambito://` link asks for (spec section 7.1): the widget's ＋ (`wambito://add`, the add
@@ -15,8 +16,10 @@ import '../router.dart';
 /// quick capture listening). `wambito://due` is the "Hoy vence…" notice's (spec section 7.2): home,
 /// where the payments due today are listed first. `wambito://progress` is the guest warning's:
 /// "Guarda tu progreso", over home. `wambito://home` is a tap on the widget itself (its figures, its
-/// face, any area but the buttons): home.
-enum LaunchAction { add, capture, due, progress, home }
+/// face, any area but the buttons): home. `wambito://review` and `wambito://review/<id>` are the
+/// detected-transaction notification's "Cambiar" and the like: the review inbox, with that
+/// transaction open in the editor when an id comes ([launchReviewIdOf]).
+enum LaunchAction { add, capture, due, progress, home, review }
 
 /// The scheme of the links the app builds.
 const launchScheme = 'wambito';
@@ -28,6 +31,12 @@ Uri launchLinkOf(LaunchAction action) => Uri(scheme: launchScheme, host: action.
 LaunchAction? launchActionOf(String? link) {
   final uri = Uri.tryParse(link ?? '');
   if (uri == null || uri.scheme != launchScheme) return null;
+  if (uri.host == 'review') {
+    // Nothing, or exactly one segment: the transaction's id.
+    return uri.pathSegments.where((s) => s.isNotEmpty).length <= 1 && !uri.path.startsWith('//')
+        ? LaunchAction.review
+        : null;
+  }
   if (uri.path.isNotEmpty && uri.path != '/') return null;
   return switch (uri.host) {
     'add' => LaunchAction.add,
@@ -37,6 +46,13 @@ LaunchAction? launchActionOf(String? link) {
     'home' => LaunchAction.home,
     _ => null,
   };
+}
+
+/// The transaction id of a `wambito://review/<id>` link; null for `wambito://review` and any other.
+String? launchReviewIdOf(String? link) {
+  if (launchActionOf(link) != LaunchAction.review) return null;
+  final id = Uri.parse(link!).pathSegments.where((s) => s.isNotEmpty).firstOrNull;
+  return id;
 }
 
 /// Where `wambito://` links come from: Android (MainActivity.kt) keeps them away from the router
@@ -167,6 +183,11 @@ class LaunchLinks {
         // Only a guest has a progress to save; an account that has since claimed an email is on
         // home already.
         if (_ref.read(sessionProvider).isGuest) unawaited(router.push('/progress'));
+      case LaunchAction.review:
+        if (_ref.exists(homeProvider)) unawaited(_ref.read(homeProvider.notifier).refresh());
+        _ref.invalidate(reviewProvider);
+        final id = launchReviewIdOf(link);
+        unawaited(router.push(id == null ? '/review' : '/review/${Uri.encodeComponent(id)}'));
     }
   }
 }
