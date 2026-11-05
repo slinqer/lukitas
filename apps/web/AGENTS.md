@@ -26,8 +26,9 @@ account deletion page (prerendered, es/en/it/pt; `app/features/legal/`), the sig
   `ChipsDemo`, `NoticeDemo`, `LearnDemo`), `CapturePage.tsx`, `capture.css`; scenes
   `public/wambi/capture-step1..5.webp`. The landing card is the fifth `#how` item
   (`features/landing/HowItWorks.tsx`). Copy under `landing.capture.*`; `messages.test.ts` forbids
-  naming a language in it. Stories `Capture/Steps`, `Capture/Step`, `Capture/MainPicture` are
-  parity stories (the Flutter twin is `apps/mobile/lib/capture_auto/`).
+  naming a language in it. `Capture/Step` and `Capture/MainPicture` (night) are parity stories in
+  `apps/mobile/test/parity/parity.json`; `Capture/Steps` is web-only (the Flutter twin is
+  `apps/mobile/lib/capture_auto/`).
 - `/confirm-email?token=…` (`routes/confirm-email.tsx`, `features/confirm-email/`, under the app
   layout, public): the page of an admin-started email change. It posts the token only when the
   person taps the button (a mail scanner opening the link spends nothing), then sends them to

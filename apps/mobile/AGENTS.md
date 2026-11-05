@@ -17,10 +17,10 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
   prominent disclosure) and from the section's link (ends with "Entendido"); dots, Siguiente and
   the last step's disclosure and button sit in the sheet's stuck footer (that disclosure is the
   Play prominent disclosure). Scenes `assets/wambi/capture-step1..5.webp`, byte-identical to the
-  web copies (`test/tooling/capture_scenes_test.dart`); `test/l10n/capture_copy_test.dart` (no
-  language words; app copy equals web copy); parity pairs in
-  `test/parity/capture_how_parity_test.dart`. `capture_platform.dart`
-  wraps the `wambito/capture` channel (`autoCapturePlatformProvider`; no channel ⇒ `status()` null ⇒ the section
+  web copies (`test/tooling/capture_scenes_test.dart`). Tests: `test/l10n/capture_copy_test.dart`
+  (no language words; app copy equals web copy), parity pairs in
+  `test/parity/capture_how_parity_test.dart`.
+  `capture_platform.dart` wraps the `wambito/capture` channel (`autoCapturePlatformProvider`; no channel ⇒ `status()` null ⇒ the section
   hides); `SessionController.signOut`/`accountDeleted` call its `clearQueue()`, and every sign-in
   (`_signedIn`) and a start the server confirms call `sendQueued(userId)` (a 401 keeps the queue).
   Tests fake it with
