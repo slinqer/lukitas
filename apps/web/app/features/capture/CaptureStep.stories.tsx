@@ -5,7 +5,6 @@ import { CaptureStepView } from "./CaptureSteps.tsx";
 const meta = {
   title: "Capture/Step",
   component: CaptureStepView,
-  parameters: { layout: "centered" },
 } satisfies Meta<typeof CaptureStepView>;
 
 export default meta;

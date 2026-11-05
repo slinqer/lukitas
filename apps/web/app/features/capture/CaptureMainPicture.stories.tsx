@@ -5,7 +5,6 @@ import { MainPicture } from "./CaptureDemos.tsx";
 const meta = {
   title: "Capture/MainPicture",
   component: MainPicture,
-  parameters: { layout: "centered" },
 } satisfies Meta<typeof MainPicture>;
 
 export default meta;
