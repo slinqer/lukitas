@@ -271,7 +271,7 @@
         "description": "How Wambito handles your data: what it stores, where, who can see it and how to ask us to delete it."
       },
       "title": "Privacy policy",
-      "version": "Version of 4 November 2026",
+      "version": "Version of 5 November 2026",
       "sections": {
         "controller": {
           "title": "Who is responsible for your data",
@@ -296,6 +296,10 @@
         "voice": {
           "title": "Your voice",
           "body": "In the Android app you can dictate an expense. Your voice is processed on your phone, with Vosk, and the audio never leaves it. The voice models are downloaded once, when you ask for them, from the project's releases on GitHub. Only the transaction you save reaches our server, as if you had typed it."
+        },
+        "capture": {
+          "title": "Automatic capture",
+          "body": "In the Android app you can turn on automatic capture: it starts off. If you turn it on and give Wambito access to notifications, it reads only those of the apps you choose, Revolut and Google Wallet, and ignores every other one. The notification text is processed on the phone and never leaves your phone: we neither store it nor send it. Only the transaction taken from it reaches our server: the amount and currency, the merchant, the date and time, and the app it came from. It arrives marked “to review”, and you can confirm, change or delete it. To suggest the category, we remember the one you gave each merchant. You can turn it off at any time in Settings → Automatic capture, or remove Wambito's access to notifications in Android's settings."
         },
         "assistants": {
           "title": "AI assistants",

@@ -271,7 +271,7 @@
         "description": "Como o Wambito trata os teus dados: o que guarda, onde, quem os vê e como pedir que os apaguemos."
       },
       "title": "Política de privacidade",
-      "version": "Versão de 4 de novembro de 2026",
+      "version": "Versão de 5 de novembro de 2026",
       "sections": {
         "controller": {
           "title": "Quem responde pelos teus dados",
@@ -296,6 +296,10 @@
         "voice": {
           "title": "A tua voz",
           "body": "Na app Android podes ditar uma despesa. A voz é processada no teu telemóvel, com o Vosk, e o áudio nunca sai dele. Os modelos de voz são transferidos uma vez, quando tu pedes, a partir das versões do projeto no GitHub. Ao nosso servidor só chega o movimento que guardas, como se o tivesses escrito."
+        },
+        "capture": {
+          "title": "Captura automática",
+          "body": "Na app Android podes ligar a captura automática: vem desligada. Se a ligares e deres ao Wambito acesso às notificações, lê só as das apps que escolheres, Revolut e Google Wallet, e ignora todas as outras. O texto da notificação é processado no telemóvel e nunca sai do teu telemóvel: não o guardamos nem o enviamos. Ao nosso servidor só chega o movimento retirado dela: o valor e a moeda, o comerciante, a data e a hora, e a app de onde veio. Chega marcado «por rever», e podes confirmá-lo, alterá-lo ou apagá-lo. Para te sugerir a categoria, lembramo-nos da que deste a cada comerciante. Podes desligá-la quando quiseres em Definições → Captura automática, ou retirar ao Wambito o acesso às notificações nas definições do Android."
         },
         "assistants": {
           "title": "Assistentes de IA",

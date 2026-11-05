@@ -15,6 +15,14 @@ type Legal = {
 const CATALOGS = { es, en, it: itMessages, pt: ptMessages } as const;
 const PAGES = { privacy: PRIVACY_SECTIONS, deleteAccount: DELETE_ACCOUNT_SECTIONS } as const;
 
+/** Each language's words for "the notification text never leaves your phone". */
+const NOTIFICATION_STAYS: Record<keyof typeof CATALOGS, string> = {
+  es: "nunca sale de tu teléfono",
+  en: "never leaves your phone",
+  it: "non lascia mai il tuo telefono",
+  pt: "nunca sai do teu telemóvel",
+};
+
 function legal(locale: keyof typeof CATALOGS, page: keyof typeof PAGES): Legal {
   const tree = CATALOGS[locale].legal as unknown as Record<string, Legal>;
   return tree[LEGAL_MESSAGES[page]] ?? {};
@@ -29,6 +37,7 @@ describe("legal pages", () => {
       "storage",
       "not_done",
       "voice",
+      "capture",
       "assistants",
       "guest",
       "self_hosted",
@@ -60,6 +69,13 @@ describe("legal pages", () => {
         expect(sections.rights?.body).toContain("privacy@wambito.com");
         expect(sections.controller?.body).toContain("Slinqer S.A.S.");
         expect(sections.controller?.body).toContain("1581");
+      });
+
+      it("privacy: automatic capture names its apps and keeps the notification on the phone", () => {
+        const body = legal(locale, "privacy").sections?.capture?.body ?? "";
+        expect(body).toContain("Revolut");
+        expect(body).toContain("Google Wallet");
+        expect(body).toContain(NOTIFICATION_STAYS[locale]);
       });
 
       it("says backups go within 14 days, on both pages", () => {
