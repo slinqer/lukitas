@@ -149,10 +149,12 @@ if (nativeFromSource) {
                 "run apps/mobile/scripts/build-native-deps.sh first",
         )
     }
-    // First, so that nothing else can answer for these two; and it answers for nothing else.
-    val local = repositories.maven {
-        url = uri("../third_party/m2")
-        content {
+    // Exclusive: only this repository serves the two -src versions, and it serves nothing else.
+    // First in the list as well.
+    lateinit var local: ArtifactRepository
+    repositories.exclusiveContent {
+        forRepository { repositories.maven { url = uri("../third_party/m2") }.also { local = it } }
+        filter {
             includeVersion("com.alphacephei", "vosk-android", "0.3.75-src")
             includeVersion("net.java.dev.jna", "jna", "5.18.1-src")
         }

@@ -44,7 +44,7 @@ fail() {
 # list [gradle args...]: the release classpath into $WORK/out.txt; returns Gradle's exit status.
 list() {
   local status=0
-  (cd android && ./gradlew --quiet --console=plain :app:dependencies \
+  (cd android && ./gradlew --no-daemon --quiet --console=plain :app:dependencies \
     --configuration releaseRuntimeClasspath "$@") >"$WORK/out.txt" 2>&1 || status=$?
   return "$status"
 }

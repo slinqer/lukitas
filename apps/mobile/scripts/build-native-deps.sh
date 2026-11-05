@@ -13,7 +13,7 @@
 # used: JNA's lib/native/*.jar (upstream's jnidispatch for every platform) is deleted first.
 #
 # Usage (Linux x86_64 with the NDK below, cmake, autoconf, automake, libtool, libltdl-dev, texinfo,
-# ant, JDK 17, gcc, g++, python3, git when a source is left out; about an hour on 8 cores):
+# ant, JDK 17, gcc, g++, python3, git; about an hour on 8 cores):
 #   apps/mobile/scripts/build-native-deps.sh --vosk-src <dir> --jna-src <dir> --ndk <dir>
 #       [--out <dir>]            default: apps/mobile/android/third_party/m2
 #       [--kaldi-src <dir>] [--openfst-src <dir>] [--openblas-src <dir>] [--clapack-src <dir>]
@@ -23,7 +23,7 @@
 #                                ($ANDROID_HOME, or the one the NDK sits in)
 #       [--work <dir>]           the build trees (about 4 GB), kept; default: a temporary one
 #       [--jobs <n>]             default: the number of processors
-# A source given as a git checkout must be at its pinned revision.
+# Every source must be a git checkout at its pinned revision, at a path with no spaces.
 # Exit codes: 0 built, 1 a build step failed, 2 bad arguments, host, tools or sources.
 set -euo pipefail
 
@@ -77,7 +77,7 @@ done
 # linux-x86_64 toolchain (on a Mac, run this in a linux/amd64 container).
 [ "$(uname -s)" = Linux ] && [ "$(uname -m)" = x86_64 ] ||
   die "needs Linux x86_64 (this is $(uname -s) $(uname -m)): run it in a linux/amd64 container."
-for tool in make cmake autoreconf libtoolize makeinfo ant javac jar gcc g++ python3 patch; do
+for tool in git make cmake autoreconf libtoolize makeinfo ant javac jar gcc g++ python3 patch; do
   command -v "$tool" >/dev/null || die "$tool is missing."
 done
 ndk="$(cd "$ndk" 2>/dev/null && pwd)" || die "no NDK directory at $ndk"
@@ -98,7 +98,13 @@ jobs="${jobs:-$(nproc)}"
 
 if [ -z "$work" ]; then
   work="$(mktemp -d)"
-  trap 'rm -rf "$work"' EXIT
+  # A temporary build tree goes when done; after a failure only its logs stay, for reading.
+  trap 'status=$?
+    if [ "$status" -eq 0 ]; then rm -rf "$work"
+    else
+      find "$work" -mindepth 1 -maxdepth 1 ! -name logs -exec rm -rf {} +
+      echo "build-native-deps: the logs are kept in $work/logs" >&2
+    fi' EXIT
 fi
 mkdir -p "$work"
 work="$(cd "$work" && pwd)"
@@ -111,7 +117,6 @@ source_dir() {
   if [ -z "$dir" ]; then
     dir="$work/src/$name"
     if [ ! -d "$dir/.git" ]; then
-      command -v git >/dev/null || die "git is missing (needed to fetch $name: or pass --$name-src)."
       echo "Fetching $name at $rev" >&2
       rm -rf "$dir" && mkdir -p "$dir"
       git -C "$dir" init --quiet
@@ -120,11 +125,15 @@ source_dir() {
     fi
   fi
   dir="$(cd "$dir" 2>/dev/null && pwd)" || die "no $name source at $dir"
-  if [ -e "$dir/.git" ] && command -v git >/dev/null; then
-    have="$(git -c safe.directory='*' -C "$dir" rev-parse HEAD 2>/dev/null || true)"
-    [ "$have" = "$rev" ] || die "$name at $dir is at '${have:-unknown}', not the pinned $rev."
-  fi
-  case "$dir" in *'#'* | *'&'* | *\\*) die "the path of $name may not hold #, & or \\: $dir" ;; esac
+  # The path goes unquoted into sed and into the edited build-vosk.sh.
+  case "$dir" in *'#'* | *'&'* | *\\* | *[[:space:]]*)
+    die "the path of $name may not hold #, &, \\ or spaces: $dir" ;;
+  esac
+  # Every source must be a git checkout at its pinned revision: nothing unchecked is built.
+  [ -e "$dir/.git" ] ||
+    die "$name at $dir is not a git checkout, so its revision cannot be checked against $rev."
+  have="$(git -c safe.directory='*' -C "$dir" rev-parse HEAD 2>/dev/null || true)"
+  [ "$have" = "$rev" ] || die "$name at $dir is at '${have:-unknown}', not the pinned $rev."
   echo "$dir"
 }
 vosk_src="$(source_dir vosk "$vosk_src" "$VOSK_REV" https://github.com/alphacep/vosk-api)"
@@ -136,17 +145,26 @@ clapack_src="$(source_dir clapack "$clapack_src" "$CLAPACK_REV" https://github.c
 [ -f "$vosk_src/android/lib/build-vosk.sh" ] || die "$vosk_src is not vosk-api (no android/lib/build-vosk.sh)."
 [ -f "$jna_src/native/Makefile" ] || die "$jna_src is not JNA (no native/Makefile)."
 
-# step <log name> <command...>: runs a long build step into its own log, and shows the end of the
-# log when it fails.
+# step <name> <command...>: runs a long build step into its own log, with `set -e` (a plain
+# command, not an `if` condition, where bash would ignore it), and on failure shows the step, the
+# end of its log and where the whole log is.
 step() {
-  local log="$work/logs/$1.log" start=$SECONDS
+  local name="$1" log="$work/logs/$1.log" start=$SECONDS status
   shift
-  echo "$(date -u +%H:%M:%S) $(basename "$log" .log)..." >&2
-  if ! "$@" >"$log" 2>&1; then
-    tail -n 40 "$log" >&2
-    die "$(basename "$log" .log) failed; the whole log is $log" 1
+  echo "$(date -u +%H:%M:%S) $name..." >&2
+  set +e
+  (
+    set -e
+    "$@"
+  ) >"$log" 2>&1
+  status=$?
+  set -e
+  if [ "$status" -ne 0 ]; then
+    echo "build-native-deps: step $name failed (exit $status); the end of its log:" >&2
+    tail -n 40 "$log" | sed 's/^/  | /' >&2
+    die "step $name failed; the whole log is $log" 1
   fi
-  echo "$(date -u +%H:%M:%S) $(basename "$log" .log) done in $((SECONDS - start)) s" >&2
+  echo "$(date -u +%H:%M:%S) $name done in $((SECONDS - start)) s" >&2
 }
 # elf_machine <so>: the machine an ELF file is built for ("AArch64", "ARM").
 elf_machine() { "$ndk_bin/llvm-readelf" -h "$1" | sed -n 's/^ *Machine: *//p'; }
