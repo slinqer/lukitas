@@ -33,7 +33,10 @@ export interface WambiMoodArt {
   treatment: "none" | "shiver" | "hop";
 }
 
-/** The founder's sheets: 4×2 frames each, 500px cells. Each loop is timed by eye for its mood. */
+/**
+ * The founder's sheets: 4×2 frames each, 500px cells (wave: 800px, re-rendered sharper, as the
+ * landing's hero shows it big). Each loop is timed by eye for its mood.
+ */
 const WAVE: WambiSprite = { src: "/wambi/wave.webp", columns: 4, rows: 2, loopMs: 1200 };
 /** Worried wrings his hands and sweats: slower, so it reads as fretting, not panic. */
 const WORRIED: WambiSprite = { src: "/wambi/worried.webp", columns: 4, rows: 2, loopMs: 2000 };
