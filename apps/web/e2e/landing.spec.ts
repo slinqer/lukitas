@@ -218,6 +218,31 @@ const ROADMAP = {
     intro: "Esto es lo que tenemos planeado. Puede cambiar con el tiempo.",
     columns: [
       {
+        label: "En construcción",
+        items: [
+          "Captura automática de las notificaciones de tu banco",
+          "En F-Droid y Google Play",
+          "Importa desde Buddy y otras apps",
+        ],
+      },
+      {
+        label: "Próximo",
+        items: [
+          "App para iPhone",
+          "Cifrado de punta a punta",
+          "Conecta tu IA en un clic",
+          "Apoya a Wambito",
+        ],
+      },
+      {
+        label: "Más adelante",
+        items: [
+          "Sin servidor central",
+          "Anota por WhatsApp",
+          "Tu resumen del mes con IA en tu teléfono",
+        ],
+      },
+      {
         label: "Ya está",
         items: [
           "App web",
@@ -230,27 +255,7 @@ const ROADMAP = {
           "Pagos recurrentes con avisos",
           "En cuatro idiomas",
           "Instálalo en tu propio servidor",
-        ],
-      },
-      {
-        label: "En construcción",
-        items: ["Conecta tu IA", "App para iPhone", "Importa desde Buddy y otras apps"],
-      },
-      {
-        label: "Próximo",
-        items: [
-          "Cifrado de punta a punta",
-          "En F-Droid y Google Play",
-          "Conecta tu IA en un clic",
-          "Apoya a Wambito",
-        ],
-      },
-      {
-        label: "Más adelante",
-        items: [
-          "Captura automática de las alertas de tu banco",
-          "Sin servidor central",
-          "Anota por WhatsApp",
+          "Conecta tu IA",
         ],
       },
     ],
@@ -266,6 +271,31 @@ const ROADMAP = {
     intro: "This is what we have planned. It may change over time.",
     columns: [
       {
+        label: "Being built",
+        items: [
+          "Automatic capture of your bank's notifications",
+          "On F-Droid and Google Play",
+          "Import from Buddy and other apps",
+        ],
+      },
+      {
+        label: "Next",
+        items: [
+          "iPhone app",
+          "End-to-end encryption",
+          "Connect your AI in one click",
+          "Support Wambito",
+        ],
+      },
+      {
+        label: "Later",
+        items: [
+          "No central server",
+          "Log it on WhatsApp",
+          "Your monthly recap with AI on your phone",
+        ],
+      },
+      {
         label: "Live",
         items: [
           "Web app",
@@ -278,27 +308,7 @@ const ROADMAP = {
           "Recurring payments with reminders",
           "In four languages",
           "Run it on your own server",
-        ],
-      },
-      {
-        label: "Being built",
-        items: ["Connect your AI", "iPhone app", "Import from Buddy and other apps"],
-      },
-      {
-        label: "Next",
-        items: [
-          "End-to-end encryption",
-          "On F-Droid and Google Play",
-          "Connect your AI in one click",
-          "Support Wambito",
-        ],
-      },
-      {
-        label: "Later",
-        items: [
-          "Automatic capture of your bank's alerts",
-          "No central server",
-          "Log it on WhatsApp",
+          "Connect your AI",
         ],
       },
     ],
@@ -314,6 +324,31 @@ const ROADMAP = {
     intro: "Questo è quello che abbiamo in programma. Può cambiare nel tempo.",
     columns: [
       {
+        label: "In costruzione",
+        items: [
+          "Cattura automatica delle notifiche della tua banca",
+          "Su F-Droid e Google Play",
+          "Importa da Buddy e da altre app",
+        ],
+      },
+      {
+        label: "Prossimo",
+        items: [
+          "App per iPhone",
+          "Crittografia end-to-end",
+          "Collega la tua IA in un clic",
+          "Sostieni Wambito",
+        ],
+      },
+      {
+        label: "Più avanti",
+        items: [
+          "Senza server centrale",
+          "Annota su WhatsApp",
+          "Il riepilogo del mese con l'IA sul telefono",
+        ],
+      },
+      {
         label: "Fatto",
         items: [
           "App web",
@@ -326,27 +361,7 @@ const ROADMAP = {
           "Pagamenti ricorrenti con avvisi",
           "In quattro lingue",
           "Installalo sul tuo server",
-        ],
-      },
-      {
-        label: "In costruzione",
-        items: ["Collega la tua IA", "App per iPhone", "Importa da Buddy e da altre app"],
-      },
-      {
-        label: "Prossimo",
-        items: [
-          "Crittografia end-to-end",
-          "Su F-Droid e Google Play",
-          "Collega la tua IA in un clic",
-          "Sostieni Wambito",
-        ],
-      },
-      {
-        label: "Più avanti",
-        items: [
-          "Cattura automatica degli avvisi della tua banca",
-          "Senza server centrale",
-          "Annota su WhatsApp",
+          "Collega la tua IA",
         ],
       },
     ],
@@ -362,6 +377,31 @@ const ROADMAP = {
     intro: "Isto é o que temos planeado. Pode mudar com o tempo.",
     columns: [
       {
+        label: "Em construção",
+        items: [
+          "Captura automática das notificações do teu banco",
+          "No F-Droid e no Google Play",
+          "Importa do Buddy e de outras apps",
+        ],
+      },
+      {
+        label: "A seguir",
+        items: [
+          "App para iPhone",
+          "Encriptação ponta a ponta",
+          "Liga a tua IA num clique",
+          "Apoia o Wambito",
+        ],
+      },
+      {
+        label: "Mais à frente",
+        items: [
+          "Sem servidor central",
+          "Regista pelo WhatsApp",
+          "O resumo do mês com IA no teu telemóvel",
+        ],
+      },
+      {
         label: "Já está",
         items: [
           "App web",
@@ -374,27 +414,7 @@ const ROADMAP = {
           "Pagamentos recorrentes com avisos",
           "Em quatro línguas",
           "Instala-o no teu próprio servidor",
-        ],
-      },
-      {
-        label: "Em construção",
-        items: ["Liga a tua IA", "App para iPhone", "Importa do Buddy e de outras apps"],
-      },
-      {
-        label: "A seguir",
-        items: [
-          "Encriptação ponta a ponta",
-          "No F-Droid e no Google Play",
-          "Liga a tua IA num clique",
-          "Apoia o Wambito",
-        ],
-      },
-      {
-        label: "Mais à frente",
-        items: [
-          "Captura automática dos alertas do teu banco",
-          "Sem servidor central",
-          "Regista pelo WhatsApp",
+          "Liga a tua IA",
         ],
       },
     ],

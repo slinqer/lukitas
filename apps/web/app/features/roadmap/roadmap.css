@@ -66,6 +66,67 @@
     padding: 0;
   }
 
+  /* Done is green: the label, and each card's border and icon box. */
+  .lk-landing .lk-roadmap-column.is-done .lk-roadmap-label {
+    color: var(--good);
+  }
+  .lk-roadmap-column.is-done .lk-landing-card {
+    border-color: color-mix(in srgb, var(--good) 80%, var(--stroke));
+    background: color-mix(in srgb, var(--good) 8%, var(--surface-row));
+  }
+  .lk-roadmap-column.is-done .lk-landing-icon {
+    background: color-mix(in srgb, var(--good) 16%, var(--surface-sunken));
+  }
+
+  /*
+   * On a phone a card is one compact row: the icon on the left, the title and its line beside it.
+   * The head's wrapper steps aside (display: contents) so the icon can span both lines.
+   */
+  @media (max-width: 899px) {
+    .lk-roadmap-intro {
+      padding-block: var(--space-3) var(--space-4);
+    }
+    .lk-roadmap-board {
+      gap: var(--space-4);
+    }
+    .lk-roadmap-column,
+    .lk-roadmap-list {
+      gap: var(--space-2);
+    }
+    .lk-landing .lk-roadmap-label {
+      font-size: 19px;
+    }
+    .lk-roadmap .lk-landing-card {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      column-gap: var(--space-3);
+      row-gap: 2px;
+      padding: var(--space-3);
+      border-radius: var(--radius-md);
+    }
+    .lk-roadmap .lk-landing-card-head {
+      display: contents;
+    }
+    .lk-roadmap .lk-landing-icon {
+      grid-row: span 2;
+      align-self: start;
+      width: 36px;
+      height: 36px;
+    }
+    .lk-roadmap .lk-landing-icon.is-glyph {
+      font-size: 20px;
+    }
+    .lk-roadmap .lk-landing-card h3 {
+      font-size: 16px;
+    }
+    .lk-roadmap .lk-landing-card p {
+      grid-column: 2;
+      font-size: 13.5px;
+      line-height: 1.4;
+    }
+  }
+
   @media (min-width: 900px) {
     .lk-landing .lk-roadmap-intro h1 {
       font-size: 56px;
@@ -77,6 +138,25 @@
       grid-template-columns: repeat(var(--lk-columns, 3), minmax(0, 1fr));
       align-items: start;
       gap: var(--space-5);
+    }
+    /*
+     * Each column scrolls on its own, so the whole board fits the screen without scrolling the page.
+     * 18rem is what sits above the lists (header, title, intro, column label) plus the bottom space;
+     * a short screen still gets a usable list.
+     */
+    .lk-roadmap-list {
+      max-height: max(20rem, calc(100dvh - 18rem));
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+      scrollbar-color: var(--stroke) transparent;
+      /* Room for the cards' shadow and the scrollbar, so neither is clipped. */
+      padding: 2px var(--space-2) var(--space-2) 2px;
+      border-radius: var(--radius-md);
+    }
+    .lk-roadmap-list:focus-visible {
+      outline: 2px solid var(--brand);
+      outline-offset: 2px;
     }
   }
 }

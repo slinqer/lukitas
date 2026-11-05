@@ -16,7 +16,8 @@ function Column({ column }: { column: RoadmapColumn }) {
         <span className="lk-roadmap-dot" aria-hidden="true" />
         {t(`status.${column.status}`)}
       </h2>
-      <ul className="lk-roadmap-list">
+      {/* Focusable: on a desktop the list scrolls on its own, and the keyboard must reach it. */}
+      <ul className="lk-roadmap-list" tabIndex={0} aria-labelledby={id}>
         {column.items.map((item) => (
           <RoadmapCard key={item.id} item={item} />
         ))}

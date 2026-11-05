@@ -27,10 +27,10 @@ export const Page: Story = {
     await expect(canvas.getByText(/Puede cambiar con el tiempo/)).toBeVisible();
     const columns = canvas.getAllByRole("heading", { level: 2 });
     await expect(columns.map((heading) => heading.textContent)).toEqual([
-      "Ya está",
       "En construcción",
       "Próximo",
       "Más adelante",
+      "Ya está",
     ]);
     await expect(canvas.getByRole("heading", { name: "Conecta tu IA" })).toBeVisible();
   },
