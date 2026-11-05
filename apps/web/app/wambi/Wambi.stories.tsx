@@ -45,7 +45,7 @@ export const Happy: Story = {
     const style = getComputedStyle(sheet);
     await expect(style.backgroundImage).toContain("/wambi/wave.webp");
     await expect(style.backgroundSize).toBe("400% 200%");
-    await expect(await loads("/wambi/wave.webp")).toEqual({ width: 2000, height: 1000 });
+    await expect(await loads("/wambi/wave.webp")).toEqual({ width: 3200, height: 1600 });
 
     // Columns step 4× per row (600ms) and rows 2× per loop (1.2s): 8 frames of 150ms in reading order.
     await expect(animationNames(wambi)).toEqual(["lk-sprite-x", "lk-sprite-y"]);
@@ -96,7 +96,10 @@ async function expectPlaying(wambi: HTMLElement, src: string, loopMs: number) {
   const sheet = sprite(wambi);
   await expect(getComputedStyle(sheet).backgroundImage).toContain(src);
   await expect(getComputedStyle(sheet).backgroundSize).toBe("400% 200%");
-  await expect(await loads(src)).toEqual({ width: 2000, height: 1000 });
+  // A 4×2 grid of square cells, at least 500px each (the wave sheet's are 800px).
+  const { width, height } = await loads(src);
+  await expect(width).toBe(height * 2);
+  await expect(width).toBeGreaterThanOrEqual(2000);
   await expect(animationNames(wambi)).toEqual(["lk-sprite-x", "lk-sprite-y"]);
   const [x, y] = sheet.getAnimations() as CSSAnimation[];
   await expect(x?.effect?.getComputedTiming().duration).toBe(loopMs / 2);
