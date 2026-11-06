@@ -93,6 +93,31 @@ object CapturePoster : CaptureNotifier {
         refreshSummary(context, manager)
     }
 
+    /** Removes the notifications of [transactionIds] (confirmed in the app), and the summary if one is left alone. */
+    fun dismissAll(context: Context, transactionIds: List<String>) {
+        val manager = context.getSystemService(NotificationManager::class.java) ?: return
+        for (id in transactionIds) manager.cancel(TAG, notificationId(id))
+        refreshSummary(context, manager)
+    }
+
+    /**
+     * [waiting] is every transaction still to review, as the app read it at [before] (epoch ms):
+     * the capture notifications of any other one were answered somewhere else (in the app, on the
+     * web, through an assistant) and go. One posted at or after [before] may be newer than the
+     * list, so it stays. The sign-in notice and the summary are not captures and are left to
+     * [refreshSummary].
+     */
+    fun keepOnly(context: Context, waiting: List<String>, before: Long) {
+        val manager = context.getSystemService(NotificationManager::class.java) ?: return
+        val keep = waiting.map(::notificationId).toSet()
+        for (shown in manager.activeNotifications) {
+            val isCapture = shown.tag == TAG && shown.id >= 0 && shown.notification.group == GROUP &&
+                shown.notification.flags and Notification.FLAG_GROUP_SUMMARY == 0
+            if (isCapture && shown.id !in keep && shown.postTime < before) manager.cancel(TAG, shown.id)
+        }
+        refreshSummary(context, manager)
+    }
+
     /** Posts the group's summary when two or more captures wait, and takes it away otherwise. */
     private fun refreshSummary(context: Context, manager: NotificationManager) {
         val count = manager.activeNotifications.count {

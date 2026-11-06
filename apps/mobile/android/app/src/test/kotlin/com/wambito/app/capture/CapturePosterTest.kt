@@ -104,6 +104,53 @@ class CapturePosterTest {
     }
 
     @Test
+    fun `Wambi signs the notification`() {
+        CapturePoster.show(context, answer("t-1"))
+        val shown = children().single().notification
+        assertEquals("Wambi", shown.extras.getString(Notification.EXTRA_TITLE))
+    }
+
+    @Test
+    fun `dismissing several takes each one away, and the summary with them`() {
+        CapturePoster.show(context, answer("t-1"))
+        CapturePoster.show(context, answer("t-2", "Café"))
+        CapturePoster.show(context, answer("t-3", "Pan"))
+
+        CapturePoster.dismissAll(context, listOf("t-1", "t-3", "unknown"))
+
+        assertEquals(listOf(CapturePoster.notificationId("t-2")), active().map { it.id })
+    }
+
+    @Test
+    fun `keepOnly takes away the captures no longer waiting, posted before the list was read`() {
+        CapturePoster.show(context, answer("t-1"))
+        CapturePoster.show(context, answer("t-2", "Café"))
+        CapturePoster.show(context, answer("t-3", "Pan"))
+
+        CapturePoster.keepOnly(context, listOf("t-2"), before = Long.MAX_VALUE)
+
+        assertEquals(listOf(CapturePoster.notificationId("t-2")), active().map { it.id })
+    }
+
+    @Test
+    fun `keepOnly leaves a capture posted after the list was read`() {
+        CapturePoster.show(context, answer("t-1"))
+
+        CapturePoster.keepOnly(context, emptyList(), before = 0)
+
+        assertEquals(listOf(CapturePoster.notificationId("t-1")), children().map { it.id })
+    }
+
+    @Test
+    fun `keepOnly leaves the sign-in notice`() {
+        CapturePoster.signInNeeded(context, 1)
+
+        CapturePoster.keepOnly(context, emptyList(), before = Long.MAX_VALUE)
+
+        assertEquals(1, manager.activeNotifications.size)
+    }
+
+    @Test
     fun `the sign-in notice says how many wait and opens the app`() {
         CapturePoster.signInNeeded(context, 2)
         val posted = manager.activeNotifications.single().notification
