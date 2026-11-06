@@ -412,6 +412,11 @@
       "license": "Apache-2.0"
     },
     {
+      "id": "com.k2fsa.sherpa.onnx:sherpa-onnx",
+      "version": "2.0.1",
+      "license": "Apache-2.0"
+    },
+    {
       "id": "net.java.dev.jna:jna",
       "version": "5.18.1",
       "license": "Apache-2.0 OR LGPL-2.1-or-later"

@@ -47,6 +47,24 @@ else
   fail "right file was not installed"
 fi
 
+# 2b. The POM declares the licence (Apache-2.0), as the library's own POMs do, so
+# scripts/gen-android-licenses.dart can list it.
+if grep -q '<license>' "$ART/sherpa-onnx-2.0.1.pom" &&
+  grep -q '<name>Apache License, Version 2.0</name>' "$ART/sherpa-onnx-2.0.1.pom"; then
+  pass "the POM declares the Apache-2.0 licence"
+else
+  fail "the POM names no licence"
+fi
+
+# 2c. A POM installed before it declared a licence is rewritten, not trusted.
+sed -i.bak '/<licenses>/,/<\/licenses>/d' "$ART/sherpa-onnx-2.0.1.pom"
+rm -f "$ART/sherpa-onnx-2.0.1.pom.bak"
+if "$FETCH" --from "$WORK/good.aar" --m2 "$M2" >/dev/null 2>&1 && grep -q '<license>' "$ART/sherpa-onnx-2.0.1.pom"; then
+  pass "a POM without a licence is rewritten"
+else
+  fail "licence-less POM kept"
+fi
+
 # 3. Idempotent: a second run leaves the files alone.
 before="$(shasum -a 256 "$ART"/* | shasum -a 256)"
 if "$FETCH" --from "$WORK/good.aar" --m2 "$M2" >/dev/null 2>&1 && [ "$before" = "$(shasum -a 256 "$ART"/* | shasum -a 256)" ]; then

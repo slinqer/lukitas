@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Downloads sherpa-onnx's Android AAR (Apache-2.0, k2-fsa's GitHub release; it is not on Maven
 # Central) and installs it in the local Maven repository android/third_party/m2 (git-ignored) as
-# com.k2fsa.sherpa.onnx:sherpa-onnx:2.0.1, an .aar and a minimal .pom, where android/app/build.gradle.kts
+# com.k2fsa.sherpa.onnx:sherpa-onnx:2.0.1, an .aar and a minimal .pom (declaring Apache-2.0, for About's
+# licence list: scripts/gen-android-licenses.dart), where android/app/build.gradle.kts
 # looks for it. The AAR carries the Kotlin API and the native libraries (onnxruntime inside) of the
 # precise voice model (Canary). The F-Droid build does not take it (docs/mobile/fdroid.md).
 #
@@ -40,7 +41,7 @@ sha256_of() { if command -v sha256sum >/dev/null; then sha256sum "$1" | cut -d' 
 size_of() { wc -c <"$1" | tr -d ' '; }
 matches() { [ "$(size_of "$1")" = "$SIZE" ] && [ "$(sha256_of "$1")" = "$SHA256" ]; }
 
-if [ -f "$AAR" ] && [ -s "$POM" ] && matches "$AAR"; then
+if [ -f "$AAR" ] && [ -s "$POM" ] && grep -q '<license>' "$POM" && matches "$AAR"; then
   echo "sherpa-onnx $VERSION is already in $M2."
   exit 0
 fi
@@ -70,6 +71,12 @@ cat >"$POM.part" <<POMXML
   <artifactId>sherpa-onnx</artifactId>
   <version>$VERSION</version>
   <packaging>aar</packaging>
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
 </project>
 POMXML
 mv "$AAR.part" "$AAR"
