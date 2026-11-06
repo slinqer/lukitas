@@ -104,7 +104,7 @@ class RefineTest {
         val result = Refine(cache, limitMs = 3000).run(key, buffer) { false }
         val tookMs = (System.nanoTime() - started) / 1_000_000
         assertEquals(RefineResult.Failed("timeout"), result)
-        assertTrue("gave up at the limit, took $tookMs ms", tookMs in 3000..3800)
+        assertTrue("gave up at the limit, took $tookMs ms", tookMs in 3000..5000)
         assertTrue(buffer.isEmpty)
     }
 

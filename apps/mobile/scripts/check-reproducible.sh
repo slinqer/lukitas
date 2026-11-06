@@ -51,6 +51,10 @@ fi
 # build_in <mobile dir> <name>: a clean unsigned build there, its APKs copied to <out>/<name>.
 build_in() {
   local dir="$1" name="$2" abi
+  # The default build takes the sherpa-onnx AAR from the git-ignored android/third_party/m2, which
+  # a fresh clone does not have (idempotent).
+  "$dir/scripts/fetch-sherpa-onnx.sh" >/dev/null 2>&1 \
+    || { echo "build $name failed: scripts/fetch-sherpa-onnx.sh could not install the sherpa-onnx AAR" >&2; exit 2; }
   (
     cd "$dir"
     flutter clean >/dev/null 2>&1
