@@ -484,6 +484,38 @@ void main() {
       expect(env.engine.listens, 2);
     });
 
+    testWidgets('canary already installed: the offer is vosk\'s size and downloads only vosk', (
+      tester,
+    ) async {
+      // e.g. es Vosk and Canary, the app switched to a language whose Vosk is missing.
+      final env = await _pump(tester, failure: noModel, eligible: true);
+      env.precise.installed = true;
+      await _open(tester);
+      expect(find.text('DESCARGAR ${(voskMb / 1e6).round()} MB'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('capture.offer.download')));
+      await tester.pumpAndSettle();
+      expect(env.log, [voiceModels['es']!.name]);
+      expect(env.precise.downloads, 0);
+    });
+
+    testWidgets('a recorded "no" to the precise model: the joint offer is vosk only', (
+      tester,
+    ) async {
+      final env = await _pump(
+        tester,
+        failure: noModel,
+        eligible: true,
+        offerFlag: FakeFlagStore(false),
+      );
+      await _open(tester);
+      expect(find.text('DESCARGAR ${(voskMb / 1e6).round()} MB'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('capture.offer.download')));
+      await tester.pumpAndSettle();
+      expect(env.log, [voiceModels['es']!.name]);
+      expect(env.precise.downloads, 0);
+      expect(env.offerFlag.value, isFalse, reason: 'the "no" stays');
+    });
+
     testWidgets('one progress bar runs over both downloads', (tester) async {
       final env = await _pump(tester, failure: noModel, eligible: true);
       env.precise.gate = Completer<void>();

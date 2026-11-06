@@ -53,7 +53,7 @@ class CaptureOfferBody extends StatelessWidget {
     final model = session.model;
     if (model == null) return const SizedBox.shrink();
     // On a phone that gets the precise model, the one size shown is both downloads'.
-    final megabytes = ((model.bytes + (session.preciseModel?.bytes ?? 0)) / 1e6).round();
+    final megabytes = ((model.bytes + (session.jointPreciseModel?.bytes ?? 0)) / 1e6).round();
     final failure = session.downloadFailure;
     return _VoiceCard(
       outline: failure == null ? null : colors.over,
@@ -88,8 +88,8 @@ class CaptureOfferActions extends StatelessWidget {
   Widget build(BuildContext context) {
     final session = CaptureSession.of(context);
     final l10n = session.l10n;
-    final megabytes = (((session.model?.bytes ?? 0) + (session.preciseModel?.bytes ?? 0)) / 1e6)
-        .round();
+    final megabytes =
+        (((session.model?.bytes ?? 0) + (session.jointPreciseModel?.bytes ?? 0)) / 1e6).round();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: WambitoTokens.space1,

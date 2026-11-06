@@ -120,6 +120,7 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
 
   /// This phone and language get the precise model (Canary): the offer adds its size.
   var _eligible = false;
+  var _joint = false;
   ModelDownloadFailure? downloadFailure;
 
   CapturePreview? preview;
@@ -214,6 +215,10 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
   VoiceModel? get preciseModel =>
       _eligible ? ref.read(preciseModelStoreProvider).modelFor(locale) : null;
 
+  /// The precise model the opt-in download adds to Vosk's: [preciseModel] unless it is installed
+  /// already or the person said no (or switched it off). Its size is the one the offer shows.
+  VoiceModel? get jointPreciseModel => _joint ? preciseModel : null;
+
   void cancelDownload() => _download?.cancel();
 
   void _set(VoidCallback change) {
@@ -268,6 +273,8 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
     ).wait;
     if (!mounted) return;
     _eligible = eligible;
+    _joint = eligible && await ref.read(preciseOfferProvider(locale)).wantsWithVosk();
+    if (!mounted) return;
     canListen = available && hasVoice;
     _warm = canListen && warm;
     if (!widget.listen) {
@@ -413,7 +420,7 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
   /// cancelled), the person listens with Vosk now and is offered the other once more later.
   Future<void> downloadModel() async {
     final voskBytes = model?.bytes ?? 0;
-    final canary = preciseModel;
+    final canary = jointPreciseModel;
     final cancel = _beginDownload(voskBytes + (canary?.bytes ?? 0));
     try {
       await ref

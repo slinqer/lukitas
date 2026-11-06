@@ -41,6 +41,18 @@ class PreciseOffer {
     }
   }
 
+  /// Whether the first-use download of Vosk also fetches the precise model: the phone gets it, it
+  /// is not installed for [locale] already, and the person has not said no (or switched it off).
+  Future<bool> wantsWithVosk() async {
+    try {
+      if (!await eligible()) return false;
+      if (await precise.installedPath(locale) != null) return false;
+      return await store.read() != false;
+    } on Object {
+      return false;
+    }
+  }
+
   /// Remembers the answer: [accepted] true once the precise model is installed, false for "Ahora no".
   Future<void> answer({required bool accepted}) async {
     try {
