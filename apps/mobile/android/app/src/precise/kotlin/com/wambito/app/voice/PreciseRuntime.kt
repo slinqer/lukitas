@@ -1,6 +1,7 @@
 package com.wambito.app.voice
 
 import com.k2fsa.sherpa.onnx.OfflineRecognizerConfig
+import java.io.File
 
 /**
  * Whether the precise voice model's runtime (sherpa-onnx) is in this build. True here: this file is
@@ -10,7 +11,13 @@ import com.k2fsa.sherpa.onnx.OfflineRecognizerConfig
 object PreciseRuntime {
     val linked: Boolean = OfflineRecognizerConfig::class.java.name.isNotEmpty()
 
-    /** Loads Canary from the model folder [path] for [language] ([PreciseModels.cache]'s opener). */
+    /**
+     * Loads the model in the folder [path] for [language] ([PreciseModels.cache]'s opener): Parakeet
+     * when it has a joiner ([PreciseModels.kindOf]), Canary otherwise.
+     */
     fun open(path: String, language: String, threads: Int): PreciseRecognizer =
-        CanaryRecognizer(path, language, threads)
+        when (PreciseModels.kindOf(File(path))) {
+            PreciseKind.PARAKEET -> ParakeetRecognizer(path, threads)
+            PreciseKind.CANARY -> CanaryRecognizer(path, language, threads)
+        }
 }

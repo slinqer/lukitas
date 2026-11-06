@@ -24,6 +24,7 @@ class VoiceModel {
     required this.bytes,
     required this.unzippedBytes,
     required this.sha256,
+    this.minRamBytes,
   });
 
   /// `es`, `en`, `it` or `pt`.
@@ -40,6 +41,10 @@ class VoiceModel {
 
   /// The zip's SHA-256, lowercase hex: of the official file, published unchanged.
   final String sha256;
+
+  /// A precise model's own RAM floor, asked of the phone (`deviceQualifies`); null is the
+  /// platform's default (3 GB).
+  final int? minRamBytes;
 
   String get fileName => '$name.zip';
 }
@@ -78,7 +83,8 @@ const voiceModels = {
   ),
 };
 
-/// Where the precise model is downloaded from: the second release, with the Canary zip.
+/// Where the precise models are downloaded from: the second release, with the Canary and Parakeet
+/// zips.
 final preciseModelsReleaseUrl = Uri.parse(
   'https://github.com/slinqer/wambito/releases/download/voice-models-v2',
 );
@@ -93,8 +99,21 @@ const _canary = VoiceModel(
   sha256: '65bf6fb27f22c506b217d1847c2a61ad0d8a734eed6a6842d4e735dfed10776b',
 );
 
-/// The precise model by language: only Spanish and English (Italian and Portuguese have none).
-const preciseModels = {'es': _canary, 'en': _canary};
+/// NVIDIA Parakeet TDT 0.6B v3 int8 (CC-BY-4.0), the precise model for Italian and Portuguese: one
+/// zip for both, about three times Canary's size, so only on phones sold with 6 GB of RAM or more
+/// (about 5.5 GiB reported; the floor is 5 GiB).
+const _parakeet = VoiceModel(
+  locale: 'it',
+  name: 'sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8',
+  bytes: 477666406,
+  unzippedBytes: 670478772,
+  sha256: 'f7f4d4f9a04ef10d77a99eb9ad3c1a616393c031cbf0232febfac51dc3bd937d',
+  minRamBytes: 5 * 1024 * 1024 * 1024,
+);
+
+/// The precise model by language: Canary for Spanish and English, Parakeet for Italian and
+/// Portuguese.
+const preciseModels = {'es': _canary, 'en': _canary, 'it': _parakeet, 'pt': _parakeet};
 
 /// A download that did not end with a model ready to use.
 class ModelDownloadFailure implements Exception {
@@ -351,13 +370,14 @@ final preciseModelStoreProvider = Provider<ModelStore>(
 );
 
 /// Whether the precise model is offered for [locale] (a `voiceLocale`): the phone qualifies (arm64,
-/// enough RAM, sherpa-onnx linked) and the language is `es` or `en`.
+/// enough RAM for that language's model, sherpa-onnx linked) and the language has one.
 final preciseEligibleProvider = FutureProvider.family<bool, String>((ref, locale) async {
-  if (!preciseModels.containsKey(locale)) return false;
+  final model = preciseModels[locale];
+  if (model == null) return false;
   // A channel that never answers must not hold the capture sheet: no answer means not eligible.
   return ref
       .watch(voiceChannelProvider)
-      .deviceQualifies()
+      .deviceQualifies(minRamBytes: model.minRamBytes)
       .timeout(
         const Duration(seconds: 2),
         onTimeout: () {

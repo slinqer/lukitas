@@ -108,9 +108,9 @@ abstract interface class VoicePlatform implements ModelFiles {
   /// Whether Vosk's native library loads on this phone.
   Future<bool> supported();
 
-  /// Whether this phone can run the precise model: arm64, at least 3 GB of RAM, not low-RAM, and
-  /// sherpa-onnx linked.
-  Future<bool> deviceQualifies();
+  /// Whether this phone can run the precise model: arm64, at least 3 GB of RAM (or [minRamBytes],
+  /// a bigger model's floor), not low-RAM, and sherpa-onnx linked.
+  Future<bool> deviceQualifies({int? minRamBytes});
 
   /// Asks for the microphone when it has not been granted yet; true when granted.
   Future<bool> requestPermission();
@@ -157,9 +157,10 @@ class VoiceChannel implements VoicePlatform {
   }
 
   @override
-  Future<bool> deviceQualifies() async {
+  Future<bool> deviceQualifies({int? minRamBytes}) async {
     try {
-      return await _methods.invokeMethod<bool>('deviceQualifies') ?? false;
+      return await _methods.invokeMethod<bool>('deviceQualifies', {'minRamBytes': ?minRamBytes}) ??
+          false;
     } on PlatformException {
       return false;
     } on MissingPluginException {

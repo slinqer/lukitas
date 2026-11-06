@@ -34,7 +34,8 @@ import java.util.concurrent.Executors
  * the final one: the grammar recognizer hits endpoints mid-sentence. Dart merges the two.
  *
  * Methods: `supported` → Boolean (the native library loads); `requestPermission` → Boolean;
- * `deviceQualifies` → Boolean (this build and phone can run the precise model, [PreciseModels]);
+ * `deviceQualifies({minRamBytes?})` → Boolean (this build and phone, with at least that RAM, can run
+ * the precise model, [PreciseModels]);
  * `warmUp({modelPath, precisePath?, language?})` → Boolean (loads Vosk's model, and the precise one
  * for that language when `precisePath` is given and the phone qualifies, in the background, keeps
  * them while the process lives; never records; true once all asked for are loaded);
@@ -119,7 +120,8 @@ class VoiceChannel(private val activity: Activity, messenger: BinaryMessenger) :
             }
             "requestPermission" -> requestPermission(result)
             "deviceQualifies" -> files.execute {
-                val ok = PreciseModels.available(activity)
+                val minRam = call.argument<Number>("minRamBytes")?.toLong() ?: PreciseModels.MIN_RAM
+                val ok = PreciseModels.available(activity, minRam)
                 main.post { result.success(ok) }
             }
             "warmUp" -> {

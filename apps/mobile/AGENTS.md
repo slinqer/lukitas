@@ -69,12 +69,13 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
   for another tap), "Cambiar" opens `wambito://review/<id>` through the launch alias. Words in
   `CaptureText` (strings `capture_*`, language from `NoticeSettings`). Voice: Vosk, never Android's SpeechRecognizer
   (`voice/VoiceChannel.kt`, `wambito/voice` + `wambito/voice/events`; models kept per process by
-  `ModelCache`: `VoiceModels` for Vosk, `PreciseModels` for Canary keyed `path#language`). With
+  `ModelCache`: `VoiceModels` for Vosk, `PreciseModels` for the precise model keyed `path#language`: Canary for es/en, Parakeet for it/pt,
+  told apart by its `joiner.int8.onnx` (`kindOf`)). With
   `precisePath`/`language` in the listen args the recording is kept in memory (`PcmBuffer`, 30 s max,
   never on disk, sent or logged) and `Refine` re-transcribes it on release (waits ≤ 3 s for a loading
   model): events `refining`, then `refined {text}` or `refine_failed {code: timeout|failed}`, between
-  Vosk's `result`s and `done`; methods `deviceQualifies`, `warmUp`/`isWarm` with `precisePath`/
-  `language`, `releaseModels` frees both. `CanaryRecognizer` is in `src/precise` only. Passkeys: androidx.credentials.
+  Vosk's `result`s and `done`; methods `deviceQualifies({minRamBytes?})` (Parakeet asks 5 GiB, else 3), `warmUp`/`isWarm` with `precisePath`/
+  `language`, `releaseModels` frees both. `CanaryRecognizer` and `ParakeetRecognizer` are in `src/precise` only. Passkeys: androidx.credentials.
 
 ## Generated
 
@@ -102,7 +103,7 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
     a dot, so `export` and a bare `NAME=value` prefix do not work) takes
     those artifacts. ARM only, so off for the x86_64 emulator. `scripts/test-native-switch.sh`
     (CI) tests it.
-  - `scripts/package-canary.sh [--check]` builds the precise model's zip for the voice-models-v2 release from sherpa-onnx's archive (not committed; prints its size and SHA-256; publish the zip from one run and pin that hash, `--check` proves reproducibility on one machine).
+  - `scripts/package-canary.sh [--model canary|parakeet] [--check]` builds a precise model's zip for the voice-models-v2 release from sherpa-onnx's archive (not committed; prints its size and SHA-256; publish the zip from one run and pin that hash, `--check` proves reproducibility on one machine).
   - sherpa-onnx 2.0.1 (the precise voice model's runtime; Play and GitHub builds only):
     `scripts/fetch-sherpa-onnx.sh` downloads its AAR, checks the pinned SHA-256 and installs it in
     `android/third_party/m2`; run it before any Gradle or `flutter build` (CI and `release.sh` do).

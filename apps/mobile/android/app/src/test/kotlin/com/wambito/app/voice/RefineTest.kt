@@ -180,4 +180,27 @@ class RefineTest {
         assertEquals(false, PreciseModels.qualifies(true, arrayOf("arm64-v8a"), 3 * gb - 1, false))
         assertEquals(false, PreciseModels.qualifies(true, arrayOf("arm64-v8a"), 8 * gb, true))
     }
+
+    @Test
+    fun `a bigger model asks for its own RAM floor`() {
+        val gb = 1024L * 1024 * 1024
+        val five = PreciseModels.PARAKEET_MIN_RAM
+        assertEquals(5 * gb, five)
+        assertTrue(PreciseModels.qualifies(true, arrayOf("arm64-v8a"), five, false, minRam = five))
+        assertEquals(false, PreciseModels.qualifies(true, arrayOf("arm64-v8a"), five - 1, false, minRam = five))
+        // Never below the 3 GB floor, whatever is asked.
+        assertEquals(false, PreciseModels.qualifies(true, arrayOf("arm64-v8a"), 2 * gb, false, minRam = gb))
+    }
+
+    @Test
+    fun `a folder with a joiner is Parakeet, otherwise Canary`() {
+        val dir = java.nio.file.Files.createTempDirectory("precise").toFile()
+        try {
+            assertEquals(PreciseKind.CANARY, PreciseModels.kindOf(dir))
+            java.io.File(dir, "joiner.int8.onnx").writeText("")
+            assertEquals(PreciseKind.PARAKEET, PreciseModels.kindOf(dir))
+        } finally {
+            dir.deleteRecursively()
+        }
+    }
 }

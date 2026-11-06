@@ -16,8 +16,8 @@ import 'android_libraries.dart';
 ///    OpenBLAS and CLAPACK (with libf2c) in libvosk.so, libffi in libjnidispatch.so;
 ///  * the precise voice model's runtime, sherpa-onnx (an AAR that scripts/fetch-sherpa-onnx.sh
 ///    installs with a POM that declares Apache-2.0, so it is in the Android list too and is
-///    handled here like Vosk), the Canary model (CC BY 4.0, NVIDIA, downloaded like the Vosk
-///    ones), and what the AAR's two native libraries carry: onnxruntime 1.28.2 and what is
+///    handled here like Vosk), the Canary and Parakeet models (CC BY 4.0, NVIDIA, downloaded
+///    like the Vosk ones), and what the AAR's two native libraries carry: onnxruntime 1.28.2 and what is
 ///    linked into it (libonnxruntime.so), and what sherpa-onnx's CMakeLists.txt and cmake/*.cmake
 ///    at v2.0.1 link into libsherpa-onnx-jni.so;
 ///  * the app's own sounds, and the app.
@@ -114,12 +114,15 @@ Stream<LicenseEntry> extraLicenseEntries(AssetBundle bundle, AppLocalizations l1
     ], '${l10n.licenseNoticeLibffi}\n\n${await load(_libffi)}');
   }
   // The precise voice model's runtime is in the build (not in the F-Droid one): sherpa-onnx, the
-  // Canary model it runs, and the libraries inside the AAR's two native libraries.
+  // Canary and Parakeet models it runs, and the libraries inside the AAR's two native libraries.
   final sherpa = find(_sherpa);
   if (sherpa != null) {
     yield LicenseEntryWithLineBreaks([
       'Canary-180M flash, NVIDIA',
     ], '${l10n.licenseNoticeCanary}\n\n${await load(_ccBy)}');
+    yield LicenseEntryWithLineBreaks([
+      'Parakeet TDT 0.6B v3, NVIDIA',
+    ], '${l10n.licenseNoticeParakeet}\n\n${await load(_ccBy)}');
     yield LicenseEntryWithLineBreaks([
       'sherpa-onnx ${sherpa.version}',
     ], '${l10n.licenseNoticeSherpa}\n\n$apache');

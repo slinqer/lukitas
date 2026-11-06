@@ -482,13 +482,24 @@ void main() {
         preciseModelsReleaseUrl.toString(),
         'https://github.com/slinqer/wambito/releases/download/voice-models-v2',
       );
-      expect(preciseModels.keys, unorderedEquals(['es', 'en']));
+      expect(preciseModels.keys, unorderedEquals(['es', 'en', 'it', 'pt']));
       final model = preciseModels['es']!;
       expect(identical(model, preciseModels['en']), isTrue);
       expect(model.name, 'sherpa-onnx-nemo-canary-180m-flash-en-es-de-fr-int8');
       expect(model.bytes, 150137764);
       expect(model.unzippedBytes, 207170046);
       expect(model.sha256, '65bf6fb27f22c506b217d1847c2a61ad0d8a734eed6a6842d4e735dfed10776b');
+      expect(model.minRamBytes, isNull);
+    });
+
+    test('it and pt share one parakeet zip from the same release, for 5 GiB phones', () {
+      final model = preciseModels['it']!;
+      expect(identical(model, preciseModels['pt']), isTrue);
+      expect(model.name, 'sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8');
+      expect(model.bytes, 477666406);
+      expect(model.unzippedBytes, 670478772);
+      expect(model.sha256, 'f7f4d4f9a04ef10d77a99eb9ad3c1a616393c031cbf0232febfac51dc3bd937d');
+      expect(model.minRamBytes, 5 * 1024 * 1024 * 1024);
     });
 
     test('en and es share one precise download', () async {
@@ -522,18 +533,24 @@ void main() {
       expect(part.existsSync(), isFalse);
     });
 
-    test('no precise model for it or pt', () {
+    test('a precise model for all four languages', () {
       final s = ModelStore(files: files, http: Dio(), models: preciseModels);
-      expect(s.hasModel('it'), isFalse);
-      expect(s.hasModel('pt'), isFalse);
-      expect(s.hasModel('es'), isTrue);
-      expect(s.hasModel('en'), isTrue);
+      for (final locale in ['es', 'en', 'it', 'pt']) {
+        expect(s.hasModel(locale), isTrue, reason: locale);
+      }
+      expect(s.hasModel('fr'), isFalse);
     });
 
     group('preciseEligibleProvider', () {
-      Future<bool> eligible(String locale, {required bool qualifies}) async {
+      Future<bool> eligible(
+        String locale, {
+        required bool qualifies,
+        _QualifyingPlatform? platform,
+      }) async {
         final container = ProviderContainer(
-          overrides: [voiceChannelProvider.overrideWithValue(_QualifyingPlatform(qualifies))],
+          overrides: [
+            voiceChannelProvider.overrideWithValue(platform ?? _QualifyingPlatform(qualifies)),
+          ],
         );
         addTearDown(container.dispose);
         return container.read(preciseEligibleProvider(locale).future);
@@ -543,11 +560,18 @@ void main() {
         expect(await eligible('es', qualifies: false), isFalse);
       });
 
-      test('is true for es and en on a device that qualifies, false for it and pt', () async {
-        expect(await eligible('es', qualifies: true), isTrue);
-        expect(await eligible('en', qualifies: true), isTrue);
-        expect(await eligible('it', qualifies: true), isFalse);
-        expect(await eligible('pt', qualifies: true), isFalse);
+      test('is true for the four languages on a device that qualifies, false for others', () async {
+        for (final locale in ['es', 'en', 'it', 'pt']) {
+          expect(await eligible(locale, qualifies: true), isTrue, reason: locale);
+        }
+        expect(await eligible('fr', qualifies: true), isFalse);
+      });
+
+      test("asks the phone for the model's RAM floor: parakeet's for it and pt", () async {
+        final platform = _QualifyingPlatform(true);
+        await eligible('it', qualifies: true, platform: platform);
+        await eligible('es', qualifies: true, platform: platform);
+        expect(platform.asked, [5 * 1024 * 1024 * 1024, null]);
       });
 
       test('a timed-out answer is not kept: the next read asks again', () async {
@@ -569,9 +593,13 @@ class _QualifyingPlatform implements VoicePlatform {
   _QualifyingPlatform(this.qualifies);
 
   final bool qualifies;
+  final asked = <int?>[];
 
   @override
-  Future<bool> deviceQualifies() async => qualifies;
+  Future<bool> deviceQualifies({int? minRamBytes}) async {
+    asked.add(minRamBytes);
+    return qualifies;
+  }
 
   @override
   dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError('$invocation');
@@ -581,7 +609,7 @@ class _SlowThenQualifyingPlatform implements VoicePlatform {
   var asked = 0;
 
   @override
-  Future<bool> deviceQualifies() {
+  Future<bool> deviceQualifies({int? minRamBytes}) {
     asked++;
     // The first answer never comes (the 2 s timeout answers false); the second is immediate.
     return asked == 1 ? Completer<bool>().future : Future.value(true);

@@ -211,6 +211,26 @@ void main() {
       }
     });
 
+    test('Parakeet is credited to NVIDIA under CC BY 4.0, with the attribution line', () async {
+      for (final language in ['es', 'en', 'it', 'pt']) {
+        final entry = (await _extras(language))
+            .singleWhere((e) => e.packages.contains('Parakeet TDT 0.6B v3, NVIDIA'));
+        expect(entry.packages, ['Parakeet TDT 0.6B v3, NVIDIA']);
+        expect(
+          _text(entry),
+          contains(
+            'Parakeet TDT 0.6B v3 by NVIDIA, CC BY 4.0, converted to ONNX by the sherpa-onnx project',
+          ),
+          reason: language,
+        );
+        expect(
+          _text(entry),
+          contains('Creative Commons Attribution 4.0 International Public License'),
+          reason: language,
+        );
+      }
+    });
+
     test('sherpa-onnx is listed with the version of the build, under Apache-2.0', () async {
       final libraries = await _libraries();
       final sherpa = libraries.singleWhere((l) => l.id == 'com.k2fsa.sherpa.onnx:sherpa-onnx');
@@ -311,6 +331,7 @@ void main() {
         'CLAPACK 3.2.1',
         'libffi 3.4.4',
         'Canary-180M flash, NVIDIA',
+        'Parakeet TDT 0.6B v3, NVIDIA',
         'sherpa-onnx 2.0.1',
         'onnxruntime 1.28.2',
         'Fredoka',
