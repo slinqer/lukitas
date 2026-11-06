@@ -6,7 +6,9 @@ import 'package:flutter/rendering.dart' show RenderAbstractViewport;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../add/add_repository.dart' show TransactionPatch;
 import '../add/add_sheet.dart';
+import '../add/save_outcome.dart' show deleteUnsent, uploadedRow;
 import '../api/gen/wambito_api.dart';
 import '../budgets/category_detail_screen.dart' show detailFromCategories;
 import '../budgets/categories_tab.dart';
@@ -243,6 +245,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   Future<void> _delete(Transaction tx) async {
     final toasts = ToastHost.of(context);
     final l10n = AppLocalizations.of(context);
+    if (isUnsent(tx)) {
+      final uploaded = await deleteUnsent(
+        container: ProviderScope.containerOf(context),
+        toasts: toasts,
+        l10n: l10n,
+        transaction: tx,
+      );
+      if (uploaded == null || !mounted) return;
+      tx = uploaded;
+    }
     // At the gesture, not at the server's answer: the row is already gone (the web does the same).
     ref.read(feedbackProvider)(FeedbackEvent.deleted);
     try {
@@ -276,6 +288,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     final toasts = ToastHost.of(context);
     final l10n = AppLocalizations.of(context);
     final data = ref.read(homeProvider).data;
+    if (isUnsent(tx)) {
+      final container = ProviderScope.containerOf(context);
+      final queue = ref.read(pendingSavesProvider.notifier);
+      if (await queue.edit(tx.id, const TransactionPatch(pending: false))) {
+        if (mounted) ref.read(feedbackProvider)(FeedbackEvent.paid);
+        if (data != null) {
+          toasts.say(
+            l10n.transactionPaid(tx.name, formatMoney(tx.amount, data.currency, l10n.localeName)),
+          );
+        }
+        return;
+      }
+      // It went up meanwhile: the server's row is paid.
+      final uploaded = uploadedRow(container, tx);
+      if (uploaded == null) {
+        toasts.say(l10n.errorGeneric, error: true);
+        throw const HomeFailure(500);
+      }
+      tx = uploaded;
+    }
     try {
       await _controller.markPaid(tx);
     } on HomeFailure catch (failure) {
@@ -754,21 +786,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   }
 
   Widget _row(HomeState home, HomeData data, Transaction tx, AppLocalizations l10n) {
-    // Not on the server yet: nothing to delete, edit or pay there. A tap says why.
-    if (isUnsent(tx)) {
-      return Padding(
-        key: ValueKey(tx.id),
-        padding: const EdgeInsets.only(bottom: WambitoTokens.space2),
-        child: _txRow(
-          data,
-          tx,
-          false,
-          (_) => ToastHost.of(context).say(l10n.unsentRowTap),
-          null,
-          unsent: true,
-        ),
-      );
-    }
+    // A row not on the server yet is edited, deleted and paid like any other: the change waits with
+    // it, on the phone, and goes up after it.
     final pending = tx.status == TransactionStatusEnum.pending;
     final onEdit = widget.onEdit ?? (Transaction tx) => unawaited(openEditSheet(context, tx));
     return SwipeRow(
@@ -792,6 +811,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         home.paidHere.contains(tx.id),
         onEdit,
         () => _pay(tx),
+        unsent: isUnsent(tx),
         reviewMark: reviewMarkOf(l10n, tx),
       ),
     );

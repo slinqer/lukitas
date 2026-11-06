@@ -69,6 +69,47 @@ class TransactionPatch {
     if (setNote) 'note': note,
     if (confirm) 'needsReview': false,
   };
+
+  /// The patch [toJson] wrote.
+  static TransactionPatch fromJson(Map<String, Object?> json) => TransactionPatch(
+    name: json['name'] as String?,
+    amount: json['amount'] as int?,
+    categoryId: json['categoryId'] as String?,
+    date: json['date'] as String?,
+    pending: switch (json['status']) {
+      'pending' => true,
+      'paid' => false,
+      _ => null,
+    },
+    setNote: json.containsKey('note'),
+    note: json['note'] as String?,
+    confirm: json['needsReview'] == false,
+  );
+
+  /// This patch followed by [later]: each field [later] sets wins.
+  TransactionPatch then(TransactionPatch later) => TransactionPatch(
+    name: later.name ?? name,
+    amount: later.amount ?? amount,
+    categoryId: later.categoryId ?? categoryId,
+    date: later.date ?? date,
+    pending: later.pending ?? pending,
+    setNote: setNote || later.setNote,
+    note: later.setNote ? later.note : note,
+    confirm: confirm || later.confirm,
+  );
+
+  /// [tx] as it is once this patch is applied.
+  Transaction applyTo(Transaction tx) => tx.rebuild((b) {
+    if (name != null) b.name = name;
+    if (amount != null) b.amount = amount;
+    if (categoryId != null) b.categoryId = categoryId;
+    if (date != null) b.date = date;
+    if (pending != null) {
+      b.status = pending! ? TransactionStatusEnum.pending : TransactionStatusEnum.paid;
+    }
+    if (setNote) b.note = note;
+    if (confirm) b.needsReview = false;
+  });
 }
 
 /// What the add sheet reads and writes on the server (apps/web/app/api/queries.ts, the create,

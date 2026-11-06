@@ -233,6 +233,21 @@ class AddSheetState extends ConsumerState<AddSheet> {
       navigator.pop();
       return;
     }
+    // Not on the server yet: the edit waits with it, and the row shows it at once.
+    var editingId = editing?.id;
+    if (editing != null && isUnsent(editing)) {
+      if (await container.read(pendingSavesProvider.notifier).edit(editing.id, patch!)) {
+        if (mounted) navigator.pop();
+        toasts.say(words.addUpdated(patch.applyTo(editing).name));
+        return;
+      }
+      // It went up meanwhile: the edit goes to the server's row.
+      editingId = uploadedRow(container, editing)?.id;
+      if (editingId == null) {
+        if (mounted) setState(() => failure = const HomeFailure(500));
+        return;
+      }
+    }
     // One key per attempt: made at the first press, the same for Reintentar, new after any edit.
     final input = editing == null ? current.input() : null;
     final key = editing == null ? current.keyForSave() : null;
@@ -244,7 +259,7 @@ class AddSheetState extends ConsumerState<AddSheet> {
     try {
       final Transaction saved = editing == null
           ? await repo.create(input!, idempotencyKey: key!)
-          : await repo.update(editing.id, patch!);
+          : await repo.update(editingId!, patch!);
       final homeController = container.read(homeProvider.notifier);
       if (editing == null) {
         // The feel follows the figures (near or over a limit say so), as on the web.
