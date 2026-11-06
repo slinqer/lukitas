@@ -3427,10 +3427,6 @@
       }
     }
   },
-  "unsentRowTap": "Aún no está en el servidor. Lo subimos cuando vuelva la red.",
-  "@unsentRowTap": {
-    "description": "Home: a tap on a row saved with no network and not uploaded yet."
-  },
   "unsentLabel": "Sin subir",
   "@unsentLabel": {
     "description": "Home: read out on a row not uploaded yet (the cloud with a line through it)."

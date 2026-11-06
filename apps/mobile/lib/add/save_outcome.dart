@@ -9,6 +9,7 @@ import '../home/home_controller.dart';
 import '../home/home_repository.dart';
 import '../l10n/app_localizations.dart';
 import '../money/format.dart';
+import '../offline/pending_saves.dart';
 import '../recurring/recurring_repository.dart';
 import '../review/review_controller.dart';
 import '../ui/toast.dart';
@@ -100,6 +101,16 @@ Future<void> deleteMovement({
   required AppLocalizations l10n,
   required Transaction transaction,
 }) async {
+  if (isUnsent(transaction)) {
+    final uploaded = await deleteUnsent(
+      container: container,
+      toasts: toasts,
+      l10n: l10n,
+      transaction: transaction,
+    );
+    if (uploaded == null) return;
+    transaction = uploaded;
+  }
   final home = container.read(homeProvider.notifier);
   container.read(feedbackProvider)(FeedbackEvent.deleted);
   try {
@@ -129,6 +140,64 @@ Future<void> _bringBack(
     return;
   }
   if (transaction.needsReview) container.invalidate(reviewProvider);
+  container.read(feedbackProvider)(FeedbackEvent.undo);
+  toasts.say(l10n.transactionRestored(transaction.name));
+}
+
+/// The row [transaction] stood for, as the server has it, when it was not uploaded yet but is by
+/// now (the sheet or the swipe started before it went up). Null when the server's id is not known.
+Transaction? uploadedRow(ProviderContainer container, Transaction transaction) {
+  final id = container.read(pendingSavesProvider.notifier).uploadedId(transaction.id);
+  return id == null ? null : transaction.rebuild((b) => b.id = id);
+}
+
+/// Eliminar on a row not uploaded yet: it goes at once, with Deshacer on the toast, and the server
+/// deletes the movement once it has it. When the row went up meanwhile, answers it as the server
+/// has it, for the caller to delete there (null when there is nothing more to do).
+Future<Transaction?> deleteUnsent({
+  required ProviderContainer container,
+  required ToastController toasts,
+  required AppLocalizations l10n,
+  required Transaction transaction,
+}) async {
+  final queue = container.read(pendingSavesProvider.notifier);
+  if (await queue.remove(transaction.id)) {
+    container.read(feedbackProvider)(FeedbackEvent.deleted);
+    toasts.say(
+      l10n.transactionDeleted(transaction.name),
+      actionLabel: l10n.undo,
+      onAction: () => unawaited(_bringBackUnsent(container, toasts, l10n, transaction)),
+    );
+    return null;
+  }
+  final uploaded = uploadedRow(container, transaction);
+  if (uploaded == null) toasts.say(l10n.errorGeneric, error: true);
+  return uploaded;
+}
+
+Future<void> _bringBackUnsent(
+  ProviderContainer container,
+  ToastController toasts,
+  AppLocalizations l10n,
+  Transaction transaction,
+) async {
+  final bool back;
+  try {
+    back = await container.read(pendingSavesProvider.notifier).restore(transaction.id);
+  } on HomeFailure catch (failure) {
+    toasts.say(failure.offline ? l10n.errorNetwork : l10n.errorGeneric, error: true);
+    return;
+  }
+  if (!back) {
+    // It went up, deleted, meanwhile: the server brings it back.
+    final uploaded = uploadedRow(container, transaction);
+    if (uploaded == null) {
+      toasts.say(l10n.errorGeneric, error: true);
+      return;
+    }
+    await _bringBack(container, toasts, l10n, uploaded);
+    return;
+  }
   container.read(feedbackProvider)(FeedbackEvent.undo);
   toasts.say(l10n.transactionRestored(transaction.name));
 }

@@ -53,9 +53,23 @@ Future<void> clearPendingSaves(PendingSavesStore store) async {
   }
 }
 
-/// One save waiting for the network: the movement of the add sheet, or a quick capture's batch.
+/// One save waiting for the network: the movement of the add sheet, or a quick capture's batch,
+/// with what the person changed on its rows since.
+///
+/// The save itself never changes: it goes up with the key and the body of its first try (the
+/// server refuses the same key with another body, and the first try may have reached it). An edit
+/// or a delete made meanwhile is kept apart, per movement, and goes up once the server has the
+/// movement and its id.
 class PendingSave {
-  const PendingSave({required this.key, required this.items, required this.batch});
+  const PendingSave({
+    required this.key,
+    required this.items,
+    required this.batch,
+    this.edits = const {},
+    this.deleted = const {},
+    this.ids,
+    this.gone = const {},
+  });
 
   /// The Idempotency-Key of the first try: every retry sends it again.
   final String key;
@@ -66,30 +80,70 @@ class PendingSave {
   /// A quick capture's batch (`POST /v1/transactions/batch`), or one movement.
   final bool batch;
 
+  /// The changes to item `index` not on the server yet, all of them in one patch.
+  final Map<int, TransactionPatch> edits;
+
+  /// The items the person deleted: hidden at once, deleted on the server once it has them.
+  final Set<int> deleted;
+
+  /// The server's ids of the items, once the save is up (null before).
+  final List<String>? ids;
+
+  /// The [deleted] items the server has deleted too.
+  final Set<int> gone;
+
   /// The id of the row that stands for item [index] on home until the server has it.
   String rowId(int index) => '$unsentPrefix$key-$index';
 
-  /// The rows home shows for this save: what was typed, with no id from the server yet.
+  /// The item [rowId] stands for, or null when it is another save's.
+  int? indexOf(String rowId) {
+    final prefix = '$unsentPrefix$key-';
+    if (!rowId.startsWith(prefix)) return null;
+    final index = int.tryParse(rowId.substring(prefix.length));
+    return index != null && index >= 0 && index < items.length ? index : null;
+  }
+
+  /// The rows home shows for this save: what was typed, edited as the person edited it, with no id
+  /// from the server yet. A deleted item has none.
   List<Transaction> rows(String currency) => [
     for (final (i, item) in items.indexed)
-      Transaction(
-        (b) => b
-          ..id = rowId(i)
-          ..name = item.name
-          ..amount = item.amount
-          ..currency = currency
-          ..date = item.date
-          ..status = item.status == CreateTransactionStatusEnum.pending
-              ? TransactionStatusEnum.pending
-              : TransactionStatusEnum.paid
-          ..note = item.note
-          ..categoryId = item.categoryId
-          ..needsReview = false
-          ..source_ = TransactionSource_Enum.app
-          ..createdAt = ''
-          ..updatedAt = '',
-      ),
+      if (!deleted.contains(i)) _edited(i, _row(i, item, currency)),
   ];
+
+  Transaction _edited(int i, Transaction row) => edits[i]?.applyTo(row) ?? row;
+
+  Transaction _row(int i, CreateTransaction item, String currency) => Transaction(
+    (b) => b
+      ..id = rowId(i)
+      ..name = item.name
+      ..amount = item.amount
+      ..currency = currency
+      ..date = item.date
+      ..status = item.status == CreateTransactionStatusEnum.pending
+          ? TransactionStatusEnum.pending
+          : TransactionStatusEnum.paid
+      ..note = item.note
+      ..categoryId = item.categoryId
+      ..needsReview = false
+      ..source_ = TransactionSource_Enum.app
+      ..createdAt = ''
+      ..updatedAt = '',
+  );
+
+  PendingSave copyWith({
+    Map<int, TransactionPatch>? edits,
+    Set<int>? deleted,
+    List<String>? ids,
+    Set<int>? gone,
+  }) => PendingSave(
+    key: key,
+    items: items,
+    batch: batch,
+    edits: edits ?? this.edits,
+    deleted: deleted ?? this.deleted,
+    ids: ids ?? this.ids,
+    gone: gone ?? this.gone,
+  );
 
   Map<String, Object?> toJson() => {
     'key': key,
@@ -98,6 +152,11 @@ class PendingSave {
       for (final item in items)
         standardSerializers.serializeWith(CreateTransaction.serializer, item),
     ],
+    if (edits.isNotEmpty)
+      'edits': {for (final MapEntry(:key, :value) in edits.entries) '$key': value.toJson()},
+    if (deleted.isNotEmpty) 'deleted': deleted.toList()..sort(),
+    'ids': ?ids,
+    if (gone.isNotEmpty) 'gone': gone.toList()..sort(),
   };
 
   static PendingSave fromJson(Map<String, Object?> json) => PendingSave(
@@ -107,6 +166,14 @@ class PendingSave {
       for (final item in json['items']! as List<Object?>)
         standardSerializers.deserializeWith(CreateTransaction.serializer, item)!,
     ],
+    edits: {
+      for (final MapEntry(:key, :value)
+          in ((json['edits'] as Map<String, Object?>?) ?? const {}).entries)
+        int.parse(key): TransactionPatch.fromJson(value! as Map<String, Object?>),
+    },
+    deleted: {...?(json['deleted'] as List<Object?>?)?.cast<int>()},
+    ids: (json['ids'] as List<Object?>?)?.cast<String>(),
+    gone: {...?(json['gone'] as List<Object?>?)?.cast<int>()},
   );
 }
 
@@ -169,16 +236,19 @@ final pendingRetryDelayProvider = Provider<Duration Function(int attempt)>(
 /// first try, so a save that did reach the server the first time gets that answer back instead of
 /// a second row. It tries again when the app starts, whenever home loads, and on a timer while
 /// anything is waiting. A save the server refuses (an archived category, say) is dropped, and home
-/// says which one. Only new movements wait here: an edit, a delete or a payment still needs the
+/// says which one. An edit, a delete or a payment of one of these rows waits with it
+/// ([edit], [remove], [restore]) and goes up after it; one of any other movement still needs the
 /// network.
 ///
 /// The queue of the signed-in session. The document kept on the phone is version 1:
 ///
 /// ```json
-/// {"v": 1, "owner": "<sha-256 of the session token>", "saves": [{"key": "...", "batch": false, "items": [...]}]}
+/// {"v": 1, "owner": "<sha-256 of the session token>", "saves": [{"key": "...", "batch": false, "items": [...],
+///   "edits": {"0": {...}}, "deleted": [1], "ids": ["..."], "gone": [1]}]}
 /// ```
 ///
-/// with the API's own JSON for each movement. Like the home cache it is bound to the session that
+/// with the API's own JSON for each movement and each edit (the PATCH body); `edits`, `deleted`,
+/// `ids` and `gone` are left out when empty or unknown. Like the home cache it is bound to the session that
 /// wrote it, and signing out deletes it.
 class PendingSaves extends Notifier<PendingSavesState> {
   static const version = 1;
@@ -189,6 +259,10 @@ class PendingSaves extends Notifier<PendingSavesState> {
   Timer? _retry;
   var _failures = 0;
   var _noticeId = 0;
+
+  /// The server's ids of the rows that went up on this run, for an edit or a delete that comes
+  /// after (the sheet opened on the row before it went up).
+  final _uploaded = <String, String>{};
 
   /// Changes whenever the queue on screen changes, so a write that lands late never overwrites a
   /// newer one.
@@ -274,47 +348,188 @@ class PendingSaves extends Notifier<PendingSavesState> {
     _retry?.cancel();
     var sent = 0;
     while (_alive && state.saves.isNotEmpty) {
-      final save = state.saves.first;
-      final List<Transaction> saved;
-      try {
-        saved = save.batch
-            ? await ref
-                  .read(captureRepositoryProvider)
-                  .createBatch(save.items, idempotencyKey: save.key)
-            : [
-                await ref
-                    .read(addRepositoryProvider)
-                    .create(save.items.single, idempotencyKey: save.key),
-              ];
-      } on HomeFailure catch (failure) {
-        if (!_alive) return;
-        // A refused session ends it (home signs out); signing out forgets the queue.
-        if (failure.unauthorized) return;
-        if (canRetrySave(failure)) {
-          _failures++;
-          _schedule();
-          _tell(sent);
+      final key = state.saves.first.key;
+      List<Transaction>? created;
+      if (state.saves.first.ids == null) {
+        final save = state.saves.first;
+        try {
+          created = save.batch
+              ? await ref
+                    .read(captureRepositoryProvider)
+                    .createBatch(save.items, idempotencyKey: save.key)
+              : [
+                  await ref
+                      .read(addRepositoryProvider)
+                      .create(save.items.single, idempotencyKey: save.key),
+                ];
+        } on HomeFailure catch (failure) {
+          if (!_alive) return;
+          // A refused session ends it (home signs out); signing out forgets the queue.
+          if (failure.unauthorized) return;
+          if (canRetrySave(failure)) {
+            _retryLater(sent);
+            return;
+          }
+          // Refused for good (the category is gone, say): sending it again says the same.
+          _drop(save);
+          _tell(sent, refused: save.items.first);
+          sent = 0;
+          continue;
+        } on Object {
+          if (!_alive) return;
+          _retryLater(sent);
           return;
         }
-        // Refused for good (the category is gone, say): sending it again says the same.
-        _drop(save);
-        _tell(sent, refused: save.items.first);
-        sent = 0;
-        continue;
-      } on Object {
         if (!_alive) return;
-        _failures++;
-        _schedule();
-        _tell(sent);
+        final ids = [for (final tx in created) tx.id];
+        _change(key, (s) => s.copyWith(ids: ids));
+      }
+      final edited = await _followUp(key);
+      if (edited == null) {
+        if (_alive) _retryLater(sent);
         return;
       }
       if (!_alive) return;
       _failures = 0;
+      final save = _save(key);
+      if (save == null) continue;
+      final ids = save.ids!;
+      final rows = [
+        for (final (i, _) in save.items.indexed)
+          if (!save.deleted.contains(i)) ?(edited[i] ?? created?[i]),
+      ];
+      final gone = [for (final i in save.gone) ids[i]];
+      for (final (i, id) in ids.indexed) {
+        _uploaded[save.rowId(i)] = id;
+      }
       // Home puts the server's rows in before the ones that stood for them go.
-      if (ref.exists(homeProvider)) unawaited(ref.read(homeProvider.notifier).savedBatch(saved));
+      if (ref.exists(homeProvider)) {
+        final home = ref.read(homeProvider.notifier);
+        unawaited(home.savedBatch(rows));
+        if (gone.isNotEmpty) unawaited(home.forget(gone));
+      }
       _drop(save);
-      sent += saved.length;
+      sent += save.items.length - save.deleted.length;
     }
+    _tell(sent);
+  }
+
+  /// Sends what the person changed on the rows of the save [key] once the server has it: the
+  /// deletes, then the edits. Answers the server's rows of the edited items, or null when the
+  /// network failed again (what is left waits for the next try).
+  Future<Map<int, Transaction>?> _followUp(String key) async {
+    final answers = <int, Transaction>{};
+    while (_alive) {
+      final save = _save(key);
+      if (save == null) return answers;
+      final ids = save.ids!;
+      final toDelete = save.deleted.where((i) => !save.gone.contains(i)).firstOrNull;
+      if (toDelete != null) {
+        try {
+          await ref.read(homeRepositoryProvider).delete(ids[toDelete]);
+        } on HomeFailure catch (failure) {
+          if (failure.unauthorized || canRetrySave(failure)) return null;
+          // Refused for good (already gone, say): nothing more to send.
+        } on Object {
+          return null;
+        }
+        _change(key, (s) => s.copyWith(gone: {...s.gone, toDelete}));
+        continue;
+      }
+      final edit = save.edits.entries.where((e) => !save.deleted.contains(e.key)).firstOrNull;
+      if (edit == null) return answers;
+      try {
+        answers[edit.key] = await ref.read(addRepositoryProvider).update(ids[edit.key], edit.value);
+      } on HomeFailure catch (failure) {
+        if (failure.unauthorized || canRetrySave(failure)) return null;
+        // Refused for good: the movement stays as it was saved.
+      } on Object {
+        return null;
+      }
+      // An edit made while this one was on its way is sent next, whole.
+      _change(key, (s) {
+        if (!identical(s.edits[edit.key], edit.value)) return s;
+        return s.copyWith(edits: {...s.edits}..remove(edit.key));
+      });
+    }
+    return null;
+  }
+
+  /// The save [key] still waiting, if it is.
+  PendingSave? _save(String key) => state.saves.where((s) => s.key == key).firstOrNull;
+
+  /// Replaces the save [key] with what [change] makes of it, and keeps the queue.
+  void _change(String key, PendingSave Function(PendingSave save) change) {
+    state = state.copyWith(saves: [for (final s in state.saves) s.key == key ? change(s) : s]);
+    unawaited(_persist());
+  }
+
+  /// The save that has the row [rowId], with the item it stands for.
+  (PendingSave, int)? _find(String rowId) {
+    for (final save in state.saves) {
+      final index = save.indexOf(rowId);
+      if (index != null) return (save, index);
+    }
+    return null;
+  }
+
+  /// The server's id of the movement the row [rowId] stood for, once the server has it (null
+  /// before, or when it is not known on this run).
+  String? uploadedId(String rowId) {
+    final found = _find(rowId);
+    if (found != null) return found.$1.ids?[found.$2];
+    return _uploaded[rowId];
+  }
+
+  /// Edits the row [rowId] of a save still waiting: it shows at once, and goes up after the save.
+  /// False when the save is not waiting any more ([uploadedId] says which movement it became).
+  Future<bool> edit(String rowId, TransactionPatch patch) async {
+    await _loaded;
+    final found = _find(rowId);
+    if (!_alive || found == null || found.$1.deleted.contains(found.$2)) return false;
+    final (save, index) = found;
+    final before = save.edits[index];
+    _change(
+      save.key,
+      (s) => s.copyWith(edits: {...s.edits, index: before == null ? patch : before.then(patch)}),
+    );
+    _schedule();
+    return true;
+  }
+
+  /// Deletes the row [rowId] of a save still waiting: it goes at once, and the server deletes the
+  /// movement once it has it. False when the save is not waiting any more.
+  Future<bool> remove(String rowId) async {
+    await _loaded;
+    final found = _find(rowId);
+    if (!_alive || found == null || found.$1.deleted.contains(found.$2)) return false;
+    _change(found.$1.key, (s) => s.copyWith(deleted: {...s.deleted, found.$2}));
+    _schedule();
+    return true;
+  }
+
+  /// Deshacer for [remove]: the row comes back. When the server had deleted it already, it brings
+  /// it back too (and a failure is thrown, as a [HomeFailure], if it cannot). False when the save
+  /// is not waiting any more.
+  Future<bool> restore(String rowId) async {
+    await _loaded;
+    final found = _find(rowId);
+    if (!_alive || found == null || !found.$1.deleted.contains(found.$2)) return false;
+    final (save, index) = found;
+    if (save.gone.contains(index)) {
+      await ref.read(homeRepositoryProvider).restore(save.ids![index]);
+      if (!_alive) return true;
+    }
+    _change(
+      save.key,
+      (s) => s.copyWith(deleted: {...s.deleted}..remove(index), gone: {...s.gone}..remove(index)),
+    );
+    return true;
+  }
+
+  void _retryLater(int sent) {
+    _failures++;
+    _schedule();
     _tell(sent);
   }
 

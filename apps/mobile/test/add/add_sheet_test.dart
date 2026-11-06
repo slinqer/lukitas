@@ -408,7 +408,7 @@ void main() {
       await letTimersEnd(tester);
     });
 
-    testWidgets('a tap on a row not uploaded yet says so, and opens nothing', (tester) async {
+    testWidgets('a movement saved with no network opens to edit, filled in', (tester) async {
       final env = await pump(tester);
       await openSheet(tester);
       await tapKeys(tester, '25000');
@@ -420,10 +420,10 @@ void main() {
 
       await tester.tap(find.byKey(const Key('row.unsent')));
       await tester.pumpAndSettle();
-      expect(
-        find.text('Aún no está en el servidor. Lo subimos cuando vuelva la red.'),
-        findsOneWidget,
-      );
+      expect(find.text('Editar movimiento'), findsOneWidget);
+      expect(amountShown(tester), contains(r'$25.000'));
+      await tester.tap(find.byKey(const Key('add.save')));
+      await tester.pumpAndSettle();
       expect(find.byKey(const Key('add.sheet')), findsNothing);
       env.add.hold!.complete();
       await letTimersEnd(tester);

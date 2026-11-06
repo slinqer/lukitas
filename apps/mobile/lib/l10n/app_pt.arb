@@ -711,7 +711,6 @@
   "savedOffline": "Sem ligação. {count, plural, =0{Enviamo-los} =1{Enviamo-lo} other{Enviamo-los}} quando a rede voltar.",
   "unsentUploaded": "Enviámos {count, plural, =0{os {count} movimentos} =1{o movimento} other{os {count} movimentos}} que registaste sem ligação.",
   "unsentRefused": "Não conseguimos guardar «{name}». Regista-o outra vez.",
-  "unsentRowTap": "Ainda não está no servidor. Enviamo-lo quando a rede voltar.",
   "unsentLabel": "Por enviar",
   "settingsAssistantsTitle": "Liga o teu assistente",
   "settingsAssistantsLead": "Usa o Wambito a partir do Claude ou do ChatGPT: regista os teus movimentos e pergunta como vais, a conversar.",
