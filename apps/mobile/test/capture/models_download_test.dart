@@ -1,6 +1,7 @@
 // The voice model download (lib/capture/models_download.dart) against a fake HTTP server on this
 // machine, standing in for the repo's GitHub release (tag voice-models-v1), which does not exist
 // yet. The server honours Range, can cut a download short, redirect, or ignore Range.
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -548,6 +549,18 @@ void main() {
         expect(await eligible('it', qualifies: true), isFalse);
         expect(await eligible('pt', qualifies: true), isFalse);
       });
+
+      test('a timed-out answer is not kept: the next read asks again', () async {
+        final platform = _SlowThenQualifyingPlatform();
+        final container = ProviderContainer(
+          overrides: [voiceChannelProvider.overrideWithValue(platform)],
+        );
+        addTearDown(container.dispose);
+        expect(await container.read(preciseEligibleProvider('es').future), isFalse);
+        await Future<void>.delayed(Duration.zero); // a later open of the sheet
+        expect(await container.read(preciseEligibleProvider('es').future), isTrue);
+        expect(platform.asked, 2);
+      });
     });
   });
 }
@@ -559,6 +572,20 @@ class _QualifyingPlatform implements VoicePlatform {
 
   @override
   Future<bool> deviceQualifies() async => qualifies;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError('$invocation');
+}
+
+class _SlowThenQualifyingPlatform implements VoicePlatform {
+  var asked = 0;
+
+  @override
+  Future<bool> deviceQualifies() {
+    asked++;
+    // The first answer never comes (the 2 s timeout answers false); the second is immediate.
+    return asked == 1 ? Completer<bool>().future : Future.value(true);
+  }
 
   @override
   dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError('$invocation');

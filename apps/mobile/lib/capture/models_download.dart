@@ -358,7 +358,17 @@ final preciseEligibleProvider = FutureProvider.family<bool, String>((ref, locale
   return ref
       .watch(voiceChannelProvider)
       .deviceQualifies()
-      .timeout(const Duration(seconds: 2), onTimeout: () => false);
+      .timeout(
+        const Duration(seconds: 2),
+        onTimeout: () {
+          // The family is not auto-dispose, so a kept timeout would answer false for the whole
+          // process: forget it (once it has answered), and the next read asks again.
+          Timer.run(() {
+            if (ref.mounted) ref.invalidateSelf();
+          });
+          return false;
+        },
+      );
 });
 
 /// Deletes the downloaded voice models (Settings, Task 14, adds the button).
