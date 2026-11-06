@@ -57,6 +57,14 @@ abstract interface class AutoCapturePlatform {
   /// [userId] signed in: the queue becomes theirs (captures queued for another account, or for no
   /// known one, are dropped) and what is left is sent.
   Future<void> sendQueued(String userId);
+
+  /// Takes away the phone notifications of [ids]: they were confirmed in the app.
+  Future<void> dismissNotifications(List<String> ids);
+
+  /// [ids] is everything still to review, as read when [before] began: the notifications of any
+  /// other detected transaction (confirmed on the web, through an assistant, in the editor) go.
+  /// One posted from [before] on may be newer than the list, so it stays.
+  Future<void> keepOnlyNotifications(List<String> ids, DateTime before);
 }
 
 /// [AutoCapturePlatform] over the `wambito/capture` channel. Where that channel does not exist the
@@ -102,6 +110,13 @@ class ChannelAutoCapturePlatform implements AutoCapturePlatform {
 
   @override
   Future<void> sendQueued(String userId) => _call<void>('sendQueued', {'userId': userId});
+
+  @override
+  Future<void> dismissNotifications(List<String> ids) => _call<void>('dismiss', {'ids': ids});
+
+  @override
+  Future<void> keepOnlyNotifications(List<String> ids, DateTime before) =>
+      _call<void>('keepOnly', {'ids': ids, 'before': before.millisecondsSinceEpoch});
 }
 
 /// The platform side of automatic capture (replaced in tests).

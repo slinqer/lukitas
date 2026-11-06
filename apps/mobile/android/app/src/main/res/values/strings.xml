@@ -33,7 +33,7 @@
     <string name="widget_progress">%1$d %% del presupuesto gastado</string>
 
     <!-- The two local notices (spec section 7.2), posted by notices/. The title; the sentence is the text. -->
-    <string name="notice_title" translatable="false">Wambito</string>
+    <string name="notice_title" translatable="false">Wambi</string>
     <!-- "Hoy vence Arriendo" / "Hoy vencen Arriendo y Spotify". %1$s is the names, joined. -->
     <string name="notice_due_one">Hoy vence %1$s</string>
     <string name="notice_due_many">Hoy vencen %1$s</string>

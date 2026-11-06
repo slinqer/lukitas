@@ -58,8 +58,11 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
   languages return null until samples exist; a parser that throws drops the notification) and queues
   the result; `CaptureChannel` is `wambito/capture`: `status`,
   `setSource`, `openAccessSettings`, `openAppInfo`, `clearQueue` (on sign-out: items and owner),
-  `sendQueued` (`{userId}`, after a sign-in: `adopt` + send). `CapturePoster` (the
-  default `CaptureHooks.notifier`) posts the silent notification per detected transaction on channel
+  `sendQueued` (`{userId}`, after a sign-in: `adopt` + send), `dismiss` (`{ids}`, confirmed in the
+  app) and `keepOnly` (`{ids, before}`: `reviewProvider` sends every read under a full page; capture
+  notifications of other ids posted before `before` go, so confirms on the web or by an assistant clear too). `CapturePoster` (the
+  default `CaptureHooks.notifier`) posts the silent notification per detected transaction (title "Wambi", small icon
+  `ic_notice` = Wambi's face cut from `ic_launcher_monochrome.xml`) on channel
   `wambito.capture` (LOW; id = `notificationId(transactionId)`, so a merged answer updates it, and one
   already confirmed (`needsReview` false) is `dismiss`ed instead; a group
   summary from 2): "Bien" is an immutable broadcast to the non-exported `ConfirmReceiver` →

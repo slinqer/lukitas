@@ -4,10 +4,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:wambito/add/add_repository.dart';
 import 'package:wambito/add/add_sheet.dart';
 import 'package:wambito/api/gen/wambito_api.dart';
+import 'package:wambito/capture_auto/capture_platform.dart';
 import 'package:wambito/home/home_repository.dart';
 import 'package:wambito/review/review_repository.dart';
 
 import '../add/fakes.dart';
+import '../capture_auto/fakes.dart';
 import '../home/fakes.dart';
 import '../home/fixtures.dart';
 import '../settings/harness.dart';
@@ -17,12 +19,13 @@ import 'fakes.dart';
 /// "Today" is whatever the app clock says; the rows' dates only need to be in one month.
 
 class _Env {
-  _Env(this.app, this.home, this.review, this.add);
+  _Env(this.app, this.home, this.review, this.add, this.capture);
 
   final SettingsEnv app;
   final FakeHomeRepository home;
   final FakeReviewRepository review;
   final FakeAddRepository add;
+  final FakeAutoCapturePlatform capture;
 
   ProviderContainer get container => app.container;
 }
@@ -50,6 +53,7 @@ Future<_Env> _pump(
   );
   final review = FakeReviewRepository(home);
   final add = FakeAddRepository(home);
+  final capture = FakeAutoCapturePlatform();
   final app = await pumpSettingsApp(
     tester,
     homeRepo: home,
@@ -58,9 +62,10 @@ Future<_Env> _pump(
     overrides: [
       reviewRepositoryProvider.overrideWithValue(review),
       addRepositoryProvider.overrideWithValue(add),
+      autoCapturePlatformProvider.overrideWithValue(capture),
     ],
   );
-  return _Env(app, home, review, add);
+  return _Env(app, home, review, add, capture);
 }
 
 void main() {
@@ -81,6 +86,53 @@ void main() {
     expect(env.review.calls, contains('confirm d1'));
     expect(find.text('Cafe Juan'), findsNothing);
     expect(find.text('Taxi'), findsOneWidget);
+  });
+
+  testWidgets('Bien takes away the phone notification of that one', (tester) async {
+    final env = await _pump(tester);
+    await tester.tap(find.byKey(const Key('review.ok.d1')));
+    await tester.pumpAndSettle();
+    expect(env.capture.callsNamed('dismiss'), ['dismiss d1']);
+  });
+
+  testWidgets('Confirmar todos takes away the notifications of every batch', (tester) async {
+    final env = await _pump(
+      tester,
+      items: [for (var i = 0; i < 60; i++) detected('d$i', '2026-10-21', -100000, name: 'Shop $i')],
+    );
+    await tester.tap(find.byKey(const Key('review.confirmAll')));
+    await tester.pumpAndSettle();
+    final dismissed = env.capture.callsNamed('dismiss');
+    expect([for (final c in dismissed) c.substring('dismiss '.length).split(',').length], [50, 10]);
+  });
+
+  testWidgets('a failed confirm keeps the notifications', (tester) async {
+    final env = await _pump(tester);
+    env.review.failures['confirm'] = const HomeFailure(0);
+    await tester.tap(find.byKey(const Key('review.confirmAll')));
+    await tester.pumpAndSettle();
+    expect(env.capture.callsNamed('dismiss'), isEmpty);
+  });
+
+  testWidgets('each read of the inbox keeps only the notifications still waiting', (tester) async {
+    final started = DateTime.now();
+    final env = await _pump(tester);
+    expect(env.capture.callsNamed('keepOnly').last.split(' ').last.split(',').toSet(), {'d1', 'd2'});
+    expect(env.capture.keepBefore.last.isBefore(started), isFalse, reason: 'the time the read started');
+  });
+
+  testWidgets('an inbox read in full pages keeps every notification', (tester) async {
+    final env = await _pump(
+      tester,
+      items: [
+        for (var i = 0; i < reviewPageSize; i++) detected('d$i', '2026-10-21', -100000, name: 'Shop $i'),
+      ],
+    );
+    expect(
+      env.capture.callsNamed('keepOnly'),
+      isEmpty,
+      reason: 'a full page may leave older ones out: their notifications stay',
+    );
   });
 
   testWidgets('Confirmar todos sends every id in one request', (tester) async {
@@ -175,6 +227,11 @@ void main() {
     expect(update, contains('Cafe Pedro'));
     expect(find.text('Cafe Pedro'), findsNothing, reason: 'it left the inbox');
     expect(env.review.calls.last, 'pending', reason: 'the inbox read again');
+    expect(
+      env.capture.callsNamed('keepOnly').last,
+      'keepOnly d2',
+      reason: 'the read after the save takes its notification away',
+    );
   });
 
   testWidgets('saving a row of the inbox with no change still confirms it', (tester) async {

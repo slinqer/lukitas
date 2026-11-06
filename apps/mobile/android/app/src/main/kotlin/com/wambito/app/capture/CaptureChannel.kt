@@ -52,6 +52,27 @@ class CaptureChannel(private val activity: Activity, messenger: BinaryMessenger)
                 CaptureQueue(activity).clear()
                 result.success(null)
             }
+            // Confirmed in the app: their notifications have nothing left to ask.
+            "dismiss" -> {
+                val ids = call.argument<List<String>>("ids")
+                if (ids == null) {
+                    result.error("bad_args", "ids is required", null)
+                } else {
+                    CapturePoster.dismissAll(activity, ids)
+                    result.success(null)
+                }
+            }
+            // The review list as the app read it: notifications of anything not in it go.
+            "keepOnly" -> {
+                val ids = call.argument<List<String>>("ids")
+                val before = call.argument<Number>("before")?.toLong()
+                if (ids == null || before == null) {
+                    result.error("bad_args", "ids and before are required", null)
+                } else {
+                    CapturePoster.keepOnly(activity, ids, before)
+                    result.success(null)
+                }
+            }
             else -> result.notImplemented()
         }
     }
