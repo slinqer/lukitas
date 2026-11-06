@@ -66,6 +66,8 @@ Only when that prints the same `SHA256` fingerprint as the one written next to t
 
 Do the key move below (its own section) once, before the first build from these instructions. Until the Mac folder is moved, `cd` into the current checkout instead of `~/projects/wambito`.
 
+**Precondition for any `mobile-v*` tag: the Canary model must be published.** Eligible phones download it from the release `voice-models-v2`, so that release must exist with `sherpa-onnx-nemo-canary-180m-flash-en-es-de-fr-int8.zip`, built by ONE run of `apps/mobile/scripts/package-canary.sh`, whose size and SHA-256 equal the values pinned in `apps/mobile/lib/capture/models_download.dart` (150137764 bytes, SHA-256 `65bf6fb27f22c506b217d1847c2a61ad0d8a734eed6a6842d4e735dfed10776b`). Otherwise every eligible phone gets a 404 (or a failed check) on the precise model. Check it before tagging: `gh release view voice-models-v2 --repo slinqer/wambito` (the asset's size, and its digest against the SHA-256 above). If a rebuilt zip differs, the pins change in the app first, never the other way round.
+
 Before this, on `main`: for each release after `mobile-v1.0.0`, add and commit the new `<versionCode>.txt` changelogs (both codes, all four locales, `scripts/check-fastlane.sh` checks them) and push `main`. The release commit below is cut from `main`, and F-Droid reads the changelogs at the tag, so they must already be there.
 
 ```sh

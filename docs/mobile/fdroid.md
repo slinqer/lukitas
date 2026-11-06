@@ -22,6 +22,7 @@ Wambito is built for F-Droid from source on F-Droid's own build server, from the
 - After F-Droid publishes the first build, its signing-key fingerprint goes into `ANDROID_CERT_SHA256` next to ours, or App Links and passkeys do not work for F-Droid users (`release.md`; plan Task 10).
 - Not exercised at runtime on a from-source build: live speech recognition and anything on `armeabi-v7a` (installs, signs in and loads a model on an arm64 emulator only; the emulator's microphone hung). Check on a real phone before the first release.
 - No Canary (precise voice model) on F-Droid yet: its runtime, sherpa-onnx, is a prebuilt AAR from a GitHub release, which F-Droid does not accept. The from-source build leaves it out (`src/noPrecise`, no dependency), so F-Droid users get Vosk only. Building sherpa-onnx from source is the way in.
+- About lists sherpa-onnx, onnxruntime and the Canary model on the F-Droid build too, which ships none of them until the F-Droid build of Canary is done (`docs/superpowers/specs/2026-11-05-voice-canary-design.md`, section 6).
 - F-Droid's build timeout is unverified: the recipe asks for `timeout: 10800`.
 
 ## How the build works
