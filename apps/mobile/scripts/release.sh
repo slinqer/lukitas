@@ -172,6 +172,8 @@ if [ "$clean" -eq 1 ]; then
   quietly without_secrets flutter clean || die "flutter clean failed" 1
 fi
 quietly without_secrets flutter pub get --enforce-lockfile || die "flutter pub get failed" 1
+# sherpa-onnx's AAR (the precise voice model's runtime) comes from a GitHub release, checked against a pinned SHA-256.
+without_secrets "$MOBILE/scripts/fetch-sherpa-onnx.sh" || die "could not fetch sherpa-onnx" 1
 flutter_out="$MOBILE/build/app/outputs/flutter-apk"
 for abi in "${ABIS[@]}"; do rm -f "$flutter_out/app-$abi-release.apk"; done
 # WAMBITO_UNSIGNED_RELEASE: android/app/build.gradle.kts leaves the release APK without a signature.

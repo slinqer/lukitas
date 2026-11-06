@@ -14,6 +14,7 @@ import 'package:wambito/capture/mic_level.dart';
 import 'package:wambito/capture/models_download.dart';
 import 'package:wambito/feedback/stored_flag.dart';
 import 'package:wambito/home/home_repository.dart';
+import 'package:wambito/ui/lk_theme.dart';
 import 'package:wambito/ui/press_button.dart';
 import 'package:wambito/ui/toast.dart';
 
@@ -46,11 +47,24 @@ class _FlippingEngine extends FakeSpeechEngine {
 }
 
 class _Env {
-  _Env(this.server, this.capture, this.engine, this.models, this.harness, this.celebrated);
+  _Env(
+    this.server,
+    this.capture,
+    this.engine,
+    this.models,
+    this.harness,
+    this.celebrated, {
+    required this.precise,
+    required this.offerFlag,
+    required this.log,
+  });
   final FakeHomeRepository server;
   final FakeCaptureRepository capture;
   final FakeSpeechEngine engine;
   final FakeModelStore models;
+  final FakeModelStore precise;
+  final FakeFlagStore offerFlag;
+  final List<String> log;
   final HomeHarness harness;
   final List<List<Transaction>> celebrated;
 }
@@ -65,6 +79,9 @@ Future<_Env> _pump(
   Locale locale = const Locale('es'),
   FakeFlagStore? noteFlag,
   bool warm = false,
+  bool eligible = false,
+  bool voskInstalled = false,
+  FakeFlagStore? offerFlag,
 }) async {
   final server = FakeHomeRepository(
     categoryList: [
@@ -80,7 +97,10 @@ Future<_Env> _pump(
     failure: failure,
     availableAnswer: available,
   )..warm = warm;
-  final models = FakeModelStore();
+  final log = <String>[];
+  final models = FakeModelStore(installed: voskInstalled, log: log);
+  final precise = FakeModelStore(models: preciseModels, log: log);
+  final answered = offerFlag ?? FakeFlagStore();
   final celebrated = <List<Transaction>>[];
   final harness = await pumpHome(
     tester,
@@ -90,15 +110,30 @@ Future<_Env> _pump(
       captureRepositoryProvider.overrideWithValue(capture),
       speechEngineProvider.overrideWithValue(engine),
       modelStoreProvider.overrideWithValue(models),
+      preciseModelStoreProvider.overrideWithValue(precise),
+      preciseEligibleProvider.overrideWith((ref, locale) async => eligible),
       batchSavedFeedbackProvider.overrideWithValue(celebrated.add),
       // Where the first-use note's flag is kept: nothing kept yet unless a test says so.
       flagStoreProvider.overrideWith(
-        (ref, key) =>
-            key == 'setting.capture.note' ? (noteFlag ?? FakeFlagStore()) : FakeFlagStore(),
+        (ref, key) => switch (key) {
+          'setting.capture.note' => noteFlag ?? FakeFlagStore(),
+          'wambito.voice.preciseOffer' => answered,
+          _ => FakeFlagStore(),
+        },
       ),
     ],
   );
-  return _Env(server, capture, engine, models, harness, celebrated);
+  return _Env(
+    server,
+    capture,
+    engine,
+    models,
+    harness,
+    celebrated,
+    precise: precise,
+    offerFlag: answered,
+    log: log,
+  );
 }
 
 Future<void> _open(WidgetTester tester) async {
@@ -430,6 +465,182 @@ void main() {
     expect(find.text('GUARDAR 2'), findsOneWidget);
   });
 
+  group('the precise model (canary)', () {
+    const noModel = SpeechFailure(SpeechFailureKind.noModel);
+    final voskMb = voiceModels['es']!.bytes;
+    final canaryMb = preciseModels['es']!.bytes;
+    final joint = ((voskMb + canaryMb) / 1e6).round();
+
+    testWidgets('an eligible phone sees the joint size, and vosk lands before canary', (
+      tester,
+    ) async {
+      final env = await _pump(tester, failure: noModel, eligible: true);
+      await _open(tester);
+      expect(find.text('DESCARGAR $joint MB'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('capture.offer.download')));
+      await tester.pumpAndSettle();
+      expect(env.log, [voiceModels['es']!.name, preciseModels['es']!.name]);
+      expect(env.precise.downloaded, ['es']);
+      expect(env.engine.listens, 2);
+    });
+
+    testWidgets('canary already installed: the offer is vosk\'s size and downloads only vosk', (
+      tester,
+    ) async {
+      // e.g. es Vosk and Canary, the app switched to a language whose Vosk is missing.
+      final env = await _pump(tester, failure: noModel, eligible: true);
+      env.precise.installed = true;
+      await _open(tester);
+      expect(find.text('DESCARGAR ${(voskMb / 1e6).round()} MB'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('capture.offer.download')));
+      await tester.pumpAndSettle();
+      expect(env.log, [voiceModels['es']!.name]);
+      expect(env.precise.downloads, 0);
+    });
+
+    testWidgets('a recorded "no" to the precise model: the joint offer is vosk only', (
+      tester,
+    ) async {
+      final env = await _pump(
+        tester,
+        failure: noModel,
+        eligible: true,
+        offerFlag: FakeFlagStore(false),
+      );
+      await _open(tester);
+      expect(find.text('DESCARGAR ${(voskMb / 1e6).round()} MB'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('capture.offer.download')));
+      await tester.pumpAndSettle();
+      expect(env.log, [voiceModels['es']!.name]);
+      expect(env.precise.downloads, 0);
+      expect(env.offerFlag.value, isFalse, reason: 'the "no" stays');
+    });
+
+    testWidgets('one progress bar runs over both downloads', (tester) async {
+      final env = await _pump(tester, failure: noModel, eligible: true);
+      env.precise.gate = Completer<void>();
+      await _open(tester);
+      await tester.tap(find.byKey(const Key('capture.offer.download')));
+      await tester.pump(const Duration(milliseconds: 100));
+      final done = ((voskMb + canaryMb ~/ 2) / (voskMb + canaryMb) * 100).floor();
+      expect(find.text('Descargando la voz… $done %'), findsOneWidget);
+      env.precise.gate!.complete();
+      await tester.pumpAndSettle();
+      expect(env.engine.listens, 2);
+    });
+
+    testWidgets('vosk lands first, and listening works when canary fails', (tester) async {
+      final env = await _pump(tester, failure: noModel, eligible: true);
+      env.precise.failure = const ModelDownloadFailure();
+      await _open(tester);
+      await tester.tap(find.byKey(const Key('capture.offer.download')));
+      await tester.pumpAndSettle();
+      expect(env.models.downloads, 1);
+      expect(env.precise.downloads, 1);
+      expect(env.engine.listens, 2, reason: 'it listens with vosk');
+      expect(find.byKey(const Key('capture.offer.download')), findsNothing);
+      expect(env.offerFlag.value, isNull, reason: 'a failure is not an answer');
+      expect(
+        find.text('No pudimos descargar el modelo preciso. Inténtalo otra vez.'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a joint download that installs canary records the offer as answered', (
+      tester,
+    ) async {
+      final env = await _pump(tester, failure: noModel, eligible: true);
+      await _open(tester);
+      await tester.tap(find.byKey(const Key('capture.offer.download')));
+      await tester.pumpAndSettle();
+      expect(env.offerFlag.value, isTrue);
+    });
+
+    testWidgets('canary switched off in Settings: the sheet listens, with no offer', (
+      tester,
+    ) async {
+      // Settings records the switch's answer; the canary files are gone.
+      final env = await _pump(
+        tester,
+        eligible: true,
+        voskInstalled: true,
+        offerFlag: FakeFlagStore(false),
+      );
+      expect(env.precise.installed, isFalse);
+      await _open(tester);
+      expect(find.byKey(const Key('capture.offer.precise.accept')), findsNothing);
+      expect(env.engine.listens, 1);
+    });
+
+    testWidgets('a phone that does not qualify sees today\'s offer and gets no canary', (
+      tester,
+    ) async {
+      final env = await _pump(tester, failure: noModel);
+      await _open(tester);
+      expect(find.text('DESCARGAR ${(voskMb / 1e6).round()} MB'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('capture.offer.download')));
+      await tester.pumpAndSettle();
+      expect(env.precise.downloads, 0);
+    });
+
+    testWidgets('someone with vosk is offered canary once, before listening', (tester) async {
+      final env = await _pump(tester, eligible: true, voskInstalled: true);
+      await _open(tester);
+      expect(env.engine.listens, 0);
+      expect(find.text('Mejorar la precisión (+${(canaryMb / 1e6).round()} MB)'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('capture.offer.precise.decline')));
+      await tester.pumpAndSettle();
+      expect(env.precise.downloads, 0);
+      expect(env.offerFlag.value, isFalse);
+      expect(env.engine.listens, 1);
+    });
+
+    testWidgets('the one-time offer shows once: answered, it listens at once', (tester) async {
+      final env = await _pump(
+        tester,
+        eligible: true,
+        voskInstalled: true,
+        offerFlag: FakeFlagStore(false),
+      );
+      await _open(tester);
+      expect(find.byKey(const Key('capture.offer.precise.accept')), findsNothing);
+      expect(env.engine.listens, 1);
+    });
+
+    testWidgets('"Mejorar" downloads canary only, records it, then listens', (tester) async {
+      final env = await _pump(tester, eligible: true, voskInstalled: true);
+      await _open(tester);
+      await tester.tap(find.byKey(const Key('capture.offer.precise.accept')));
+      await tester.pumpAndSettle();
+      expect(env.models.downloads, 0);
+      expect(env.precise.downloaded, ['es']);
+      expect(env.offerFlag.value, isTrue);
+      expect(env.engine.listens, 1);
+    });
+
+    testWidgets('"Mejorar" that fails still listens, and the offer stays open', (tester) async {
+      final env = await _pump(tester, eligible: true, voskInstalled: true);
+      env.precise.failure = const ModelDownloadFailure();
+      await _open(tester);
+      await tester.tap(find.byKey(const Key('capture.offer.precise.accept')));
+      await tester.pumpAndSettle();
+      expect(env.engine.listens, 1);
+      expect(env.offerFlag.value, isNull);
+      expect(
+        find.text('No pudimos descargar el modelo preciso. Inténtalo otra vez.'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('someone who already has canary is not offered it', (tester) async {
+      final env = await _pump(tester, eligible: true, voskInstalled: true);
+      env.precise.installed = true;
+      await _open(tester);
+      expect(find.byKey(const Key('capture.offer.precise.accept')), findsNothing);
+      expect(env.engine.listens, 1);
+    });
+  });
+
   testWidgets('a corrupt download says so and offers it again', (tester) async {
     final env = await _pump(tester, failure: const SpeechFailure(SpeechFailureKind.noModel));
     env.models.failure = const ModelDownloadFailure(corrupt: true);
@@ -473,6 +684,112 @@ void main() {
     await tester.pump();
     expect(find.text('¿En qué gastaste?'), findsOneWidget);
     expect(find.text('Preparando el micrófono…'), findsNothing);
+    await env.engine.held!.close();
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('refining shows the label over the heard text', (tester) async {
+    final env = await _pump(tester);
+    env.engine.hold = true;
+    await _openMoving(tester);
+    env.engine.held!
+      ..add('')
+      ..add('gasté 15 mil');
+    await tester.pump();
+    expect(find.text('Refinando…'), findsNothing);
+    env.engine.refiningController.add(true);
+    await tester.pump();
+    expect(find.text('Refinando…'), findsOneWidget);
+    expect(find.text('gasté 15 mil'), findsOneWidget);
+    final heard = tester.widget<Text>(find.byKey(const Key('capture.heard')));
+    final muted = tester.element(find.byKey(const Key('capture.heard'))).lkColors.inkMuted;
+    expect(heard.style?.color, muted);
+    expect(find.bySemanticsLabel('Refinando…'), findsOneWidget);
+    final live = tester.getSemantics(find.byKey(const Key('capture.refining')));
+    expect(live.flagsCollection.isLiveRegion, isTrue);
+    env.engine.refiningController.add(false);
+    await tester.pump();
+    expect(find.text('Refinando…'), findsNothing);
+    await env.engine.held!.close();
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('the preview follows the refined text', (tester) async {
+    final env = await _pump(tester);
+    env.engine.hold = true;
+    await _openMoving(tester);
+    env.engine.held!
+      ..add('')
+      ..add('dos euros en cafe');
+    await tester.pump();
+    env.engine.refiningController.add(true);
+    await tester.pump();
+    env.engine.held!.add('Dos euros en café.');
+    env.engine.refiningController.add(false);
+    await tester.pump();
+    expect(find.text('Refinando…'), findsNothing);
+    await env.engine.held!.close();
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('capture.card.0')), findsOneWidget);
+    expect(find.text('Dos euros en café.'), findsOneWidget);
+    expect(find.text(r'−$2'), findsOneWidget);
+  });
+
+  Future<_Env> refiningNow(WidgetTester tester) async {
+    final env = await _pump(tester);
+    env.engine.hold = true;
+    await _openMoving(tester);
+    env.engine.held!
+      ..add('')
+      ..add('gasté 15 mil');
+    await tester.pump();
+    env.engine.refiningController.add(true);
+    await tester.pump();
+    expect(find.text('Refinando…'), findsOneWidget);
+    return env;
+  }
+
+  testWidgets('a listen error while refining takes the label away', (tester) async {
+    final env = await refiningNow(tester);
+    env.engine.held!.addError(const SpeechFailure(SpeechFailureKind.failed));
+    await tester.pumpAndSettle();
+    expect(find.text('Refinando…'), findsNothing);
+    expect(find.byKey(const Key('capture.field')), findsOneWidget);
+  });
+
+  testWidgets('Escribir while refining takes the label away', (tester) async {
+    final env = await refiningNow(tester);
+    await tester.tap(find.byKey(const Key('capture.type')));
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('Refinando…'), findsNothing);
+    expect(find.byKey(const Key('capture.field')), findsOneWidget);
+    unawaited(env.engine.held?.close());
+    await tester.pump(const Duration(milliseconds: 300));
+  });
+
+  testWidgets('closing the sheet while refining throws nothing', (tester) async {
+    final env = await refiningNow(tester);
+    Navigator.of(tester.element(find.byKey(const Key('capture.stop')))).pop();
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('capture.stop')), findsNothing);
+    env.engine.refiningController.add(false);
+    env.engine.refiningController.add(true);
+    await tester.pump();
+    unawaited(env.engine.held?.close());
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('a new listen starts with no label', (tester) async {
+    final env = await refiningNow(tester);
+    await tester.tap(find.byKey(const Key('capture.type')));
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.tap(find.byKey(const Key('capture.listen')));
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('Refinando…'), findsNothing);
+    env.engine.held!.add('');
+    await tester.pump();
+    expect(find.text('Refinando…'), findsNothing);
     await env.engine.held!.close();
     await tester.pumpAndSettle();
   });

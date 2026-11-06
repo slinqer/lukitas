@@ -1,12 +1,15 @@
 // The voice model download (lib/capture/models_download.dart) against a fake HTTP server on this
 // machine, standing in for the repo's GitHub release (tag voice-models-v1), which does not exist
 // yet. The server honours Range, can cut a download short, redirect, or ignore Range.
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:wambito/capture/engine/voice_channel.dart';
 import 'package:wambito/capture/models_download.dart';
 
 /// A zip's bytes for the tests: what is in it does not matter, the unzip is faked.
@@ -458,4 +461,160 @@ void main() {
       expect(files.released, 1);
     },
   );
+
+  group('the precise model', () {
+    final canaryBytes = _payload;
+    final canary = _modelNamed(
+      'es',
+      'sherpa-onnx-nemo-canary-180m-flash-en-es-de-fr-int8',
+      canaryBytes,
+    );
+
+    ModelStore preciseStore() => ModelStore(
+      files: files,
+      http: Dio(),
+      releaseUrl: server.base,
+      models: {'es': canary, 'en': canary},
+    );
+
+    test('the constants name the v2 release and the one canary zip for es and en', () {
+      expect(
+        preciseModelsReleaseUrl.toString(),
+        'https://github.com/slinqer/wambito/releases/download/voice-models-v2',
+      );
+      expect(preciseModels.keys, unorderedEquals(['es', 'en', 'it', 'pt']));
+      final model = preciseModels['es']!;
+      expect(identical(model, preciseModels['en']), isTrue);
+      expect(model.name, 'sherpa-onnx-nemo-canary-180m-flash-en-es-de-fr-int8');
+      expect(model.bytes, 150137764);
+      expect(model.unzippedBytes, 207170046);
+      expect(model.sha256, '65bf6fb27f22c506b217d1847c2a61ad0d8a734eed6a6842d4e735dfed10776b');
+      expect(model.minRamBytes, isNull);
+    });
+
+    test('it and pt share one parakeet zip from the same release, for 5 GiB phones', () {
+      final model = preciseModels['it']!;
+      expect(identical(model, preciseModels['pt']), isTrue);
+      expect(model.name, 'sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8');
+      expect(model.bytes, 477666406);
+      expect(model.unzippedBytes, 670478772);
+      expect(model.sha256, 'f7f4d4f9a04ef10d77a99eb9ad3c1a616393c031cbf0232febfac51dc3bd937d');
+      expect(model.minRamBytes, 5 * 1024 * 1024 * 1024);
+    });
+
+    test('en and es share one precise download', () async {
+      final s = preciseStore();
+      await s.download('es');
+      expect(await s.installedPath('en'), isNotNull);
+      expect(await s.installedPath('en'), await s.installedPath('es'));
+    });
+
+    test('deleteModel removes only that model', () async {
+      final vosk = store();
+      await vosk.download('es');
+      final precise = preciseStore();
+      await precise.download('es');
+      final preciseDir = await precise.installedPath('es');
+      await precise.deleteModel('en');
+      expect(await precise.installedPath('es'), isNull);
+      expect(Directory(preciseDir!).existsSync(), isFalse);
+      expect(File('$preciseDir.ready').existsSync(), isFalse);
+      expect(await vosk.installedPath('es'), isNotNull);
+      expect(files.released, 1);
+    });
+
+    test('deleteModel also removes a partial download', () async {
+      final s = preciseStore();
+      server.cutAfter = 1000;
+      await expectLater(s.download('es'), throwsA(isA<ModelDownloadFailure>()));
+      final part = File('${root.path}/voice/${canary.fileName}.part');
+      expect(part.existsSync(), isTrue);
+      await s.deleteModel('es');
+      expect(part.existsSync(), isFalse);
+    });
+
+    test('a precise model for all four languages', () {
+      final s = ModelStore(files: files, http: Dio(), models: preciseModels);
+      for (final locale in ['es', 'en', 'it', 'pt']) {
+        expect(s.hasModel(locale), isTrue, reason: locale);
+      }
+      expect(s.hasModel('fr'), isFalse);
+    });
+
+    group('preciseEligibleProvider', () {
+      Future<bool> eligible(
+        String locale, {
+        required bool qualifies,
+        _QualifyingPlatform? platform,
+      }) async {
+        final container = ProviderContainer(
+          overrides: [
+            voiceChannelProvider.overrideWithValue(platform ?? _QualifyingPlatform(qualifies)),
+          ],
+        );
+        addTearDown(container.dispose);
+        return container.read(preciseEligibleProvider(locale).future);
+      }
+
+      test('is false when the device does not qualify', () async {
+        expect(await eligible('es', qualifies: false), isFalse);
+      });
+
+      test('is true for the four languages on a device that qualifies, false for others', () async {
+        for (final locale in ['es', 'en', 'it', 'pt']) {
+          expect(await eligible(locale, qualifies: true), isTrue, reason: locale);
+        }
+        expect(await eligible('fr', qualifies: true), isFalse);
+      });
+
+      test("asks the phone for the model's RAM floor: parakeet's for it and pt", () async {
+        final platform = _QualifyingPlatform(true);
+        await eligible('it', qualifies: true, platform: platform);
+        await eligible('es', qualifies: true, platform: platform);
+        expect(platform.asked, [5 * 1024 * 1024 * 1024, null]);
+      });
+
+      test('a timed-out answer is not kept: the next read asks again', () async {
+        final platform = _SlowThenQualifyingPlatform();
+        final container = ProviderContainer(
+          overrides: [voiceChannelProvider.overrideWithValue(platform)],
+        );
+        addTearDown(container.dispose);
+        expect(await container.read(preciseEligibleProvider('es').future), isFalse);
+        await Future<void>.delayed(Duration.zero); // a later open of the sheet
+        expect(await container.read(preciseEligibleProvider('es').future), isTrue);
+        expect(platform.asked, 2);
+      });
+    });
+  });
+}
+
+class _QualifyingPlatform implements VoicePlatform {
+  _QualifyingPlatform(this.qualifies);
+
+  final bool qualifies;
+  final asked = <int?>[];
+
+  @override
+  Future<bool> deviceQualifies({int? minRamBytes}) async {
+    asked.add(minRamBytes);
+    return qualifies;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError('$invocation');
+}
+
+class _SlowThenQualifyingPlatform implements VoicePlatform {
+  var asked = 0;
+
+  @override
+  Future<bool> deviceQualifies({int? minRamBytes}) {
+    asked++;
+    // The first answer never comes (the 2 s timeout answers false); the second is immediate.
+    return asked == 1 ? Completer<bool>().future : Future.value(true);
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError('$invocation');
 }

@@ -57,7 +57,7 @@
       "properties": {
         "id": {
           "type": "string",
-          "pattern": "^(spike|real|amount|focus|date|kind|split|category|unread)(-[a-z0-9]+)+$"
+          "pattern": "^(spike|real|amount|focus|date|kind|split|category|unread|canary)(-[a-z0-9]+)+$"
         },
         "input": { "type": "string", "minLength": 1 },
         "locale": { "enum": ["es", "en", "it", "pt"] },

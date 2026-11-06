@@ -14,6 +14,12 @@ import 'android_libraries.dart';
 ///    checks is not stale), each under the licence its POM declares;
 ///  * the speech engine, JNA and the voice models, and what their native libraries carry inside:
 ///    OpenBLAS and CLAPACK (with libf2c) in libvosk.so, libffi in libjnidispatch.so;
+///  * the precise voice model's runtime, sherpa-onnx (an AAR that scripts/fetch-sherpa-onnx.sh
+///    installs with a POM that declares Apache-2.0, so it is in the Android list too and is
+///    handled here like Vosk), the Canary and Parakeet models (CC BY 4.0, NVIDIA, downloaded
+///    like the Vosk ones), and what the AAR's two native libraries carry: onnxruntime 1.28.2 and what is
+///    linked into it (libonnxruntime.so), and what sherpa-onnx's CMakeLists.txt and cmake/*.cmake
+///    at v2.0.1 link into libsherpa-onnx-jni.so;
 ///  * the app's own sounds, and the app.
 /// The notices are in the ARB files; the licence texts are as their authors published them.
 
@@ -31,6 +37,23 @@ const _clapack = 'assets/licenses/clapack-bsd.txt';
 const _libf2c = 'assets/licenses/libf2c-notice.txt';
 const _libffi = 'assets/licenses/libffi-mit.txt';
 
+// The precise voice model and the AAR of sherpa-onnx 2.0.1, as their projects publish the texts:
+// Creative Commons' legal code of CC BY 4.0, onnxruntime v1.28.2's LICENSE (the version inside
+// libonnxruntime.so, from its strings and sherpa-onnx's cmake/onnxruntime-android-*.cmake), and
+// the texts of what is linked in: nlohmann/json v3.12.0, utf8proc v2.12.0, hclust-cpp (fastcluster),
+// darts-clone 0.32 (the header simple-sentencepiece v0.7 includes), Protocol Buffers and RE2 (inside
+// libonnxruntime.so). The Apache-2.0 ones (kaldi-native-fbank 1.22.4, kaldi-decoder 0.3.0, kaldifst
+// 1.8.0, OpenFst 1.8.5, simple-sentencepiece 0.7; Abseil and ONNX) use the Apache text. A test pins
+// sherpa-onnx 2.0.1: upgrading it means checking the AAR's libraries and these entries again.
+const _ccBy = 'assets/licenses/cc-by-4.0.txt';
+const _onnxruntime = 'assets/licenses/onnxruntime-mit.txt';
+const _nlohmann = 'assets/licenses/nlohmann-json-mit.txt';
+const _utf8proc = 'assets/licenses/utf8proc-license.txt';
+const _fastcluster = 'assets/licenses/fastcluster-bsd-2-clause.txt';
+const _darts = 'assets/licenses/darts-clone-bsd-2-clause.txt';
+const _protobuf = 'assets/licenses/protobuf-bsd-3-clause.txt';
+const _re2 = 'assets/licenses/re2-bsd-3-clause.txt';
+
 // The fonts and the licence file each ships (assets/fonts, pubspec.yaml; scripts/check-licenses.sh
 // checks every font has one). Both are SIL OFL 1.1, from Google Fonts' repository.
 const _fredokaOfl = 'assets/fonts/Fredoka-OFL.txt';
@@ -38,6 +61,7 @@ const _nunitoOfl = 'assets/fonts/Nunito-OFL.txt';
 
 const _vosk = 'com.alphacephei:vosk-android';
 const _jna = 'net.java.dev.jna:jna';
+const _sherpa = 'com.k2fsa.sherpa.onnx:sherpa-onnx';
 
 /// The text of a library whose licence is not the plain Apache one: the BSD-3-Clause that
 /// `androidx.glance:glance-appwidget-external-protobuf` publishes inside its jar.
@@ -89,8 +113,50 @@ Stream<LicenseEntry> extraLicenseEntries(AssetBundle bundle, AppLocalizations l1
       'libffi 3.4.4',
     ], '${l10n.licenseNoticeLibffi}\n\n${await load(_libffi)}');
   }
+  // The precise voice model's runtime is in the build (not in the F-Droid one): sherpa-onnx, the
+  // Canary and Parakeet models it runs, and the libraries inside the AAR's two native libraries.
+  final sherpa = find(_sherpa);
+  if (sherpa != null) {
+    yield LicenseEntryWithLineBreaks([
+      'Canary-180M flash, NVIDIA',
+    ], '${l10n.licenseNoticeCanary}\n\n${await load(_ccBy)}');
+    yield LicenseEntryWithLineBreaks([
+      'Parakeet TDT 0.6B v3, NVIDIA',
+    ], '${l10n.licenseNoticeParakeet}\n\n${await load(_ccBy)}');
+    yield LicenseEntryWithLineBreaks([
+      'sherpa-onnx ${sherpa.version}',
+    ], '${l10n.licenseNoticeSherpa}\n\n$apache');
+    yield LicenseEntryWithLineBreaks([
+      'onnxruntime 1.28.2',
+    ], '${l10n.licenseNoticeOnnxruntime}\n\n${await load(_onnxruntime)}');
+    yield LicenseEntryWithLineBreaks([
+      'Abseil',
+      'ONNX',
+    ], '${l10n.licenseNoticeOrtApache}\n\n$apache');
+    for (final (name, notice, asset) in [
+      ('Protocol Buffers', l10n.licenseNoticeProtobuf, _protobuf),
+      ('RE2', l10n.licenseNoticeRe2, _re2),
+    ]) {
+      yield LicenseEntryWithLineBreaks([name], '$notice\n\n${await load(asset)}');
+    }
+    yield LicenseEntryWithLineBreaks([
+      'kaldi-native-fbank 1.22.4',
+      'kaldi-decoder 0.3.0',
+      'kaldifst 1.8.0',
+      'OpenFst 1.8.5',
+      'simple-sentencepiece 0.7',
+    ], '${l10n.licenseNoticeSherpaNative}\n\n$apache');
+    for (final (name, notice, asset) in [
+      ('nlohmann/json 3.12.0', l10n.licenseNoticeNlohmann, _nlohmann),
+      ('utf8proc 2.12.0', l10n.licenseNoticeUtf8proc, _utf8proc),
+      ('fastcluster (hclust-cpp)', l10n.licenseNoticeFastcluster, _fastcluster),
+      ('darts-clone 0.32', l10n.licenseNoticeDarts, _darts),
+    ]) {
+      yield LicenseEntryWithLineBreaks([name], '$notice\n\n${await load(asset)}');
+    }
+  }
   // The rest, one entry per licence text: every library under what its own POM declares.
-  const handled = {_vosk, _jna};
+  const handled = {_vosk, _jna, _sherpa};
   final groups = <String, List<AndroidLibrary>>{};
   for (final library in libraries.where((l) => !handled.contains(l.id))) {
     (groups[_textAssetFor(library)] ??= []).add(library);

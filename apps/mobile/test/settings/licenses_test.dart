@@ -188,6 +188,138 @@ void main() {
       expect(version('net.java.dev.jna:jna'), '5.18.1');
     });
 
+    // The precise voice model (Canary through sherpa-onnx) and what the AAR's native libraries carry
+    // (sherpa-onnx 2.0.1's cmake/ and the strings of libsherpa-onnx-jni.so and libonnxruntime.so).
+    test('Canary is credited to NVIDIA under CC BY 4.0, with the attribution line and the legal code', () async {
+      for (final language in ['es', 'en']) {
+        final entry = (await _extras(language))
+            .singleWhere((e) => e.packages.contains('Canary-180M flash, NVIDIA'));
+        expect(entry.packages, ['Canary-180M flash, NVIDIA']);
+        expect(
+          _text(entry),
+          contains(
+            'Canary-180M flash by NVIDIA, CC BY 4.0, converted to ONNX by the sherpa-onnx project',
+          ),
+          reason: language,
+        );
+        expect(_text(entry), contains('Attribution 4.0 International'), reason: language);
+        expect(
+          _text(entry),
+          contains('Creative Commons Attribution 4.0 International Public License'),
+        );
+        expect(_text(entry), isNot(contains('Apache License')), reason: language);
+      }
+    });
+
+    test('Parakeet is credited to NVIDIA under CC BY 4.0, with the attribution line', () async {
+      for (final language in ['es', 'en', 'it', 'pt']) {
+        final entry = (await _extras(language))
+            .singleWhere((e) => e.packages.contains('Parakeet TDT 0.6B v3, NVIDIA'));
+        expect(entry.packages, ['Parakeet TDT 0.6B v3, NVIDIA']);
+        expect(
+          _text(entry),
+          contains(
+            'Parakeet TDT 0.6B v3 by NVIDIA, CC BY 4.0, converted to ONNX by the sherpa-onnx project',
+          ),
+          reason: language,
+        );
+        expect(
+          _text(entry),
+          contains('Creative Commons Attribution 4.0 International Public License'),
+          reason: language,
+        );
+      }
+    });
+
+    test('sherpa-onnx is listed with the version of the build, under Apache-2.0', () async {
+      final libraries = await _libraries();
+      final sherpa = libraries.singleWhere((l) => l.id == 'com.k2fsa.sherpa.onnx:sherpa-onnx');
+      expect(sherpa.version, '2.0.1');
+      expect(sherpa.license, 'Apache-2.0');
+      for (final language in ['es', 'en']) {
+        final entry = (await _extras(language))
+            .singleWhere((e) => e.packages.contains('sherpa-onnx ${sherpa.version}'));
+        expect(entry.packages, ['sherpa-onnx 2.0.1']);
+        expect(_text(entry), contains('Version 2.0, January 2004'), reason: language);
+        expect(_text(entry), contains('github.com/k2-fsa/sherpa-onnx'), reason: language);
+      }
+    });
+
+    test('onnxruntime 1.28.2 is listed with its MIT text', () async {
+      for (final language in ['es', 'en']) {
+        final entry = (await _extras(language))
+            .singleWhere((e) => e.packages.contains('onnxruntime 1.28.2'));
+        expect(entry.packages, ['onnxruntime 1.28.2']);
+        expect(_text(entry), contains('Copyright (c) Microsoft Corporation'), reason: language);
+        expect(_text(entry), contains('Permission is hereby granted, free of charge'));
+        expect(_text(entry), isNot(contains('Apache License')), reason: language);
+      }
+    });
+
+    // Linked into libsherpa-onnx-jni.so (sherpa-onnx's CMakeLists.txt and cmake/*.cmake at v2.0.1)
+    // and into libonnxruntime.so (the third-party paths inside it), each with its published text.
+    for (final (name, text) in [
+      ('nlohmann/json 3.12.0', 'Copyright (c) 2013-2025 Niels Lohmann'),
+      ('utf8proc 2.12.0', 'utf8proc license'),
+      ('fastcluster (hclust-cpp)', '2011 Daniel M'),
+      ('darts-clone 0.32', 'Copyright (c) 2008-2014, Susumu Yata'),
+      ('Protocol Buffers', 'Copyright 2008 Google Inc.'),
+      ('RE2', 'Copyright (c) 2009 The RE2 Authors'),
+    ]) {
+      test('$name is listed with its own published text', () async {
+        for (final language in ['es', 'en']) {
+          final entry = (await _extras(language)).singleWhere((e) => e.packages.contains(name));
+          expect(entry.packages, [name]);
+          expect(_text(entry), contains(text), reason: language);
+          expect(_text(entry), isNot(contains('Apache License')), reason: language);
+        }
+      });
+    }
+
+    test(
+      'the Apache-2.0 libraries inside the native libraries are named with their versions',
+      () async {
+        for (final language in ['es', 'en']) {
+          final entries = await _extras(language);
+          for (final group in [
+            [
+              'kaldi-native-fbank 1.22.4',
+              'kaldi-decoder 0.3.0',
+              'kaldifst 1.8.0',
+              'OpenFst 1.8.5',
+              'simple-sentencepiece 0.7',
+            ],
+            ['Abseil', 'ONNX'],
+          ]) {
+            final entry = entries.singleWhere((e) => e.packages.contains(group.first));
+            expect(entry.packages, group, reason: language);
+            expect(_text(entry), contains('Version 2.0, January 2004'), reason: language);
+          }
+        }
+      },
+    );
+
+    test('the sherpa-onnx notices say where each library sits, in both languages', () async {
+      final es = _text((await _extras('es')).singleWhere((e) => e.packages.contains('RE2')));
+      final en = _text((await _extras('en')).singleWhere((e) => e.packages.contains('RE2')));
+      expect(es.split('\n\n').first, isNot(en.split('\n\n').first));
+      expect(en, contains('libonnxruntime.so'));
+      final jni = _text(
+        (await _extras('en')).singleWhere((e) => e.packages.contains('utf8proc 2.12.0')),
+      );
+      expect(jni, contains('libsherpa-onnx-jni.so'));
+    });
+
+    test('those versions are the sherpa-onnx of the build', () async {
+      // onnxruntime 1.28.2 and the libraries above are what sherpa-onnx 2.0.1's AAR is built with
+      // (its cmake/ at v2.0.1): upgrading it means checking these entries again.
+      final libraries = await _libraries();
+      expect(
+        libraries.singleWhere((l) => l.id == 'com.k2fsa.sherpa.onnx:sherpa-onnx').version,
+        '2.0.1',
+      );
+    });
+
     test('the list never silently shrinks', () async {
       final packages = {for (final e in await _extras()) ...e.packages};
       for (final name in [
@@ -198,6 +330,10 @@ void main() {
         'OpenBLAS 0.3.20',
         'CLAPACK 3.2.1',
         'libffi 3.4.4',
+        'Canary-180M flash, NVIDIA',
+        'Parakeet TDT 0.6B v3, NVIDIA',
+        'sherpa-onnx 2.0.1',
+        'onnxruntime 1.28.2',
         'Fredoka',
         'Nunito',
         'Wambito feedback sounds',
@@ -230,6 +366,14 @@ void main() {
           'clapack-bsd.txt',
           'libf2c-notice.txt',
           'libffi-mit.txt',
+          'cc-by-4.0.txt',
+          'onnxruntime-mit.txt',
+          'nlohmann-json-mit.txt',
+          'utf8proc-license.txt',
+          'fastcluster-bsd-2-clause.txt',
+          'darts-clone-bsd-2-clause.txt',
+          'protobuf-bsd-3-clause.txt',
+          're2-bsd-3-clause.txt',
         ]),
       );
       final shown = [for (final e in await _extras()) _text(e)].join('\n');
@@ -299,5 +443,6 @@ void main() {
 bool _named(String p, AndroidLibrary library) => switch (library.id) {
   'com.alphacephei:vosk-android' => p == 'vosk-android ${library.version}',
   'net.java.dev.jna:jna' => p == 'JNA ${library.version}',
+  'com.k2fsa.sherpa.onnx:sherpa-onnx' => p == 'sherpa-onnx ${library.version}',
   _ => false,
 };

@@ -24,6 +24,7 @@ class VoiceModel {
     required this.bytes,
     required this.unzippedBytes,
     required this.sha256,
+    this.minRamBytes,
   });
 
   /// `es`, `en`, `it` or `pt`.
@@ -40,6 +41,10 @@ class VoiceModel {
 
   /// The zip's SHA-256, lowercase hex: of the official file, published unchanged.
   final String sha256;
+
+  /// A precise model's own RAM floor, asked of the phone (`deviceQualifies`); null is the
+  /// platform's default (3 GB).
+  final int? minRamBytes;
 
   String get fileName => '$name.zip';
 }
@@ -77,6 +82,38 @@ const voiceModels = {
     sha256: '6e1ce909032e1afa7a88e68a3d628ecafff302bdf195befab308826c395e93b7',
   ),
 };
+
+/// Where the precise models are downloaded from: the second release, with the Canary and Parakeet
+/// zips.
+final preciseModelsReleaseUrl = Uri.parse(
+  'https://github.com/slinqer/wambito/releases/download/voice-models-v2',
+);
+
+/// NVIDIA Canary 180M Flash int8 (CC-BY-4.0), the precise model that re-transcribes a recording on
+/// release. One model serves Spanish and English, so one download installs both.
+const _canary = VoiceModel(
+  locale: 'es',
+  name: 'sherpa-onnx-nemo-canary-180m-flash-en-es-de-fr-int8',
+  bytes: 150137764,
+  unzippedBytes: 207170046,
+  sha256: '65bf6fb27f22c506b217d1847c2a61ad0d8a734eed6a6842d4e735dfed10776b',
+);
+
+/// NVIDIA Parakeet TDT 0.6B v3 int8 (CC-BY-4.0), the precise model for Italian and Portuguese: one
+/// zip for both, about three times Canary's size, so only on phones sold with 6 GB of RAM or more
+/// (about 5.5 GiB reported; the floor is 5 GiB).
+const _parakeet = VoiceModel(
+  locale: 'it',
+  name: 'sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8',
+  bytes: 477666406,
+  unzippedBytes: 670478772,
+  sha256: 'f7f4d4f9a04ef10d77a99eb9ad3c1a616393c031cbf0232febfac51dc3bd937d',
+  minRamBytes: 5 * 1024 * 1024 * 1024,
+);
+
+/// The precise model by language: Canary for Spanish and English, Parakeet for Italian and
+/// Portuguese.
+const preciseModels = {'es': _canary, 'en': _canary, 'it': _parakeet, 'pt': _parakeet};
 
 /// A download that did not end with a model ready to use.
 class ModelDownloadFailure implements Exception {
@@ -279,6 +316,21 @@ class ModelStore {
     return match == null ? null : int.parse(match.group(1)!);
   }
 
+  /// Deletes [locale]'s model (folder, `.ready` and any `.part`), freeing the loaded ones first.
+  /// The other store's files in the same directory stay.
+  Future<void> deleteModel(String locale) async {
+    final model = modelFor(locale);
+    if (model == null) return;
+    await _files.releaseModels();
+    final dir = await _voiceDir();
+    final folder = Directory('$dir/${model.name}');
+    if (folder.existsSync()) await folder.delete(recursive: true);
+    for (final path in ['$dir/${model.name}.ready', '$dir/${model.fileName}.part']) {
+      final file = File(path);
+      if (file.existsSync()) await file.delete();
+    }
+  }
+
   /// Deletes every downloaded model (and partial download), freeing a loaded one first. Settings
   /// calls it (Task 14); the next 🎤 asks to download again.
   Future<void> deleteModels() async {
@@ -301,6 +353,43 @@ final modelStoreProvider = Provider<ModelStore>(
     ),
   ),
 );
+
+/// The precise model's store: the same download and verification, from the v2 release.
+final preciseModelStoreProvider = Provider<ModelStore>(
+  (ref) => ModelStore(
+    files: ref.watch(voiceChannelProvider),
+    http: Dio(
+      BaseOptions(
+        connectTimeout: const Duration(seconds: 15),
+        receiveTimeout: const Duration(seconds: 30),
+      ),
+    ),
+    releaseUrl: preciseModelsReleaseUrl,
+    models: preciseModels,
+  ),
+);
+
+/// Whether the precise model is offered for [locale] (a `voiceLocale`): the phone qualifies (arm64,
+/// enough RAM for that language's model, sherpa-onnx linked) and the language has one.
+final preciseEligibleProvider = FutureProvider.family<bool, String>((ref, locale) async {
+  final model = preciseModels[locale];
+  if (model == null) return false;
+  // A channel that never answers must not hold the capture sheet: no answer means not eligible.
+  return ref
+      .watch(voiceChannelProvider)
+      .deviceQualifies(minRamBytes: model.minRamBytes)
+      .timeout(
+        const Duration(seconds: 2),
+        onTimeout: () {
+          // The family is not auto-dispose, so a kept timeout would answer false for the whole
+          // process: forget it (once it has answered), and the next read asks again.
+          Timer.run(() {
+            if (ref.mounted) ref.invalidateSelf();
+          });
+          return false;
+        },
+      );
+});
 
 /// Deletes the downloaded voice models (Settings, Task 14, adds the button).
 Future<void> deleteModels(WidgetRef ref) => ref.read(modelStoreProvider).deleteModels();

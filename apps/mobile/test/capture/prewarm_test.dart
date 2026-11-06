@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wambito/capture/engine/speech_engine.dart';
+import 'package:wambito/capture/engine/voice_channel.dart';
+import 'package:wambito/capture/engine/vosk_engine.dart';
 import 'package:wambito/capture/models_download.dart';
 import 'package:wambito/capture/prewarm.dart';
 import 'package:wambito/feedback/stored_flag.dart';
@@ -14,9 +16,8 @@ import '../settings/fakes.dart';
 import 'fakes.dart';
 
 class _Installed extends FakeModelStore {
-  _Installed({this.installed = true});
+  _Installed({super.installed = true});
 
-  bool installed;
   final asked = <String>[];
 
   @override
@@ -73,6 +74,7 @@ Future<_Env> _start(
 }
 
 void main() {
+  _preciseTests();
   testWidgets('after a first capture, the model is loaded at the start', (tester) async {
     final env = await _start(tester, noteOn: false, device: const Locale('es'));
     expect(env.engine.warmUps, ['es']);
@@ -166,5 +168,46 @@ void main() {
     expect(voiceLocale(const Locale('it', 'IT')), 'it');
     expect(voiceLocale(const Locale('pt', 'BR')), 'pt');
     expect(voiceLocale(const Locale('fr')), 'es');
+  });
+}
+
+class _Platform implements VoicePlatform {
+  final warmUps = <({String path, String? precisePath, String? language})>[];
+
+  @override
+  Future<bool> warmUp(String modelPath, {String? precisePath, String? language}) async {
+    warmUps.add((path: modelPath, precisePath: precisePath, language: language));
+    return true;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError('$invocation');
+}
+
+void _preciseTests() {
+  testWidgets('prewarm passes the precise path', (tester) async {
+    tester.platformDispatcher.localeTestValue = const Locale('es');
+    addTearDown(tester.platformDispatcher.clearLocaleTestValue);
+    final platform = _Platform();
+    final container = ProviderContainer(
+      overrides: [
+        speechEngineProvider.overrideWith(
+          (ref) => VoskEngine(channel: platform, models: _Installed(), precise: _Installed()),
+        ),
+        modelStoreProvider.overrideWithValue(_Installed()),
+        flagStoreProvider.overrideWith(
+          (ref, key) => key == 'setting.capture.note' ? FakeFlagStore(false) : FakeFlagStore(),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+    container.read(voicePrewarmProvider);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 10));
+    expect(platform.warmUps.single, (
+      path: '/models/es',
+      precisePath: '/models/es',
+      language: 'es',
+    ));
   });
 }

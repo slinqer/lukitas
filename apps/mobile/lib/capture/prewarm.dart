@@ -48,6 +48,7 @@ class VoicePrewarm with WidgetsBindingObserver {
       final locale = voiceLocale(_ref.read(localeOverrideProvider));
       final models = _ref.read(modelStoreProvider);
       if (!models.hasModel(locale) || await models.installedPath(locale) == null) return;
+      // The engine loads the precise model too, when it is installed for the locale.
       await _ref.read(speechEngineProvider).warmUp(locale: locale);
     } on Object {
       // Not loaded in advance: the first tap loads it.

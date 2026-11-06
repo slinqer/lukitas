@@ -68,6 +68,7 @@ The spec leaves these open, and the expected values rely on them. If the parser 
   - Bare `mil` is 1.000 (`gasté mil en chicle`, and the `mil` left by a misheard `doce` in `gastos de mil`).
   - **Scale words** are `mil`, `millón`/`millones`, `thousand`, `million`, `k`, and the COP slang units `palo(s)` and `luca(s)`/`lukas`.
   - `con` joins units and cents (`nueve con cincuenta`, `9 euros con 50`). In en, `and … cents` does (`twelve dollars and fifty cents`).
+  - es, in EUR and USD only: two word numbers with no scale word, a unit 1–99 then a 10–99 not followed by a scale, `cientos` or `ciento`, are units and cents (`uno cincuenta` is 1,50; `canary-c01`…`c03`). In COP they stay two amounts. en has the same rule (`twelve fifty`).
   - `coma` (es) and `point` (en) are the decimal in words. The decimals keep their written length: `10 coma 05` is 10,05 and `cuatro coma tres` is 4,3.
   - A larger scale right after a scale multiplies everything before it: `mil millones` is 1.000.000.000 (then over the cap, so unread).
   - `y medio`/`y media` after a scale adds half of it: `un palo y medio` is 1.500.000, `mil y medio` is 1.500. `medio` before a scale is half of it (`medio palo`).

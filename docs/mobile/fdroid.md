@@ -5,7 +5,7 @@ Wambito is built for F-Droid from source on F-Droid's own build server, from the
 ## What F-Droid sees
 
 - **No Google, no trackers.** `scripts/check-no-google.sh` (CI) fails on Play Services, Firebase, ML Kit, Play Core or any other proprietary artifact in any variant's resolved classpath. No analytics, no crash reporter. Permissions are an allowlist (`scripts/check-permissions.sh`).
-- **Licences.** AGPL-3.0-only (the recipe's `License:`); every Dart and Android dependency has a licence entry in About (`scripts/check-licenses.sh`). Voice models and sounds are listed too.
+- **Licences.** AGPL-3.0-only (the recipe's `License:`); every Dart and Android dependency has a licence entry in About (`scripts/check-licenses.sh`). Voice models and sounds are listed too, and so are sherpa-onnx, the Canary model (CC BY 4.0) and the libraries inside the AAR's native libraries (`lib/settings/licenses.dart`); the F-Droid build has no sherpa-onnx, and the Android list is generated from the default classpath.
 - **Metadata in the repo:** `apps/mobile/fastlane/metadata/android/{en-US,es-ES,it-IT,pt-PT}` (titles, descriptions and a changelog per version code in all four; six screenshots in en-US and es-ES). `scripts/check-fastlane.sh` checks F-Droid's limits. The store icon is `en-US/images/icon.png`, written by `docs/brand/tools/gen-icon.cjs`. F-Droid finds the folder under the recipe's `subdir: apps/mobile`.
 - **Package name** `com.wambito.app` (`docs/superpowers/specs/2026-11-02-wambito-urls-design.md` §3.2): it cannot change once published.
 
@@ -21,6 +21,8 @@ Wambito is built for F-Droid from source on F-Droid's own build server, from the
 
 - After F-Droid publishes the first build, its signing-key fingerprint goes into `ANDROID_CERT_SHA256` next to ours, or App Links and passkeys do not work for F-Droid users (`release.md`; plan Task 10).
 - Not exercised at runtime on a from-source build: live speech recognition and anything on `armeabi-v7a` (installs, signs in and loads a model on an arm64 emulator only; the emulator's microphone hung). Check on a real phone before the first release.
+- No Canary (precise voice model) on F-Droid yet: its runtime, sherpa-onnx, is a prebuilt AAR from a GitHub release, which F-Droid does not accept. The from-source build leaves it out (`src/noPrecise`, no dependency), so F-Droid users get Vosk only. Building sherpa-onnx from source is the way in.
+- About lists sherpa-onnx, onnxruntime and the Canary model on the F-Droid build too, which ships none of them until the F-Droid build of Canary is done (`docs/superpowers/specs/2026-11-05-voice-canary-design.md`, section 6).
 - F-Droid's build timeout is unverified: the recipe asks for `timeout: 10800`.
 
 ## How the build works
@@ -38,7 +40,7 @@ The prebuilt native code in the APK comes from two Maven artifacts: `com.alphace
 
 ### The two lockfiles
 
-`android/app/gradle.lockfile` (default) and `android/app/gradle-fdroid.lockfile` (with the switch) pin every Gradle dependency. They differ only in the two `-src` lines, and `scripts/check-fdroid-lock.sh` (CI) checks exactly that, as text. Flutter's own `io.flutter:*` artifacts are left out of both: they depend on the ABI, and a one-ABI build would not resolve. How to regenerate them: `setup.md`, "Dependency locks". CI also resolves the default one again (`check-gradle-locks.sh`).
+`android/app/gradle.lockfile` (default) and `android/app/gradle-fdroid.lockfile` (with the switch) pin every Gradle dependency. They differ only in the two `-src` lines and in the default one's sherpa-onnx line (the switch leaves it out), and `scripts/check-fdroid-lock.sh` (CI) checks exactly that, as text. Flutter's own `io.flutter:*` artifacts are left out of both: they depend on the ABI, and a one-ABI build would not resolve. How to regenerate them: `setup.md`, "Dependency locks". CI also resolves the default one again (`check-gradle-locks.sh`).
 
 ### The Gradle wrapper jar
 

@@ -22,6 +22,7 @@ import 'capture_repository.dart';
 import 'capture_save.dart';
 import 'engine/speech_engine.dart';
 import 'models_download.dart';
+import 'precise_offer.dart';
 import 'parser/parse.dart' as p;
 import 'preview/capture_preview.dart';
 
@@ -51,7 +52,7 @@ class OpenCaptureSheets {
 
 final openCaptureSheetsProvider = Provider<OpenCaptureSheets>((ref) => OpenCaptureSheets());
 
-enum CaptureStage { starting, offer, downloading, listening, typing, preview }
+enum CaptureStage { starting, offer, preciseOffer, downloading, listening, typing, preview }
 
 /// Why the typing field shows instead of listening: one sentence over it.
 enum CaptureWhy { micDenied, noEngine, noVoiceYet, listenFailed, nothingHeard, nothingRead }
@@ -102,11 +103,24 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
   /// once.
   var _warm = false;
 
+  /// The precise model is re-transcribing what was said: the sheet shows the live text dimmed with
+  /// "Refinando…" until the final transcript arrives.
+  var refining = false;
+  StreamSubscription<bool>? _refiningSub;
+
   /// A transcript that came before home's figures did: read once they are here.
   String? _pending;
 
   CancelToken? _download;
   var downloaded = 0;
+
+  /// What the download under way fetches in all (the bytes of Vosk's model, Canary's, or both): the
+  /// bar's whole.
+  var downloadTotal = 0;
+
+  /// This phone and language get the precise model (Canary): the offer adds its size.
+  var _eligible = false;
+  var _joint = false;
   ModelDownloadFailure? downloadFailure;
 
   CapturePreview? preview;
@@ -154,6 +168,7 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
     _withInput.mark(this, hasInput: false);
     WidgetsBinding.instance.removeObserver(this);
     unawaited(_listening?.cancel());
+    unawaited(_refiningSub?.cancel());
     _download?.cancel();
     preview?.dispose();
     field.dispose();
@@ -195,6 +210,15 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
   /// the sheet then opens on the typing field, as it does when the phone cannot listen.
   bool get hasVoice => ref.read(modelStoreProvider).hasModel(locale);
 
+  /// The precise model of the app's language, when the phone gets it; null otherwise. Its size is
+  /// added to the offer, and it is the one the one-time offer is about.
+  VoiceModel? get preciseModel =>
+      _eligible ? ref.read(preciseModelStoreProvider).modelFor(locale) : null;
+
+  /// The precise model the opt-in download adds to Vosk's: [preciseModel] unless it is installed
+  /// already or the person said no (or switched it off). Its size is the one the offer shows.
+  VoiceModel? get jointPreciseModel => _joint ? preciseModel : null;
+
   void cancelDownload() => _download?.cancel();
 
   void _set(VoidCallback change) {
@@ -213,7 +237,7 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
       CaptureStage.preview =>
         _pending != null ||
             (current != null && (current.cards.isNotEmpty || current.unread.isNotEmpty)),
-      CaptureStage.offer || CaptureStage.downloading => false,
+      CaptureStage.offer || CaptureStage.preciseOffer || CaptureStage.downloading => false,
     };
   }
 
@@ -242,7 +266,14 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
 
   Future<void> _start() async {
     // Both at once: nothing waits for the other.
-    final (available, warm) = await (engine.available(), engine.isWarm(locale: locale)).wait;
+    final (available, warm, eligible) = await (
+      engine.available(),
+      engine.isWarm(locale: locale),
+      _preciseEligible(),
+    ).wait;
+    if (!mounted) return;
+    _eligible = eligible;
+    _joint = eligible && await ref.read(preciseOfferProvider(locale)).wantsWithVosk();
     if (!mounted) return;
     canListen = available && hasVoice;
     _warm = canListen && warm;
@@ -252,8 +283,19 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
       type(CaptureWhy.noEngine);
     } else if (!hasVoice) {
       type(CaptureWhy.noVoiceYet);
+    } else if (await ref.read(preciseOfferProvider(locale)).shouldOffer()) {
+      // Someone with Vosk's model, once: the precise one, before the microphone opens.
+      if (mounted) _set(() => stage = CaptureStage.preciseOffer);
     } else {
       listen();
+    }
+  }
+
+  Future<bool> _preciseEligible() async {
+    try {
+      return await ref.read(preciseEligibleProvider(locale).future);
+    } on Object {
+      return false;
     }
   }
 
@@ -277,13 +319,16 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
       return;
     }
     unawaited(_listening?.cancel());
+    unawaited(_refiningSub?.cancel());
     _kept = field.text.trim();
     _set(() {
       stage = CaptureStage.listening;
       why = null;
       heard = '';
       ready = _warm;
+      refining = false;
     });
+    _refiningSub = engine.refining.listen((on) => _set(() => refining = on));
     _listening = engine
         .listen(locale: locale)
         .listen(
@@ -295,6 +340,8 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
           }),
           onError: (Object error) {
             _listening = null;
+            unawaited(_refiningSub?.cancel());
+            refining = false;
             final kind = error is SpeechFailure ? error.kind : SpeechFailureKind.failed;
             switch (kind) {
               case SpeechFailureKind.noModel when !hasVoice:
@@ -314,6 +361,8 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
           onDone: () {
             if (_listening == null || !mounted) return;
             _listening = null;
+            unawaited(_refiningSub?.cancel());
+            refining = false;
             final text = heard.trim();
             if (text.isEmpty) {
               type(CaptureWhy.nothingHeard);
@@ -336,6 +385,8 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
     _kept = '';
     final listening = _listening;
     _listening = null;
+    unawaited(_refiningSub?.cancel());
+    refining = false;
     if (listening != null) {
       unawaited(listening.cancel());
       unawaited(engine.stop());
@@ -352,14 +403,25 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
 
   // -- the model download --------------------------------------------------------------------
 
-  Future<void> downloadModel() async {
+  CancelToken _beginDownload(int total) {
     final cancel = CancelToken();
     _set(() {
       _download = cancel;
       downloaded = 0;
+      downloadTotal = total;
       downloadFailure = null;
       stage = CaptureStage.downloading;
     });
+    return cancel;
+  }
+
+  /// The opt-in: Vosk's model and, on a phone that gets it, the precise one after it, on one bar.
+  /// Vosk goes first, so the voice works as soon as it lands: if the precise one then fails (or is
+  /// cancelled), the person listens with Vosk now and is offered the other once more later.
+  Future<void> downloadModel() async {
+    final voskBytes = model?.bytes ?? 0;
+    final canary = jointPreciseModel;
+    final cancel = _beginDownload(voskBytes + (canary?.bytes ?? 0));
     try {
       await ref
           .read(modelStoreProvider)
@@ -379,8 +441,55 @@ class CaptureSheetState extends ConsumerState<CaptureSheet>
       return;
     }
     if (!mounted) return;
+    if (canary != null) await _finishPrecise(cancel, after: voskBytes);
+    if (!mounted) return;
     _download = null;
     listen();
+  }
+
+  /// Downloads the precise model ([after] bytes of the bar are done) and, once it is installed,
+  /// records the one-time offer as answered. If it does not come, a toast says so and nothing is
+  /// recorded: the offer returns later. A cancel is the same, but silent: it is intentionally not
+  /// an answer either.
+  Future<void> _finishPrecise(CancelToken cancel, {required int after}) async {
+    final toasts = ToastHost.of(context);
+    final said = l10n.settingsVoicePreciseFailed;
+    final offer = ref.read(preciseOfferProvider(locale));
+    try {
+      await ref
+          .read(preciseModelStoreProvider)
+          .download(
+            locale,
+            cancel: cancel,
+            onProgress: (received, _) => _set(() => downloaded = after + received),
+          );
+      await offer.answer(accepted: true);
+    } on Object catch (error) {
+      if (error is ModelDownloadFailure && error.cancelled) return;
+      toasts.say(said, error: true);
+    }
+  }
+
+  /// "Mejorar": the one-time offer accepted. Only the precise model is fetched; whatever happens,
+  /// the person then listens. It is recorded as answered once it is installed: a failure or a
+  /// cancel leaves the offer open for next time (a cancel is deliberately not an answer).
+  Future<void> improvePrecision() async {
+    final canary = preciseModel;
+    if (canary == null) {
+      listen();
+      return;
+    }
+    final cancel = _beginDownload(canary.bytes);
+    await _finishPrecise(cancel, after: 0);
+    if (!mounted) return;
+    _download = null;
+    listen();
+  }
+
+  /// "Ahora no": the one-time offer declined and remembered, then listening.
+  Future<void> declinePrecision() async {
+    await ref.read(preciseOfferProvider(locale)).answer(accepted: false);
+    if (mounted) listen();
   }
 
   // -- the preview ---------------------------------------------------------------------------

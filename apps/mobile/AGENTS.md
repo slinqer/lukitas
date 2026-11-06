@@ -67,7 +67,15 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
   `wambito.capture.confirm.<id>`, KEEP; POST review, then cancels the notification; a 4xx other than
   401/408/429, 404 included, drops it; at most `MAX_ATTEMPTS` = 8 runs, then the notification stays
   for another tap), "Cambiar" opens `wambito://review/<id>` through the launch alias. Words in
-  `CaptureText` (strings `capture_*`, language from `NoticeSettings`). Voice: Vosk, never Android's SpeechRecognizer. Passkeys: androidx.credentials.
+  `CaptureText` (strings `capture_*`, language from `NoticeSettings`). Voice: Vosk, never Android's SpeechRecognizer
+  (`voice/VoiceChannel.kt`, `wambito/voice` + `wambito/voice/events`; models kept per process by
+  `ModelCache`: `VoiceModels` for Vosk, `PreciseModels` for the precise model keyed `path#language`: Canary for es/en, Parakeet for it/pt,
+  told apart by its `joiner.int8.onnx` (`kindOf`)). With
+  `precisePath`/`language` in the listen args the recording is kept in memory (`PcmBuffer`, 30 s max,
+  never on disk, sent or logged) and `Refine` re-transcribes it on release (waits ≤ 3 s for a loading
+  model): events `refining`, then `refined {text}` or `refine_failed {code: timeout|failed}`, between
+  Vosk's `result`s and `done`; methods `deviceQualifies({minRamBytes?})` (Parakeet asks 5 GiB, else 3), `warmUp`/`isWarm` with `precisePath`/
+  `language`, `releaseModels` frees both. `CanaryRecognizer` and `ParakeetRecognizer` are in `src/precise` only. Passkeys: androidx.credentials.
 
 ## Generated
 
@@ -95,6 +103,14 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
     a dot, so `export` and a bare `NAME=value` prefix do not work) takes
     those artifacts. ARM only, so off for the x86_64 emulator. `scripts/test-native-switch.sh`
     (CI) tests it.
+  - `scripts/package-canary.sh [--model canary|parakeet] [--check]` builds a precise model's zip for the voice-models-v2 release from sherpa-onnx's archive (not committed; prints its size and SHA-256; publish the zip from one run and pin that hash, `--check` proves reproducibility on one machine).
+  - sherpa-onnx 2.0.1 (the precise voice model's runtime; Play and GitHub builds only):
+    `scripts/fetch-sherpa-onnx.sh` downloads its AAR, checks the pinned SHA-256 and installs it in
+    `android/third_party/m2`; run it before any Gradle or `flutter build` (CI and `release.sh` do).
+    `scripts/test-fetch-sherpa-onnx.sh` (CI) tests it offline. Code that uses `com.k2fsa.sherpa.onnx`
+    goes in `android/app/src/precise/kotlin`, never in `src/main`: the switch swaps that folder for
+    `src/noPrecise/kotlin` (stand-ins), and both define `voice.PreciseRuntime.linked`. Adds ~31 MB
+    to the arm64 APK. `docs/mobile/setup.md` has the details.
   - Recipe: `fdroid/com.wambito.app.yml` is the source of truth, copied to fdroiddata when
     submitting; one build per ABI, srclibs in `fdroid/srclibs/*.yml`, natives built in `build:`
     (after F-Droid's source scan). Change it together with the revisions in `build-native-deps.sh`
@@ -108,9 +124,10 @@ deps pinned, free-licensed (`scripts/check-licenses.sh`). Setup, emulator, JDK 1
     copy of that commit (Docker, about an hour per ABI on 4 emulated cores; nothing is pushed).
   - Gradle locks: `android/app/gradle.lockfile`, and `gradle-fdroid.lockfile` for the switch.
     After changing a dependency, rewrite the first with `./gradlew :app:dependencies --write-locks`
-    and the second with the `sed` in `docs/mobile/setup.md` ("Dependency locks"; no native build),
+    and the second with the `sed` in `docs/mobile/setup.md` ("Dependency locks"; no native build; it also drops
+    the sherpa-onnx line),
     and commit both. `scripts/check-gradle-locks.sh` (CI) checks the first; `scripts/check-fdroid-lock.sh`
-    (CI, text only) checks that the second is the first with the two `-src` substitutions.
+    (CI, text only) checks that the second is the first with the two `-src` substitutions and no sherpa-onnx line.
   - The Gradle wrapper jar is committed: the official one for the version in
     `gradle-wrapper.properties`.
 - Release self-tests: `scripts/test-release.sh`, `scripts/check-fastlane.sh` (changelog ≤500 bytes,

@@ -48,6 +48,7 @@ class CaptureBody extends StatelessWidget {
       child: Center(child: QuietSpinner(size: 28)),
     ),
     CaptureStage.offer => const CaptureOfferBody(),
+    CaptureStage.preciseOffer => const CapturePreciseOfferBody(),
     CaptureStage.downloading => const CaptureDownloadingBody(),
     CaptureStage.listening => const CaptureListeningBody(),
     CaptureStage.typing => const CaptureTypingBody(),
@@ -63,6 +64,7 @@ class CaptureFooter extends StatelessWidget {
   Widget build(BuildContext context) => switch (CaptureSession.of(context).stage) {
     CaptureStage.starting => const CaptureListeningActions(enabled: false),
     CaptureStage.offer => const CaptureOfferActions(),
+    CaptureStage.preciseOffer => const CapturePreciseOfferActions(),
     CaptureStage.downloading => const CaptureDownloadingActions(),
     CaptureStage.listening => const CaptureListeningActions(),
     CaptureStage.typing => const CaptureTypingActions(),

@@ -71,6 +71,9 @@ run() { # run <granted|revoked> <label> <flutter test args...>
   fi
 }
 
+# The default build needs the sherpa-onnx AAR in the git-ignored android/third_party/m2 (idempotent).
+"$MOBILE/scripts/fetch-sherpa-onnx.sh"
+
 # Any debug build to start from (the first install); each run builds its own over it.
 [ -f "$apk" ] || flutter build apk --debug
 

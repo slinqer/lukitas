@@ -5,7 +5,8 @@
 # builds (unit and integration tests never see them), and About's licence page is made from that
 # file. This reads it from the release APK, and fails when a package listed under `dependencies:`
 # in pubspec.yaml has no entry. (The app's own extras, the voice models, the speech engine with
-# what its native library carries (OpenBLAS, CLAPACK and libf2c), JNA with libffi, the Android
+# what its native library carries (OpenBLAS, CLAPACK and libf2c), JNA with libffi, sherpa-onnx with
+# Canary and the libraries inside its native libraries, the Android
 # libraries and the sounds, are added in code: lib/settings/licenses.dart, and a widget test
 # checks them.) It checks the same for the bundled fonts (pubspec.yaml `fonts:`): each font file
 # must exist and have an OFL.txt beside it (assets/fonts/Nunito-Variable.ttf needs

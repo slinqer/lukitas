@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wambito/api/session.dart';
+import 'package:wambito/capture/models_download.dart';
 import 'package:wambito/feedback/feedback.dart';
 import 'package:wambito/home/home_screen.dart';
 import 'package:wambito/entry/entry_screen.dart';
@@ -547,6 +550,82 @@ void main() {
       env.opener.works = false;
       await _tap(tester, 'settings.web');
       expect(find.text('No pudimos abrir el navegador.'), findsOneWidget);
+    });
+  });
+
+  group('the precise voice model', () {
+    bool switchOn(WidgetTester tester) => tester
+        .widget<LkSwitch>(
+          find.descendant(
+            of: find.byKey(const Key('settings.voicePrecise')),
+            matching: find.byType(LkSwitch),
+          ),
+        )
+        .value;
+
+    testWidgets('a phone that does not qualify has no switch', (tester) async {
+      await pumpSettingsApp(tester, location: '/settings');
+      expect(find.byKey(const Key('settings.voicePrecise')), findsNothing);
+    });
+
+    testWidgets('the switch names the size, and turning it on downloads canary only', (
+      tester,
+    ) async {
+      final env = await pumpSettingsApp(tester, location: '/settings', preciseEligible: true);
+      await _scrollTo(tester, 'settings.voicePrecise');
+      expect(find.bySemanticsLabel('Mejorar la precisión (+150 MB)'), findsOneWidget);
+      expect(switchOn(tester), isFalse);
+      await tester.tap(find.byKey(const Key('settings.voicePrecise')));
+      await tester.pumpAndSettle();
+      expect(env.precise.downloaded, ['es']);
+      expect(env.models.downloads, 0);
+      expect(switchOn(tester), isTrue);
+      expect(env.flags['wambito.voice.preciseOffer']?.value, isTrue);
+    });
+
+    testWidgets('leaving Settings during the download throws nothing', (tester) async {
+      final env = await pumpSettingsApp(tester, location: '/settings', preciseEligible: true);
+      env.precise.gate = Completer<void>();
+      await _scrollTo(tester, 'settings.voicePrecise');
+      await tester.tap(find.byKey(const Key('settings.voicePrecise')));
+      await tester.pump(const Duration(milliseconds: 100));
+      env.router.go('/');
+      await tester.pumpAndSettle();
+      env.precise.gate!.complete();
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('on when installed; turning it off deletes only canary', (tester) async {
+      final env = await pumpSettingsApp(
+        tester,
+        location: '/settings',
+        preciseEligible: true,
+        preciseInstalled: true,
+      );
+      await _scrollTo(tester, 'settings.voicePrecise');
+      expect(switchOn(tester), isTrue);
+      await tester.tap(find.byKey(const Key('settings.voicePrecise')));
+      await tester.pumpAndSettle();
+      expect(env.precise.deletedOne, ['es']);
+      expect(env.precise.deletes, 0);
+      expect(env.models.deletes, 0);
+      expect(env.models.installed, isTrue, reason: 'vosk stays');
+      expect(switchOn(tester), isFalse);
+      expect(env.flags['wambito.voice.preciseOffer']?.value, isFalse, reason: 'no offer after off');
+    });
+
+    testWidgets('a download that fails says so and leaves the switch off', (tester) async {
+      final env = await pumpSettingsApp(tester, location: '/settings', preciseEligible: true);
+      env.precise.failure = const ModelDownloadFailure();
+      await _scrollTo(tester, 'settings.voicePrecise');
+      await tester.tap(find.byKey(const Key('settings.voicePrecise')));
+      await tester.pumpAndSettle();
+      expect(
+        find.text('No pudimos descargar el modelo preciso. Inténtalo otra vez.'),
+        findsOneWidget,
+      );
+      expect(switchOn(tester), isFalse);
     });
   });
 

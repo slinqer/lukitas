@@ -43,12 +43,19 @@ class FakeUrlOpener implements UrlOpener {
 
 /// A model store holding downloaded models until they are deleted.
 class DeletableModelStore extends FakeModelStore {
-  bool installed = true;
+  DeletableModelStore({super.models, super.installed = true});
+
   int deletes = 0;
+
+  /// The locales [deleteModel] was asked for.
+  final deletedOne = <String>[];
   Object? deleteFailure;
 
   @override
-  Future<String?> installedPath(String locale) async => installed ? '/models/$locale' : null;
+  Future<void> deleteModel(String locale) async {
+    deletedOne.add(locale);
+    installed = false;
+  }
 
   @override
   Future<void> deleteModels() async {
@@ -67,6 +74,7 @@ class SettingsEnv {
     required this.flags,
     required this.opener,
     required this.models,
+    required this.precise,
     required this.passkeys,
   });
 
@@ -78,6 +86,7 @@ class SettingsEnv {
   final Map<String, FakeFlagStore> flags;
   final FakeUrlOpener opener;
   final DeletableModelStore models;
+  final DeletableModelStore precise;
   final FakePasskeys passkeys;
 
   GoRouter get router => container.read(routerProvider);
@@ -91,6 +100,8 @@ Future<SettingsEnv> pumpSettingsApp(
   bool guest = false,
   bool passkeysSupported = false,
   bool modelsInstalled = true,
+  bool preciseEligible = false,
+  bool preciseInstalled = false,
   Locale locale = const Locale('es'),
   String? location,
   FakeAuthApi? auth,
@@ -108,6 +119,7 @@ Future<SettingsEnv> pumpSettingsApp(
   final flags = <String, FakeFlagStore>{};
   final opener = FakeUrlOpener();
   final models = DeletableModelStore()..installed = modelsInstalled;
+  final precise = DeletableModelStore(models: preciseModels, installed: preciseInstalled);
   final passkeys = FakePasskeys(isSupported: passkeysSupported);
   tester.platformDispatcher.localesTestValue = [locale];
   addTearDown(tester.platformDispatcher.clearLocalesTestValue);
@@ -129,6 +141,8 @@ Future<SettingsEnv> pumpSettingsApp(
     flagStoreProvider.overrideWith((ref, key) => flags.putIfAbsent(key, FakeFlagStore.new)),
     urlOpenerProvider.overrideWithValue(opener),
     modelStoreProvider.overrideWithValue(models),
+    preciseModelStoreProvider.overrideWithValue(precise),
+    preciseEligibleProvider.overrideWith((ref, locale) async => preciseEligible),
     feedbackPlatformProvider.overrideWithValue(FakeFeedbackPlatform()),
     reviewRepositoryProvider.overrideWithValue(
       FakeReviewRepository(homeRepo ?? FakeHomeRepository()),
@@ -171,6 +185,7 @@ Future<SettingsEnv> pumpSettingsApp(
     flags: flags,
     opener: opener,
     models: models,
+    precise: precise,
     passkeys: passkeys,
   );
   if (location != null) {

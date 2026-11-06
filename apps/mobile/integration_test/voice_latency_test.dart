@@ -56,6 +56,9 @@ class _Timed implements SpeechEngine {
   Stream<double> get levels => _real.levels;
 
   @override
+  Stream<bool> get refining => _real.refining;
+
+  @override
   Future<void> stop() => _real.stop();
 
   @override
@@ -126,7 +129,13 @@ void main() {
         key: 'setting.capture.note',
         value: _voiceUsed ? 'off' : 'on',
       );
-      final engine = _Timed(VoskEngine(channel: channel, models: store));
+      final engine = _Timed(
+        VoskEngine(
+          channel: channel,
+          models: store,
+          precise: ModelStore(files: channel, http: Dio(), models: preciseModels),
+        ),
+      );
       await _startAsGuest(tester, store, engine);
       // The person looks at home for a moment: a background load has time to finish.
       for (var i = 0; i < 40; i++) {

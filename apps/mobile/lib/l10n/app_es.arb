@@ -1017,6 +1017,10 @@
   "@captureListeningNote": {
     "description": "Quick capture: under the prompt while listening, for the first use only (until the first saved capture); the engine runs on the phone, with no network."
   },
+  "captureRefining": "Refinando…",
+  "@captureRefining": {
+    "description": "Quick capture: label under the heard text while the precise model re-transcribes it, after the microphone closes."
+  },
   "captureStop": "Listo",
   "@captureStop": {
     "description": "Quick capture: stops listening."
@@ -1094,6 +1098,27 @@
   "captureOfferDecline": "Ahora no, escribo",
   "@captureOfferDecline": {
     "description": "Quick capture: declines the voice download; the typing field shows."
+  },
+  "captureOfferPrecise": "Mejorar la precisión (+{megabytes} MB)",
+  "@captureOfferPrecise": {
+    "description": "Quick capture: the one-time offer of the precise voice model to someone who has the basic one.",
+    "placeholders": {
+      "megabytes": {
+        "type": "int"
+      }
+    }
+  },
+  "captureOfferPreciseBody": "Wambito puede corregir lo que dices con un modelo más preciso. Se descarga una sola vez, queda en tu teléfono y funciona sin internet.",
+  "@captureOfferPreciseBody": {
+    "description": "Quick capture: what the precise model is, under its offer."
+  },
+  "captureOfferPreciseAccept": "Mejorar",
+  "@captureOfferPreciseAccept": {
+    "description": "Quick capture: accepts the precise model download."
+  },
+  "captureOfferPreciseDecline": "Ahora no",
+  "@captureOfferPreciseDecline": {
+    "description": "Quick capture: declines the precise model; it is not offered again."
   },
   "captureDownloading": "Descargando la voz… {percent} %",
   "@captureDownloading": {
@@ -1267,6 +1292,23 @@
   "settingsVoice": "Voz",
   "settingsDeleteVoice": "Borrar los modelos de voz",
   "settingsDeleteVoiceHint": "Libera espacio en el teléfono. La próxima vez que dictes, te pedimos descargarlos otra vez.",
+  "settingsVoicePrecise": "Mejorar la precisión (+{megabytes} MB)",
+  "@settingsVoicePrecise": {
+    "description": "Settings, voice: the switch that downloads or deletes the precise model.",
+    "placeholders": {
+      "megabytes": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsVoicePreciseHint": "Un modelo más preciso corrige lo que dices al terminar. Funciona sin internet.",
+  "@settingsVoicePreciseHint": {
+    "description": "Settings, voice: what the precise model does."
+  },
+  "settingsVoicePreciseFailed": "No pudimos descargar el modelo preciso. Inténtalo otra vez.",
+  "@settingsVoicePreciseFailed": {
+    "description": "Settings, voice: the precise model did not download."
+  },
   "settingsDeleteVoiceTitle": "¿Borrar los modelos de voz?",
   "settingsDeleteVoiceBody": "No podrás dictar hasta descargarlos de nuevo. Lo que ya anotaste no cambia.",
   "settingsDeleteVoiceConfirm": "Sí, borrar",
@@ -1357,6 +1399,18 @@
   "licenseNoticeClapack": "CLAPACK (https://www.netlib.org/clapack), la versión en C de LAPACK que va dentro de la biblioteca nativa de Vosk, bajo una licencia BSD. Trae libf2c, cuyo aviso va después de la licencia.",
   "licenseNoticeLibffi": "libffi (https://github.com/libffi/libffi), que va dentro de la biblioteca nativa de JNA, bajo la licencia MIT.",
   "licenseNoticeJna": "Java Native Access (https://github.com/java-native-access/jna), por donde Vosk llega a su biblioteca nativa. Tiene doble licencia: Apache 2.0 o LGPL 2.1. Wambito la usa bajo la licencia Apache 2.0.",
+  "licenseNoticeCanary": "El modelo de voz preciso de la captura rápida, Canary-180M flash (https://huggingface.co/nvidia/canary-180m-flash), de NVIDIA, bajo la licencia Creative Commons Attribution 4.0 (CC BY 4.0). No viene en la app: se descarga al teléfono si aceptas, y reconoce la voz sin salir de él. Atribución: Canary-180M flash by NVIDIA, CC BY 4.0, converted to ONNX by the sherpa-onnx project. Se usa convertido a ONNX, sin otros cambios de Wambito.",
+  "licenseNoticeParakeet": "El modelo de voz preciso de la captura rápida en italiano y portugués, Parakeet TDT 0.6B v3 (https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3), de NVIDIA, bajo la licencia Creative Commons Attribution 4.0 (CC BY 4.0). No viene en la app: se descarga al teléfono si aceptas, y reconoce la voz sin salir de él. Atribución: Parakeet TDT 0.6B v3 by NVIDIA, CC BY 4.0, converted to ONNX by the sherpa-onnx project. Se usa convertido a ONNX, sin otros cambios de Wambito.",
+  "licenseNoticeSherpa": "sherpa-onnx (https://github.com/k2-fsa/sherpa-onnx), de k2-fsa, bajo la licencia Apache 2.0. Es el motor que ejecuta el modelo preciso en el teléfono. Sus bibliotecas nativas, libsherpa-onnx-jni.so y libonnxruntime.so, llevan dentro las bibliotecas que aparecen aparte, cada una con su licencia.",
+  "licenseNoticeOnnxruntime": "ONNX Runtime (https://github.com/microsoft/onnxruntime), de Microsoft, bajo la licencia MIT. Es la biblioteca nativa libonnxruntime.so que viene en el AAR de sherpa-onnx, y hace los cálculos del modelo.",
+  "licenseNoticeSherpaNative": "Bibliotecas que van dentro de libsherpa-onnx-jni.so, la biblioteca nativa de sherpa-onnx, todas bajo la licencia Apache 2.0: kaldi-native-fbank (https://github.com/csukuangfj/kaldi-native-fbank), kaldi-decoder (https://github.com/k2-fsa/kaldi-decoder), kaldifst (https://github.com/k2-fsa/kaldifst), OpenFst (https://www.openfst.org) y simple-sentencepiece (https://github.com/pkufool/simple-sentencepiece).",
+  "licenseNoticeOrtApache": "Bibliotecas que van dentro de libonnxruntime.so, la biblioteca nativa de ONNX Runtime, bajo la licencia Apache 2.0: Abseil (https://github.com/abseil/abseil-cpp) y ONNX (https://github.com/onnx/onnx).",
+  "licenseNoticeNlohmann": "nlohmann/json (https://github.com/nlohmann/json), que va dentro de libsherpa-onnx-jni.so, bajo la licencia MIT.",
+  "licenseNoticeUtf8proc": "utf8proc (https://github.com/JuliaStrings/utf8proc), que va dentro de libsherpa-onnx-jni.so, bajo la licencia MIT; su texto trae también los avisos de los datos de Unicode que usa.",
+  "licenseNoticeFastcluster": "fastcluster, en la versión de hclust-cpp (https://github.com/csukuangfj/hclust-cpp), que va dentro de libsherpa-onnx-jni.so, bajo la licencia BSD de 2 cláusulas.",
+  "licenseNoticeDarts": "darts-clone (https://github.com/s-yata/darts-clone), que simple-sentencepiece incluye y va dentro de libsherpa-onnx-jni.so, bajo la licencia BSD de 2 cláusulas.",
+  "licenseNoticeProtobuf": "Protocol Buffers (https://github.com/protocolbuffers/protobuf), que va dentro de libonnxruntime.so, bajo la licencia BSD de 3 cláusulas.",
+  "licenseNoticeRe2": "RE2 (https://github.com/google/re2), que va dentro de libonnxruntime.so, bajo la licencia BSD de 3 cláusulas.",
   "licenseNoticeLibraries": "Bibliotecas de Android con las que se construye la app. Cada una declara su licencia en su propio POM; esta es la del grupo: {license}. Ninguna es Google Play Services ni Firebase.",
   "@licenseNoticeLibraries": {
     "placeholders": {

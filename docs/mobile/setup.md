@@ -87,6 +87,12 @@ flutter doctor -v
 
 Expected: Flutter and the Android toolchain are OK. Xcode, Chrome and Android Studio may show warnings or be missing; the Android app does not need them.
 
+## sherpa-onnx (the precise voice model's runtime)
+
+The Play and GitHub builds carry sherpa-onnx 2.0.1 (Apache-2.0), which runs the precise voice model. Its AAR is not on Maven Central: `apps/mobile/scripts/fetch-sherpa-onnx.sh` downloads it from k2-fsa's GitHub release, checks its size and SHA-256 (both pinned in the script) and installs it in the local Maven repository `android/third_party/m2` (git-ignored) as `com.k2fsa.sherpa.onnx:sherpa-onnx:2.0.1`. Run it once after cloning, before any Gradle or `flutter build` command; it does nothing when the file is already there and correct, and it refuses (exit 1, nothing installed) a file that does not match. `scripts/release.sh` and CI run it. `scripts/test-fetch-sherpa-onnx.sh` tests it offline. The AAR adds about 31 MB to the arm64 release APK (onnxruntime is 22 MB of it).
+
+The F-Droid build (`-Pwambito.nativeFromSource=true`) does not take it: code that uses sherpa-onnx lives in `android/app/src/precise/kotlin` (compiled only without the switch), and `src/noPrecise/kotlin` has the stand-ins for the switch; both define `com.wambito.app.voice.PreciseRuntime.linked`.
+
 ## The time zone table
 
 `apps/mobile/lib/settings/zone_countries.dart` is generated: the time zones Settings offers (the web's 418, in ICU's
@@ -240,9 +246,10 @@ The first Gradle build also installs `platforms;android-35` and `cmake;3.22.1` i
 Gradle dependency locking pins every dependency version of the Android app (`lockAllConfigurations()`
 in `android/app/build.gradle.kts`), so F-Droid and CI resolve the same graph. Two files, both committed:
 
-- `android/app/gradle.lockfile`: the default graph (Vosk and JNA from Maven Central);
+- `android/app/gradle.lockfile`: the default graph (Vosk and JNA from Maven Central, sherpa-onnx from `third_party/m2`);
 - `android/app/gradle-fdroid.lockfile`: the graph with `-Pwambito.nativeFromSource=true` (Vosk and JNA
-  from source, `docs/mobile/fdroid.md`); it differs from the first only in the two `-src` versions.
+  from source, `docs/mobile/fdroid.md`); it differs from the first only in the two `-src` versions and
+  in having no sherpa-onnx line.
 
 Flutter's engine artifacts (`io.flutter:*`) are not locked (`ignoredDependencies`): the Flutter SDK
 pins them, and a build resolves only those of its `--target-platform`, so locking them fails a
@@ -254,17 +261,19 @@ the locks and commit them:
 ```bash
 cd apps/mobile/android
 export JAVA_HOME=~/development/jdk/jdk-17.0.21+9/Contents/Home
+../scripts/fetch-sherpa-onnx.sh   # the default graph needs the AAR
 ./gradlew :app:dependencies --write-locks
-# the F-Droid lock is the default one with the two -src lines; no native build is needed
+# the F-Droid lock is the default one with the two -src lines and without sherpa-onnx; no native build is needed
 sed -e 's/^\(com\.alphacephei:vosk-android:0\.3\.75\)=/\1-src=/' \
     -e 's/^\(net\.java\.dev\.jna:jna:5\.18\.1\)=/\1-src=/' \
+    -e '/^com\.k2fsa\.sherpa\.onnx:sherpa-onnx:/d' \
     app/gradle.lockfile > app/gradle-fdroid.lockfile
 ```
 
 `apps/mobile/scripts/check-gradle-locks.sh` (CI's `mobile-build`) rewrites the default lock and fails
 when it differs from the committed one. `scripts/check-fdroid-lock.sh` (CI's `mobile` job, text only)
 fails when `gradle-fdroid.lockfile` is not the default lock with exactly those two `-src`
-substitutions, so rewrite it with the `sed` above whenever the first changes.
+substitutions and without the sherpa-onnx line, so rewrite it with the `sed` above whenever the first changes.
 
 ## Physical phone
 
